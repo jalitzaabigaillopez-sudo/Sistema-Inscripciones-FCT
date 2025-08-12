@@ -1,0 +1,34 @@
+  body {
+            background-color: #222; 
+        }
+        .login-container {
+            background-color: #f8f8f8;
+            padding: 30px;
+            border-radius: 5px;
+            margin-top: 40px;
+        }
+        .login-box {
+            background-color: #e7c843;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .btn-ingresar {
+            background-color: red;
+            color: white;
+            border-radius: 20px;
+            padding: 8px 20px;
+            border: none;
+            font-weight: bold;
+        }
+        .logo {
+            max-width: 250px;
+        }
+        a {
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: black;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
