@@ -7,7 +7,11 @@
 </head>
 <body>
     <h1>Sistema de registro de Federación Costarricense de Taekwondo</h1>
-    <p>Para continuar el registro por favor ingrese al siguiente enlace:</p>
-    <a href="http://127.0.0.1:8000">Click para registrarse en Federación Costarricense de Taekwondo</a>
+    <h2>Hola, {{ $usuario->nombre }}</h2>
+    <p>Para continuar con el proceso de registro por favor haga clic en el siguiente enlace:</p>
+    <a href="{{ route('activar.cuenta', ['id' => $usuario->id_usuario]) }}">Click para registrarse en Federación Costarricense de Taekwondo</a>
+    <p>Debera ingresar con su correo electronico: <span style="font-weight: bold;">{{ $usuario->email }}</span> </p>
+    <p>y su contraseña temporal: <span style="font-weight: bold;">{{ $usuario->password }}</span></p>
+
 </body>
 </html>

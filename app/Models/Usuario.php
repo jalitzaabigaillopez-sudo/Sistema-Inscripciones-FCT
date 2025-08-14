@@ -8,9 +8,10 @@ use App\Traits\Encryptable;
 class Usuario extends Model
 {
     use Encryptable;
-    protected $encrypted = ['username', 'password'];
+    protected $encrypted = ['cedula', 'password'];
 
     protected $table = 'usuarios'; 
+    protected $primaryKey= 'id_usuario';
     public $timestamps = true;    // se deben colocar las columnas created_at y updated_at
-    protected $fillable = ['username', 'password',	'correo',	'tipo',	'activo'];
+    protected $fillable = ['cedula', 'nombre',	'email', 'password', 'rol',	'estado'];
 }

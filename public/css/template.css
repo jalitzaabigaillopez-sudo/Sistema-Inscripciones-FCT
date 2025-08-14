@@ -1,0 +1,88 @@
+body {
+            background-color: #f4f6f9;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        /* Topbar */
+        .topbar {
+            background-color: black;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .topbar-logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        /* Sidebar */
+        .sidebar {
+            background-color: black;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+        .sidebar a {
+            color: #ccc;
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .sidebar a:hover {
+            background-color: black;
+            color: white;
+        }
+        .sidebar hr {
+            border-color: lig;
+        }
+        /* Content */
+        .content-wrapper {
+            padding: 20px;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        /* Footer */
+        .footer {
+            background-color: black;
+            color: #bbb;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /*  */
+        .login-container {
+            background-color: #f8f8f8;
+            padding: 30px;
+            border-radius: 5px;
+            margin-top: 40px;
+        }
+        .login-box {
+            background-color: #e7c843;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .btn-ingresar {
+            background-color: red;
+            color: white;
+            border-radius: 20px;
+            padding: 8px 20px;
+            border: none;
+            font-weight: bold;
+        }
+        .logo {
+            max-width: 250px;
+        }
+        a {
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: black;
+        }
+        a:hover {
+            text-decoration: underline;
+        }

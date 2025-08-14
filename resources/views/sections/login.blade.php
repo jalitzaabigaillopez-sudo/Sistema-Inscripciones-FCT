@@ -25,8 +25,8 @@
                 <form action="{{route('login.process')}}" method="post">
                 @csrf
                     <div class="mb-3">
-                        <label for="correo" class="form-label fw-bold">Correo</label>
-                        <input type="email" class="form-control" name="correo" placeholder="">
+                        <label for="email" class="form-label fw-bold">Correo</label>
+                        <input type="email" class="form-control" name="email" placeholder="">
                     </div>
                     <div class="mb-3">
                         <label for="password" class=" form-label fw-bold">Contraseña</label>
