@@ -5,6 +5,7 @@ use App\Http\Controllers\DBController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AcademiaController;
+use App\Http\Controllers\PasswordController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -32,4 +33,15 @@ Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia'
 /**
  * Ruta para completar pre-registro
  */
-Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'activarCuenta'])->name('activar.cuenta');
+Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta')->middleware('signed'); ;
+Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
+
+//####################################### AMBOS ROLES #################################################
+/**
+ * Rutas cambio de contraseña
+ */
+
+Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
+Route::post('/cambiar-contraseña', [PasswordController::class, 'cambiarContraseña'])->name('cambiar.contraseña');
+
+Route::post('/recuperar-contraseña', [PasswordController::class, 'correoCambiarContraseña'])->name('correo.cambiarContraseña');

@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FCTMail extends Mailable
+class PasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,7 +31,7 @@ class FCTMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Completar Registro',
+            subject: 'Cambiar Contraseña',
         );
     }
 
@@ -41,7 +41,7 @@ class FCTMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.preregistroAcademia',
+             view: 'mails.cambiarContraseña',
         );
     }
 

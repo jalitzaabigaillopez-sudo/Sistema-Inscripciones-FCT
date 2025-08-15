@@ -7,6 +7,8 @@ use App\Models\Usuario;
 use App\Models\Academia;
 use App\Mail\FCTMail;
 use Illuminate\Support\Facades\Mail;
+use App\Services\PasswordGenerator;
+use Illuminate\Support\Facades\URL;
 
 class DBController extends Controller
 {
@@ -37,7 +39,8 @@ class DBController extends Controller
     // 127.0.0.1:8000/pre_registroAcademia
     public function pre_registroAcademia ()
     {
-        $temporalPass = $this->generarPassword();
+        $generator = new PasswordGenerator();
+        $temporalPass = $generator->generate(12);
 
         // 1
         $usuario = new Usuario();
@@ -63,21 +66,11 @@ class DBController extends Controller
         $academia->save();
 
         // 3
-        Mail::to($usuario->email)->send(new FCTMail($usuario));
+        $urlFirmada = URL::temporarySignedRoute('activar.cuenta', now()->addMinutes(15), // Tiempo de expiración
+        ['id' => $usuario->id_usuario]
+        );
+        Mail::to($usuario->email)->send(new FCTMail($usuario, $urlFirmada));
 
         echo "pre-registro de academia completado, se ha enviado un correo.";
-    }
-
-    // Método para generar contraseña aleatoria
-    public function generarPassword($longitud = 8)
-    {
-        $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        $password = '';
-
-        for ($i = 0; $i < $longitud; $i++) {
-            $password .= $caracteres[rand(0, strlen($caracteres) - 1)];
-        }
-
-        return $password;
     }
 }

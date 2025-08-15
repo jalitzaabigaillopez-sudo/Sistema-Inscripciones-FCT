@@ -19,35 +19,18 @@
 
     <div class="container-fluid">
         <div class="row mt-3 mb-3">
-            <!-- <div class="col-md-2">
-                <nav class="sidebar" style="pointer-events: none; opacity: 0.5;">
-                    <a href="#">Inicio</a>
-                    <hr>
-                    <a href="#">Módulos</a>
-                    <a href="#">Inscripción</a>
-                    <a href="#">Revisión de resultados</a>
-                    <a href="#">Eventos</a>
-                    <hr>
-                    <a href="#">Estadísticas</a>
-                    <a href="#">Verificación de Peso</a>
-                    <a href="#">Generación de llaves</a>
-                    <a href="#">Ranking nacional</a>
-                    <hr>
-                    <small class="text-muted">Log in as: Administrador</small>
-                </nav> 
-            </div> -->
 
                <div class="col-md-6">
                     <div class="login-box">
-                        <form action="{{route('cuentaAcademia.process')}}" method="post">
+                        <form action="{{route('cambiar.contraseña')}}" method="post">
                         @csrf
 
                         <input type="hidden" name="id_usuario" value="{{$usuario->id_usuario }}">
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="email" class="form-label fw-bold">Correo</label>
                                 <input type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="">
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="temporaryPassword" class=" form-label fw-bold">Contraseña Temporal</label>
                                 <input type="temporaryPassword" class="form-control" name="temporaryPassword" value="{{ old('temporaryPassword') }}" placeholder="">
