@@ -36,6 +36,67 @@ Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia'
 Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta')->middleware('signed'); ;
 Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
 
+
+
+
+//prueba frontend
+
+// Ruta principal del dashboard
+Route::get('/adminDash', function () {
+    return view('admin.dashboard');
+})->name('adminDash');
+
+// Ruta para inscripción
+Route::get('/inscripcion', function () {
+    return view('admin.inscripcion');
+})->name('inscripcion');
+
+// Ruta para perfil
+Route::get('/perfil', function () {
+    return view('admin.perfil');
+})->name('perfil');
+
+
+// Ruta para eventos
+Route::get('/eventos', function () {
+    return view('eventos');
+})->name('eventos');
+
+// Ruta para estadísticas
+Route::get('/estadisticas', function () {
+    return view('estadisticas');
+})->name('estadisticas');
+
+// Ruta para verificación de peso
+Route::get('/peso', function () {
+    return view('peso');
+})->name('peso');
+
+// Ruta para ranking nacional
+Route::get('/ranking', function () {
+    return view('ranking');
+})->name('ranking');
+
+// Ruta para catálogos generales
+Route::get('/catalogos', function () {
+    return view('admin.catalogos');
+})->name('catalogos');
+
+Route::get('/dashboard-academias', function () {
+    return view('academia.dashboard-academia');
+})->name('dashboard.academias');
+
+// Vista de catálogo de atletas
+Route::get('/atletas', function () {
+    return view('academia.atletas');
+})->name('atletas');
+
+// Vista de perfil de academia
+Route::get('/perfil-academia', function () {
+    return view('academia.perfil-academia');
+})->name('perfil.academia');
+
+
 //####################################### AMBOS ROLES #################################################
 /**
  * Rutas cambio de contraseña
