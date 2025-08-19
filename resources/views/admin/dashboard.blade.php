@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
         <div class="d-flex align-items-center gap-3">
-            <img src="{{ asset('images/fct-logo.svg') }}" alt="FCT Logo" height="40">
+            <img src="{{ asset('images/fct_logo.svg') }}" alt="FCT Logo" height="40">
             <h4 class="mb-0">Panel Administrativo</h4>
         </div>
         <div class="d-flex align-items-center gap-2">

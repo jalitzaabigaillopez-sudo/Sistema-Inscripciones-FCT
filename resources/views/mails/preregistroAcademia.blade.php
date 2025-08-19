@@ -7,11 +7,12 @@
 </head>
 <body>
     <h1>Sistema de registro de Federación Costarricense de Taekwondo</h1>
-    <h2>Hola, {{ $usuario->nombre }}</h2>
+    <h2>Hola, {{ $usuario->nombre_completo }}</h2>
     <p>Para continuar con el proceso de registro por favor haga clic en el siguiente enlace:</p>
-    <a href="{{ $urlFirmada }}">Click para registrarse en Federación Costarricense de Taekwondo</a>
+    <a href="{{ $url }}">Click para registrarse en Federación Costarricense de Taekwondo</a>
     <p>Debera ingresar con su correo electronico: <span style="font-weight: bold;">{{ $usuario->email }}</span> </p>
-    <p>y su contraseña temporal: <span style="font-weight: bold;">{{ $usuario->password }}</span></p>
+    <p>y su contraseña temporal: <span style="font-weight: bold;">{{ $contraseñaTemporal->password_temporal }}</span></p>
+    <p>Debera realizar este proceso antes de <span style="font-weight: bold;"> {{ $contraseñaTemporal->fecha_expiracion }} </span>o su contraseña temporal caducara</p>
 
 </body>
 </html>

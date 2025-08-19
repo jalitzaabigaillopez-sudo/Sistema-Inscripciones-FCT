@@ -14,7 +14,7 @@ class Academia extends Model
     protected $table = 'academias';
     protected $primaryKey= 'id_academia';
     public $timestamps = true;    // se deben colocar las columnas created_at y updated_at
-    protected $fillable = ['id_usuario', 'nombre', 'canton', 'provincia', 'profesor_encargado', 'direccion', 'correo', 'telefono', 'estado'];
+    protected $fillable = ['nombre', 'profesor_encargado', 'direccion', 'correo', 'telefono', 'estado', 'id_usuario', 'id_distrito'];
 
     public function usuario()
     {

@@ -28,12 +28,13 @@ Route::get('/dashboard', [Controller::class, 'index'])->name('dashboard');
 Route::get('/insertUser', [DBController::class, 'insertUser']);
 Route::get('/selectUser', [DBController::class, 'selectUser']);
 Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia']);
+Route::get('/pre_registroAcademia1', [DBController::class, 'pre_registroAcademia1']);
 
 //####################################### SOLO ACADEMIA #################################################
 /**
  * Ruta para completar pre-registro
  */
-Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta')->middleware('signed'); ;
+Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta');
 Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
 
 
@@ -102,7 +103,11 @@ Route::get('/perfil-academia', function () {
  * Rutas cambio de contraseña
  */
 
-Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
+// Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
+Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña');
 Route::post('/cambiar-contraseña', [PasswordController::class, 'cambiarContraseña'])->name('cambiar.contraseña');
 
 Route::post('/recuperar-contraseña', [PasswordController::class, 'correoCambiarContraseña'])->name('correo.cambiarContraseña');
+
+Route::get('/cambiar-contraseña-vencida/{id}', [PasswordController::class, 'vistaCambiarContraseñaVencida'])->name('vista.cambiarContraseñaVencida')->middleware('signed');
+Route::post('/cambiar-contraseña-vencida', [PasswordController::class, 'cambiarContraseñaVencida'])->name('cambiar.contraseñaVencida');

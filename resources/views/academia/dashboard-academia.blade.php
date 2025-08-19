@@ -7,7 +7,7 @@
     {{-- Sidebar --}}
     <nav class="bg-white border-end p-3" style="min-width: 240px;">
       <div class="mb-4 text-center">
-        <img src="{{ asset('images/fct-logo.png') }}" alt="FCT logo" class="img-fluid mb-2" style="max-height: 60px;">
+        <img src="{{ asset('images/fct_logo.png') }}" alt="FCT logo" class="img-fluid mb-2" style="max-height: 60px;">
         <h6 class="text-muted">Panel Academia</h6>
       </div>
       <ul class="nav flex-column">
