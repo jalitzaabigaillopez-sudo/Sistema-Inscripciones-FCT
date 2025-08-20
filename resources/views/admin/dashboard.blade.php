@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('title', 'Panel Administrativo')
 
@@ -32,7 +32,7 @@
                 <a class="nav-link" href="#">🏆 Ranking nacional</a>
                 <a class="nav-link" href="#">📚 Catálogos generales</a>
                 <hr>
-                <span class="text-muted">Log in as: <strong>Administrador</strong></span>
+                {{-- <span class="text-muted">Log in as: <strong>Administrador</strong></span> --}}
             </nav>
         </div>
 
