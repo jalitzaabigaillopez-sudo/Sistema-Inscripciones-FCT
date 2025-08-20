@@ -59,6 +59,10 @@
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
     </style>
 </head>
 
@@ -72,18 +76,20 @@
                     <div class="card-body shadow-lg" style="background-color: #656b8c23">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
-                        <form>
+                        <form action="" method="POST">
+                            @csrf
                             <div class="mb-3 p-1">
                                 <label for="email" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="email"
+                                <input type="email" class="form-control" name="correo" id="correo"
                                     placeholder="ej: usuario@gmail.com" aria-describedby="emailHelp">
                             </div>
                             <div class="mb-3 p-1">
                                 <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password">
+                                <input type="password" class="form-control" name="password" id="password">
                             </div>
                             <div class="mb-4">
-                                <a href="#" class="link-primary">¿Olvidaste tu contraseña?</a>
+                                <a href="{{ route('restablecerContrasena') }}" class="link-primary">¿Olvidaste tu
+                                    contraseña?</a>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
