@@ -20,7 +20,7 @@ class PasswordController extends Controller
     {
 
         // Verificar que exista el usuario
-        $usuario = Usuario::where('email', $request['correoInput'])->first();
+        $usuario = Usuario::where('email', $request['correo'])->first();
         if (!$usuario) {
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
@@ -55,7 +55,7 @@ class PasswordController extends Controller
         Mail::to($usuario->email)->send(new PasswordMail($usuario, $contraseñaTemporal, $url));
 
         // Redirigir al login :_ Falta alertas de avisos
-        return redirect()->route('login');
+        return redirect()->back();
     } 
 
     /**

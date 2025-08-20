@@ -76,11 +76,11 @@
                     <div class="card-body shadow-lg" style="background-color: #656b8c23">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
-                        <form action="" method="POST">
+                        <form action="{{route('login.process')}}" method="POST">
                             @csrf
                             <div class="mb-3 p-1">
                                 <label for="email" class="form-label">Correo</label>
-                                <input type="email" class="form-control" name="correo" id="correo"
+                                <input type="email" class="form-control" name="email" id="correo"
                                     placeholder="ej: usuario@gmail.com" aria-describedby="emailHelp">
                             </div>
                             <div class="mb-3 p-1">
@@ -88,7 +88,7 @@
                                 <input type="password" class="form-control" name="password" id="password">
                             </div>
                             <div class="mb-4">
-                                <a href="{{ route('restablecerContrasena') }}" class="link-primary">¿Olvidaste tu
+                                <a href="{{ route('restablecerContraseña') }}" class="link-primary">¿Olvidaste tu
                                     contraseña?</a>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 button"><i

@@ -98,9 +98,9 @@ Route::get('/perfil-academia', function () {
 })->name('perfil.academia');
 
 // Vista de prueba restablecer contra
-Route::get('/restablecerContra', function () {
+Route::get('/restablecerContraseseña', function () {
     return view('academia.restablecerContrasena');
-})->name('restablecerContrasena');
+})->name('restablecerContraseña');
 
 
 //####################################### AMBOS ROLES #################################################

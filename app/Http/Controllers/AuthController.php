@@ -12,8 +12,8 @@ class AuthController extends Controller
     {
         // VERIFICAR DATOS  DE ENTRADA
         $validateData = $request->validate([
-                'email' => 'required|string',
-                'password' => 'required|string',
+                'email' => 'required|string|max:255',
+                'password' => 'required|string|min:8|max:16',
         ]); 
 
         $correo = $request->input('email');
@@ -31,9 +31,8 @@ class AuthController extends Controller
                     $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
                     return redirect()->route('dashboard');
 
-                } else if($usuario->estado === 'inactivo'){
-                    return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
-                }
+                } 
+                return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
             }else {
                 // Contraseña vencida
                 $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);          

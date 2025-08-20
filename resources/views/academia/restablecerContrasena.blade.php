@@ -136,7 +136,7 @@
                                 <h5 class="card-title">Restablecer Contraseña</h5>
                                 <p class="card-text">Ingrese su dirección de correo electrónico registrada en la
                                     plataforma.</p>
-                                <form action="" method="POST" id="resetForm">
+                                <form action="{{route('correo.cambiarContraseña')}}" method="POST" id="resetForm">
                                     @csrf
                                     <div class="mb-4">
                                         <input type="email" class="form-control" name="correo" id="correo"
@@ -168,7 +168,6 @@
 
     <script>
         document.getElementById('resetForm').addEventListener('submit', function(e) {
-            e.preventDefault();
 
             const isSuccess = true;
 

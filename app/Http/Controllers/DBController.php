@@ -61,7 +61,7 @@ class DBController extends Controller
         $contraseñaTemporal->id_usuario = $usuario->id_usuario;  
         $contraseñaTemporal->password_temporal = $temporalPass;//contraseña temporal
         $fecha_creacion = Carbon::now('America/Costa_Rica'); 
-        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addMinutes(2); // DEFINIR EL TIEMPO MAXIMO c
+        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addHours(48); // DEFINIR EL TIEMPO MAXIMO c
         $contraseñaTemporal->fecha_creacion = $fecha_creacion;  
         $contraseñaTemporal->fecha_expiracion = $fecha_expiracion; 
         $contraseñaTemporal->vigente = 'si'; 
