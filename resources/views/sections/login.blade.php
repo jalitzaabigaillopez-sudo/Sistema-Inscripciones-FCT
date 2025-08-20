@@ -33,6 +33,7 @@
         .login-container {
             max-width: 450px;
             margin-top: 20px;
+            border-radius: 1rem;
         }
 
         .logo-container {
@@ -56,24 +57,28 @@
         }
 
         .card {
-            border-radius: 5px;
+            border-radius: 1rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .card:hover {
             transform: translateY(-5px);
         }
+
+        .card-body {
+            border-radius: 1rem; 
+        }
     </style>
 </head>
 
-<body>
+<body class="bg-gray-100">
     <div class="header-image"></div>
 
     <div class="container p-5">
         <div class="row centered-row">
             <div class="col-md-6 login-container me-3">
                 <div class="card" style="height: 530px;">
-                    <div class="card-body shadow-lg" style="background-color: #656b8c23">
+                    <div class="card-body shadow-lg" >
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
                         <form action="{{route('login.process')}}" method="POST">

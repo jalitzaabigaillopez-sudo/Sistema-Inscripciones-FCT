@@ -7,167 +7,165 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Restablecer Contraseña</title>
 
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <!-- Bootstrap CSS (v5.3.3) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- SweetAlert CSS -->
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-    <!-- SweetAlert JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         .header-image {
-            background-color: #000080;
-            height: 110px;
-            background-image: url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
+            background: linear-gradient(to bottom, rgba(0, 0, 128, 0.8), rgba(0, 0, 128, 0.5)),
+                url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
             background-size: cover;
             background-position: center;
-            opacity: 0.7;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .footer {
             background-color: #222A59;
-            height: 40px;
-            width: 100%;
+            color: white;
+            padding: 1rem;
+            text-align: center;
             position: fixed;
             bottom: 0;
-            left: 0;
-        }
-
-        .button-primary {
-            background-color: #222A59;
-            color: #ffffff;
-            border: none;
-            padding: 10px;
-        }
-
-        .button-primary:hover {
-            background-color: #2e386e;
-            color: #ffffff;
-        }
-
-        .button-secondary {
-            background-color: #6c757d;
-            color: #ffffff;
-            border: none;
-            padding: 10px;
-        }
-
-        .button-secondary:hover {
-            background-color: #5a6268;
-            color: #ffffff;
-        }
-
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            background-color: #ffffff;
-            margin: 0 auto;
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-img-top {
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            object-fit: contain;
-            height: 120px;
             width: 100%;
-            padding: 10px;
+            font-size: 0.9rem;
         }
 
-        .card-header {
-            background-color: #f8f9fa;
-            /* padding: 10px; */
-            border-bottom: 1px solid #e0e0e0;
-            text-align: center;
+        .custom-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.40);
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            max-width: 630px;
+            margin: 2rem auto;
+            transition: transform 0.3s ease;
         }
 
-        .card-body {
-            padding: 25px;
-            text-align: center;
-        }
-
-        .card-title {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: #222A59;
-            margin-bottom: 15px;
-        }
-
-        .card-text {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 20px;
+        .custom-card:hover {
+            transform: translateY(-8px);
         }
 
         .form-control {
-            border-radius: 8px;
-            border: 1px solid #8d8c8c;
-            padding: 12px;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem;
             font-size: 1rem;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .text-body-secondary {
-            color: #6c757d !important;
-            font-size: 0.9rem;
+        .form-control:focus {
+            border-color: #222A59;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #222A59;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #2b4ba5;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a606b;
+        }
+
+        @media (max-width: 576px) {
+            .custom-card {
+                margin: 1rem;
+            }
+
+            .header-image {
+                height: 120px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
 
-<body>
+<body class="bg-gray-100">
+    <!-- Header -->
     <div class="header-image"></div>
 
     <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-sm-7">
-                <div class="card">
-                    <div class="card-header" style="background-color: #2e386e1c">
-                        <img src="{{ asset('images/LogoFCT_transpa.png') }}" class="card-img-top" alt="Logo FCT">
-                    </div>
-                    <div class="card-body">
-                        <div class="row justify-content-center">
-                            <div class="col-10">
-                                <h5 class="card-title">Restablecer Contraseña</h5>
-                                <p class="card-text">Ingrese su dirección de correo electrónico registrada en la
-                                    plataforma.</p>
-                                <form action="{{route('correo.cambiarContraseña')}}" method="POST" id="resetForm">
-                                    @csrf
-                                    <div class="mb-4">
-                                        <input type="email" class="form-control" name="correo" id="correo"
-                                            placeholder="ej: usuario@gmail.com" aria-describedby="emailHelp">
-                                    </div>
-                                    <div class="d-grid gap-2 d-md-block">
-                                        <a href="{{ route('login') }}" type="button" class="btn button-secondary"><i
-                                                class="bi bi-box-arrow-left"></i> Regresar</a>
-                                        <button type="submit" class="btn button-primary">Enviar
-                                            Solicitud <i class="bi bi-send"></i></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+        <div class="custom-card">
 
-                    </div>
+
+            <div class="p-4 text-center">
+                <img src="{{ asset('images/LogoFCT_transpa.png') }}" class="mx-auto mb-4" alt="Logo FCT"
+                    style="max-height: 60px;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Restablecer Contraseña</h2>
+                <p class="text-gray-600 mb-4">Ingrese su dirección de correo electrónico registrada para recibir una
+                    contraseña temporal.</p>
+
+                <div class="px-4">
+                    <form id="resetForm" action="{{ route('correo.cambiarContraseña') }}" method="POST"
+                        class="space-y-4">
+                        @csrf
+                        <div class="mb-4">
+                            <input type="email" class="form-control w-full" name="correo" id="correo"
+                                placeholder="ej: usuario@gmail.com" aria-describedby="emailHelp" required
+                                aria-required="true">
+                            <div id="emailHelp" class="text-gray-500 text-sm mt-1 hidden">Por favor, ingrese un
+                                correo válido.</div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block">
+                            <a href="{{ route('login') }}" class="btn btn-secondary">
+                                Regresar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="footer"></div>
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2025 Plataforma FCT. Todos los derechos reservados.
+    </div>
 
-    <!-- use bootstrap 5.3.7 -->
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css') }}">
-    <script src="{{ asset('https://cdn.jsdelivr.net/npm/sweetalert2@11') }}"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.getElementById('resetForm').addEventListener('submit', function(e) {
+
+            const email = document.getElementById('correo').value;
 
             const isSuccess = true;
 
@@ -175,10 +173,12 @@
                 Swal.fire({
                     icon: 'success',
                     title: '¡Éxito!',
-                    text: 'Se ha enviado una contraseña temporal a tu correo.',
+                    html: `Su contraseña temporal ha sido enviada a <b>${email}</b>.`,
                     confirmButtonText: 'Aceptar',
+                    timer: 3000,
+                    timerProgressBar: true,
                     customClass: {
-                        confirmButton: 'btn button-primary'
+                        confirmButton: 'btn btn-primary'
                     }
                 });
             } else {
@@ -188,7 +188,7 @@
                     text: 'Ha ocurrido un problema. Por favor, intenta de nuevo más tarde.',
                     confirmButtonText: 'Aceptar',
                     customClass: {
-                        confirmButton: 'btn button-secondary'
+                        confirmButton: 'btn btn-secondary'
                     }
                 });
             }
