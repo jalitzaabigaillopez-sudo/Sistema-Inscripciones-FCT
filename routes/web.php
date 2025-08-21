@@ -46,10 +46,7 @@ Route::get('/adminDash', function () {
     return view('admin.dashboard');
 })->name('adminDash');
 
-// Ruta para inscripción
-Route::get('/inscripcion', function () {
-    return view('admin.inscripcion');
-})->name('inscripcion');
+
 
 // Ruta para perfil
 Route::get('/perfil', function () {
@@ -57,30 +54,20 @@ Route::get('/perfil', function () {
 })->name('perfil');
 
 
-// Ruta para eventos
-Route::get('/eventos', function () {
-    return view('eventos');
-})->name('eventos');
 
 // Ruta para estadísticas
 Route::get('/estadisticas', function () {
     return view('estadisticas');
 })->name('estadisticas');
 
-// Ruta para verificación de peso
-Route::get('/peso', function () {
-    return view('peso');
-})->name('peso');
+
 
 // Ruta para ranking nacional
 Route::get('/ranking', function () {
     return view('ranking');
 })->name('ranking');
 
-// Ruta para catálogos generales
-Route::get('/catalogos', function () {
-    return view('admin.catalogos');
-})->name('catalogos');
+
 
 Route::get('/dashboard-academias', function () {
     return view('academia.dashboard-academia');
@@ -95,6 +82,57 @@ Route::get('/atletas', function () {
 Route::get('/perfil-academia', function () {
     return view('academia.perfil-academia');
 })->name('perfil.academia');
+
+
+//####################################### SOLO ADMINISTRADOR ###########################################
+// Dashboard principal
+Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
+
+// Catálogos generales
+Route::view('/catalogos/academias', 'catalogos.academias.index')->name('academias.index');
+Route::view('/catalogos/academias/create', 'catalogos.academias.create')->name('academias.create');
+Route::view('/catalogos/academias/edit', 'catalogos.academias.edit')->name('academias.edit');
+Route::view('/catalogos/academias/show', 'catalogos.academias.show')->name('academias.show');
+
+Route::view('/catalogos/atletas', 'catalogos.atletas.index')->name('atletas.index');
+Route::view('/catalogos/atletas/create', 'catalogos.atletas.create')->name('atletas.create');
+Route::view('/catalogos/atletas/edit', 'catalogos.atletas.edit')->name('atletas.edit');
+Route::view('/catalogos/atletas/show', 'catalogos.atletas.show')->name('atletas.show');
+
+Route::view('/catalogos/categorias', 'catalogos.categorias.index')->name('categorias.index');
+Route::view('/catalogos/categorias/create', 'catalogos.categorias.create')->name('categorias.create');
+Route::view('/catalogos/categorias/edit', 'catalogos.categorias.edit')->name('categorias.edit');
+Route::view('/catalogos/categorias/show', 'catalogos.categorias.show')->name('categorias.show');
+
+Route::view('/catalogos/torneos', 'catalogos.torneos.index')->name('torneos.index');
+Route::view('/catalogos/torneos/create', 'catalogos.torneos.create')->name('torneos.create');
+Route::view('/catalogos/torneos/edit', 'catalogos.torneos.edit')->name('torneos.edit');
+Route::view('/catalogos/torneos/show', 'catalogos.torneos.show')->name('torneos.show');
+
+Route::view('/catalogos/usuarios', 'catalogos.usuarios.index')->name('usuarios.index');
+Route::view('/catalogos/usuarios/create', 'catalogos.usuarios.create')->name('usuarios.create');
+Route::view('/catalogos/usuarios/edit', 'catalogos.usuarios.edit')->name('usuarios.edit');
+Route::view('/catalogos/usuarios/show', 'catalogos.usuarios.show')->name('usuarios.show');
+
+    Route::view('/catalogos/pesos', 'catalogos.pesos.index')->name('pesos.index');
+    Route::view('/catalogos/pesos/create', 'catalogos.pesos.create')->name('pesos.create');
+    Route::view('/catalogos/pesos/edit', 'catalogos.pesos.edit')->name('pesos.edit');
+    Route::view('/catalogos/pesos/show', 'catalogos.pesos.show')->name('pesos.show');
+
+// Seguridad
+   Route::view('/catalogos/seguridad', 'catalogos.seguridad.index')->name('seguridad.index');  
+   Route::view('/catalogos/seguridad/create', 'catalogos.seguridad.create')->name('seguridad.create');
+    Route::view('/catalogos/seguridad/edit', 'catalogos.seguridad.edit')->name('seguridad.edit');
+    Route::view('/catalogos/seguridad/show', 'catalogos.seguridad.show')->name('seguridad.show');
+
+
+Route::post('/admin/profile/update', function () {
+    // Lógica para actualizar el perfil del admin                               
+    $data = request()->all();
+    // Actualiza el perfil según tu lógica
+    return redirect()->route('perfil')->with('success', 'Perfil actualizado correctamente.');
+})->name('admin.profile.update');
+
 
 
 //####################################### AMBOS ROLES #################################################

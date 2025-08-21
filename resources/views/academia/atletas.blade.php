@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<a href="{{ route('dashboard-academia') }}" class="btn btn-outline-primary float-end">
+    Volver al Dashboard
+</a>
 <div class="container-fluid py-4">
   <h4 class="mb-4">📋 Datos del Atleta</h4>
   <div class="row g-4">
