@@ -25,8 +25,10 @@
             padding: 0.5rem 1rem;
             position: fixed;
             top: 0;
-            left: 250px; /* Start after sidebar width on large screens */
-            width: calc(100% - 250px); /* Span remaining width */
+            left: 250px;
+            /* Start after sidebar width on large screens */
+            width: calc(100% - 250px);
+            /* Span remaining width */
             z-index: 1030;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -44,9 +46,41 @@
         }
 
         .user-icon {
-            color: white;
+            color: #3a447f;
             font-size: 1.5rem;
             cursor: pointer;
+        }
+
+        /* User Dropdown Button */
+        .user-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #3a447f;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .user-btn:hover,
+        .user-btn:focus {
+            color: #2a325f;
+            /* Slightly darker on hover/focus */
+            outline: none;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            z-index: 1050;
+            /* Above navbar and sidebar */
+        }
+
+        .dropdown-item {
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #D9B36C;
+            color: white;
         }
 
         /* Sidebar Styling */
@@ -56,11 +90,13 @@
             top: 0;
             bottom: 0;
             background-color: #222A59;
-            padding-top: 0; /* Remove padding to ensure logo is at top */
+            padding-top: 0;
+            /* Remove padding to ensure logo is at top */
             color: white;
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
-            z-index: 1040; /* Increased to ensure sidebar is above navbar */
+            z-index: 1040;
+            /* Above navbar */
         }
 
         .sidebar-hidden {
@@ -69,16 +105,26 @@
 
         .sidebar .logo-container {
             text-align: center;
-            padding: 1rem;
-            background-color: #222A59; /* Matches sidebar */
+            padding: 1.5rem;
+            /* Increased padding for better spacing */
+            background-color: #222A59;
+            /* Matches sidebar */
             position: relative;
-            z-index: 1041; /* Above sidebar and navbar */
+            z-index: 1041;
+            /* Above sidebar and navbar */
         }
 
         .sidebar .logo-container img {
-            width: 150px; /* Increased size for better legibility */
-            height: auto; /* Maintain aspect ratio */
-            object-fit: contain; /* Prevent distortion */
+            width: 200px;
+            /* Larger size for better legibility */
+            height: auto;
+            /* Maintain aspect ratio */
+            object-fit: contain;
+            /* Prevent distortion */
+            display: block;
+            /* Ensure proper centering */
+            margin: 0 auto;
+            /* Center horizontally */
         }
 
         .sidebar a {
@@ -95,8 +141,10 @@
 
         /* Content Wrapper */
         .content-wrapper {
-            margin-top: 60px; /* Match navbar height */
-            margin-left: 250px; /* Align with navbar on large screens */
+            margin-top: 60px;
+            /* Match navbar height */
+            margin-left: 250px;
+            /* Align with navbar on large screens */
             padding: 1rem;
             transition: margin-left 0.3s ease-in-out;
         }
@@ -111,47 +159,57 @@
             font-size: 1.5rem;
             cursor: pointer;
             margin-right: 1rem;
-            z-index: 1050; /* Above sidebar and navbar */
+            z-index: 1050;
+            /* Above sidebar and navbar */
         }
 
         /* Close Button in Sidebar for Small Screens */
         .sidebar-close {
-            display: none; /* Hidden on large screens */
+            display: none;
+            /* Hidden on large screens */
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 1050; /* Above sidebar */
+            z-index: 1050;
+            /* Above sidebar */
         }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .sidebar {
-                z-index: 1040; /* Ensure sidebar is above content but below hamburger */
+                z-index: 1040;
+                /* Above content, below hamburger */
             }
 
             .sidebar-open {
-                transform: translateX(0); /* Show when toggled */
+                transform: translateX(0);
+                /* Show when toggled */
             }
 
             .sidebar-close {
-                display: block; /* Show close button on small screens */
+                display: block;
+                /* Show close button on small screens */
             }
 
             .navbar {
                 left: 0;
-                width: 100%; /* Full width on small screens */
-                z-index: 1030; /* Below sidebar when open */
+                width: 100%;
+                /* Full width on small screens */
+                z-index: 1030;
+                /* Below sidebar when open */
             }
 
             .content-wrapper {
-                margin-left: 0; /* No margin shift on small screens */
+                margin-left: 0;
+                /* No margin shift on small screens */
             }
 
             .sidebar .logo-container img {
-                width: 120px; /* Slightly smaller for mobile but still legible */
+                width: 150px;
+                /* Slightly smaller for mobile but legible */
                 height: auto;
             }
         }
@@ -162,14 +220,18 @@
     <!-- Sidebar -->
     <nav class="sidebar sidebar-hidden" id="sidebar">
         <div class="logo-container">
-            <img src="{{ asset('images/Logotipo.png') }}" alt="FCT Logo">
+            <img src="{{ asset('images/Logotipo.png') }}" alt="FCT Logo"
+                onerror="this.src='https://via.placeholder.com/200x100?text=FCT+Logo'">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-walking" viewBox="0 0 16 16">
-  <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z"/>
-  <path d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"/>
-</svg> Atletas</a>
+        <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ route('atletas.index') }}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-person-walking" viewBox="0 0 16 16">
+                <path
+                    d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
+                <path
+                    d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
+            </svg> Atletas</a>
         <a href="#"><i class="bi bi-layers"></i> Academias</a>
         <a href="#"><i class="bi bi-people"></i> Usuarios</a>
         <a href="#"><i class="bi bi-columns-gap"></i> Modalidades</a>
@@ -185,7 +247,23 @@
             <i class="bi bi-list hamburger" id="toggleSidebar"></i>
             <span class="navbar-text">@yield('navbar-title', 'Inicio / Academias')</span>
             <div class="ms-auto">
-                <i class="bi bi-person-circle user-icon" style="color: #3a447f"></i>
+                <div class="dropdown">
+                    <button class="user-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle user-icon"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Cerrar Sesión
+                            </a>
+                            <form id="logout-form" action="{{ route('logout.process') }}" method="POST"
+                                style="display: none;">
+                                @csrf
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -200,7 +278,7 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const navbar = document.querySelector('.navbar');
             const contentWrapper = document.getElementById('contentWrapper');
@@ -220,7 +298,7 @@
             }
 
             // Toggle sidebar on hamburger click
-            toggleSidebar.addEventListener('click', function () {
+            toggleSidebar.addEventListener('click', function() {
                 sidebar.classList.toggle('sidebar-hidden');
                 sidebar.classList.toggle('sidebar-open');
                 if (!isSmallScreen) {
@@ -230,13 +308,13 @@
             });
 
             // Close sidebar on close button click (small screens)
-            sidebarClose.addEventListener('click', function () {
+            sidebarClose.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
             });
 
             // Handle window resize
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
                 if (isNowSmallScreen) {
                     sidebar.classList.add('sidebar-hidden');
