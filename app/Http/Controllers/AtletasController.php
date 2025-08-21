@@ -21,11 +21,10 @@ class AtletasController extends Controller
                 // 'fecha_nacimiento' => 'required|date',
                 'estado' => 'require|string|in:activo,inactivo',        
                 
-                //Recordar: categorias, grados se usan en la vista de creacion de atletas:
-                'id_categoria' => 'required|integer',
-                'id_grado' => 'required|integer',
-                'id_padron_nacimiento' => 'required|integer',
-                'id_academia' => 'required|integer',//id_de academia actual "registrante"
+                // 'id_categoria' => 'required|integer',// asignar segun el año de nacimiento
+                // 'id_grado' => 'required|integer',
+                // 'id_padron_nacimiento' => 'required|integer',
+                // 'id_academia' => 'required|integer',//id_de academia actual "registrante"
         ]); 
 
         // Verificar que no exista el atleta
