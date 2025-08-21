@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('title', 'Dashboard Administrativo')
 
@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
         <div class="d-flex align-items-center gap-3">
-            <img src="{{ asset('images/fct-logo.svg') }}" alt="FCT Logo" height="40">
+            {{-- <img src="{{ asset('images/fct-logo.svg') }}" alt="FCT Logo" height="40"> --}}
             <h4 class="mb-0">Panel Administrativo</h4>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -21,18 +21,18 @@
         {{-- Sidebar --}}
         <div class="col-md-3 col-lg-2">
             <nav class="nav flex-column bg-light rounded p-3 shadow-sm">
-                <a class="nav-link active" href="#">🏠 Menú</a>
-                <a class="nav-link" href="">👤 Perfil</a>
-                <a class="nav-link" href="#">📝 Inscripción</a>
-                <a class="nav-link" href="#">📅 Eventos</a>
-                <a class="nav-link" href="#">📊 Estadísticas</a>
-                <a class="nav-link" href="#">⚖️ Verificación de Peso</a>
-                <a class="nav-link" href="#">🔒 Seguridad</a>
-                <a class="nav-link" href="#">🔑 Generación de llaves</a>
-                <a class="nav-link" href="#">🏆 Ranking nacional</a>
-                <a class="nav-link" href="#">📚 Catálogos generales</a>
+                <a class="nav-link active" href="#">Menú</a>
+                <a class="nav-link" href="">Perfil</a>
+                <a class="nav-link" href="#">Inscripción</a>
+                <a class="nav-link" href="#">Eventos</a>
+                <a class="nav-link" href="#">Estadísticas</a>
+                <a class="nav-link" href="#">Verificación de Peso</a>
+                <a class="nav-link" href="#">Seguridad</a>
+                <a class="nav-link" href="#">Generación de llaves</a>
+                <a class="nav-link" href="#">Ranking nacional</a>
+                <a class="nav-link" href="#">Catálogos generales</a>
                 <hr>
-                <span class="text-muted">Log in as: <strong>Administrador</strong></span>
+                {{-- <span class="text-muted">Log in as: <strong>Administrador</strong></span> --}}
             </nav>
         </div>
 

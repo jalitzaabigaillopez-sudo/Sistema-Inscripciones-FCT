@@ -21,7 +21,7 @@
 
         /* Navbar Styling */
         .navbar {
-            background-color: #222A59;
+            background-color: #D9B36C;
             padding: 0.5rem 1rem;
             position: fixed;
             top: 0;
@@ -60,7 +60,7 @@
             color: white;
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
-            z-index: 1020; /* Below navbar on large screens */
+            z-index: 1040; /* Increased to ensure sidebar is above navbar */
         }
 
         .sidebar-hidden {
@@ -70,13 +70,15 @@
         .sidebar .logo-container {
             text-align: center;
             padding: 1rem;
-            background-color: #222A59; /* Ensure logo background matches sidebar */
+            background-color: #222A59; /* Matches sidebar */
             position: relative;
-            z-index: 1021; /* Above sidebar to prevent clipping */
+            z-index: 1041; /* Above sidebar and navbar */
         }
 
         .sidebar .logo-container img {
-            height: 40px;
+            width: 150px; /* Increased size for better legibility */
+            height: auto; /* Maintain aspect ratio */
+            object-fit: contain; /* Prevent distortion */
         }
 
         .sidebar a {
@@ -109,7 +111,7 @@
             font-size: 1.5rem;
             cursor: pointer;
             margin-right: 1rem;
-            z-index: 1040; /* Above sidebar and navbar */
+            z-index: 1050; /* Above sidebar and navbar */
         }
 
         /* Close Button in Sidebar for Small Screens */
@@ -127,7 +129,7 @@
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .sidebar {
-                z-index: 1020; /* Below navbar to keep hamburger accessible */
+                z-index: 1040; /* Ensure sidebar is above content but below hamburger */
             }
 
             .sidebar-open {
@@ -141,11 +143,16 @@
             .navbar {
                 left: 0;
                 width: 100%; /* Full width on small screens */
-                z-index: 1030; /* Above sidebar */
+                z-index: 1030; /* Below sidebar when open */
             }
 
             .content-wrapper {
                 margin-left: 0; /* No margin shift on small screens */
+            }
+
+            .sidebar .logo-container img {
+                width: 120px; /* Slightly smaller for mobile but still legible */
+                height: auto;
             }
         }
     </style>
@@ -163,13 +170,13 @@
   <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z"/>
   <path d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"/>
 </svg> Atletas</a>
-        <a href="#">Academias</a>
-        <a href="#">Usuarios</a>
-        <a href="#">Modalidades</a>
-        <a href="#">Inscripciones</a>
-        <a href="#">Pesos</a>
-        <a href="#">Eventos</a>
-        <a href="#">Categorías</a>
+        <a href="#"><i class="bi bi-layers"></i> Academias</a>
+        <a href="#"><i class="bi bi-people"></i> Usuarios</a>
+        <a href="#"><i class="bi bi-columns-gap"></i> Modalidades</a>
+        <a href="#"><i class="bi bi-ui-checks"></i> Inscripciones</a>
+        <a href="#"><i class="bi bi-card-heading"></i> Pesos</a>
+        <a href="#"><i class="bi bi-calendar3"></i> Eventos</a>
+        <a href="#"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>
 
     <!-- Navbar -->
@@ -178,7 +185,7 @@
             <i class="bi bi-list hamburger" id="toggleSidebar"></i>
             <span class="navbar-text">@yield('navbar-title', 'Inicio / Academias')</span>
             <div class="ms-auto">
-                <i class="bi bi-person-circle user-icon"></i>
+                <i class="bi bi-person-circle user-icon" style="color: #3a447f"></i>
             </div>
         </div>
     </nav>
