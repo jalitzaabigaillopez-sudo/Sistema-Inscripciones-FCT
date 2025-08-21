@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -11,8 +12,8 @@ class AuthController extends Controller
     {
         // VERIFICAR DATOS  DE ENTRADA
         $validateData = $request->validate([
-                'email' => 'required|string',
-                'password' => 'required|string',
+                'email' => 'required|string|max:255',
+                'password' => 'required|string|min:8|max:16',
         ]); 
 
         $correo = $request->input('email');
@@ -25,16 +26,18 @@ class AuthController extends Controller
         }
 
         if ($password === $usuario->password) {
+            if($usuario->password_vencimiento > 0){
+                if($usuario->estado === 'activo'){
+                    $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
+                    return redirect()->route('dashboard');
 
-            if($usuario->estado === 'activo'){
-                $request->session()->put('usuario', $usuario->id_usuario);
-                return redirect()->route('dashboard');
-
-            } else if($usuario->estado === 'inactivo'){
+                } 
                 return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
+            }else {
+                // Contraseña vencida
+                $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);          
+                return redirect($urlFirmada);
             }
-
-            return response()->json(['error' => 'Usuario pendiente de completar registro'], 401);
         } else {
             return response()->json(['error' => 'Contraseña incorrecta'], 401);
         } 

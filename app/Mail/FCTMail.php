@@ -14,15 +14,17 @@ class FCTMail extends Mailable
     use Queueable, SerializesModels;
 
     public $usuario; 
-    public $urlFirmada;
+    public $contraseñaTemporal;
+    public $url;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($usuario, $urlFirmada)
+    public function __construct($usuario, $contraseñaTemporal, $url)
     {
         $this->usuario = $usuario;
-        $this->urlFirmada = $urlFirmada;
+        $this->contraseñaTemporal = $contraseñaTemporal;
+        $this->url = $url;
     }
 
     /**

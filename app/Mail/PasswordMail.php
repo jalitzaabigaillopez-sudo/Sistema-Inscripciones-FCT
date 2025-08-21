@@ -14,15 +14,17 @@ class PasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     public $usuario; 
-    public $urlFirmada;
+    public $url;
+    public $contraseñaTemporal;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($usuario, $urlFirmada)
+    public function __construct($usuario, $contraseñaTemporal, $url)
     {
         $this->usuario = $usuario;
-        $this->urlFirmada = $urlFirmada;
+        $this->contraseñaTemporal = $contraseñaTemporal;
+        $this->url = $url;
     }
 
     /**

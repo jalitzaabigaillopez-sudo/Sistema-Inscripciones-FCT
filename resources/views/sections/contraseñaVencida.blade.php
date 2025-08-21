@@ -22,18 +22,21 @@
 
                <div class="col-md-6">
                     <div class="login-box">
-                        <form action="{{route('cambiar.contraseña')}}" method="post">
+                        <form action="{{route('cambiar.contraseñaVencida')}}" method="post">
                         @csrf
 
                         <input type="hidden" name="id_usuario" value="{{$usuario->id_usuario }}">
 
+                            <h3 class=" form-label fw-bold">Su contraseña ha vencido. Por razones de seguridad debe actualizarla cada <span>{{config('ConfiguracionFCT._vencimiento_contraseña')}}</span> días.</h3>
+                            <p for="info" class=" form-label fw-bold">Su nueva contraseña debe contener más de 8 caracteres y  maximo 16 y no puede ser igual que la anterior.</p>
+                            <hr>
                             <div class="mb-3">
-                                <label for="temporaryPassword" class=" form-label fw-bold">Contraseña Temporal</label>
-                                <input type="temporaryPassword" class="form-control" name="temporaryPassword" value="{{ old('temporaryPassword') }}" placeholder="">
+                                <label for="nuevaContraseña" class=" form-label fw-bold">Nueva Contraseña</label>
+                                <input type="nuevaContraseña" class="form-control" name="nuevaContraseña" value="{{ old('nuevaContraseña') }}" placeholder="">
                             </div>
                             <div class="mb-3">
-                                <label for="password" class=" form-label fw-bold">Nueva Contraseña</label>
-                                <input type="password" class="form-control" name="password" value="{{ old('password') }}" placeholder="">
+                                <label for="confirmarNuevaContraseña" class=" form-label fw-bold">Confirmar Nueva Contraseña</label>
+                                <input type="confirmarNuevaContraseña" class="form-control" name="confirmarNuevaContraseña" placeholder="">
                             </div>
                             <button type="submit" class="btn-ingresar">completar</button>
                         </form>
