@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AcademiaController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\PadronNacimientoController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -23,12 +24,16 @@ Route::post('/logout-process', [AuthController::class, 'cerrarSesion'])->name('l
 Route::get('/dashboard', [Controller::class, 'index'])->name('dashboard');
 
 /**
- * Rutas para pruebas
+ * Rutas para pruebas all
  */
 Route::get('/insertUser', [DBController::class, 'insertUser']);
 Route::get('/selectUser', [DBController::class, 'selectUser']);
 Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia']);
 Route::get('/pre_registroAcademia1', [DBController::class, 'pre_registroAcademia1']);
+Route::get('/prueba', function () {
+    return view('prueba');
+})->name('prueba');
+
 
 //####################################### SOLO ACADEMIA #################################################
 /**
@@ -154,3 +159,5 @@ Route::post('/recuperar-contraseña', [PasswordController::class, 'correoCambiar
 
 Route::get('/cambiar-contraseña-vencida/{id}', [PasswordController::class, 'vistaCambiarContraseñaVencida'])->name('vista.cambiarContraseñaVencida')->middleware('signed');
 Route::post('/cambiar-contraseña-vencida', [PasswordController::class, 'cambiarContraseñaVencida'])->name('cambiar.contraseñaVencida');
+
+Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona']);

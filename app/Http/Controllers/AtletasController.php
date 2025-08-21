@@ -21,10 +21,10 @@ class AtletasController extends Controller
                 // 'fecha_nacimiento' => 'required|date',
                 'estado' => 'require|string|in:activo,inactivo',        
                 
-                // 'id_categoria' => 'required|integer',// asignar segun el año de nacimiento
-                // 'id_grado' => 'required|integer',
+                //'id_categoria' => 'required|integer',// 
+                'id_grado' => 'required|integer',
                 // 'id_padron_nacimiento' => 'required|integer',
-                // 'id_academia' => 'required|integer',//id_de academia actual "registrante"
+                'id_academia' => 'required|integer',//id_de academia actual "registrante"
         ]); 
 
         // Verificar que no exista el atleta
@@ -39,6 +39,9 @@ class AtletasController extends Controller
             return response()->json(['error' => 'Este numero de cedula no esta registrado'], 401);
         }
 
+        // Asignar categoria
+        
+
         // Crear Atleta
         $atleta = Atleta::create([
         'tipo_identificacion' => $validateData['tipo_identificacion'],
@@ -52,7 +55,8 @@ class AtletasController extends Controller
         'estado' => $validateData['estado'],
 
         'id_padron_nacimiento' => $padronNacimiento->id_padron_nacimiento,
-        
+        'id_grado' => $validateData['id_grado'],
+        'id_academia' => $validateData['id_academia'],
         ]);
         $atleta->save();
     }
