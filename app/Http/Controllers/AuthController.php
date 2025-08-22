@@ -21,16 +21,27 @@ class AuthController extends Controller
 
         $usuario = Usuario::where('email', $correo)->first();
 
+        // Verificar que exista el usuario
         if (!$usuario) {
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
 
+        // Verificar que la contraseña sea igual a la proporcionada
         if ($password === $usuario->password) {
-            if($usuario->password_vencimiento > 0){
-                if($usuario->estado === 'activo'){
-                    $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
-                    return redirect()->route('dashboard');
 
+            // Verificar que la contraseña no haya vencido
+            if($usuario->password_vencimiento > 0){
+
+                // Verificar que el usuario este activo
+                if($usuario->estado === 'activo'){
+
+                    $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
+
+                    // Redirigir segun el tipo de usuario "rol"
+                    if (!$usuario->rol === 'administrador') {
+                        return view('academia/dashboard-academia');
+                    }
+                    return view('admin/dashboard');
                 } 
                 return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
             }else {

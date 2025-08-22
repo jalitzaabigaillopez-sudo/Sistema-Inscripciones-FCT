@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Inscripcion;
+use App\Models\ModalidadEvento;
+
+class InscripcionController extends Controller
+{
+    public function crearInscripcion(Request $request){
+        $validateData = $request->validate([
+            'atleta' => 'required|integer',// id
+            'evento' => 'required|integer',// id
+            'modalidad' => 'required|integer',// id
+        ]);
+
+        // Crear modalidades_eventos
+        $modalidaEvento = ModalidadEvento::create([
+            'id_evento' => $validateData['evento'],
+            'id_modalidad' => $validateData['modalidad'],
+        ]);
+        $modalidaEvento->save();
+
+        // Crear inscripcion
+        $inscripcion = Inscripcion::create([
+            'id_atleta' => $validateData['atleta'],
+            'id_modalidad_evento' => $modalidaEvento->id_modalidad_evento,
+            'fecha_inscripcion' => $validateData['fecha_inscripcion'],
+            'estado' => $validateData['estado'],
+        ]);
+        $inscripcion->save();
+    }
+}
