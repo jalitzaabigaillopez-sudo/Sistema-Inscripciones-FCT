@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
@@ -15,8 +15,8 @@
     </div>
 
     <div class="mt-3">
-        <a href="#" class="btn btn-secondary">↩️ Volver</a>
-        <a href="#" class="btn btn-warning">✏️ Editar</a>
+        <a href="{{ route('atletas.index') }}" class="btn btn-secondary">↩️ Volver</a>
+        <a href="{{ route('atletas.edit')}}" class="btn btn-warning">✏️ Editar</a>
     </div>
 </div>
 @endsection

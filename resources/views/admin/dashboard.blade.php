@@ -3,87 +3,52 @@
 @section('title', 'Dashboard Administrativo')
 
 @section('content')
-<div class="container-fluid">
-    {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-        <div class="d-flex align-items-center gap-3">
-            <img src="{{ asset('images/fct-logo.svg') }}" alt="FCT Logo" height="40">
-            <h4 class="mb-0">Panel Administrativo</h4>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <input type="text" class="form-control" placeholder="Buscar..." aria-label="Buscador">
-            <button class="btn btn-outline-secondary">🔍</button>
-        </div>
-    </div>
-
-    {{-- Sidebar + Main --}}
-    <div class="row mt-4">
-        {{-- Sidebar --}}
-        <div class="col-md-3 col-lg-2">
-            <nav class="nav flex-column bg-light rounded p-3 shadow-sm">
-                <a class="nav-link active" href="#">🏠 Menú</a>
-                <a class="nav-link" href="">👤 Perfil</a>
-                <a class="nav-link" href="#">📝 Inscripción</a>
-                <a class="nav-link" href="#">📅 Eventos</a>
-                <a class="nav-link" href="#">📊 Estadísticas</a>
-                <a class="nav-link" href="#">⚖️ Verificación de Peso</a>
-                <a class="nav-link" href="#">🔒 Seguridad</a>
-                <a class="nav-link" href="#">🔑 Generación de llaves</a>
-                <a class="nav-link" href="#">🏆 Ranking nacional</a>
-                <a class="nav-link" href="#">📚 Catálogos generales</a>
-                <hr>
-                <span class="text-muted">Log in as: <strong>Administrador</strong></span>
-            </nav>
-        </div>
-
-        {{-- Main Content --}}
-        <div class="col-md-9 col-lg-10">
-            {{-- Summary Cards --}}
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card text-white bg-warning shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Academias a nivel nacional</h5>
-                            <p class="card-text fs-4">100</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-white bg-danger shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Atletas a nivel nacional</h5>
-                            <p class="card-text fs-4">300</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-white bg-secondary shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Torneos/Eventos</h5>
-                            <p class="card-text fs-4">100</p>
-                        </div>
-                    </div>
+<div class="container">
+    <h3 class="mb-4">Bienvenido al Dashboard Administrativo</h3>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Usuarios</h5>
+                    <p class="card-text fs-2">120</p>
                 </div>
             </div>
-
-{{-- Gráficos de ejemplo --}}
-<div class="row">
-  <div class="col-md-6">
-    <div class="card shadow">
-      <div class="card-header bg-primary text-white">Eventos por Mes</div>
-      <div class="card-body">
-        <canvas id="barChart"></canvas>
-      </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Academias</h5>
+                    <p class="card-text fs-2">15</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Eventos este año</h5>
+                    <p class="card-text fs-2">7</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-6">
-    <div class="card shadow">
-      <div class="card-header bg-primary text-white">Distribución de Atletas</div>
-      <div class="card-body">
-        <canvas id="pieChart"></canvas>
-      </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Eventos por mes</div>
+                <div class="card-body">
+                    <canvas id="barChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Distribución de género</div>
+                <div class="card-body">
+                    <canvas id="pieChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 @endsection
 

@@ -125,13 +125,18 @@ Route::view('/catalogos/usuarios/show', 'catalogos.usuarios.show')->name('usuari
     Route::view('/catalogos/pesos/edit', 'catalogos.pesos.edit')->name('pesos.edit');
     Route::view('/catalogos/pesos/show', 'catalogos.pesos.show')->name('pesos.show');
 
-// Seguridad
-   Route::view('/catalogos/seguridad', 'catalogos.seguridad.index')->name('seguridad.index');  
-   Route::view('/catalogos/seguridad/create', 'catalogos.seguridad.create')->name('seguridad.create');
-    Route::view('/catalogos/seguridad/edit', 'catalogos.seguridad.edit')->name('seguridad.edit');
-    Route::view('/catalogos/seguridad/show', 'catalogos.seguridad.show')->name('seguridad.show');
+   Route::view('/catalogos/modalidades', 'catalogos.modalidades.index')->name('modalidades.index');
+   Route::view('/catalogos/modalidades/create', 'catalogos.modalidades.create')->name('modalidades.create');
+   Route::view('/catalogos/modalidades/edit', 'catalogos.modalidades.edit')->name('modalidades.edit');
+   Route::view('/catalogos/modalidades/show', 'catalogos.modalidades.show')->name('modalidades.show');
 
 
+   Route::view('/catalogos/inscripciones', 'catalogos.inscripciones.index')->name('inscripciones.index');
+   Route::view('/catalogos/inscripciones/create', 'catalogos.inscripciones.create')->name('inscripciones.create');
+   Route::view('/catalogos/inscripciones/edit', 'catalogos.inscripciones.edit')->name('inscripciones.edit');
+   Route::view('/catalogos/inscripciones/show', 'catalogos.inscripciones.show')->name('inscripciones.show');
+
+   
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               
     $data = request()->all();

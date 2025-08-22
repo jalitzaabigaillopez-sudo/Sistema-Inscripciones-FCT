@@ -4,40 +4,35 @@
 <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
     Volver al Dashboard
 </a>
-
 <div class="container mt-4">
-    <h2 class="mb-4">Listado de Eventos</h2>
+    <h2 class="mb-4">Listado de Inscripciones</h2>
 
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalEvento">
-        ➕ Nuevo Evento
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
+        ➕ Nueva Inscripción
     </button>
 
-    <div class="modal fade" id="modalEvento" tabindex="-1" aria-labelledby="modalEventoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <form>
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalEventoLabel">Crear Nuevo Evento</h5>
+                        <h5 class="modal-title" id="modalInscripcion">Crear Nueva Inscripcion</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre del Evento</label>
-                            <input type="text" class="form-control" id="nombre">
+                            <label for="atleta" class="form-label">Atleta</label>
+                            <input type="text" class="form-control" id="atleta" placeholder="Nombre del Atleta">
                         </div>
                         <div class="mb-3">
-                            <label for="descripcion" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="descripcion" rows="3"></textarea>
+                            <label for="evento" class="form-label">Evento</label>
+                            <input type="text" class="form-control" id="evento" placeholder="Nombre del Evento">
                         </div>
-                        <div class="mb-3">
-                            <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
-                            <input type="date" class="form-control" id="fecha_inicio">
+                         <div class="mb-3">
+                            <label for="fecha_inscripcion" class="form-label">Fecha Inscripción</label>
+                            <input type="date" class="form-control" id="fecha_inscripcion">
                         </div>
-                        <div class="mb-3">
-                            <label for="fecha_final" class="form-label">Fecha Final</label>
-                            <input type="date" class="form-control" id="fecha_final">
-                        </div>
-                        <div class="mb-3">
+                       <div class="mb-3">
                             <label for="estado" class="form-label">Estado</label>
                             <select class="form-select" id="estado">
                                 <option value="activo">Activo</option>
@@ -58,10 +53,9 @@
         <thead class="table-light">
             <tr>
                 <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Final</th>
+                <th>Atleta</th>
+                <th>Evento</th>
+                <th>Fecha Inscripción</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -69,18 +63,16 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td>Campeonato Nacional</td>
-                <td>Evento anual de karate</td>
-                <td>2025-09-01</td>
-                <td>2025-09-03</td>
+                <td>Maria Gomez</td>
+                <td>Copa Caribe</td>
+                <td>2023-05-15</td>
                 <td>Activo</td>
                 <td>
-                    <a href="{{ route('torneos.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('torneos.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <a href="{{ route('inscripciones.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
+                    <a href="{{ route('inscripciones.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
 @endsection
-
