@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Http\Controllers\Controller;
+use App\Models\Atleta;
 use Illuminate\Http\Request;
 
-class CategoriaController extends Controller
+class ControllerAtletas extends Controller
 {
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Categoria::all();
-        return view('catalogos.categorias.index', compact('data'));
+        $data = Atleta::all();
+        return view('catalogos.atletas.index', compact('data'));
     }
 
     /**

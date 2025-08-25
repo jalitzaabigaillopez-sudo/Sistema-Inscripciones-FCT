@@ -23,7 +23,7 @@
                 url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
             background-size: cover;
             background-position: center;
-            height: 150px;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;

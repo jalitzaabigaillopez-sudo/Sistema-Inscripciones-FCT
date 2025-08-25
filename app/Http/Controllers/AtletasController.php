@@ -8,8 +8,29 @@ use App\Models\PadronNacimiento;
 
 class AtletasController extends Controller
 {
-    public function insertarAtleta(Request $request)
+     public function index()
     {
+        $data = Atleta::all();
+        return view('catalogos.atletas.index', compact('data'));
+    }
+
+     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+    
+    public function insertarAtleta(Request $request){
 
         $validateData = $request->validate([
             'tipo_identificacion' => 'required|string|in:nacional,otro',
@@ -71,5 +92,33 @@ class AtletasController extends Controller
         $atletas = Atleta::where('rol', $tipo)->where('id_academia', $idAcademia)->get();
 
         return response()->json($atletas);
+    }
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }

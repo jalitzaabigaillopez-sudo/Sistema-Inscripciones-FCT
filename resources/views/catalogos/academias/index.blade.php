@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('content')
 <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
@@ -83,36 +83,11 @@
                     <td>academia@email.com</td>
                     <td>Activo</td>
                     <td>
-                        <a href="{{ route('academias.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                        <a href="{{ route('academias.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                        <a href="" class="btn btn-sm btn-info">👁️ Ver</a>
+                        <a href="" class="btn btn-sm btn-warning">✏️ Editar</a>
                     </td>
                 </tr>
-                 <tr>
-                    <td>1</td>
-                    <td>Academia Central</td>
-                    <td>Siquirres</td>
-                    <td>Profesor 1</td>
-                    <td>+506 8888-8888</td>
-                    <td>academia@email.com</td>
-                    <td>Activo</td>
-                    <td>
-                        <a href="{{ route('academias.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                        <a href="{{ route('academias.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                    </td>
-                </tr>
-                 <tr>
-                    <td>1</td>
-                    <td>Academia Central</td>
-                    <td>Siquirres</td>
-                    <td>Profesor 1</td>
-                    <td>+506 8888-8888</td>
-                    <td>academia@email.com</td>
-                    <td>Activo</td>
-                    <td>
-                        <a href="{{ route('academias.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                        <a href="{{ route('academias.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                    </td>
-                </tr>
+                 
             </tbody>
         </table>
     </div>

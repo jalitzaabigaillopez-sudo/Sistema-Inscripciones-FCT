@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('content')
 <a href="{{ route('dashboard-academia') }}" class="btn btn-outline-primary float-end">

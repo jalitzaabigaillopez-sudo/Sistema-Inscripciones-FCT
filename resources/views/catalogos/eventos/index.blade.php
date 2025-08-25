@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('content')
 <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
@@ -75,8 +75,8 @@
                 <td>2025-09-03</td>
                 <td>Activo</td>
                 <td>
-                    <a href="{{ route('torneos.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('torneos.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <a href="" class="btn btn-sm btn-info">👁️ Ver</a>
+                    <a href="" class="btn btn-sm btn-warning">✏️ Editar</a>
                 </td>
             </tr>
         </tbody>
