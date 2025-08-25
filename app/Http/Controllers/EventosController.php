@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Http\Controllers\Controller;
+use App\Models\Evento;
 use Illuminate\Http\Request;
 
-class CategoriaController extends Controller
+class EventosController extends Controller
 {
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Categoria::all();
-        return view('catalogos.categorias.index', compact('data'));
+        $data = Evento::all();
+        return view('catalogos.eventos.index', compact('data'));
     }
 
     /**

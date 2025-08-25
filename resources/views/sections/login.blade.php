@@ -14,11 +14,11 @@
     <style>
         .header-image {
             background-color: #000080;
-            height: 110px;
-            background-image: url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
+            height: 120px;
+            background-image:  linear-gradient(to bottom, rgba(0, 0, 128, 0.8), rgba(0, 0, 128, 0.5)), url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
             background-size: cover;
             background-position: center;
-            opacity: 0.7;
+            /* opacity: 0.7; */
         }
 
         .footer {

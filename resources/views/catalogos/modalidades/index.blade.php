@@ -61,8 +61,8 @@
                 <td>Disciplina tradicional japonesa</td>
                 <td>Activo</td>
                 <td>
-                    <a href="{{ route('modalidades.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('modalidades.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <a href="" class="btn btn-sm btn-info">👁️ Ver</a>
+                    <a href="" class="btn btn-sm btn-warning">✏️ Editar</a>
                 </td>
             </tr>
         </tbody>
