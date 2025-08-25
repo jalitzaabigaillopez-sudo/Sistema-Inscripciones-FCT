@@ -3,18 +3,10 @@
 use Illuminate\Support\Facades\Route; 
 use App\Http\Controllers\DBController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\AcademiaController;
-use App\Http\Controllers\AtletasController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\EventosController;
-use App\Http\Controllers\GradosController;
-use App\Http\Controllers\InicioController;
-use App\Http\Controllers\InscripcionController;
-use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
-use App\Http\Controllers\UsuariosController;
-use Illuminate\Types\Relations\Role;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -29,7 +21,7 @@ Route::post('/logout-process', [AuthController::class, 'cerrarSesion'])->name('l
 /**
  * DashBoard
  */
-Route::get('/dashboard', [InicioController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [Controller::class, 'index'])->name('dashboard');
 
 /**
  * Rutas para pruebas all
@@ -49,6 +41,8 @@ Route::get('/prueba', function () {
  */
 Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta');
 Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
+
+
 
 
 //prueba frontend
@@ -106,22 +100,46 @@ Route::get('/restablecerContrasena', function () {
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 
 // Catálogos generales
+Route::view('/catalogos/academias', 'catalogos.academias.index')->name('academias.index');
+Route::view('/catalogos/academias/create', 'catalogos.academias.create')->name('academias.create');
+Route::view('/catalogos/academias/edit', 'catalogos.academias.edit')->name('academias.edit');
+Route::view('/catalogos/academias/show', 'catalogos.academias.show')->name('academias.show');
 
-Route::resource('/academias', AcademiaController::class);
+Route::view('/catalogos/atletas', 'catalogos.atletas.index')->name('atletas.index');
+Route::view('/catalogos/atletas/create', 'catalogos.atletas.create')->name('atletas.create');
+Route::view('/catalogos/atletas/edit', 'catalogos.atletas.edit')->name('atletas.edit');
+Route::view('/catalogos/atletas/show', 'catalogos.atletas.show')->name('atletas.show');
 
-Route::resource('/atletas', AtletasController::class);
+Route::view('/catalogos/categorias', 'catalogos.categorias.index')->name('categorias.index');
+Route::view('/catalogos/categorias/create', 'catalogos.categorias.create')->name('categorias.create');
+Route::view('/catalogos/categorias/edit', 'catalogos.categorias.edit')->name('categorias.edit');
+Route::view('/catalogos/categorias/show', 'catalogos.categorias.show')->name('categorias.show');
 
-Route::resource('/categorias', CategoriaController::class);
+Route::view('/catalogos/torneos', 'catalogos.torneos.index')->name('torneos.index');
+Route::view('/catalogos/torneos/create', 'catalogos.torneos.create')->name('torneos.create');
+Route::view('/catalogos/torneos/edit', 'catalogos.torneos.edit')->name('torneos.edit');
+Route::view('/catalogos/torneos/show', 'catalogos.torneos.show')->name('torneos.show');
 
-Route::resource('/eventos', EventosController::class);
+Route::view('/catalogos/usuarios', 'catalogos.usuarios.index')->name('usuarios.index');
+Route::view('/catalogos/usuarios/create', 'catalogos.usuarios.create')->name('usuarios.create');
+Route::view('/catalogos/usuarios/edit', 'catalogos.usuarios.edit')->name('usuarios.edit');
+Route::view('/catalogos/usuarios/show', 'catalogos.usuarios.show')->name('usuarios.show');
 
-Route::resource('/usuarios', UsuariosController::class);
+    Route::view('/catalogos/pesos', 'catalogos.pesos.index')->name('pesos.index');
+    Route::view('/catalogos/pesos/create', 'catalogos.pesos.create')->name('pesos.create');
+    Route::view('/catalogos/pesos/edit', 'catalogos.pesos.edit')->name('pesos.edit');
+    Route::view('/catalogos/pesos/show', 'catalogos.pesos.show')->name('pesos.show');
 
-Route::resource('/grados', GradosController::class);
+   Route::view('/catalogos/modalidades', 'catalogos.modalidades.index')->name('modalidades.index');
+   Route::view('/catalogos/modalidades/create', 'catalogos.modalidades.create')->name('modalidades.create');
+   Route::view('/catalogos/modalidades/edit', 'catalogos.modalidades.edit')->name('modalidades.edit');
+   Route::view('/catalogos/modalidades/show', 'catalogos.modalidades.show')->name('modalidades.show');
 
-Route::resource('/modalidades', ModalidadesController::class);
 
-Route::resource('/inscripciones', InscripcionController::class);
+   Route::view('/catalogos/inscripciones', 'catalogos.inscripciones.index')->name('inscripciones.index');
+   Route::view('/catalogos/inscripciones/create', 'catalogos.inscripciones.create')->name('inscripciones.create');
+   Route::view('/catalogos/inscripciones/edit', 'catalogos.inscripciones.edit')->name('inscripciones.edit');
+   Route::view('/catalogos/inscripciones/show', 'catalogos.inscripciones.show')->name('inscripciones.show');
 
    
 Route::post('/admin/profile/update', function () {

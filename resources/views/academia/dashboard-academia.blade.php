@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app')
 
 @section('title', 'Dashboard Academia')
 
@@ -6,8 +6,42 @@
 <div class="container-fluid px-0">
   <div class="d-flex flex-column flex-md-row min-vh-100">
     
-   
+    {{-- Sidebar --}}
+    <nav class="bg-white border-end p-3" style="min-width: 240px;">
+      <div class="mb-4 text-center">
+        <img src="{{ asset('images/fct-logo.png') }}" alt="FCT logo" class="img-fluid mb-2" style="max-height: 60px;">
+        <h6 class="text-muted">Panel Academia</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card text-white bg-info shadow">
+      <div class="card-body">
+        <h5 class="card-title">Eventos Inscritos</h5>
+        <p class="card-text fs-4">3</p>
+      </div>
+    </div>
+  </div>
+</div>
 
+<div class="row">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">Estadísticas de Participación</div>
+      <div class="card-body">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">Avance de Eventos</div>
+      <div class="card-body">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('scripts')

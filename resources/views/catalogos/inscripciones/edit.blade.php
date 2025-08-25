@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app')
 @section('content')
 <div class="container mt-4">
     <h2 class="mb-4">Editar Inscripción</h2>

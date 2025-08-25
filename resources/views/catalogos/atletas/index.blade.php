@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app')
 
 @section('content')
 <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
