@@ -1,96 +1,134 @@
 @extends('layouts.app')
 
 @section('content')
-<a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
-    Volver al Dashboard
-</a>
-<div class="container mt-4">
-    <h2 class="mb-4">Listado de Usuarios</h2>
+<div class="container py-4">
+    <h4 class="fw-bold mb-4">Listas de Usuarios</h4>
 
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalUsuario">
-        ➕ Nuevo Usuario
-    </button>
+    {{-- Buscador y botón --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="GET" action="{{ route('usuarios.index') }}" class="w-50">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar usuario...">
+            </div>
+        </form>
 
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo usuario
+        </button>
+    </div>
+
+    {{-- Modal --}}
     <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalUsuarioLabel">Crear Nuevo Usuario</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="identificacion" class="form-label">Identificación</label>
-                            <input type="text" class="form-control" id="identificacion">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUsuarioLabel">Crear Nueva Academia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nombreUsuario" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombreUsuario" placeholder="Nombre del usuario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="correoUsuario" class="form-label">Correo</label>
+                                <input type="email" class="form-control" id="correoUsuario" placeholder="correo@email.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contrasenaUsuario" class="form-label">Contraseña</label>
+                                <input type="text" class="form-control" id="contrasenaUsuario" placeholder="Contraseña del usuario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="rolUsuario" class="form-label">Rol</label>
+                                <select class="form-select" id="rolUsuario">
+                                    <option selected disabled>Selecciona el rol</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="Academia">Academia</option>
+                                    <option value="arbitro">Arbitro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="estadoUsuario" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoUsuario">
+                                    <option selected disabled>Selecciona el estado</option>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                    <option value="pendiente">Pendiente</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="nombre_completo" class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control" id="nombre_completo">
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password">
-                        </div>
-                        <div class="mb-3">
-                            <label for="rol" class="form-label">Rol</label>
-                            <select class="form-select" id="rol">
-                                <option value="administrador">Administrador</option>
-                                <option value="academia">Academia</option>
-                                <option value="arbitro">Árbitro</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-select" id="estado">
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="imagen" class="form-label">Imagen</label>
-                            <input type="file" class="form-control" id="imagen">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">💾 Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar Academia</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Identificación</th>
+    {{-- Tabla --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Identificación</th>
                 <th>Nombre</th>
                 <th>Correo</th>
+                <th>Contraseña</th>
                 <th>Rol</th>
                 <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
+                <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- Aquí deberías usar @foreach para mostrar datos reales --}}
+                
+                <tr>
+                       
                 <td>123456789</td>
                 <td>Doris Vega</td>
                 <td>doris@email.com</td>
+                <td>contraseña123</td>
                 <td>Administrador</td>
-                <td>Activo</td>
                 <td>
-                    <a href="{{ route('usuarios.show') }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('usuarios.edit') }}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        <span class="badge bg-success">Activo</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="#" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="#" method="POST" class="d-inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta academia?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+              
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Paginación --}}
+    <div class="d-flex justify-content-end mt-3">
+        <nav aria-label="Navegación de usuarios">
+            <ul class="pagination mb-0">
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                <li class="page-item active"><span class="page-link">1</span></li>
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 @endsection
+
+

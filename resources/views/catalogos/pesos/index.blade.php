@@ -1,86 +1,112 @@
 @extends('layouts.app')
 
 @section('content')
-<a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
-    Volver al Dashboard
-</a>
-<div class="container mt-4">
-    <h2 class="mb-4">Listado de Pesos</h2>
+<div class="container py-4">
+    <h4 class="fw-bold mb-4">Listas de Grados</h4>
 
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalPeso">
-        ➕ Nuevo Peso
-    </button>
+    {{-- Buscador y botón --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="GET" action="{{ route('grados.index') }}" class="w-50">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar grado...">
+            </div>
+        </form>
 
-    <div class="modal fade" id="modalPeso" tabindex="-1" aria-labelledby="modalPesoLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAcademia">
+            <i class="bi bi-plus-circle me-1"></i> Nueva grado
+        </button>
+    </div>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="modalGrado" tabindex="-1" aria-labelledby="modalGradoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalPesoLabel">Crear Nuevo Peso</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="division" class="form-label">División</label>
-                            <select class="form-select" id="division">
-                                <option value="Cadete">Cadete</option>
-                                <option value="Junior">Junior</option>
-                                <option value="Senior">Senior</option>
-                                <option value="Ejecutivo">Ejecutivo</option>
-                            </select>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalGradoLabel">Crear Nuevo Grado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nombreGrado" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombreGrado" placeholder="Grado Central">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="descripcionGrado" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="descripcionGrado" placeholder="Siquirres, Limón">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="estadoGrado" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoGrado" name="estadoGrado">
+                                    <option selected disabled>Selecciona el estado</option>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            
                         </div>
-                        <div class="mb-3">
-                            <label for="sexo" class="form-label">Sexo</label>
-                            <select class="form-select" id="sexo">
-                                <option value="Femenino">Femenino</option>
-                                <option value="Masculino">Masculino</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="peso_min" class="form-label">Peso Mínimo</label>
-                            <input type="number" class="form-control" id="peso_min">
-                        </div>
-                        <div class="mb-3">
-                            <label for="peso_max" class="form-label">Peso Máximo</label>
-                            <input type="number" class="form-control" id="peso_max">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">💾 Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar Grado</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>División</th>
-                <th>Sexo</th>
-                <th>Peso Mínimo</th>
-                <th>Peso Máximo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Ejemplo de fila -->
-            <tr>
-                <td>1</td>
-                <td>Junior</td>
-                <td>Masculino</td>
-                <td>60</td>
-                <td>70</td>
+    {{-- Tabla --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- Aquí deberías usar @foreach para mostrar datos reales --}}
+                
+                <tr>
+                    <td>Grado 1</td>
+                    <td>Descripción del grado 1</td>
                 <td>
-                    <a href="{{ route('pesos.show', 1) }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('pesos.edit', 1) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <span class="badge bg-success">Activo</span>
                 </td>
-            </tr>
-        </tbody>
-    </table>
+                    
+                    <td class="text-center">
+                        <a href="#" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="#" method="POST" class="d-inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta academia?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+              
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Paginación --}}
+    <div class="d-flex justify-content-end mt-3">
+        <nav aria-label="Navegación de grados">
+            <ul class="pagination mb-0">
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                <li class="page-item active"><span class="page-link">1</span></li>
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 @endsection
-
-
