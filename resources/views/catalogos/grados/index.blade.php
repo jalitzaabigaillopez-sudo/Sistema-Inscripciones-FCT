@@ -1,9 +1,7 @@
 @extends('app')
 
 @section('content')
-<a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
-    Volver al Dashboard
-</a>
+
 <div class="container mt-4">
     <h2 class="mb-4">Listado de Pesos</h2>
 

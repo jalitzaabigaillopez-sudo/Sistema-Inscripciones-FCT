@@ -123,6 +123,8 @@ Route::resource('/modalidades', ModalidadesController::class);
 
 Route::resource('/inscripciones', InscripcionController::class);
 
+
+
    
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               

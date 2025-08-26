@@ -1,88 +1,140 @@
 @extends('app')
 
 @section('content')
-<a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
-    Volver al Dashboard
-</a>
-<div class="container mt-4">
-    <h2 class="mb-4">Listado de Atletas</h2>
+<div class="container py-4">
+    <h4 class="fw-bold mb-4">Listas de Atletas</h4>
 
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalAtleta">
-        ➕ Nuevo Atleta
-    </button>
+    {{-- Buscador y botón --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="GET" action="{{ route('atletas.index') }}" class="w-50">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar atleta...">
+            </div>
+        </form>
 
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAtleta">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo atleta
+        </button>
+    </div>
+
+    {{-- Modal --}}
     <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalAtletaLabel">Crear Nuevo Atleta</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAtletaLabel">Crear Nuevo Atleta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="identificacion" class="form-label">Identificación</label>
-                                <input type="text" class="form-control" id="identificacion">
+                                <label for="nombreAtleta" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombreAtleta" placeholder="Juan">
                             </div>
                             <div class="col-md-6">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre">
+                                <label for="apellidosAtleta" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidosAtleta" placeholder="Pérez Rodríguez">
                             </div>
                             <div class="col-md-6">
-                                <label for="primer_apellido" class="form-label">Primer Apellido</label>
-                                <input type="text" class="form-control" id="primer_apellido">
+                                <label for="sexoAtleta" class="form-label">Sexo</label>
+                                <input type="text" class="form-control" id="sexoAtleta" placeholder="Masculino/Femenino">
                             </div>
                             <div class="col-md-6">
-                                <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
-                                <input type="text" class="form-control" id="segundo_apellido">
+                                <label for="fechaNacimientoAtleta" class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimientoAtleta">
                             </div>
                             <div class="col-md-6">
-                                <label for="sexo" class="form-label">Sexo</label>
-                                <select class="form-select" id="sexo">
-                                    <option value="Femenino">Femenino</option>
-                                    <option value="Masculino">Masculino</option>
+                                <label for="estadoAtleta" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoAtleta">
+                                    <option selected disabled>Selecciona el estado</option>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                    <option value="pendiente">Pendiente</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="fecha_nacimiento">
-                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">💾 Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar Academia</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>Sexo</th>
-                <th>Fecha Nacimiento</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
+    {{-- Tabla --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Identificacion</th>
+                   <th>Nombre</th>
+                   <th>Apellido 1</th>
+                   <th>Apellido 2</th>
+                   <th>Sexo</th>
+                   <th>Fecha Nacimiento</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- Aquí deberías usar @foreach para mostrar datos reales --}}
+                
+                <tr>
+                <td>123456789</td>
                 <td>Juan</td>
-                <td>Pérez Rodríguez</td>
+                <td>Pérez</td>
+                <td>Rodríguez</td>
                 <td>Masculino</td>
                 <td>2005-06-15</td>
                 <td>
-                    <a href="{{ route('atletas.show', 1) }}" class="btn btn-sm btn-info">👁️ Ver</a>
-                    <a href="{{ route('atletas.edit', 1) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <select class="form-select form-select-sm">
+                        <option value="atleta" selected>Atleta</option>
+                        <option value="entrenador">Entrenador</option>
+                    </select>
                 </td>
-            </tr>
-        </tbody>
-    </table>
+                    <td>
+                        <span class="badge bg-success">Activo</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="#" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="#" method="POST" class="d-inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta academia?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+              
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Paginación --}}
+    <div class="d-flex justify-content-end mt-3">
+        <nav aria-label="Navegación de academias">
+            <ul class="pagination mb-0">
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                <li class="page-item active"><span class="page-link">1</span></li>
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 @endsection
+
+
+
+   
+               
+           
