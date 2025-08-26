@@ -7,6 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Registro</title>
     <!-- Opcional: Bootstrap v3.x si ya lo usas en tu proyecto -->
+    <!-- use bootstrap 5.3.7 -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
         body {
@@ -30,9 +32,16 @@
 </head>
 
 <body>
+
+    <!-- GUARDAR ACA EL ID DE ACADEMI -->
+    <input type="hidden" value="1" id="id_academia">
+
+    <!-- GUARDAR ACA EL ID DE EVENTO -->
+    <input type="hidden" value="">
+
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Inscripciones</h3>
@@ -45,8 +54,8 @@
                                 <select id="formSelect" class="form-control">
                                     <option value="">Tipo de matricula...</option>
                                     <option value="entrenador">Entrenador</option>
-                                    <option value="asistente">Asistentes</option>
                                     <option value="atleta">Atletas</option>
+                                    <option value="asistente">Asistentes</option>
                                 </select>
                             </div>
 
@@ -58,50 +67,49 @@
                 <div id="mensaje" class="alert" style="display:none;"></div>
             </div>
 
-            <div class="col-md-10">
+            <div class="col-md-9">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Inscripciones</h3>
                     </div>
                     <div class="panel-body">
-                        <form id="consultaCedulaForm" onsubmit="return false;">
 
-                            <div class="form-group">
+                        <div id="form-entrenador" class="formulario d-none">
+                            <h4>Formulario Entrenadores</h4>
+                            <select id="select-entrenador" class="form-control" placeholde="buscar entrenador...">
 
-                                <div id="form-entrenador" class="formulario d-none">
-                                    <h4>Formulario Usuarios</h4>
-                                    <select id="select-entrenador" class="form-control">
-                                        <option value="">Seleccione un usuario...</option>
-                                    </select>
-                                </div>
+                            </select>
+                        </div>
 
-                                <div id="form-asistente" class="formulario d-none">
-                                    <h4>Formulario Departamentos</h4>
-                                    <select id="select-asistente" class="form-control">
-                                        <option value="">Seleccione un departamento...</option>
-                                    </select>
-                                </div>
+                        <div id="form-asistente" class="formulario d-none">
+                            <h4>Formulario Asistente</h4>
+                            <select id="select-asistente" class="form-control">
 
-                                <div id="form-atleta" class="formulario d-none">
-                                    <h4>Formulario Productos</h4>
-                                    <select id="select-atleta" class="form-control">
-                                        <option value="">Seleccione un producto...</option>
-                                    </select>
-                                </div>
+                            </select>
+                        </div>
 
-                            </div>
+                        <div id="form-atleta" class="formulario d-none">
+                            <h4>Formulario Atletas</h4>
+                            <select id="select-atleta" class="form-control">
 
-                            <div class="text-right">
-                                <button type="button" id="btnGuardar" class="btn btn-primary">
-                                    Guardar
-                                </button>
-                            </div>
-                        </form>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
             </div>
+            <hr>
+            <div class="col-md-6">
+                <h4>Lista de matricula</h4>
+                <ul id="listaSeleccionados" class="list-group"></ul>
+            </div>
         </div>
     </div>
+
+
+    <!-- use bootstrap 5.3.7 -->
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
     <!-- jQuery primero -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -109,7 +117,8 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('js/academiaMatriculaEntrendores/entrenadores.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/entrenadores.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/listaMatricula.js') }}"></script>
 </body>
 
 </html>

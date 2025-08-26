@@ -1,8 +1,9 @@
 $(document).ready(function () {
     // Activar barra de búsqueda en el select
-    $('#formSelect').select2({
-        placeholder: "Buscar opción...",
-        allowClear: true
+    $('#select-entrenador, #select-asistente, #select-atleta').select2({
+        placeholder: "Buscar atleta...",
+        allowClear: true,
+        width: '100%'
     });
 
     $('#formSelect').on('change', function () {
@@ -17,7 +18,7 @@ $(document).ready(function () {
             $('#form-' + opcion).removeClass('d-none');
 
             // Lanzar AJAX según la opción elegida
-            /*$.ajax({
+            $.ajax({
                 url: '/obtenerAtletasPorRol',
                 method: 'POST',
                 dataType: 'json',
@@ -27,6 +28,7 @@ $(document).ready(function () {
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function (res) {
+                    // console.log(res);
                     var selectId = '#select-' + opcion;
                     var select = $(selectId);
 
@@ -34,10 +36,10 @@ $(document).ready(function () {
                     select.append('<option value="">Seleccione...</option>');
 
                     res.forEach(function (item) {
-                        select.append('<option value="' + item.nombre + '">' + item.nombre + '</option>');
+                        select.append('<option value="' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + ' (' + item.rol + ') ' + '">' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + '</option>');
                     });
                 }
-            });*/
+            });
         }
     });
 });

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\AcademiaController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
+use App\Http\Controllers\AtletasController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -45,7 +46,10 @@ Route::get('/pruebaInscripciones', function () {
 Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCuenta'])->name('activar.cuenta');
 Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
 
-
+/**
+ * Rutas inscripciones
+ */
+Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
 
 
 //prueba frontend
