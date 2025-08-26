@@ -35,7 +35,7 @@ class AtletasController extends Controller
 
         // Verificar que exista la cedula si es nacional
         $padronNacimiento = PadronNacimiento::where('identificacion', $validateData['identificacion'])->first();
-        if (!$identificacion) {
+        if (!$padronNacimiento) {
             return response()->json(['error' => 'Este numero de cedula no esta registrado'], 401);
         }
 
@@ -59,5 +59,16 @@ class AtletasController extends Controller
         'id_academia' => $validateData['id_academia'],
         ]);
         $atleta->save();
+    }
+
+    public function obtenerAtletasPorRol(Request $request)
+    {
+
+        // nombre(variable) "tipo" viene de ajax
+        $tipo = $request->tipo;
+        $idAcademia = $request->id_academia;
+        $atletas = Atleta::where('rol', $tipo)->where('id_academia', $idAcademia)->get();
+
+        return response()->json($atletas);
     }
 }

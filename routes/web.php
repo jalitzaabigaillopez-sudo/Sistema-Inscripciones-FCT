@@ -32,8 +32,11 @@ Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia'
 Route::get('/pre_registroAcademia1', [DBController::class, 'pre_registroAcademia1']);
 Route::get('/prueba', function () {
     return view('prueba');
-})->name('prueba');
+});
 
+Route::get('/pruebaInscripciones', function () {
+    return view('pruebaInscripciones');
+});
 
 //####################################### SOLO ACADEMIA #################################################
 /**
