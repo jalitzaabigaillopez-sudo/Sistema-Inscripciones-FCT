@@ -96,6 +96,7 @@ Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 Route::resource('/academias', AcademiaController::class);
 
 Route::resource('/atletas', AtletasController::class);
+Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 
 Route::resource('/categorias', CategoriaController::class);
 

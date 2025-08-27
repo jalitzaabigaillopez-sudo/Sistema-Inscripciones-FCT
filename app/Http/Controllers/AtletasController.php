@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Academia;
 use Illuminate\Http\Request;
 use App\Models\Atleta;
+use App\Models\Categoria;
+use App\Models\Grado;
 use App\Models\PadronNacimiento;
 
 class AtletasController extends Controller
@@ -12,7 +15,10 @@ class AtletasController extends Controller
      public function index()
     {
         $data = Atleta::all();
-        return view('catalogos.atletas.index', compact('data'));
+        $grados = Grado::all();
+        $categorias = Categoria::all();
+        $academias = Academia::all();
+        return view('catalogos.atletas.index', compact('data', 'grados', 'categorias', 'academias'));
     }
 
      /**
@@ -89,12 +95,21 @@ class AtletasController extends Controller
         //
     }
 
+    public function datosAtleta($id)
+    {
+        $atleta = Atleta::with('grados', 'academias', 'categorias')->findOrFail($id);
+        return response()->json($atleta);
+    }
+
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+         $item = Atleta::find($id);
+        return view('catalogos.atletas.index', compact('item'));
+
     }
 
     /**
@@ -102,7 +117,25 @@ class AtletasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $atleta = Atleta::findOrFail($id);
+        $data = $request->validate([
+            'tipo_identificacion' => 'required|string',
+            'identificacion' => 'required|string|max:30',
+            'nombre' => 'required|string|max:255',
+            'primer_apellido' => 'required|string|max:255',
+            'segundo_apellido' => 'nullable|string|max:255',
+            'rol' => 'required|string',
+            'sexo' => 'required|string',
+            'fecha_nacimiento' => 'required|date',
+            'estado' => 'required|string',
+            'id_grado' => 'required|integer',
+            'id_academia' => 'required|integer',
+        ]);
+
+        $atleta->update($data);
+
+        return redirect()->back()->with('success', 'Atleta actualizado correctamente.');
+
     }
 
     /**
@@ -110,6 +143,11 @@ class AtletasController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = Atleta::find($id);
+
+        $item->delete();
+
+        return back();
+
     }
 }
