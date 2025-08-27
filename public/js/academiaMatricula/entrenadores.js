@@ -36,7 +36,7 @@ $(document).ready(function () {
                     select.append('<option value="">Seleccione...</option>');
 
                     res.forEach(function (item) {
-                        select.append('<option value="' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + ' (' + item.rol + ') ' + '">' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + '</option>');
+                        select.append('<option value="' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + ' (' + item.rol + ') ' + '" data-id="' + item.id_atleta + '">' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + '</option>');
                     });
                 }
             });

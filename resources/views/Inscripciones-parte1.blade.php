@@ -32,9 +32,12 @@
 </head>
 
 <body>
+    {{ $academia }}
+    <br>
+    {{ $evento }}
 
     <!-- GUARDAR ACA EL ID DE ACADEMI -->
-    <input type="hidden" value="1" id="id_academia">
+    <input type="hidden" value="{{ $academia['id_academia'] }}" id="id_academia">
 
     <!-- GUARDAR ACA EL ID DE EVENTO -->
     <input type="hidden" value="">

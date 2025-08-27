@@ -4,46 +4,44 @@
 
 $(document).ready(function () {
     var seleccionados = []; // memoria local
+    var idsAtletas = [];
     var contEntrenadores = 0;
-    var contAsistentes = 0;
-    var contAtletas = 0;
+
 
     $('#select-entrenador, #select-asistente, #select-atleta').on('change', function () {
         var valor = $(this).val();
+
         if (valor) {
+            if (seleccionados.includes(valor)) {
+                alert("⚠️ Ese atleta ya esta en lista");
+                return;
+            }
             if (valor.toLowerCase().includes("entrenador")) {
                 contEntrenadores++;
                 if (contEntrenadores > 1) {
                     alert("Solo un entrenador puede ser matriculado por evento")
                     return;
                 }
-                // console.log("Este ítem es un ENTRENADOR:", contEntrenadores);
 
             } else if (valor.toLowerCase().includes("asistente")) {
-                // contAsistentes++;
-                if (contAtletas > 0) {
-                    console.log("entra");
-                    if (!contAtletas % 10 === 0) {
-                        alert("Solo un asistente puede ser matriculado por cada diez atletas en un evento")
-                        return;
-                    }
-                } else {
-                    alert("Solo un asistente puede ser matriculado por cada diez atletas en un evento")
+                if (!validarAsistentes(seleccionados)) {
+                    alert("Solo un asistente puede ser matriculado por cada diez atletas")
                     return;
                 }
-                // console.log("Este ítem es un ASISTENTE:", contAsistentes);
 
-            } else if (valor.toLowerCase().includes("atleta")) {
-                contAtletas++;
             }
-
-            console.log(contAtletas);
-
             // Guardar en memoria si no esta
             if (!seleccionados.includes(valor)) {
                 seleccionados.push(valor);
                 actualizarLista();
             }
+
+            // Guardar id para uso posterior
+
+            var selectedOption = $(this).find('option:selected'); // la opción seleccionada
+            var id = selectedOption.data('id');
+            idsAtletas.push(id);
+            console.log("ids guardadas: " + idsAtletas);
 
             // resetear el select para que se pueda volver a elegir más adelante
             $(this).val('');
@@ -71,7 +69,38 @@ $(document).ready(function () {
     // Quitar elementos de la lista
     $('#listaSeleccionados').on('click', '.eliminar', function () {
         var idx = $(this).data('index');
+        var item = seleccionados[idx];
+
+        if (item.toLowerCase().includes("atleta")) {
+            contAtletas--;
+        }
+        else if (item.toLowerCase().includes("asistente")) {
+            contAsistentes--;
+        }
+        else if (item.toLowerCase().includes("entrenador")) {
+            contEntrenadores--;
+        }
+
         seleccionados.splice(idx, 1); // eliminar de memoria
         actualizarLista();
     });
+
+
+    /**
+     * Funciones para x asistente por x cantidad de asitentes
+     */
+    // Cuenta cuántos elementos contienen la palabra clave (atleta o asistente)
+    function validarAsistentes(seleccionados) {
+        let atletas = seleccionados.filter(item => item.toLowerCase().includes("atleta")).length;
+        let asistentes = seleccionados.filter(item => item.toLowerCase().includes("asistente")).length;
+
+        // No se permiten asistentes sin atletas
+        if (atletas === 0) return false;
+
+        // Calcular el máximo de asistentes permitido
+        let maxAsistentes = Math.ceil(atletas / 10);
+
+        // Si ya llegué al límite, no dejar agregar más
+        return asistentes < maxAsistentes;
+    }
 });

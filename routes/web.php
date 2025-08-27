@@ -8,6 +8,7 @@ use App\Http\Controllers\AcademiaController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
 use App\Http\Controllers\AtletasController;
+use App\Http\Controllers\InscripcionController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -35,9 +36,6 @@ Route::get('/prueba', function () {
     return view('prueba');
 });
 
-Route::get('/pruebaInscripciones', function () {
-    return view('pruebaInscripciones');
-});
 
 //####################################### SOLO ACADEMIA #################################################
 /**
@@ -49,6 +47,8 @@ Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cue
 /**
  * Rutas inscripciones
  */
+Route::get('/Inscripciones-parte1', [InscripcionController::class, 'vistaInscripcion']);
+
 Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
 
 

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Academia;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
+use App\Models\Evento;
 
 class InscripcionController extends Controller
 {
@@ -30,5 +32,13 @@ class InscripcionController extends Controller
             'estado' => $validateData['estado'],
         ]);
         $inscripcion->save();
+    }
+
+    public function vistaInscripcion(){
+        //vista, evento e inscricipcion de prueba
+        $academia = Academia::find(1);
+        $evento = Evento::with('modalidades')->find(7);
+
+        return view('Inscripciones-parte1', compact('academia', 'evento'));
     }
 }
