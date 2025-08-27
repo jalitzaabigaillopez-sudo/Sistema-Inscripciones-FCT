@@ -208,7 +208,7 @@
         <a href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a>
         <a href="{{ route('modalidades.index') }}"><i class="bi bi-columns-gap"></i> Modalidades</a>
         <a href="{{ route('inscripciones.index') }}"><i class="bi bi-ui-checks"></i> Inscripciones</a>
-        <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Pesos</a>
+        <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Grados</a>
         <a href="{{ route('eventos.index') }}"><i class="bi bi-calendar3"></i> Eventos</a>
         <a href="{{ route('categorias.index') }}"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>
@@ -255,8 +255,8 @@
     </div>
 
     <!-- Scripts -->
-  <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Required Js -->
     <script src="{{ asset('assets/js/vendor-all.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -270,12 +270,12 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
 
-     <!-- SweetAlert2 CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-        <!-- SweetAlert2 JS -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');

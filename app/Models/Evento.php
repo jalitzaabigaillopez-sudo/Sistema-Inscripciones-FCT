@@ -10,4 +10,9 @@ class Evento extends Model
     protected $primaryKey= 'id_evento';
     public $timestamps = false;    
     protected $fillable = ['nombre', 'descripcion', 'fecha_inicio_inscripcion', 'fecha_final_inscripcion', 'fecha_inicio', 'fecha_final', 'imagen', 'estado','id_tipo_evento '];
+
+    public function tipoEvento()
+    {
+        return $this->belongsTo(TipoEvento::class, 'id_tipo_evento');
+    }
 }

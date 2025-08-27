@@ -18,7 +18,7 @@ class Atleta extends Model
 
     public function academias()
     {
-        return $this->belongsTo(Academia::class, 'id_academia');
+        return $this->belongsTo(Academia::class, 'id_academia', 'id_academia');
     }
 
     public function categorias()

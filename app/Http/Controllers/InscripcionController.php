@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Academia;
+use App\Models\Evento;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
@@ -15,7 +17,9 @@ class InscripcionController extends Controller
     public function index()
     {
         $data = Inscripcion::all();
-        return view('catalogos.inscripciones.index', compact('data'));
+        $eventos = Evento::all();
+        $academias = Academia::all();
+        return view('catalogos.inscripciones.index', compact('data', 'eventos', 'academias'));
     }
 
     /**
