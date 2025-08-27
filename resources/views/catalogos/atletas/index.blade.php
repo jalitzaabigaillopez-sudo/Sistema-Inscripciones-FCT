@@ -1,153 +1,440 @@
 @extends('layouts.app')
 
+@section('tituloArriba')
+    Administrar Atletas
+@endsection
+
+@section('breadcrumb-title', 'Lista de Atletas')
+
 @section('content')
-<div class="container py-4">
-    <h4 class="fw-bold mb-4">Listas de Atletas</h4>
+    <div class="container py-4">
 
-    {{-- Buscador y botón --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <form method="GET" action="{{ route('atletas.index') }}" class="w-50">
-            <div class="input-group">
-                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                <input type="text" name="busqueda" class="form-control" placeholder="Buscar atleta...">
-            </div>
-        </form>
+        <div class="d-flex align-items-center mb-4">
+            <h4 class="fw-bold mb-0">Lista de Atletas</h4>
+            <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal"
+                data-bs-target="#modalAtleta">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo Atleta
+            </button>
+        </div>
+        <hr>
 
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAtleta">
-            <i class="bi bi-plus-circle me-1"></i> Nuevo atleta
-        </button>
-    </div>
+        {{-- Tabla --}}
+        <div class="card table-card shadow">
+            <div class="card-body p-3">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Tipo ID</th>
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Nombre</th>
+                                <th class="text-center">Rol</th>
+                                <th class="text-center">Sexo</th>
+                                <th class="text-center">Fecha N.</th>
+                                <th class="text-center">Categoría</th>
+                                <th class="text-center">Grado</th>
+                                <th class="text-center">Academia</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data as $item)
+                                <tr class="text-center">
+                                    <td class="small">{{ $item->tipo_identificacion }}</td>
+                                    <td class="small">{{ $item->identificacion }}</td>
+                                    <td class="small">{{ $item->nombre }} {{ $item->primer_apellido }}
+                                        {{ $item->segundo_apellido }}</td>
+                                    <td class="small">{{ $item->rol }}</td>
+                                    <td class="small">{{ $item->sexo }}</td>
+                                    <td class="small" data-bs-toggle="tooltip" title="{{ $item->fecha_nacimiento }}">
+                                        {{ \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y') }}
+                                    </td>
+                                    <td class="small">{{ $item->categorias->division }}</td>
+                                    <td class="small">{{ $item->grados->nombre }}</td>
+                                    <td><span class="small">{{ $item->academias->nombre }}</span></td>
+                                    <td>
+                                        @if ($item->estado === 'activo')
+                                            <span class="badge rounded-pill bg-success">
+                                                {{ ucfirst($item->estado) }}
+                                            </span>
+                                        @elseif($item->estado === 'inactivo')
+                                            <span class="badge rounded-pill bg-danger">
+                                                {{ ucfirst($item->estado) }}
+                                            </span>
+                                        @else
+                                            <span class="badge rounded-pill bg-secondary">
+                                                {{ ucfirst($item->estado) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill"
+                                                type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item btn-edit" href="#"
+                                                        data-id="{{ $item->id_atleta }}">
+                                                        <i class="bi bi-pencil-square"></i> Editar
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ route('atletas.destroy', $item) }}" method="POST"
+                                                        id="form-eliminar-{{ $item->id_atleta }}" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" class="dropdown-item text-danger"
+                                                            data-bs-toggle="tooltip" title="Eliminar Atleta"
+                                                            onclick="confirmarEliminacion({{ $item->id_atleta }})">
+                                                            <i class="bi bi-trash"></i> Eliminar
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
 
-    {{-- Modal --}}
-    
-    <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAtletaLabel">Crear Nuevo Atleta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('atletas.store') }}">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="tipo_identificacion" class="form-label">Tipo de Identificación</label>
-                            <input type="text" class="form-control" id="tipo_identificacion" name="tipo_identificacion" required placeholder="Ej. Cédula">
-                        </div>
-                        <div class="mb-3">
-                            <label for="identificacion" class="form-label">Identificacion</label>
-                            <input type="text" class="form-control" id="identificacion" name="identificacion" required placeholder="Ej. 123456789">
-                        </div>
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Juan">
-                        </div>
-                        <div class="mb-3">
-                            <label for="apellido1" class="form-label">Primer apellido</label>
-                            <input type="text" class="form-control" id="apellido1" name="apellido1" required placeholder="Ej. Pérez">
-                        </div>
-                        <div class="mb-4">
-                            <label for="apellido2" class="form-label">Segundo apellido</label>
-                            <input type="text" class="form-control" id="apellido2" name="apellido2" required placeholder="Ej. Gómez">
-                        </div>
-                          <div class="mb-4">
-                            <label for="rol" class="form-label">Rol</label>
-                            <select class="form-select" id="rol" name="rol" required>
-                                <option value="atleta">Atleta</option>
-                                <option value="entrenador">Entrenador</option>
-                            </select>
-                        </div>
-                          <div class="mb-4">
-                            <label for="sexo" class="form-label">Sexo</label>
-                            <select class="form-select" id="sexo" name="sexo" required>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                            </select>
-                        </div>
-                          <div class="mb-4">
-                            <label for="fecha" class="form-label">Fecha de nacimiento</label>
-                            <input type="date" class="form-control" id="fecha" name="fecha" required placeholder="1995-08-15">
-                        </div>
-                        <div class="mb-4">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-select" id="estado" name="estado" required>
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Guardar Academia</button>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Tabla --}}
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                  
-                    <th>Tipo_Identificacion</th>
-                    <th>Identificacion</th>
-                    <th>Nombre</th>
-                    <th>Primer apellido</th>
-                    <th>Segundo apellido</th>
-                    <th>Rol</th>
-                    <th>Sexo</th>
-                    <th>Fecha de Nacimiento</th>
-                    <th>Estado</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{-- Aquí deberías usar @foreach para mostrar datos reales --}}
-                
-                <tr>
-                    <td>Cédula</td>
-                    <td>123456789</td>
-                    <td>Juan</td>
-                    <td>Pérez</td>
-                    <td>Gómez</td>
-                    <td>Atleta</td>
-                    <td>Masculino</td>
-                    <td>1995-08-15</td>
-                    <td>
-                        <span class="badge bg-success">Activo</span>
-                    </td>
-                    <td class="text-center">
-                        <a href="#" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <form action="#" method="POST" class="d-inline">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta academia?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-              
-            </tbody>
-        </table>
-    </div>
+        {{-- Modal NUEVO ATLETA --}}
+        <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+                    <div class="modal-header border-bottom-0 pb-2">
+                        <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalAtletaLabel">Registrar
+                            Nuevo Atleta</h5>
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
+                    </div>
+                    <form method="POST" action="{{ route('atletas.store') }}">
+                        @csrf
+                        <div class="modal-body p-0">
+                            <div class="row g-4">
+                                <div class="col-md-6 border-end pe-md-4">
+                                    <h6 class="text-secondary mb-3">Información Personal</h6>
+                                    <div class="mb-3">
+                                        <label for="tipo_identificacion" class="form-label">Tipo de Identificación <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="tipo_identificacion"
+                                            name="tipo_identificacion" required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="Nacional">Nacional</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="identificacion" class="form-label">Identificación <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="identificacion"
+                                            name="identificacion" required placeholder="Ej. 123456789">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="nombre"
+                                            name="nombre" required placeholder="Ej. Juan">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="apellido1" class="form-label">Primer Apellido <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="apellido1"
+                                            name="apellido1" required placeholder="Ej. Pérez">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="apellido2" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control form-control-sm" id="apellido2"
+                                            name="apellido2" placeholder="Ej. Gómez">
+                                    </div>
 
-    {{-- Paginación --}}
-    <div class="d-flex justify-content-end mt-3">
-        <nav aria-label="Navegación de atletas">
-            <ul class="pagination mb-0">
-                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-                <li class="page-item active"><span class="page-link">1</span></li>
-                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-            </ul>
-        </nav>
-    </div>
-</div>
-@endsection
+                                </div>
 
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
+                                    <div class="mb-3">
+                                        <label for="rol" class="form-label">Rol <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="rol" name="rol"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="atleta">Atleta</option>
+                                            <option value="entrenador">Entrenador</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sexo" class="form-label">Sexo <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="sexo" name="sexo"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="masculino">Masculino</option>
+                                            <option value="femenino">Femenino</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="fecha" class="form-label">Fecha de Nacimiento <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" class="form-control form-control-sm" id="fecha"
+                                            name="fecha" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="grado" class="form-label">Grado (Cinturón) <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="grado" name="grado"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="blanco">Blanco</option>
+                                            <option value="amarillo">Amarillo</option>
+                                            <option value="naranja">Naranja</option>
+                                            <option value="verde">Verde</option>
+                                            <option value="azul">Azul</option>
+                                            <option value="marron">Marrón</option>
+                                            <option value="negro">Negro</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="academia" class="form-label">Academia <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="academia" name="academia"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            {{-- @foreach ($academias as $academia)
+                                        <option value="{{ $academia->id }}">{{ $academia->nombre }}</option>
+                                    @endforeach --}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success rounded-pill">Guardar Atleta</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- MODAL EDITAR ATLETA --}}
+        <div class="modal fade" id="modalEditarAtleta" tabindex="-1" aria-labelledby="modalEditarAtletaLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+                    <div class="modal-header border-bottom-0 pb-2">
+                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAtletaLabel">
+                            Actualizar Datos del Atleta</h5>
+
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
+                    </div>
+                    <form method="POST" action="" id="formEditarAtleta" data-id="">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body p-0">
+                            <div class="row g-4">
+                                <div class="col-md-6 border-end pe-md-4">
+                                    <h6 class="text-secondary mb-3">Información Personal</h6>
+                                    <div class="mb-3">
+                                        <label for="e_tipo_identificacion" class="form-label">Tipo de Identificación <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_tipo_identificacion"
+                                            name="tipo_identificacion" required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="Nacional">Nacional</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_identificacion" class="form-label">Identificación <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="e_identificacion"
+                                            name="identificacion" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_nombre" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="e_nombre"
+                                            name="nombre" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_apellido1" class="form-label">Primer Apellido <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="e_apellido1"
+                                            name="primer_apellido" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_apellido2" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_apellido2"
+                                            name="segundo_apellido">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
+                                    {{-- <div class="mb-3">
+                                        <label for="e_categoria" class="form-label">Categoría</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_categoria"
+                                            name="categoria" readonly>
+                                    </div> --}}
+                                    <div class="mb-3">
+                                        <label for="e_rol" class="form-label">Rol <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_rol" name="rol"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="atleta">Atleta</option>
+                                            <option value="entrenador">Entrenador</option>
+                                            <option value="asistente">Asistente</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_sexo" class="form-label">Sexo <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_sexo" name="sexo"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            <option value="masculino">Masculino</option>
+                                            <option value="femenino">Femenino</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_fecha_nacimiento" class="form-label">Fecha de Nacimiento <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" class="form-control form-control-sm"
+                                            id="e_fecha_nacimiento" name="fecha_nacimiento" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_grado" class="form-label">Grado (Cinturón) <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_grado" name="id_grado"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            @foreach ($grados as $grado)
+                                                <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_academia" class="form-label">Academia <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_academia" name="id_academia"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            @foreach ($academias as $academia)
+                                                <option value="{{ $academia->id_academia }}">{{ $academia->nombre }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_estado" class="form-label">Estado <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="e_estado" name="estado"
+                                            required>
+                                            <option value="activo">Activo</option>
+                                            <option value="inactivo">Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('.btn-edit').click(function(e) {
+                    e.preventDefault();
+                    let atletaId = $(this).data('id');
+                    console.log('Click en editar, ID:', atletaId); // <-- Para depurar
+
+                    $.get('/atletas/' + atletaId + '/datos', function(data) {
+                        console.log('Datos recibidos:', data); // <-- Para depurar
+
+                        $('#e_tipo_identificacion').val(data.tipo_identificacion);
+                        $('#e_identificacion').val(data.identificacion);
+                        $('#e_nombre').val(data.nombre);
+                        $('#e_apellido1').val(data.primer_apellido);
+                        $('#e_apellido2').val(data.segundo_apellido);
+                        $('#e_rol').val(data.rol);
+                        $('#e_sexo').val(data.sexo.toLowerCase());
+                        $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
+                        $('#e_grado').val(data.id_grado);
+                        $('#e_academia').val(data.id_academia);
+                        $('#e_categoria').val(data.categorias.division);
+                        $('#e_estado').val(data.estado);
+
+                        $('#formEditarAtleta').attr('action', '/atletas/' + atletaId);
+
+                        // Abrir modal
+                        let modal = new bootstrap.Modal(document.getElementById('modalEditarAtleta'));
+                        modal.show();
+                    });
+                });
+            });
+
+            function confirmarEliminacion(id) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esta acción!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Envía el formulario usando AJAX para manejar la respuesta
+                        $.ajax({
+                            url: $('#form-eliminar-' + id).attr('action'),
+                            method: $('#form-eliminar-' + id).attr('method'),
+                            data: $('#form-eliminar-' + id).serialize(),
+                            success: function(response) {
+                                Swal.fire({
+                                    title: '¡Eliminado!',
+                                    text: 'El registro ha sido eliminado correctamente.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    // Recarga la página o actualiza la tabla
+                                    location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Ocurrió un error al intentar eliminar el registro.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        </script>
+    @endsection

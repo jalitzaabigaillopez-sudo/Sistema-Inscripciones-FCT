@@ -3,13 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Academia;
+use App\Models\Evento;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
-use App\Models\Evento;
 
 class InscripcionController extends Controller
 {
+
+     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $data = Inscripcion::all();
+        $eventos = Evento::all();
+        $academias = Academia::all();
+        return view('catalogos.inscripciones.index', compact('data', 'eventos', 'academias'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
     public function crearInscripcion(Request $request){
         $validateData = $request->validate([
             'atleta' => 'required|integer',// id

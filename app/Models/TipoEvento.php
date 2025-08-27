@@ -10,4 +10,9 @@ class TipoEvento extends Model
     protected $primaryKey= 'id_tipo_evento';
     public $timestamps = false;    
     protected $fillable = ['nombre', 'descripcion'];
+
+    public function eventos()
+    {
+        return $this->hasMany(TipoEvento::class, 'id_evento');
+    }
 }

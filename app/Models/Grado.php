@@ -10,4 +10,9 @@ class Grado extends Model
     protected $primaryKey= 'id_grado';
     public $timestamps = false;    
     protected $fillable = ['nombre', 'descripcion'];
+
+    public function atletas()
+    {
+        return $this->hasMany(Atleta::class, 'id_grado');
+    }
 }

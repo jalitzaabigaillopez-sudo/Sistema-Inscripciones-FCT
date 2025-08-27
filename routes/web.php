@@ -82,24 +82,10 @@ Route::get('/ranking', function () {
 
 
 
-Route::get('/dashboard-academias', function () {
-    return view('academia.dashboard-academia');
-})->name('dashboard.academias');
+// Dashboard de academias
+Route::view('/dashboard-academias', 'academia.dashboard-academia')->name('dashboard.academias');
 
-// Vista de catálogo de atletas
-Route::get('/atletas', function () {
-    return view('academia.atletas');
-})->name('atletas');
 
-// Vista de perfil de academia
-Route::get('/perfil-academia', function () {
-    return view('academia.perfil-academia');
-})->name('perfil.academia');
-
-// Vista de prueba restablecer contra
-Route::get('/restablecerContrasena', function () {
-    return view('academia.restablecerContrasena');
-})->name('restablecerContraseña');
 
 
 //####################################### SOLO ADMINISTRADOR ###########################################
@@ -117,10 +103,8 @@ Route::view('/catalogos/atletas/create', 'catalogos.atletas.create')->name('atle
 Route::view('/catalogos/atletas/edit', 'catalogos.atletas.edit')->name('atletas.edit');
 Route::view('/catalogos/atletas/show', 'catalogos.atletas.show')->name('atletas.show');
 
-Route::view('/catalogos/categorias', 'catalogos.categorias.index')->name('categorias.index');
-Route::view('/catalogos/categorias/create', 'catalogos.categorias.create')->name('categorias.create');
-Route::view('/catalogos/categorias/edit', 'catalogos.categorias.edit')->name('categorias.edit');
-Route::view('/catalogos/categorias/show', 'catalogos.categorias.show')->name('categorias.show');
+Route::resource('/atletas', AtletasController::class);
+Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 
 Route::view('/catalogos/torneos', 'catalogos.torneos.index')->name('torneos.index');
 Route::view('/catalogos/torneos/create', 'catalogos.torneos.create')->name('torneos.create');
@@ -157,13 +141,17 @@ Route::post('/admin/profile/update', function () {
 })->name('admin.profile.update');
 
 
+// Vista de prueba restablecer contra
+Route::get('/restablecerContrasena', function () {
+    return view('academia.restablecerContrasena');
+})->name('restablecerContraseña');
 
 //####################################### AMBOS ROLES #################################################
 /**
  * Rutas cambio de contraseña
  */
 
-// Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
+ Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
 Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña');
 Route::post('/cambiar-contraseña', [PasswordController::class, 'cambiarContraseña'])->name('cambiar.contraseña');
 

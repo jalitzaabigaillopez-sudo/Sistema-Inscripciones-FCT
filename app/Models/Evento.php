@@ -21,4 +21,9 @@ class Evento extends Model
             'id_modalidad'    // clave foránea de Modalidad en la pivote
         );
     }
+
+    public function tipoEvento()
+    {
+        return $this->belongsTo(TipoEvento::class, 'id_tipo_evento');
+    }
 }
