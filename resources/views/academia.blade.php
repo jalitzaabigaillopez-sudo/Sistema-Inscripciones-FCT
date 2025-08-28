@@ -186,10 +186,10 @@
             <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-      <a href="{{ route('academias.inscripcion') }}"><i class="bi bi-calendar-check"></i> Inscripciones a eventos</>
+        <a href="{{ route('dashboard.academias') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ route('academias.inscripcion') }}"><i class="bi bi-calendar-check"></i> Inscripciones a eventos</a>
         <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
-        <a href="#"><i class="bi bi-person-circle"></i> Perfil</a>
+        <a href="{{ route('academias.perfil') }}"><i class="bi bi-person-badge"></i> Administracion de Perfil</a>
         <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
         <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
     </nav>
@@ -207,7 +207,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('academias.perfil') }}">
                                 <i class="bi bi-person"></i> Perfil Academia
                             </a>
                         </li>
