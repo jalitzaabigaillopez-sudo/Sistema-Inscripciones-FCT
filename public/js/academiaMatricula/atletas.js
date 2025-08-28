@@ -10,6 +10,9 @@ $(document).ready(function () {
         var opcion = $(this).val();
         var id_academia = $('#id_academia').val();
 
+        // console.log(opcion);
+        
+
         // Ocultar todos los formularios
         $('.formulario').addClass('d-none');
 
@@ -38,6 +41,11 @@ $(document).ready(function () {
                     res.forEach(function (item) {
                         select.append('<option value="' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + ' (' + item.rol + ') ' + '" data-id="' + item.id_atleta + '">' + item.nombre + ' ' + item.primer_apellido + ' ' + item.segundo_apellido + ' ' + item.identificacion + '</option>');
                     });
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                    console.log("Detalle:", xhr.responseText);
+                    alert("Ocurrió un error en la petición");
                 }
             });
         }

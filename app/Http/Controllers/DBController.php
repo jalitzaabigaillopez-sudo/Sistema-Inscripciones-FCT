@@ -23,7 +23,7 @@ class DBController extends Controller
         $usuario->nombre_completo = 'John Chaves';
         $usuario->email = 'JHON.CHAVES@ucr.ac.cr';
         $usuario->password = '12345678';
-        $usuario->rol = 'administrador';
+        $usuario->rol = 'academia';
         $usuario->estado = 'activo';
         $usuario->password_vencimiento = 180;
 

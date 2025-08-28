@@ -7,14 +7,15 @@ use App\Models\Evento;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
+use App\Models\Atleta;
 
 class InscripcionController extends Controller
 {
 
-     /**
+    /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $data = Inscripcion::all();
         $eventos = Evento::all();
@@ -30,7 +31,8 @@ class InscripcionController extends Controller
         //
     }
 
-    public function crearInscripcion(Request $request){
+    public function crearInscripcion(Request $request)
+    {
         $validateData = $request->validate([
             'atleta' => 'required|integer',// id
             'evento' => 'required|integer',// id
@@ -54,11 +56,23 @@ class InscripcionController extends Controller
         $inscripcion->save();
     }
 
-    public function vistaInscripcion(){
+    public function vistaInscripcionP1()
+    {
         //vista, evento e inscricipcion de prueba
         $academia = Academia::find(1);
         $evento = Evento::with('modalidades')->find(7);
 
-        return view('Inscripciones-parte1', compact('academia', 'evento'));
+        return view('inscripciones-parte1', compact('academia', 'evento'));
+    }
+
+    public function vistaInscripcionP2(Request $request)
+    {
+        $ids = json_decode($request->input('ids'), true);//son las ids de los atletas guardada en forma de arreglo en un input tipo hidden desde js
+        $atletas = Atleta::whereIn('id_atleta', $ids)->get();
+
+        $id_evento = $request->input('id_evento');
+        $evento = Evento::with('modalidades')->find($id_evento);        
+
+        return view('inscripciones-parte2', compact('atletas', 'evento'));
     }
 }

@@ -32,15 +32,13 @@
 </head>
 
 <body>
-    {{ $academia }}
-    <br>
-    {{ $evento }}
+    <!-- {{ $academia }}
+    {{ $evento }} -->
 
     <!-- GUARDAR ACA EL ID DE ACADEMI -->
-    <input type="hidden" value="{{ $academia['id_academia'] }}" id="id_academia">
+    <input type="hidden" value="{{ $academia->id_academia}}" id="id_academia">
 
-    <!-- GUARDAR ACA EL ID DE EVENTO -->
-    <input type="hidden" value="">
+
 
     <div class="container-fluid">
         <div class="row">
@@ -101,10 +99,27 @@
                     </div>
                 </div>
             </div>
+
             <hr>
             <div class="col-md-6">
                 <h4>Lista de matricula</h4>
                 <ul id="listaSeleccionados" class="list-group"></ul>
+            </div>
+
+            <hr>
+            <hr>
+            <div class="text-right">
+                <form action="{{ route('inscripciones-parte2') }}" method="POST">
+                    @csrf
+
+                    <!-- 👁️GUARDAR ACA EL ID DE EVENTO -->
+                    <input type="hidden" value="7" id="id_evento" name="id_evento">
+
+                    <input type="hidden" name="ids" id="idsInput">
+                    <button type="submit" id="btnContinuar" class="btn btn-primary">
+                        Continuar
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -120,8 +135,8 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('js/academiaMatricula/entrenadores.js') }}"></script>
-    <script src="{{ asset('js/academiaMatricula/listaMatricula.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/atletas.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/matriculaP1.js') }}"></script>
 </body>
 
 </html>

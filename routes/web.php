@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DBController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
@@ -9,6 +9,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
 use App\Http\Controllers\AtletasController;
 use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\SubModalidadController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -45,11 +46,18 @@ Route::get('/activar-cuenta/{id}', [AcademiaController::class, 'vista_activarCue
 Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cuentaAcademia.process');
 
 /**
+ * =============================================================================================================================================
  * Rutas inscripciones
  */
-Route::get('/Inscripciones-parte1', [InscripcionController::class, 'vistaInscripcion']);
+Route::get('/inscripciones-parte1', [InscripcionController::class, 'vistaInscripcionP1']);
 
 Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
+
+Route::post('/inscripciones-parte2', [InscripcionController::class, 'vistaInscripcionP2'])->name('inscripciones-parte2');
+
+Route::post('/obtenerSubModalidades', [SubModalidadController::class, 'obtenerSubModalidades']);
+
+//==============================================================================================================================================
 
 
 //prueba frontend
@@ -116,23 +124,23 @@ Route::view('/catalogos/usuarios/create', 'catalogos.usuarios.create')->name('us
 Route::view('/catalogos/usuarios/edit', 'catalogos.usuarios.edit')->name('usuarios.edit');
 Route::view('/catalogos/usuarios/show', 'catalogos.usuarios.show')->name('usuarios.show');
 
-    Route::view('/catalogos/pesos', 'catalogos.pesos.index')->name('pesos.index');
-    Route::view('/catalogos/pesos/create', 'catalogos.pesos.create')->name('pesos.create');
-    Route::view('/catalogos/pesos/edit', 'catalogos.pesos.edit')->name('pesos.edit');
-    Route::view('/catalogos/pesos/show', 'catalogos.pesos.show')->name('pesos.show');
+Route::view('/catalogos/pesos', 'catalogos.pesos.index')->name('pesos.index');
+Route::view('/catalogos/pesos/create', 'catalogos.pesos.create')->name('pesos.create');
+Route::view('/catalogos/pesos/edit', 'catalogos.pesos.edit')->name('pesos.edit');
+Route::view('/catalogos/pesos/show', 'catalogos.pesos.show')->name('pesos.show');
 
-   Route::view('/catalogos/modalidades', 'catalogos.modalidades.index')->name('modalidades.index');
-   Route::view('/catalogos/modalidades/create', 'catalogos.modalidades.create')->name('modalidades.create');
-   Route::view('/catalogos/modalidades/edit', 'catalogos.modalidades.edit')->name('modalidades.edit');
-   Route::view('/catalogos/modalidades/show', 'catalogos.modalidades.show')->name('modalidades.show');
+Route::view('/catalogos/modalidades', 'catalogos.modalidades.index')->name('modalidades.index');
+Route::view('/catalogos/modalidades/create', 'catalogos.modalidades.create')->name('modalidades.create');
+Route::view('/catalogos/modalidades/edit', 'catalogos.modalidades.edit')->name('modalidades.edit');
+Route::view('/catalogos/modalidades/show', 'catalogos.modalidades.show')->name('modalidades.show');
 
 
-   Route::view('/catalogos/inscripciones', 'catalogos.inscripciones.index')->name('inscripciones.index');
-   Route::view('/catalogos/inscripciones/create', 'catalogos.inscripciones.create')->name('inscripciones.create');
-   Route::view('/catalogos/inscripciones/edit', 'catalogos.inscripciones.edit')->name('inscripciones.edit');
-   Route::view('/catalogos/inscripciones/show', 'catalogos.inscripciones.show')->name('inscripciones.show');
+Route::view('/catalogos/inscripciones', 'catalogos.inscripciones.index')->name('inscripciones.index');
+Route::view('/catalogos/inscripciones/create', 'catalogos.inscripciones.create')->name('inscripciones.create');
+Route::view('/catalogos/inscripciones/edit', 'catalogos.inscripciones.edit')->name('inscripciones.edit');
+Route::view('/catalogos/inscripciones/show', 'catalogos.inscripciones.show')->name('inscripciones.show');
 
-   
+
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               
     $data = request()->all();
@@ -151,7 +159,7 @@ Route::get('/restablecerContrasena', function () {
  * Rutas cambio de contraseña
  */
 
- Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed'); 
+Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña')->middleware('signed');
 Route::get('/cambiar-contraseña/{id}', [PasswordController::class, 'vistaCambiarContraseña'])->name('vista.cambiarContraseña');
 Route::post('/cambiar-contraseña', [PasswordController::class, 'cambiarContraseña'])->name('cambiar.contraseña');
 

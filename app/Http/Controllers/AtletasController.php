@@ -12,7 +12,7 @@ use App\Models\PadronNacimiento;
 class AtletasController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $data = Atleta::all();
         $grados = Grado::all();
@@ -100,6 +100,7 @@ class AtletasController extends Controller
 
         return response()->json($atletas);
     }
+
     public function datosAtleta($id)
     {
         $atleta = Atleta::with('grados', 'academias', 'categorias')->findOrFail($id);
