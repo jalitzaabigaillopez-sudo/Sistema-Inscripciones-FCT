@@ -84,6 +84,10 @@ Route::get('/ranking', function () {
 // Dashboard de academias
 Route::view('/dashboard-academias', 'academia.dashboard-academia')->name('dashboard.academias');
 
+// Vista de inscripción desde el dashboard
+Route::view('/academias/inscripcion', 'academia.inscripcionEvento')->name('academias.inscripcion');
+
+
 
 
 
@@ -139,3 +143,5 @@ Route::get('/cambiar-contraseña-vencida/{id}', [PasswordController::class, 'vis
 Route::post('/cambiar-contraseña-vencida', [PasswordController::class, 'cambiarContraseñaVencida'])->name('cambiar.contraseñaVencida');
 
 Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona']);
+
+

@@ -187,7 +187,7 @@
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <a href="#"><i class="bi bi-calendar-check"></i> Inscripciones a eventos</a>
+      <a href="{{ route('academias.inscripcion') }}"><i class="bi bi-calendar-check"></i> Inscripciones a eventos</>
         <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
         <a href="#"><i class="bi bi-person-circle"></i> Perfil</a>
         <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
