@@ -3,6 +3,7 @@
 @section('title', 'Dashboard Academia')
 
 @section('content')
+
 <div class="container">
     {{-- Main dashboard --}}
    

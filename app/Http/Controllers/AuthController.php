@@ -42,7 +42,9 @@ class AuthController extends Controller
                 if (!$usuario->rol === 'administrador') {
                     return view('admin/dashboard'); 
                 }
-                return view('academia/dashboard-academia');
+
+                $academia = $usuario->academia;
+                return view('academia/dashboard-academia', compact('usuario', 'academia'));
             } else {
                 // Contraseña vencida
                 $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);

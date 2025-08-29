@@ -10,6 +10,8 @@ use App\Http\Controllers\PadronNacimientoController;
 use App\Http\Controllers\AtletasController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\SubModalidadController;
+use App\Http\Controllers\ModalidadController;
+use App\Http\Controllers\CategoriaController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -38,7 +40,7 @@ Route::get('/prueba', function () {
 });
 
 
-//####################################### SOLO ACADEMIA #################################################
+//####################################### SOLO ACADEMIA #######################################################################################
 /**
  * Ruta para completar pre-registro
  */
@@ -49,13 +51,18 @@ Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cue
  * =============================================================================================================================================
  * Rutas inscripciones
  */
-Route::get('/inscripciones-parte1', [InscripcionController::class, 'vistaInscripcionP1']);
+// Route::get('/inscripciones-parte1', [InscripcionController::class, 'vistaInscripcionP1']);
 
-Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
+// Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
 
-Route::post('/inscripciones-parte2', [InscripcionController::class, 'vistaInscripcionP2'])->name('inscripciones-parte2');
+// Route::post('/inscripciones-parte2', [InscripcionController::class, 'vistaInscripcionP2'])->name('inscripciones-parte2');
 
+
+
+Route::get('/nueva-Inscripcion-Academia/{id_academia}', [InscripcionController::class, 'vistaInscripcionesAcademia'])->name('inscripcion.academia');
+Route::post('/obtenerModalidades', [ModalidadController::class, 'obtenerModalidades']);
 Route::post('/obtenerSubModalidades', [SubModalidadController::class, 'obtenerSubModalidades']);
+Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategorias']);
 
 //==============================================================================================================================================
 

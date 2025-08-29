@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Federación Costarricense de Taekwondo')</title>
     <link rel="icon" type="image/x-icon" href="https://via.placeholder.com/32?text=FCT">
 
@@ -187,11 +188,12 @@
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-      <a href="{{ route('academias.inscripcion') }}"><i class="bi bi-calendar-check"></i> Inscripciones a eventos</>
-        <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
-        <a href="#"><i class="bi bi-person-circle"></i> Perfil</a>
-        <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
-        <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
+        <a href="{{ route('inscripcion.academia', ['id_academia' => $academia->id_academia]) }}"><i
+                class="bi bi-calendar-check"></i> Inscripciones a eventos</>
+            <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
+            <a href="#"><i class="bi bi-person-circle"></i> Perfil</a>
+            <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
+            <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
     </nav>
 
     <!-- Navbar -->
@@ -231,9 +233,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
             const navbar = document.querySelector('.navbar');
             const contentWrapper = document.getElementById('contentWrapper');
@@ -253,7 +255,7 @@
             }
 
             // Toggle sidebar on hamburger click
-            toggleSidebar.addEventListener('click', function() {
+            toggleSidebar.addEventListener('click', function () {
                 sidebar.classList.toggle('sidebar-hidden');
                 sidebar.classList.toggle('sidebar-open');
                 if (!isSmallScreen) {
@@ -263,13 +265,13 @@
             });
 
             // Close sidebar on close button click (small screens)
-            sidebarClose.addEventListener('click', function() {
+            sidebarClose.addEventListener('click', function () {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
             });
 
             // Handle window resize
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
                 if (isNowSmallScreen) {
                     sidebar.classList.add('sidebar-hidden');
@@ -285,6 +287,14 @@
             });
         });
     </script>
+
+    <!-- jQuery primero -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
 </body>
 
 </html>

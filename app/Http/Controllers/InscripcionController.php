@@ -75,4 +75,13 @@ class InscripcionController extends Controller
 
         return view('inscripciones-parte2', compact('atletas', 'evento'));
     }
+
+    //====================================================================================================================================
+    public function vistaInscripcionesAcademia($id_academia)
+    {
+        $eventos = Evento::all();
+        $academia = Academia::find($id_academia);
+        $atletas = $academia->atletas;
+        return view('academia/inscripcionEvento', compact('eventos', 'academia','atletas'));
+    }
 }
