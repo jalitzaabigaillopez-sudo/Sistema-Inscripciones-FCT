@@ -191,7 +191,7 @@
         <a href="{{ route('inscripcion.academia', ['id_academia' => $academia->id_academia]) }}"><i
                 class="bi bi-calendar-check"></i> Inscripciones a eventos</>
             <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
-            <a href="#"><i class="bi bi-person-circle"></i> Perfil</a>
+            <a href="{{ route('academias.perfil') }}"><i class="bi bi-person-badge"></i> Administracion de Perfil</a>
             <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
             <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
     </nav>
@@ -209,7 +209,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('academias.perfil') }}">
                                 <i class="bi bi-person"></i> Perfil Academia
                             </a>
                         </li>
