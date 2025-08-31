@@ -115,9 +115,10 @@
                         <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
                             aria-label="Cerrar"></button>
                     </div>
-                    <form method="POST" action="{{ route('atletas.store') }}">
-                        @csrf
-                        <div class="modal-body p-0">
+                    <div class="modal-body p-0">
+                        <div id="errorMessages" class="alert alert-danger d-none"></div>
+                        <form method="POST" action="{{ route('atletas.store') }}" id="formRegistrarAtleta">
+                            @csrf
                             <div class="row g-4">
                                 <div class="col-md-6 border-end pe-md-4">
                                     <h6 class="text-secondary mb-3">Información Personal</h6>
@@ -127,8 +128,8 @@
                                         <select class="form-select form-select-sm" id="tipo_identificacion"
                                             name="tipo_identificacion" required>
                                             <option value="" disabled selected>Seleccione...</option>
-                                            <option value="Nacional">Nacional</option>
-                                            <option value="Otro">Otro</option>
+                                            <option value="nacional">Nacional</option>
+                                            <option value="otro">Otro</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -137,26 +138,27 @@
                                         <input type="text" class="form-control form-control-sm" id="identificacion"
                                             name="identificacion" required placeholder="Ej. 123456789">
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="nombre" class="form-label">Nombre <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="nombre"
                                             name="nombre" required placeholder="Ej. Juan">
                                     </div>
+
                                     <div class="mb-3">
-                                        <label for="apellido1" class="form-label">Primer Apellido <span
+                                        <label for="primer_apellido" class="form-label">Primer Apellido <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="apellido1"
-                                            name="apellido1" required placeholder="Ej. Pérez">
+                                        <input type="text" class="form-control form-control-sm" id="primer_apellido"
+                                            name="primer_apellido" required placeholder="Ej. Pérez">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="apellido2" class="form-label">Segundo Apellido</label>
-                                        <input type="text" class="form-control form-control-sm" id="apellido2"
-                                            name="apellido2" placeholder="Ej. Gómez">
+                                        <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control form-control-sm" id="segundo_apellido"
+                                            name="segundo_apellido" placeholder="Ej. Gómez">
                                     </div>
-
+                                    
                                 </div>
-
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Información Deportiva</h6>
                                     <div class="mb-3">
@@ -167,60 +169,69 @@
                                             <option value="" disabled selected>Seleccione...</option>
                                             <option value="atleta">Atleta</option>
                                             <option value="entrenador">Entrenador</option>
+                                            <option value="asistente">Asistente</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
+
+                                     <div class="mb-3">
                                         <label for="sexo" class="form-label">Sexo <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-select form-select-sm" id="sexo" name="sexo"
                                             required>
                                             <option value="" disabled selected>Seleccione...</option>
-                                            <option value="masculino">Masculino</option>
-                                            <option value="femenino">Femenino</option>
+                                            <option value="Masculino">Masculino</option>
+                                            <option value="Femenino">Femenino</option>
                                         </select>
                                     </div>
-
-                                    <div class="mb-3">
-                                        <label for="fecha" class="form-label">Fecha de Nacimiento <span
+                                     <div class="mb-3">
+                                        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <span
                                                 class="text-danger">*</span></label>
-                                        <input type="date" class="form-control form-control-sm" id="fecha"
-                                            name="fecha" required>
+                                        <input type="date" class="form-control form-control-sm" id="fecha_nacimiento"
+                                            name="fecha_nacimiento" required>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="grado" class="form-label">Grado (Cinturón) <span
+                                    {{-- <div class="mb-3">
+                                        <label for="estado" class="form-label">Estado <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="grado" name="grado"
+                                        <select class="form-select form-select-sm" id="estado" name="estado"
                                             required>
                                             <option value="" disabled selected>Seleccione...</option>
-                                            <option value="blanco">Blanco</option>
-                                            <option value="amarillo">Amarillo</option>
-                                            <option value="naranja">Naranja</option>
-                                            <option value="verde">Verde</option>
-                                            <option value="azul">Azul</option>
-                                            <option value="marron">Marrón</option>
-                                            <option value="negro">Negro</option>
+                                            <option value="activo">Activo</option>
+                                            <option value="inactivo">Inactivo</option>
+                                        </select>
+                                    </div> --}}
+                                    <div class="mb-3">
+                                        <label for="id_grado" class="form-label">Grado (Cinturón) <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="id_grado" name="id_grado"
+                                            required>
+                                            <option value="" disabled selected>Seleccione...</option>
+                                            @foreach ($grados as $grado)
+                                                <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="academia" class="form-label">Academia <span
+                                        <label for="id_academia" class="form-label">Academia <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="academia" name="academia"
+                                        <select class="form-select form-select-sm" id="id_academia" name="id_academia"
                                             required>
                                             <option value="" disabled selected>Seleccione...</option>
-                                            {{-- @foreach ($academias as $academia)
-                                        <option value="{{ $academia->id }}">{{ $academia->nombre }}</option>
-                                    @endforeach --}}
+                                            @foreach ($academias as $academia)
+                                                <option value="{{ $academia->id_academia }}">{{ $academia->nombre }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
-                                data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success rounded-pill">Guardar Atleta</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta">Guardar
+                            Atleta</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -359,82 +370,8 @@
         </div>
 
         <!-- jQuery -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="{{ asset('js/gestion_atleta.js') }}"></script>
 
-        <script>
-            $(document).ready(function() {
-                $('.btn-edit').click(function(e) {
-                    e.preventDefault();
-                    let atletaId = $(this).data('id');
-                    console.log('Click en editar, ID:', atletaId); // <-- Para depurar
-
-                    $.get('/atletas/' + atletaId + '/datos', function(data) {
-                        console.log('Datos recibidos:', data); // <-- Para depurar
-
-                        $('#e_tipo_identificacion').val(data.tipo_identificacion);
-                        $('#e_identificacion').val(data.identificacion);
-                        $('#e_nombre').val(data.nombre);
-                        $('#e_apellido1').val(data.primer_apellido);
-                        $('#e_apellido2').val(data.segundo_apellido);
-                        $('#e_rol').val(data.rol);
-                        $('#e_sexo').val(data.sexo.toLowerCase());
-                        $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
-                        $('#e_grado').val(data.id_grado);
-                        $('#e_academia').val(data.id_academia);
-                        // $('#e_categoria').val(data.categorias.division);
-                        $('#e_estado').val(data.estado);
-
-                        $('#formEditarAtleta').attr('action', '/atletas/' + atletaId);
-
-                        // Abrir modal
-                        let modal = new bootstrap.Modal(document.getElementById('modalEditarAtleta'));
-                        modal.show();
-                    });
-                });
-            });
-
-            function confirmarEliminacion(id) {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esta acción!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Envía el formulario usando AJAX para manejar la respuesta
-                        $.ajax({
-                            url: $('#form-eliminar-' + id).attr('action'),
-                            method: $('#form-eliminar-' + id).attr('method'),
-                            data: $('#form-eliminar-' + id).serialize(),
-                            success: function(response) {
-                                Swal.fire({
-                                    title: '¡Eliminado!',
-                                    text: 'El registro ha sido eliminado correctamente.',
-                                    icon: 'success',
-                                    confirmButtonColor: '#3085d6',
-                                    confirmButtonText: 'Aceptar'
-                                }).then(() => {
-                                    // Recarga la página o actualiza la tabla
-                                    location.reload();
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: 'Error',
-                                    text: 'Ocurrió un error al intentar eliminar el registro.',
-                                    icon: 'error',
-                                    confirmButtonText: 'Aceptar'
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        </script>
     @endsection

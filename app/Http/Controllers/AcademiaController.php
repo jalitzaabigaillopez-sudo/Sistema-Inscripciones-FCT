@@ -22,7 +22,7 @@ class AcademiaController extends Controller
      */
     public function index()
     {
-        $data = Academia::all();
+        $data = Academia::with('distrito.canton.provincia')->get();
         $provincias = Provincia::all();
         return view('catalogos.academias.index', compact('data', 'provincias'));
     }

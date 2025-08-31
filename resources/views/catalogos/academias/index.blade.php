@@ -26,11 +26,11 @@
                             <tr>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Profesor a cargo</th>
-                                <th class="text-center">Dirección</th>
                                 <th class="text-center">Correo</th>
                                 <th class="text-center">Teléfono</th>
                                 <th class="text-center">Usuario</th>
                                 <th class="text-center">Ubicación</th>
+                                <th class="text-center">Dirección</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -41,15 +41,15 @@
                                 <tr class="text-center">
                                     <td class="small">{{ $item->nombre }}</td>
                                     <td class="small">{{ $item->profesor_encargado }}</td>
-                                    <td class="small">{{ $item->direccion }}</td>
                                     <td class="small">{{ $item->correo }}</td>
                                     <td class="small">{{ $item->telefono }}</td>
                                     <td class="small">{{ $item->usuario->nombre_completo }}</td>
                                     <td class="small">
-                                        {{-- {{ $item->distrito->provincia->nombre ?? '' }}, --}}
-                                        {{ $item->distrito->canton->nombre ?? '' }},
-                                        {{ $item->distrito->nombre ?? '' }}
+                                        {{ $item->distrito->canton->provincia->nombre ?? 'Sin provincia' }},
+                                        {{ $item->distrito->canton->nombre ?? 'Sin cantón' }},
+                                        {{ $item->distrito->nombre ?? 'Sin distrito' }}
                                     </td>
+                                    <td class="small">{{ $item->direccion }}</td>
                                     <td>
                                         @if ($item->estado === 'activo')
                                             <span class="badge rounded-pill bg-success">
@@ -194,97 +194,123 @@
         </div>
 
         {{-- Modal EDITAR ACADEMIA --}}
-       <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
-            <div class="modal-header border-bottom-0 pb-2">
-                <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
-                    Actualizar Datos de la Academia
-                </h5>
-                <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body p-0">
-                <form method="POST" action="{{ route('academias.update', $item->id_academia) }}" id="formEditarAcademia" 
-                    data-id="{{ $item->id_academia }}" 
-                    data-canton-id="{{ $item->distrito->canton->id_canton }}" 
-                    data-distrito-id="{{ $item->id_distrito }}">
-                    @csrf
-                    @method('PUT')
-                    <div class="row g-4">
-                        <div class="col-md-6 border-end pe-md-4">
-                            <h6 class="text-secondary mb-3">Información General</h6>
-                            <div class="mb-3">
-                                <label for="nombreAcademiaEditar" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="nombreAcademiaEditar" name="nombre" value="{{ $item->nombre }}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="profesorAcademiaEditar" class="form-label">Profesor Encargado <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="profesorAcademiaEditar" name="profesor_encargado" value="{{ $item->profesor_encargado }}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="telefonoAcademiaEditar" name="telefono" value="{{ $item->telefono }}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="correoAcademiaEditar" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control form-control-sm" id="correoAcademiaEditar" name="correo" value="{{ $item->correo }}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="estadoAcademiaEditar" class="form-label">Estado <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="estadoAcademiaEditar" name="estado" required>
-                                    <option value="activo" {{ $item->estado == 'activo' ? 'selected' : '' }}>Activo</option>
-                                    <option value="inactivo" {{ $item->estado == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6 ps-md-4">
-                            <h6 class="text-secondary mb-3">Ubicación</h6>
-                            <div class="mb-3">
-                                <label for="provinciaAcademiaEditar" class="form-label">Provincia <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="provinciaAcademiaEditar" name="provincia" required>
-                                    <option value="" disabled>Seleccione una provincia...</option>
-                                    @foreach ($provincias as $provincia)
-                                        <option value="{{ $provincia->id_provincia }}"
-                                            {{ $item->distrito->canton->provincia->id_provincia == $provincia->id_provincia ? 'selected' : '' }}>
-                                            {{ $provincia->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cantonAcademiaEditar" class="form-label">Cantón <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="cantonAcademiaEditar" name="canton" required>
-                                    <option value="" disabled selected>Seleccione un cantón...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="distritoAcademiaEditar" class="form-label">Distrito <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="distritoAcademiaEditar" name="distrito" required>
-                                    <option value="" disabled selected>Seleccione un distrito...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="direccionAcademiaEditar" class="form-label">Dirección <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="direccionAcademiaEditar" name="direccion" value="{{ $item->direccion }}" required>
-                            </div>
-                        </div>
+        <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+                    <div class="modal-header border-bottom-0 pb-2">
+                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
+                            Actualizar Datos de la Academia
+                        </h5>
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success rounded-pill" form="formEditarAcademia">Guardar cambios</button>
+                    <div class="modal-body p-0">
+                        <form method="POST" action="{{ route('academias.update', $item->id_academia) }}"
+                            id="formEditarAcademia" data-id="{{ $item->id_academia }}"
+                            data-canton-id="{{ $item->distrito->canton->id_canton }}"
+                            data-distrito-id="{{ $item->id_distrito }}">
+                            @csrf
+                            @method('PUT')
+                            <div class="row g-4">
+                                <div class="col-md-6 border-end pe-md-4">
+                                    <h6 class="text-secondary mb-3">Información General</h6>
+                                    <div class="mb-3">
+                                        <label for="nombreAcademiaEditar" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="nombreAcademiaEditar" name="nombre" value="{{ $item->nombre }}"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profesorAcademiaEditar" class="form-label">Profesor Encargado <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="profesorAcademiaEditar" name="profesor_encargado"
+                                            value="{{ $item->profesor_encargado }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="telefonoAcademiaEditar" name="telefono" value="{{ $item->telefono }}"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="correoAcademiaEditar" class="form-label">Correo Electrónico <span
+                                                class="text-danger">*</span></label>
+                                        <input type="email" class="form-control form-control-sm"
+                                            id="correoAcademiaEditar" name="correo" value="{{ $item->correo }}"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="estadoAcademiaEditar" class="form-label">Estado <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="estadoAcademiaEditar"
+                                            name="estado" required>
+                                            <option value="activo" {{ $item->estado == 'activo' ? 'selected' : '' }}>
+                                                Activo</option>
+                                            <option value="inactivo" {{ $item->estado == 'inactivo' ? 'selected' : '' }}>
+                                                Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Ubicación</h6>
+                                    <div class="mb-3">
+                                        <label for="provinciaAcademiaEditar" class="form-label">Provincia <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="provinciaAcademiaEditar"
+                                            name="provincia" required>
+                                            <option value="" disabled>Seleccione una provincia...</option>
+                                            @foreach ($provincias as $provincia)
+                                                <option value="{{ $provincia->id_provincia }}"
+                                                    {{ $item->distrito->canton->provincia->id_provincia == $provincia->id_provincia ? 'selected' : '' }}>
+                                                    {{ $provincia->nombre }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cantonAcademiaEditar" class="form-label">Cantón <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="cantonAcademiaEditar"
+                                            name="canton" required>
+                                            <option value="" disabled selected>Seleccione un cantón...</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="distritoAcademiaEditar" class="form-label">Distrito <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="distritoAcademiaEditar"
+                                            name="distrito" required>
+                                            <option value="" disabled selected>Seleccione un distrito...</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="direccionAcademiaEditar" class="form-label">Dirección <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="direccionAcademiaEditar" name="direccion" value="{{ $item->direccion }}"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success rounded-pill" form="formEditarAcademia">Guardar
+                            cambios</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
     <script src="{{ asset('js/editar_academia.js') }}"></script>
 
-    <script>
-      
-    </script>
+    <script></script>
 @endsection
