@@ -30,7 +30,14 @@ class ModalidadesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item = new Modalidad();
+
+        $item->nombre = $request->nombre;
+        $item->descripcion = $request->descripcion;
+
+        $item->save();
+
+        return back();
     }
 
     /**
@@ -46,7 +53,8 @@ class ModalidadesController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $item = Modalidad::find($id);
+        return response()->json($item);
     }
 
     /**
@@ -54,7 +62,12 @@ class ModalidadesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $item = Modalidad::find($id);
+        $item->nombre = $request->nombre;
+        $item->descripcion = $request->descripcion;
+        $item->save();
+
+        return redirect()->back()->with('success', 'Modalidad actualizada correctamente');
     }
 
     /**
@@ -62,6 +75,10 @@ class ModalidadesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = Modalidad::find($id);
+
+        $item->delete();
+
+        return back();
     }
 }

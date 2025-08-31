@@ -31,7 +31,7 @@
                                 <th class="text-center">Rol</th>
                                 <th class="text-center">Sexo</th>
                                 <th class="text-center">Fecha N.</th>
-                                <th class="text-center">Categoría</th>
+                                {{-- <th class="text-center">Categoría</th> --}}
                                 <th class="text-center">Grado</th>
                                 <th class="text-center">Academia</th>
                                 <th class="text-center">Estado</th>
@@ -50,7 +50,7 @@
                                     <td class="small" data-bs-toggle="tooltip" title="{{ $item->fecha_nacimiento }}">
                                         {{ \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y') }}
                                     </td>
-                                    <td class="small">{{ $item->categorias->division }}</td>
+                                    {{-- <td class="small">{{ $item->categorias->division }}</td> --}}
                                     <td class="small">{{ $item->grados->nombre }}</td>
                                     <td><span class="small">{{ $item->academias->nombre }}</span></td>
                                     <td>
@@ -381,7 +381,7 @@
                         $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
                         $('#e_grado').val(data.id_grado);
                         $('#e_academia').val(data.id_academia);
-                        $('#e_categoria').val(data.categorias.division);
+                        // $('#e_categoria').val(data.categorias.division);
                         $('#e_estado').val(data.estado);
 
                         $('#formEditarAtleta').attr('action', '/atletas/' + atletaId);

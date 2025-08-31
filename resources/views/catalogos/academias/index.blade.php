@@ -73,7 +73,8 @@
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <a class="dropdown-item btn-edit" href="#" data-bs-toggle="modal"
+                                                    <a class="dropdown-item btn-edit" href="#"
+                                                        data-id="{{ $item->id_academia }}" data-bs-toggle="modal"
                                                         data-bs-target="#modalEditarAcademia">
                                                         <i class="bi bi-pencil-square"></i> Editar
                                                     </a>
@@ -193,142 +194,97 @@
         </div>
 
         {{-- Modal EDITAR ACADEMIA --}}
-        <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered ">
-                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
-                    <div class="modal-header border-bottom-0 pb-2">
-                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
-                            Actualizar Datos de la Academia</h5>
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
-                            aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body p-0">
-                        <form method="POST" action="" id="formEditarAcademia" data-id="">
-                            @csrf
-                            @method('PUT')
-                            <div class="row g-4">
-                                <div class="col-md-6 border-end pe-md-4">
-                                    <h6 class="text-secondary mb-3">Información General</h6>
-                                    <div class="mb-3">
-                                        <label for="nombreAcademia" class="form-label">Nombre <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="nombreAcademia"
-                                            placeholder="Ej. Academia Taekwondo Central" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="profesorAcademia" class="form-label">Profesor Encargado <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="profesorAcademia"
-                                            placeholder="Ej. Guillermo Pérez" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="telefonoAcademia" class="form-label">Teléfono <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="telefonoAcademia"
-                                            placeholder="Ej. +506 8888-8888" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="correoAcademia" class="form-label">Correo Electrónico <span
-                                                class="text-danger">*</span></label>
-                                        <input type="email" class="form-control form-control-sm" id="correoAcademia"
-                                            placeholder="Ej. academia@email.com" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 ps-md-4">
-                                    <h6 class="text-secondary mb-3">Ubicación</h6>
-                                    <div class="mb-3">
-                                        <label for="provinciaAcademia" class="form-label">Provincia <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="provinciaAcademia" required>
-                                            <option value="" disabled selected>Seleccione una provincia...</option>
-                                            <option value="San Jose">San José</option>
-                                            <option value="Alajuela">Alajuela</option>
-                                            <option value="Cartago">Cartago</option>
-                                            <option value="Heredia">Heredia</option>
-                                            <option value="Guanacaste">Guanacaste</option>
-                                            <option value="Puntarenas">Puntarenas</option>
-                                            <option value="Limon">Limón</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="cantonAcademia" class="form-label">Cantón <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="cantonAcademia" required>
-                                            <option value="" disabled selected>Seleccione un cantón...</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="distritoAcademia" class="form-label">Distrito <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="distritoAcademia" required>
-                                            <option value="" disabled selected>Seleccione un distrito...</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="direccionAcademia" class="form-label">Dirección <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="direccionAcademia"
-                                            placeholder="Ej. Santa Teresa, calle 13" required>
-                                    </div>
-                                </div>
+       <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+            <div class="modal-header border-bottom-0 pb-2">
+                <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
+                    Actualizar Datos de la Academia
+                </h5>
+                <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <form method="POST" action="{{ route('academias.update', $item->id_academia) }}" id="formEditarAcademia" 
+                    data-id="{{ $item->id_academia }}" 
+                    data-canton-id="{{ $item->distrito->canton->id_canton }}" 
+                    data-distrito-id="{{ $item->id_distrito }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="row g-4">
+                        <div class="col-md-6 border-end pe-md-4">
+                            <h6 class="text-secondary mb-3">Información General</h6>
+                            <div class="mb-3">
+                                <label for="nombreAcademiaEditar" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="nombreAcademiaEditar" name="nombre" value="{{ $item->nombre }}" required>
                             </div>
-                        </form>
+                            <div class="mb-3">
+                                <label for="profesorAcademiaEditar" class="form-label">Profesor Encargado <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="profesorAcademiaEditar" name="profesor_encargado" value="{{ $item->profesor_encargado }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="telefonoAcademiaEditar" name="telefono" value="{{ $item->telefono }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="correoAcademiaEditar" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control form-control-sm" id="correoAcademiaEditar" name="correo" value="{{ $item->correo }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estadoAcademiaEditar" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="estadoAcademiaEditar" name="estado" required>
+                                    <option value="activo" {{ $item->estado == 'activo' ? 'selected' : '' }}>Activo</option>
+                                    <option value="inactivo" {{ $item->estado == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <h6 class="text-secondary mb-3">Ubicación</h6>
+                            <div class="mb-3">
+                                <label for="provinciaAcademiaEditar" class="form-label">Provincia <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="provinciaAcademiaEditar" name="provincia" required>
+                                    <option value="" disabled>Seleccione una provincia...</option>
+                                    @foreach ($provincias as $provincia)
+                                        <option value="{{ $provincia->id_provincia }}"
+                                            {{ $item->distrito->canton->provincia->id_provincia == $provincia->id_provincia ? 'selected' : '' }}>
+                                            {{ $provincia->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cantonAcademiaEditar" class="form-label">Cantón <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="cantonAcademiaEditar" name="canton" required>
+                                    <option value="" disabled selected>Seleccione un cantón...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="distritoAcademiaEditar" class="form-label">Distrito <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="distritoAcademiaEditar" name="distrito" required>
+                                    <option value="" disabled selected>Seleccione un distrito...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="direccionAcademiaEditar" class="form-label">Dirección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="direccionAcademiaEditar" name="direccion" value="{{ $item->direccion }}" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
-                    </div>
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success rounded-pill" form="formEditarAcademia">Guardar cambios</button>
             </div>
         </div>
     </div>
+</div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+    <script src="{{ asset('js/editar_academia.js') }}"></script>
 
     <script>
-        function confirmarEliminacion(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Envía el formulario usando AJAX para manejar la respuesta
-                    $.ajax({
-                        url: $('#form-eliminar-' + id).attr('action'),
-                        method: $('#form-eliminar-' + id).attr('method'),
-                        data: $('#form-eliminar-' + id).serialize(),
-                        success: function(response) {
-                            Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'El registro ha sido eliminado correctamente.',
-                                icon: 'success',
-                                confirmButtonColor: '#3085d6',
-                                confirmButtonText: 'Aceptar'
-                            }).then(() => {
-                                // Recarga la página o actualiza la tabla
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Ocurrió un error al intentar eliminar el registro.',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                }
-            });
-        }
+      
     </script>
 @endsection
