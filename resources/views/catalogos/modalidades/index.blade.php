@@ -35,10 +35,11 @@
                                     <td class="small">{{ $item->nombre }}</td>
                                     <td class="small">{{ $item->descripcion }}</td>
                                     <td class="text-center">
-                                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill" title="Editar"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditarModalidad">
+                                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
+                                            title="Editar" data-id="{{ $item->id_modalidad }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
+
                                         <form action="{{ route('modalidades.destroy', $item) }}" method="POST"
                                             id="form-eliminar-{{ $item->id_modalidad }}" class="d-inline">
                                             @csrf @method('DELETE')
@@ -129,17 +130,34 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     {{-- Script para editar --}}
     <script>
-        $(document).on('click', '.btn-edit', function() {
-            let id = $(this).data('id');
-            let nombre = $(this).data('nombre');
-            let descripcion = $(this).data('descripcion');
+        $(document).ready(function() {
+            $('.btn-edit').click(function(e) {
+                e.preventDefault();
+                let modalidadId = $(this).data('id');
+                console.log('Click en editar, ID:', modalidadId); // <-- Para depurar
 
-            $('#editNombreModalidad').val(nombre);
-            $('#editDescripcionModalidad').val(descripcion);
-            $('#formEditarModalidad').attr('action', '/modalidades/' + id);
+                $.get('/modalidades/' + modalidadId + '/datos', function(data) {
+                    console.log('Datos recibidos:', data); // <-- Para depurar
+
+                    $('#editNombreModalidad').val(data.nombre);
+                    $('#editDescripcionModalidad').val(data.descripcion);
+
+
+                    $('#formEditarModalidad').attr('action', '/modalidades/' + modalidadId);
+
+                    // Abrir modal
+                    let modal = new bootstrap.Modal(document.getElementById(
+                        'modalEditarModalidad'));
+                    modal.show();
+                });
+            });
         });
+
 
         function confirmarEliminacion(id) {
             Swal.fire({

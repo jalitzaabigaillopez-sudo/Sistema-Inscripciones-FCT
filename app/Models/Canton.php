@@ -14,4 +14,9 @@ class Canton extends Model
     {
         return $this->belongsTo(Provincia::class, 'id_provincia');
     }
+
+    public function distritos()
+    {
+        return $this->hasMany(Distrito::class, 'id_canton');
+    }
 }

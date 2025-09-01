@@ -123,6 +123,13 @@ Route::view('/catalogos/atletas/create', 'catalogos.atletas.create')->name('atle
 Route::view('/catalogos/atletas/edit', 'catalogos.atletas.edit')->name('atletas.edit');
 Route::view('/catalogos/atletas/show', 'catalogos.atletas.show')->name('atletas.show');
 
+Route::get('/cantones/{provinciaId}', [AcademiaController::class, 'getCantones'])->name('cantones.get');
+Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])->name('distritos.get');
+
+// Si también tienes la ruta de distritos, cámbiala también
+// Route::get('/obtener_distritos/{cantonId}', [AcademiaController::class, 'getDistritos']);
+
+
 Route::resource('/atletas', AtletasController::class);
 Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 
@@ -145,6 +152,9 @@ Route::view('/catalogos/modalidades', 'catalogos.modalidades.index')->name('moda
 Route::view('/catalogos/modalidades/create', 'catalogos.modalidades.create')->name('modalidades.create');
 Route::view('/catalogos/modalidades/edit', 'catalogos.modalidades.edit')->name('modalidades.edit');
 Route::view('/catalogos/modalidades/show', 'catalogos.modalidades.show')->name('modalidades.show');
+
+Route::resource('/modalidades', ModalidadesController::class);
+Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
 
 
 Route::view('/catalogos/inscripciones', 'catalogos.inscripciones.index')->name('inscripciones.index');
