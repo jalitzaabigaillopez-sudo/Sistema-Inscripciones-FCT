@@ -39,12 +39,13 @@ class AuthController extends Controller
 
                 $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
                 // Redirigir segun el tipo de usuario "rol"
-                if (!$usuario->rol === 'administrador') {
-                    return view('admin/dashboard'); 
-                }
+                if ($usuario->rol === 'administrador') {
+                    return view('admin/dashboard');
+                } else {
 
-                $academia = $usuario->academia;
-                return view('academia/dashboard-academia', compact('usuario', 'academia'));
+                    $academia = $usuario->academia;
+                    return view('academia/dashboard-academia', compact('usuario', 'academia'));
+                }
             } else {
                 // Contraseña vencida
                 $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);
