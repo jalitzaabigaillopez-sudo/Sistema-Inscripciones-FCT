@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('tituloArriba')
     Administrar Usuarios
@@ -350,5 +350,3 @@
         }
     </script>
 @endsection
-
-

@@ -30,4 +30,9 @@ class Academia extends Model
     {
         return $this->belongsTo(Distrito::class, 'id_distrito');
     }
+
+     public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'id_usuario');
+    }
 }

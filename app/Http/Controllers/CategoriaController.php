@@ -9,6 +9,13 @@ use App\Models\Atleta;
 
 class CategoriaController extends Controller
 {
+
+      public function index()
+    {
+        $data = Categoria::all();
+        return view('catalogos.categorias.index', compact('data'));
+    }
+    
     public function obtenerCategorias(Request $request)
     {
         $id_atleta = $request->input('id_atleta');

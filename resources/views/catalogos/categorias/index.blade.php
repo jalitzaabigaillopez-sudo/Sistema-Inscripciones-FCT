@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('tituloArriba')
     Administrar Categorías
@@ -202,10 +202,3 @@
     }
 </script>
 @endsection
-
-
-    
-               
-             
-              
-       

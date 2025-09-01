@@ -31,8 +31,10 @@
             padding: 0.5rem 1rem;
             position: fixed;
             top: 0;
-            left: 250px; /* Start after sidebar width on large screens */
-            width: calc(100% - 250px); /* Span remaining width */
+            left: 250px;
+            /* Start after sidebar width on large screens */
+            width: calc(100% - 250px);
+            /* Span remaining width */
             z-index: 1030;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -62,11 +64,13 @@
             top: 0;
             bottom: 0;
             background-color: #222A59;
-            padding-top: 0; /* Remove padding to ensure logo is at top */
+            padding-top: 0;
+            /* Remove padding to ensure logo is at top */
             color: white;
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
-            z-index: 1020; /* Below navbar on large screens */
+            z-index: 1040;
+            /* Increased to ensure sidebar is above navbar */
         }
 
         .sidebar-hidden {
@@ -76,13 +80,20 @@
         .sidebar .logo-container {
             text-align: center;
             padding: 1rem;
-            background-color: #222A59; /* Ensure logo background matches sidebar */
+            background-color: #222A59;
+            /* Matches sidebar */
             position: relative;
-            z-index: 1021; /* Above sidebar to prevent clipping */
+            z-index: 1041;
+            /* Above sidebar and navbar */
         }
 
         .sidebar .logo-container img {
-            height: 40px;
+            width: 150px;
+            /* Increased size for better legibility */
+            height: auto;
+            /* Maintain aspect ratio */
+            object-fit: contain;
+            /* Prevent distortion */
         }
 
         .sidebar a {
@@ -99,8 +110,10 @@
 
         /* Content Wrapper */
         .content-wrapper {
-            margin-top: 60px; /* Match navbar height */
-            margin-left: 250px; /* Align with navbar on large screens */
+            margin-top: 60px;
+            /* Match navbar height */
+            margin-left: 250px;
+            /* Align with navbar on large screens */
             padding: 1rem;
             transition: margin-left 0.3s ease-in-out;
         }
@@ -115,43 +128,58 @@
             font-size: 1.5rem;
             cursor: pointer;
             margin-right: 1rem;
-            z-index: 1040; /* Above sidebar and navbar */
+            z-index: 1050;
+            /* Above sidebar and navbar */
         }
 
         /* Close Button in Sidebar for Small Screens */
         .sidebar-close {
-            display: none; /* Hidden on large screens */
+            display: none;
+            /* Hidden on large screens */
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 1050; /* Above sidebar */
+            z-index: 1050;
+            /* Above sidebar */
         }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .sidebar {
-                z-index: 1020; /* Below navbar to keep hamburger accessible */
+                z-index: 1040;
+                /* Ensure sidebar is above content but below hamburger */
             }
 
             .sidebar-open {
-                transform: translateX(0); /* Show when toggled */
+                transform: translateX(0);
+                /* Show when toggled */
             }
 
             .sidebar-close {
-                display: block; /* Show close button on small screens */
+                display: block;
+                /* Show close button on small screens */
             }
 
             .navbar {
                 left: 0;
-                width: 100%; /* Full width on small screens */
-                z-index: 1030; /* Above sidebar */
+                width: 100%;
+                /* Full width on small screens */
+                z-index: 1030;
+                /* Below sidebar when open */
             }
 
             .content-wrapper {
-                margin-left: 0; /* No margin shift on small screens */
+                margin-left: 0;
+                /* No margin shift on small screens */
+            }
+
+            .sidebar .logo-container img {
+                width: 120px;
+                /* Slightly smaller for mobile but still legible */
+                height: auto;
             }
         }
 
@@ -184,6 +212,7 @@
         <a href="{{ route('eventos.index') }}"><i class="bi bi-calendar3"></i> Eventos</a>
         <a href="{{ route('categorias.index') }}"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -200,10 +229,23 @@
                 </ol>
             </nav>
             <div class="ms-auto">
-                <i class="bi bi-person-circle user-icon"></i>
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.5rem;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <form action="{{ route('logout.process') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </div>
     </nav>
- 
 
 
 
@@ -235,7 +277,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const navbar = document.querySelector('.navbar');
             const contentWrapper = document.getElementById('contentWrapper');
@@ -255,7 +297,7 @@
             }
 
             // Toggle sidebar on hamburger click
-            toggleSidebar.addEventListener('click', function () {
+            toggleSidebar.addEventListener('click', function() {
                 sidebar.classList.toggle('sidebar-hidden');
                 sidebar.classList.toggle('sidebar-open');
                 if (!isSmallScreen) {
@@ -265,13 +307,13 @@
             });
 
             // Close sidebar on close button click (small screens)
-            sidebarClose.addEventListener('click', function () {
+            sidebarClose.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
             });
 
             // Handle window resize
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
                 if (isNowSmallScreen) {
                     sidebar.classList.add('sidebar-hidden');

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('tituloArriba')
     Inscripciones a Eventos

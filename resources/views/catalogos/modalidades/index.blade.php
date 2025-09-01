@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('app')
 
 @section('tituloArriba')
     Administrar Modalidades
@@ -201,4 +201,3 @@
         }
     </script>
 @endsection
-

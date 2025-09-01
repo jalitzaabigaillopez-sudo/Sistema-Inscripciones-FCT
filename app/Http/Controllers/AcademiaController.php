@@ -7,6 +7,9 @@ use App\Models\Usuario;
 use App\Models\Academia;
 use App\Models\ContraseñaTemporal;
 use App\Mail\FCTMail;
+use App\Models\Canton;
+use App\Models\Distrito;
+use App\Models\Provincia;
 use Illuminate\Support\Facades\Mail;
 use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\URL;
@@ -14,6 +17,14 @@ use Carbon\Carbon;
 
 class AcademiaController extends Controller
 {
+
+     public function index()
+    {
+        $data = Academia::with('distrito.canton.provincia')->get();
+        $provincias = Provincia::all();
+        return view('catalogos.academias.index', compact('data', 'provincias'));
+    }
+
 //####################################### SOLO ADMINISTRADOR ############################################
     public function pre_registroAcademia(Request $request)
     {
@@ -147,4 +158,65 @@ class AcademiaController extends Controller
             return response()->json(['error' => 'Email no coincide'], 401);
         } 
     } 
+
+    public function edit(string $id)
+    {
+        $academia = Academia::with('distrito.canton.provincia')->findOrFail($id);
+        $provincias = Provincia::all();
+        return view('catalogos.academias.index', compact('academia', 'provincias'));
+    }
+
+    public function getCantones($provinciaId)
+    {
+        $cantones = Canton::where('id_provincia', $provinciaId)->get(['id_canton', 'nombre']);
+        return response()->json($cantones);
+    }
+
+    public function getDistritos($cantonId)
+    {
+        $distritos = Distrito::where('id_canton', $cantonId)->get(['id_distrito', 'nombre']);
+        return response()->json($distritos);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'profesor_encargado' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'correo' => 'required|email|max:255',
+            'estado' => 'required|in:activo,inactivo',
+            'provincia' => 'required|exists:provincias,id_provincia',
+            'canton' => 'required|exists:cantones,id_canton',
+            'distrito' => 'required|exists:distritos,id_distrito',
+            'direccion' => 'required|string|max:255',
+        ]);
+
+        $academia = Academia::findOrFail($id);
+        $academia->update([
+            'nombre' => $request->nombre,
+            'profesor_encargado' => $request->profesor_encargado,
+            'telefono' => $request->telefono,
+            'correo' => $request->correo,
+            'estado' => $request->estado,
+            'id_distrito' => $request->distrito,
+            'direccion' => $request->direccion,
+        ]);
+
+        return redirect()->route('academias.index')->with('success', 'Academia actualizada correctamente.');
+    }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $item = Academia::find($id);
+
+        $item->delete();
+
+        return back();
+    }
 }
