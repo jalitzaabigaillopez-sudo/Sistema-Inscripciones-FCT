@@ -21,8 +21,8 @@ class DBController extends Controller
 
         $usuario->identificacion = '111222333';
         $usuario->nombre_completo = 'John Chaves';
-        $usuario->email = 'JHON.CHAVES@ucr.ac.cr';
-        $usuario->password = '12345678';
+        $usuario->email = 'johnchaves2002@gmail.com';
+        $usuario->password = 'zxcvbnmm';
         $usuario->rol = 'administrador';
         $usuario->estado = 'activo';
         $usuario->password_vencimiento = 180;
@@ -51,7 +51,7 @@ class DBController extends Controller
         $usuario->nombre_completo = 'John Chaves';//encargado de academia
         $usuario->email = 'JHON.CHAVES@ucr.ac.cr';//c
         $usuario->password = $temporalPass;//contraseña temporal
-        $usuario->rol = 'administrador'; 
+        $usuario->rol = 'academia'; 
         $usuario->estado = 'inactivo';//inactivo por default
         $usuario->password_vencimiento = 180;//inactivo por default
         $usuario->save();
@@ -98,7 +98,7 @@ class DBController extends Controller
         $usuario->nombre_completo = 'John Chaves';//encargado de academia
         $usuario->email = 'johnchaves2002@gmail.com';//c
         $usuario->password = $temporalPass;//contraseña temporal
-        $usuario->rol = 'administrador'; 
+        $usuario->rol = 'academia'; 
         $usuario->estado = 'inactivo';//inactivo por default
         $usuario->password_vencimiento = 180;//inactivo por default
         $usuario->save();

@@ -1,4 +1,4 @@
-@extends('app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
@@ -14,29 +14,50 @@
                 <form method="POST" action="{{ route('atletas.store') }}">
                     @csrf
                     <div class="modal-header">
+                        <th>Tipo_Identificacion</th>
+                    <th>Identificacion</th>
+                    <th>Nombre</th>
+                    <th>Primer apellido</th>
+                    <th>Segundo apellido</th>
+                    <th>Rol</th>
+                    <th>Sexo</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Estado</th>
                         <h5 class="modal-title" id="crearAtletaModalLabel">Crear Nuevo Atleta </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre del Atleta</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Ej. Juan Pérez">
+                            <label for="tipo_identificacion" class="form-label">Tipo de Identificación</label>
+                            <input type="text" class="form-control" id="tipo_identificacion" name="tipo_identificacion" required placeholder="Ej. Cédula">
                         </div>
                         <div class="mb-3">
-                            <label for="ubicacion" class="form-label">Ubicación</label>
-                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" required placeholder="Ej. Siquirres">
+                            <label for="identificacion" class="form-label">Identificacion</label>
+                            <input type="text" class="form-control" id="identificacion" name="identificacion" required placeholder="Ej. 123456789">
                         </div>
                         <div class="mb-3">
-                            <label for="profesor" class="form-label">Profesor encargado</label>
-                            <input type="text" class="form-control" id="profesor" name="profesor" required placeholder="Profesor 1">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Juan">
                         </div>
                         <div class="mb-3">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" required placeholder="Ej. 8888-8888">
+                            <label for="apellido1" class="form-label">Primer apellido</label>
+                            <input type="text" class="form-control" id="apellido1" name="apellido1" required placeholder="Ej. Pérez">
                         </div>
                         <div class="mb-4">
-                            <label for="correo" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="correo" name="correo" required placeholder="Ej. academia@email.com">
+                            <label for="apellido2" class="form-label">Segundo apellido</label>
+                            <input type="text" class="form-control" id="apellido2" name="apellido2" required placeholder="Ej. Gómez">
+                        </div>
+                          <div class="mb-4">
+                            <label for="rol" class="form-label">Rol</label>
+                            <input type="text" class="form-control" id="rol" name="rol" required placeholder="atleta">
+                        </div>
+                          <div class="mb-4">
+                            <label for="sexo" class="form-label">Sexo</label>
+                            <input type="text" class="form-control" id="sexo" name="sexo" required placeholder="Masculino">
+                        </div>
+                          <div class="mb-4">
+                            <label for="fecha" class="form-label">Fecha de nacimiento</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required placeholder="1995-08-15">
                         </div>
                         <div class="mb-4">
                             <label for="estado" class="form-label">Estado</label>
@@ -47,7 +68,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">💾 Guardar</button>
+                        <button type="submit" class="btn btn-success"> Guardar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
@@ -55,6 +76,6 @@
         </div>
     </div>
 
-    <a href="{{ route('atletas.index') }}" class="btn btn-secondary">↩️ Volver</a>
+    <a href="{{ route('atletas.index') }}" class="btn btn-secondary">Volver</a>
 </div>
 @endsection

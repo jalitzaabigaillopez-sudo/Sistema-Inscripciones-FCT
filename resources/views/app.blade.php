@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <title>@yield('tituloArriba')</title>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Federación Costarricense de Taekwondo')</title>
@@ -10,8 +12,12 @@
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
 
     <style>
         /* Body adjustment to prevent overflow issues */
@@ -25,10 +31,8 @@
             padding: 0.5rem 1rem;
             position: fixed;
             top: 0;
-            left: 250px;
-            /* Start after sidebar width on large screens */
-            width: calc(100% - 250px);
-            /* Span remaining width */
+            left: 250px; /* Start after sidebar width on large screens */
+            width: calc(100% - 250px); /* Span remaining width */
             z-index: 1030;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -58,13 +62,11 @@
             top: 0;
             bottom: 0;
             background-color: #222A59;
-            padding-top: 0;
-            /* Remove padding to ensure logo is at top */
+            padding-top: 0; /* Remove padding to ensure logo is at top */
             color: white;
             overflow-y: auto;
             transition: transform 0.3s ease-in-out;
-            z-index: 1040;
-            /* Increased to ensure sidebar is above navbar */
+            z-index: 1020; /* Below navbar on large screens */
         }
 
         .sidebar-hidden {
@@ -74,20 +76,13 @@
         .sidebar .logo-container {
             text-align: center;
             padding: 1rem;
-            background-color: #222A59;
-            /* Matches sidebar */
+            background-color: #222A59; /* Ensure logo background matches sidebar */
             position: relative;
-            z-index: 1041;
-            /* Above sidebar and navbar */
+            z-index: 1021; /* Above sidebar to prevent clipping */
         }
 
         .sidebar .logo-container img {
-            width: 150px;
-            /* Increased size for better legibility */
-            height: auto;
-            /* Maintain aspect ratio */
-            object-fit: contain;
-            /* Prevent distortion */
+            height: 40px;
         }
 
         .sidebar a {
@@ -104,10 +99,8 @@
 
         /* Content Wrapper */
         .content-wrapper {
-            margin-top: 60px;
-            /* Match navbar height */
-            margin-left: 250px;
-            /* Align with navbar on large screens */
+            margin-top: 60px; /* Match navbar height */
+            margin-left: 250px; /* Align with navbar on large screens */
             padding: 1rem;
             transition: margin-left 0.3s ease-in-out;
         }
@@ -122,59 +115,48 @@
             font-size: 1.5rem;
             cursor: pointer;
             margin-right: 1rem;
-            z-index: 1050;
-            /* Above sidebar and navbar */
+            z-index: 1040; /* Above sidebar and navbar */
         }
 
         /* Close Button in Sidebar for Small Screens */
         .sidebar-close {
-            display: none;
-            /* Hidden on large screens */
+            display: none; /* Hidden on large screens */
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
             position: absolute;
             top: 1rem;
             right: 1rem;
-            z-index: 1050;
-            /* Above sidebar */
+            z-index: 1050; /* Above sidebar */
         }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .sidebar {
-                z-index: 1040;
-                /* Ensure sidebar is above content but below hamburger */
+                z-index: 1020; /* Below navbar to keep hamburger accessible */
             }
 
             .sidebar-open {
-                transform: translateX(0);
-                /* Show when toggled */
+                transform: translateX(0); /* Show when toggled */
             }
 
             .sidebar-close {
-                display: block;
-                /* Show close button on small screens */
+                display: block; /* Show close button on small screens */
             }
 
             .navbar {
                 left: 0;
-                width: 100%;
-                /* Full width on small screens */
-                z-index: 1030;
-                /* Below sidebar when open */
+                width: 100%; /* Full width on small screens */
+                z-index: 1030; /* Above sidebar */
             }
 
             .content-wrapper {
-                margin-left: 0;
-                /* No margin shift on small screens */
+                margin-left: 0; /* No margin shift on small screens */
             }
+        }
 
-            .sidebar .logo-container img {
-                width: 120px;
-                /* Slightly smaller for mobile but still legible */
-                height: auto;
-            }
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: #fff;
         }
     </style>
 </head>
@@ -198,34 +180,32 @@
         <a href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a>
         <a href="{{ route('modalidades.index') }}"><i class="bi bi-columns-gap"></i> Modalidades</a>
         <a href="{{ route('inscripciones.index') }}"><i class="bi bi-ui-checks"></i> Inscripciones</a>
-        <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Pesos</a>
+        <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Grados</a>
         <a href="{{ route('eventos.index') }}"><i class="bi bi-calendar3"></i> Eventos</a>
         <a href="{{ route('categorias.index') }}"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>
-
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <i class="bi bi-list hamburger" id="toggleSidebar"></i>
-            <span class="navbar-text">@yield('navbar-title', 'Inicio / Academias')</span>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a class="fw-bold text-white" href="{{ route('adminDash') }}">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">
+                        @yield('breadcrumb-title', '')
+                    </li>
+                </ol>
+            </nav>
             <div class="ms-auto">
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.5rem;"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <form action="{{ route('logout.process') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+                <i class="bi bi-person-circle user-icon"></i>
             </div>
-        </div>
     </nav>
+ 
+
+
 
     <!-- Main Content -->
     <div class="content-wrapper" id="contentWrapper">
@@ -233,11 +213,29 @@
     </div>
 
     <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Required Js -->
+    <script src="{{ asset('assets/js/vendor-all.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/ripple.js') }}"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
             const navbar = document.querySelector('.navbar');
             const contentWrapper = document.getElementById('contentWrapper');
@@ -257,7 +255,7 @@
             }
 
             // Toggle sidebar on hamburger click
-            toggleSidebar.addEventListener('click', function() {
+            toggleSidebar.addEventListener('click', function () {
                 sidebar.classList.toggle('sidebar-hidden');
                 sidebar.classList.toggle('sidebar-open');
                 if (!isSmallScreen) {
@@ -267,13 +265,13 @@
             });
 
             // Close sidebar on close button click (small screens)
-            sidebarClose.addEventListener('click', function() {
+            sidebarClose.addEventListener('click', function () {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
             });
 
             // Handle window resize
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
                 if (isNowSmallScreen) {
                     sidebar.classList.add('sidebar-hidden');
@@ -285,6 +283,35 @@
                     sidebar.classList.add('sidebar-open');
                     navbar.classList.remove('navbar-full');
                     contentWrapper.classList.remove('content-wrapper-full');
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
+            $('#tabla').DataTable({
+                "ordering": false, // Desactiva el ordenamiento automático para todas las columnas
+                "language": {
+                    "decimal": "",
+                    "emptyTable": "No hay datos disponibles en la tabla",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                    "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                    "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                    "lengthMenu": "Mostrar _MENU_ entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "No se encontraron registros coincidentes",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    },
+                    "aria": {
+                        "sortAscending": ": activar para ordenar la columna ascendente",
+                        "sortDescending": ": activar para ordenar la columna descendente"
+                    }
                 }
             });
         });

@@ -14,22 +14,6 @@ use Carbon\Carbon;
 
 class AcademiaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $data = Academia::all();
-        return view('catalogos.academias.index', compact('data'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 //####################################### SOLO ADMINISTRADOR ############################################
     public function pre_registroAcademia(Request $request)
     {
@@ -82,11 +66,21 @@ class AcademiaController extends Controller
         ]);
         $academia->save();
 
-
         // Se envia correo a la academia
         // $urlFirmada = URL::temporarySignedRoute('activar.cuenta', now()->addHours(48), // Tiempo de expiración
         // ['id' => $usuario->id_usuario]
         // );
+
+        $contraseñaTemporal = new ContraseñaTemporal();
+        $contraseñaTemporal->id_usuario = $usuario->id_usuario;  
+        $contraseñaTemporal->password_temporal = $temporalPass;//contraseña temporal
+        $fecha_creacion = Carbon::now('America/Costa_Rica'); 
+        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addHours(48); // DEFINIR EL TIEMPO MAXIMO c
+        $contraseñaTemporal->fecha_creacion = $fecha_creacion;  
+        $contraseñaTemporal->fecha_expiracion = $fecha_expiracion; 
+        $contraseñaTemporal->vigente = 'si'; 
+        $contraseñaTemporal->save();
+
         $url = route('activar.cuenta', ['id' => $usuario->id_usuario]);
         Mail::to($usuario->email)->send(new FCTMail($usuario, $contraseñaTemporal, $url));
 
@@ -153,36 +147,4 @@ class AcademiaController extends Controller
             return response()->json(['error' => 'Email no coincide'], 401);
         } 
     } 
-
-     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

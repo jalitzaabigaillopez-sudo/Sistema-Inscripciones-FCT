@@ -12,9 +12,9 @@ class AuthController extends Controller
     {
         // VERIFICAR DATOS  DE ENTRADA
         $validateData = $request->validate([
-                'email' => 'required|string|max:255',
-                'password' => 'required|string|min:8|max:16',
-        ]); 
+            'email' => 'required|string|max:255',
+            'password' => 'required|string|min:8|max:16',
+        ]);
 
         $correo = $request->input('email');
         $password = $request->input('password');
@@ -30,28 +30,30 @@ class AuthController extends Controller
         if ($password === $usuario->password) {
 
             // Verificar que la contraseña no haya vencido
-            if($usuario->password_vencimiento > 0){
+            if ($usuario->password_vencimiento > 0) {
 
                 // Verificar que el usuario este activo
-                if($usuario->estado === 'activo'){
+                if (!$usuario->estado === 'activo') {
+                    return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
+                }
 
-                    $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
-
-                    // Redirigir segun el tipo de usuario "rol"
-                    if (!$usuario->rol === 'administrador') {
-                        return view('academia/dashboard-academia');
-                    }
+                $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
+                // Redirigir segun el tipo de usuario "rol"
+                if ($usuario->rol === 'administrador') {
                     return view('admin/dashboard');
-                } 
-                return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
-            }else {
+                } else {
+
+                    $academia = $usuario->academia;
+                    return view('academia/dashboard-academia', compact('usuario', 'academia'));
+                }
+            } else {
                 // Contraseña vencida
-                $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);          
+                $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);
                 return redirect($urlFirmada);
             }
         } else {
             return response()->json(['error' => 'Contraseña incorrecta'], 401);
-        } 
+        }
     }
 
     /**
@@ -59,7 +61,7 @@ class AuthController extends Controller
      */
     public function cerrarSesion(Request $request)
     {
-        $request->session()->forget('usuario'); 
+        $request->session()->forget('usuario');
         return redirect()->route('login');
     }
 }
