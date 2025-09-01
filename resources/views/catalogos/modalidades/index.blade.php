@@ -132,72 +132,100 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
-    {{-- Script para editar --}}
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Script para editar
             $('.btn-edit').click(function(e) {
                 e.preventDefault();
                 let modalidadId = $(this).data('id');
-                console.log('Click en editar, ID:', modalidadId); // <-- Para depurar
+                console.log('Click en editar, ID:', modalidadId);
 
                 $.get('/modalidades/' + modalidadId + '/datos', function(data) {
-                    console.log('Datos recibidos:', data); // <-- Para depurar
+                    console.log('Datos recibidos:', data);
 
                     $('#editNombreModalidad').val(data.nombre);
                     $('#editDescripcionModalidad').val(data.descripcion);
 
+                    $('#formEditarModalidad').attr('action', '/modalidades/' + data.id_modalidad);
 
-                    $('#formEditarModalidad').attr('action', '/modalidades/' + modalidadId);
-
-                    // Abrir modal
                     let modal = new bootstrap.Modal(document.getElementById(
                         'modalEditarModalidad'));
                     modal.show();
                 });
             });
+
+            // Función para confirmar eliminación
+            window.confirmarEliminacion = function(id) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esta acción!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Enviamos la petición de eliminación al backend
+                        $.ajax({
+                            url: '/modalidades/' + id,
+                            method: 'POST', // Usamos POST y simulamos DELETE
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                _method: 'DELETE'
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    title: '¡Eliminado!',
+                                    text: 'La modalidad ha sido eliminada correctamente.',
+                                    icon: 'success',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Ocurrió un error al intentar eliminar la modalidad.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Manejo de SweetAlert para mensajes de sesión (éxito y errores)
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            @if ($errors->any())
+                const errores = @json($errors->all());
+                let htmlErrors = '<ul>';
+                errores.forEach(error => {
+                    htmlErrors += error;
+                });
+                htmlErrors += '</ul>';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de validación',
+                    html: htmlErrors,
+                    confirmButtonText: 'Aceptar'
+                });
+            @endif
         });
-
-
-        function confirmarEliminacion(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: $('#form-eliminar-' + id).attr('action'),
-                        method: $('#form-eliminar-' + id).attr('method'),
-                        data: $('#form-eliminar-' + id).serialize(),
-                        success: function(response) {
-                            Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'La modalidad ha sido eliminada correctamente.',
-                                icon: 'success',
-                                confirmButtonText: 'Aceptar'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Ocurrió un error al intentar eliminar la modalidad.',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                }
-            });
-        }
     </script>
 @endsection

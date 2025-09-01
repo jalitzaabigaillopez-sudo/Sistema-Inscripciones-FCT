@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Modalidad;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 
 class ModalidadesController extends Controller
@@ -30,6 +31,15 @@ class ModalidadesController extends Controller
      */
     public function store(Request $request)
     {
+        $mensajes = [
+            'nombre.unique' => 'Ya existe una modalidad con ese nombre.',
+        ];
+
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:modalidades,nombre',
+            'descripcion' => 'nullable|string|max:255',
+        ], $mensajes);
+
         $item = new Modalidad();
 
         $item->nombre = $request->nombre;
@@ -37,7 +47,7 @@ class ModalidadesController extends Controller
 
         $item->save();
 
-        return back();
+        return redirect()->back()->with('success', 'Modalidad creada correctamente.');
     }
 
     /**
@@ -63,11 +73,25 @@ class ModalidadesController extends Controller
     public function update(Request $request, string $id)
     {
         $item = Modalidad::find($id);
+
+        if (!$item) {
+            return redirect()->back()->with('error', 'Modalidad no encontrada.');
+        }
+
+        $mensajes = [
+            'nombre.unique' => 'Ya existe una modalidad con ese nombre.',
+        ];
+
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:modalidades,nombre,' . $item->id_modalidad . ',id_modalidad',
+            'descripcion' => 'nullable|string|max:255',
+        ], $mensajes);
+
         $item->nombre = $request->nombre;
         $item->descripcion = $request->descripcion;
         $item->save();
 
-        return redirect()->back()->with('success', 'Modalidad actualizada correctamente');
+        return redirect()->back()->with('success', 'Modalidad actualizada correctamente.');
     }
 
     /**
