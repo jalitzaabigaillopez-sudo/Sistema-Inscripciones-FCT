@@ -5,6 +5,7 @@
 @section('content')
 
 <div class="container">
+  <!-- {{ $academia }} -->
     {{-- Main dashboard --}}
    
       <h3 class="mb-4">Bienvenido al Dashboard de Academia</h3>

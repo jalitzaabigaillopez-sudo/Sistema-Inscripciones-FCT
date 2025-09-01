@@ -17,7 +17,7 @@
                 <i class="bi bi-calendar-check me-2"></i> Selección de Evento
             </div>
             <div class="card-body">
-                <select id="evento-select" class="form-select">
+                <select id="evento-select" class="form-select" required>
                     <option selected disabled>Selecciona un evento</option>
                     @foreach($eventos as $evento)
                         <option value="{{ $evento->id_evento }}">{{ $evento->nombre }}</option>
@@ -51,7 +51,7 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select id="atletas-select" class="form-select">
+                        <select id="atletas-select" class="form-select" required>
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
                                 <option data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
@@ -69,28 +69,28 @@
                         <input id="inputEdad" type="text" class="form-control" placeholder="Edad" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control" placeholder="Peso (kg)">
+                        <input id="inputPeso" type="text" class="form-control" placeholder="Peso (kg)" required>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputRol" type="text" class="form-control" placeholder="Rol">
+                        <input id="inputRol" type="text" class="form-control" placeholder="Rol" readonly>
                     </div>
                 </div>
 
                 <div class="row g-3 mt-3">
                     <div class="col-md-4">
-                        <select id="modalidades-select" class="form-select">
+                        <select id="modalidades-select" class="form-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select id="submodalidades-select" class="form-select">
+                        <select id="submodalidades-select" class="form-select" required>
                             <option selected disabled>Submodalidad</option>
 
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select id="categorias-select" class="form-select">
+                        <select id="categorias-select" class="form-select" required>
                             <option selected disabled>Categoria</option>
                             <!-- <option>Pareja A</option>
                                             <option>Equipo B</option>
