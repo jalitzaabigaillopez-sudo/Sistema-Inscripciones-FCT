@@ -137,6 +137,7 @@ Route::resource('/eventos', EventosController::class);
 Route::resource('/usuarios', UsuariosController::class);
 
 Route::resource('/grados', GradosController::class);
+Route::get('/grados/{id}/datos', [GradosController::class, 'edit']);
 
 Route::resource('/modalidades', ModalidadesController::class);
 Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);

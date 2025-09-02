@@ -30,7 +30,23 @@ class GradosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $mensajes = [
+            'nombre.unique' => 'Ya existe un grado con ese nombre.',
+        ];
+
+        $request->validate([
+            'nombre' => 'required|string|max:200|unique:grados,nombre',
+            'descripcion' => 'nullable|string|max:255',
+        ], $mensajes);
+
+        $item = new Grado();
+
+        $item->nombre = $request->nombre;
+        $item->descripcion = $request->descripcion;
+
+        $item->save();
+
+        return redirect()->back()->with('success', 'Grado creada correctamente.');
     }
 
     /**
@@ -46,7 +62,8 @@ class GradosController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $item = Grado::find($id);
+        return response()->json($item);
     }
 
     /**
@@ -54,7 +71,26 @@ class GradosController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $item = Grado::find($id);
+
+        if (!$item) {
+            return redirect()->back()->with('error', 'Grado no encontrado.');
+        }
+
+        $mensajes = [
+            'nombre.unique' => 'Ya existe un grado con ese nombre.',
+        ];
+
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:grados,nombre,' . $item->id_grado . ',id_grado',
+            'descripcion' => 'nullable|string|max:255',
+        ], $mensajes);
+
+        $item->nombre = $request->nombre;
+        $item->descripcion = $request->descripcion;
+        $item->save();
+
+        return redirect()->back()->with('success', 'Grado actualizado correctamente.');
     }
 
     /**
@@ -62,6 +98,10 @@ class GradosController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = Grado::find($id);
+
+        $item->delete();
+
+        return back();
     }
 }

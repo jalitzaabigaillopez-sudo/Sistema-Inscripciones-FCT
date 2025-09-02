@@ -35,16 +35,13 @@
                             <td class="small">{{ $grado->descripcion }}</td>
                             <td class="text-center">
                                 <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit" 
-                                   data-id="{{ $grado->id }}" 
-                                   data-nombre="{{ $grado->nombre }}" 
-                                   data-descripcion="{{ $grado->descripcion }}"
-                                   data-bs-toggle="modal" data-bs-target="#modalEditarGrado">
+                                   data-id="{{ $grado->id_grado }}">
                                    <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <form action="{{ route('grados.destroy', $grado) }}" method="POST" id="form-eliminar-{{ $grado->id }}" class="d-inline">
+                                <form action="{{ route('grados.destroy', $grado) }}" method="POST" id="form-eliminar-{{ $grado->id_grado }}" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                        onclick="confirmarEliminacion({{ $grado->id }})">
+                                        onclick="confirmarEliminacion({{ $grado->id_grado }})">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -122,57 +119,103 @@
 
 </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 {{-- Script para editar y eliminar --}}
 <script>
-    $(document).on('click', '.btn-edit', function() {
-        let id = $(this).data('id');
-        let nombre = $(this).data('nombre');
-        let descripcion = $(this).data('descripcion');
+   document.addEventListener('DOMContentLoaded', function() {
+            // Script para editar
+            $('.btn-edit').click(function(e) {
+                e.preventDefault();
+                let gradoId = $(this).data('id');
+                console.log('Click en editar, ID:', gradoId);
 
-        $('#editNombreGrado').val(nombre);
-        $('#editDescripcionGrado').val(descripcion);
-        $('#formEditarGrado').attr('action', '/grados/' + id);
-    });
+                $.get('/grados/' + gradoId + '/datos', function(data) {
+                    console.log('Datos recibidos:', data);
 
-    function confirmarEliminacion(id) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "¡No podrás revertir esta acción!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            allowOutsideClick: false,
-            allowEscapeKey: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: $('#form-eliminar-' + id).attr('action'),
-                    method: $('#form-eliminar-' + id).attr('method'),
-                    data: $('#form-eliminar-' + id).serialize(),
-                    success: function(response) {
-                        Swal.fire({
-                            title: '¡Eliminado!',
-                            text: 'El grado ha sido eliminado correctamente.',
-                            icon: 'success',
-                            confirmButtonText: 'Aceptar'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Ocurrió un error al intentar eliminar el grado.',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
+                    $('#editNombreGrado').val(data.nombre);
+                    $('#editDescripcionGrado').val(data.descripcion);
+
+                    $('#formEditarGrado').attr('action', '/grados/' + data.id_grado);
+
+                    let modal = new bootstrap.Modal(document.getElementById(
+                        'modalEditarGrado'));
+                    modal.show();
+                });
+            });
+
+            // Función para confirmar eliminación
+            window.confirmarEliminacion = function(id) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esta acción!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Enviamos la petición de eliminación al backend
+                        $.ajax({
+                            url: '/grados/' + id,
+                            method: 'POST', // Usamos POST y simulamos DELETE
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                _method: 'DELETE'
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    title: '¡Eliminado!',
+                                    text: 'El grado ha sido eliminada correctamente.',
+                                    icon: 'success',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Ocurrió un error al intentar eliminar el grado.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
                         });
                     }
                 });
             }
+
+            // Manejo de SweetAlert para mensajes de sesión (éxito y errores)
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            @if ($errors->any())
+                const errores = @json($errors->all());
+                let htmlErrors = '<ul>';
+                errores.forEach(error => {
+                    htmlErrors += error;
+                });
+                htmlErrors += '</ul>';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de validación',
+                    html: htmlErrors,
+                    confirmButtonText: 'Aceptar'
+                });
+            @endif
         });
-    }
 </script>
 @endsection
