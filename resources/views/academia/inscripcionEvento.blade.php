@@ -118,7 +118,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
+            <table class="table table-bordered table-hover align-middle text-center">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
@@ -144,12 +144,16 @@
                         <td>Individual</td>
                         <td>Atleta</td>
                         <td>—</td>
-                        <td>
+                           <td class="text-center">
                             <div class="btn-group">
-                                <button class="btn btn-sm btn-warning">Editar</button>
-                                <button class="btn btn-sm btn-danger">Eliminar</button>
-                            </div>
-                        </td>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                             <button class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                           </button>
+                           </div>
+                         </td>
                     </tr>
                     <tr>
                         <td>2</td>
@@ -161,12 +165,16 @@
                         <td>Pareja</td>
                         <td>Atleta</td>
                         <td>Pareja A</td>
-                        <td>
+                          <td class="text-center">
                             <div class="btn-group">
-                                <button class="btn btn-sm btn-warning">Editar</button>
-                                <button class="btn btn-sm btn-danger">Eliminar</button>
-                            </div>
-                        </td>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                             <button class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                           </button>
+                           </div>
+                         </td>
                     </tr>
                     <tr>
                         
@@ -180,12 +188,17 @@
                         <td>Trío</td>
                         <td>Atleta</td>
                         <td>Equipo B</td>
-                        <td>
+                        <td class="text-center">
                             <div class="btn-group">
-                                <button class="btn btn-sm btn-warning">Editar</button>
-                                <button class="btn btn-sm btn-danger">Eliminar</button>
-                            </div>
-                        </td>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                             <button class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                           </button>
+                           </div>
+                         </td>
+
                     {{-- Más filas estáticas si deseas mostrar ejemplos --}}
                 </tbody>
             </table>
