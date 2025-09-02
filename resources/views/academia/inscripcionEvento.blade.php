@@ -44,20 +44,21 @@
         </div>
 
         {{-- Sección: Registro de Participantes --}}
-        <div id="panelRegistro" class="card mb-4 shadow-sm">
+        <div id="panelRegistro" class="card mb-4 shadow-sm baseCard">
             <div class="card-header fw-semibold">
                 <i class="bi bi-person-plus me-2"></i> Registro de Participante
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select id="atletas-select" class="form-select" required>
+                        <select id="atletas-select" class="form-select atletas-select" required>
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
-                                <option data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
+                                <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
                                     data-rol="{{ $atleta->rol }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
                                     {{ $atleta->segundo_apellido }} -
-                                    {{ $atleta->identificacion }}
+                                    {{ $atleta->identificacion }} - 
+                                    {{ $atleta->rol }}
                                 </option>
                             @endforeach
                         </select>
@@ -66,31 +67,31 @@
                         <input id="inputSexo" type="text" class="form-control" placeholder="Sexo" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputEdad" type="text" class="form-control" placeholder="Edad" readonly>
+                        <input id="inputEdad" type="text" class="form-control inputEdad" placeholder="Edad" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputPeso" type="text" class="form-control" placeholder="Peso (kg)" required>
+                        <input id="inputRol" type="text" class="form-control inputRol" placeholder="Rol" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputRol" type="text" class="form-control" placeholder="Rol" readonly>
+                        <input id="inputPeso" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
                     </div>
                 </div>
 
                 <div class="row g-3 mt-3">
                     <div class="col-md-4">
-                        <select id="modalidades-select" class="form-select" required>
+                        <select id="modalidades-select" class="form-select modalidades-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select id="submodalidades-select" class="form-select" required>
+                        <select id="submodalidades-select" class="form-select submodalidades-select" required>
                             <option selected disabled>Submodalidad</option>
 
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select id="categorias-select" class="form-select" required>
+                        <select class="form-select categorias-select" required>
                             <option selected disabled>Categoria</option>
                             <!-- <option>Pareja A</option>
                                             <option>Equipo B</option>
@@ -105,7 +106,7 @@
         <div id="contenedor"></div>
 
         <div class="mb-4 col-md-4 align-text-end">
-            <button class="btn btn-outline-success w-100">
+            <button id="bInscribir" class="btn btn-outline-success w-100">
                 <i class="bi bi-plus-circle"></i> Inscribir
             </button>
         </div>
@@ -118,75 +119,23 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
+                    <table id="tabla-inscripcion" class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
                                 <th>Nombre</th>
                                 <th>Sexo</th>
                                 <th>Edad</th>
-                                <th>Peso</th>
-                                <th>Modalidad</th>
-                                <th>Participación</th>
                                 <th>Tipo</th>
+                                <th>Modalidad</th>
+                                <th>SubModalidad</th>
+                                <th>Rango peso</th>
                                 <th>Grupo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Juan Pérez</td>
-                                <td>Masculino</td>
-                                <td>15</td>
-                                <td>52</td>
-                                <td>Combate</td>
-                                <td>Individual</td>
-                                <td>Atleta</td>
-                                <td>—</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-warning">Editar</button>
-                                        <button class="btn btn-sm btn-danger">Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>María Gómez</td>
-                                <td>Femenino</td>
-                                <td>14</td>
-                                <td>48</td>
-                                <td>Poomsae</td>
-                                <td>Pareja</td>
-                                <td>Atleta</td>
-                                <td>#2ju5746</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-warning">Editar</button>
-                                        <button class="btn btn-sm btn-danger">Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-
-                            </tr>
-                            <td>3</td>
-                            <td>Carlos Ruiz</td>
-                            <td>Masculino</td>
-                            <td>16</td>
-                            <td>60</td>
-                            <td>Freestyle</td>
-                            <td>Trío</td>
-                            <td>Atleta</td>
-                            <td>#3gt4512</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-warning">Editar</button>
-                                    <button class="btn btn-sm btn-danger">Eliminar</button>
-                                </div>
-                            </td>
-                            {{-- Más filas estáticas si deseas mostrar ejemplos --}}
+                
                         </tbody>
                     </table>
                 </div>

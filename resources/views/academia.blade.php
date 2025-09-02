@@ -181,6 +181,7 @@
 </head>
 
 <body>
+   
     <!-- Sidebar -->
     <nav class="sidebar sidebar-hidden" id="sidebar">
         <div class="logo-container">
@@ -227,6 +228,7 @@
 
     <!-- Main Content -->
     <div class="content-wrapper" id="contentWrapper">
+        <!-- {{ $academia->id_academia }} -->
         @yield('content')
     </div>
 
@@ -294,7 +296,7 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script>
 </body>
 
 </html>
