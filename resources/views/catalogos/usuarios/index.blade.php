@@ -93,7 +93,8 @@
         </div>
 
         {{-- Modal CREAR USUARIO --}}
-        <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+        <div class="modal fade modal-crear" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
@@ -153,27 +154,24 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="fotoUsuario" class="form-label">Foto de Perfil</label>
-                                        <input class="form-control form-control-sm" type="file" id="fotoUsuario"
-                                            accept="image/*">
+                                        <input class="form-control form-control-sm fotoUsuarioInput" type="file"
+                                            id="fotoUsuarioCrear" accept="image/*">
                                     </div>
-
                                     <div class="mb-3 d-flex flex-column align-items-center">
-                                        <div id="previewContainer"
-                                            class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
                                             style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
-                                            <span id="previewText" class="text-muted">Sin foto</span>
-                                            <img id="previewImage" src="" alt="Vista previa"
-                                                class="img-thumbnail rounded-circle"
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
-                                        <button type="button" id="removeImage" class="btn btn-sm btn-danger"
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
                                             style="display: none;"> <i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
-
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                             data-bs-dismiss="modal">Cancelar</button>
@@ -184,8 +182,8 @@
         </div>
 
         {{-- Modal EDITAR USUARIO --}}
-        <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel"
-            aria-hidden="true">
+        <div class="modal fade modal-editar" id="modalEditarUsuario" tabindex="-1"
+            aria-labelledby="modalEditarUsuarioLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
@@ -200,43 +198,42 @@
                                 <div class="col-md-6 border-end pe-md-4">
                                     <h6 class="text-secondary mb-3">Información Personal</h6>
                                     <div class="mb-3">
-                                        <label for="identificacionUsuario" class="form-label">Identificación <span
+                                        <label for="identificacionUsuarioEditar" class="form-label">Identificación <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm"
-                                            id="identificacionUsuario" placeholder="Ej. 123456789" required>
+                                            id="identificacionUsuarioEditar" placeholder="Ej. 123456789" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="nombreUsuario" class="form-label">Nombre <span
+                                        <label for="nombreUsuarioEditar" class="form-label">Nombre <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="nombreUsuario"
-                                            placeholder="Ej. Juan Pérez" required>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="nombreUsuarioEditar" placeholder="Ej. Juan Pérez" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="correoUsuario" class="form-label">Correo Electrónico <span
+                                        <label for="correoUsuarioEditar" class="form-label">Correo Electrónico <span
                                                 class="text-danger">*</span></label>
-                                        <input type="email" class="form-control form-control-sm" id="correoUsuario"
-                                            placeholder="Ej. correo@email.com" required>
+                                        <input type="email" class="form-control form-control-sm"
+                                            id="correoUsuarioEditar" placeholder="Ej. correo@email.com" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contrasenaUsuario" class="form-label">Contraseña <span
-                                                class="text-danger">*</span></label>
-                                        <input type="password" class="form-control form-control-sm"
-                                            id="contrasenaUsuario" placeholder="Mínimo 8 caracteres" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirmarContrasena" class="form-label">Confirmar Contraseña <span
+                                        <label for="contrasenaUsuarioEditar" class="form-label">Contraseña <span
                                                 class="text-danger">*</span></label>
                                         <input type="password" class="form-control form-control-sm"
-                                            id="confirmarContrasena" placeholder="Repetir la contraseña" required>
+                                            id="contrasenaUsuarioEditar" placeholder="Mínimo 8 caracteres" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmarContrasenaEditar" class="form-label">Confirmar Contraseña
+                                            <span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control form-control-sm"
+                                            id="confirmarContrasenaEditar" placeholder="Repetir la contraseña" required>
                                     </div>
                                 </div>
-
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Rol y Foto de Perfil</h6>
                                     <div class="mb-3">
-                                        <label for="rolUsuario" class="form-label">Rol <span
+                                        <label for="rolUsuarioEditar" class="form-label">Rol <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="rolUsuario" required>
+                                        <select class="form-select form-select-sm" id="rolUsuarioEditar" required>
                                             <option value="" selected disabled>Seleccione el rol</option>
                                             <option value="administrador">Administrador</option>
                                             <option value="academia">Academia</option>
@@ -244,28 +241,25 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="fotoUsuario" class="form-label">Foto de Perfil</label>
-                                        <input class="form-control form-control-sm" type="file" id="fotoUsuario"
-                                            accept="image/*">
+                                        <label for="fotoUsuarioEditar" class="form-label">Foto de Perfil</label>
+                                        <input class="form-control form-control-sm fotoUsuarioInput" type="file"
+                                            id="fotoUsuarioEditar" accept="image/*">
                                     </div>
-
                                     <div class="mb-3 d-flex flex-column align-items-center">
-                                        <div id="previewContainer"
-                                            class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
                                             style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
-                                            <span id="previewText" class="text-muted">Sin foto</span>
-                                            <img id="previewImage" src="" alt="Vista previa"
-                                                class="img-thumbnail rounded-circle"
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
-                                        <button type="button" id="removeImage" class="btn btn-sm btn-danger"
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
                                             style="display: none;"> <i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
-
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                             data-bs-dismiss="modal">Cancelar</button>
@@ -278,31 +272,48 @@
     </div>
 
     <script>
-        const inputFile = document.getElementById("fotoUsuario");
-        const previewImage = document.getElementById("previewImage");
-        const previewText = document.getElementById("previewText");
-        const removeBtn = document.getElementById("removeImage");
+        function setupImagePreview(modalElement) {
+            const inputFile = modalElement.querySelector(".fotoUsuarioInput");
+            const previewImage = modalElement.querySelector(".previewImage");
+            const previewText = modalElement.querySelector(".previewText");
+            const removeBtn = modalElement.querySelector(".removeImageBtn");
 
-        inputFile.addEventListener("change", function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = "block";
-                    previewText.style.display = "none";
-                    removeBtn.style.display = "inline-block";
-                };
-                reader.readAsDataURL(file);
+            if (inputFile && previewImage && previewText && removeBtn) {
+                inputFile.addEventListener("change", function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = "block";
+                            previewText.style.display = "none";
+                            removeBtn.style.display = "inline-block";
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener("click", function() {
+                    previewImage.src = "";
+                    previewImage.style.display = "none";
+                    previewText.style.display = "block";
+                    removeBtn.style.display = "none";
+                    inputFile.value = "";
+                });
             }
-        });
+        }
 
-        removeBtn.addEventListener("click", function() {
-            previewImage.src = "";
-            previewImage.style.display = "none";
-            previewText.style.display = "block";
-            removeBtn.style.display = "none";
-            inputFile.value = ""; // resetea el input file
+        // Llama a la función para cada modal
+        document.addEventListener("DOMContentLoaded", function() {
+            const crearModal = document.getElementById("modalUsuario");
+            const editarModal = document.getElementById("modalEditarUsuario");
+
+            if (crearModal) {
+                setupImagePreview(crearModal);
+            }
+            if (editarModal) {
+                setupImagePreview(editarModal);
+            }
         });
 
         function confirmarEliminacion(id) {
