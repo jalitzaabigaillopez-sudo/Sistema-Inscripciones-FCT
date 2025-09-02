@@ -6,7 +6,7 @@
 <div class="container">
     {{-- Main dashboard mejorado --}}
 
-    <h3 class="mb-4 fw-bold text-primary">Dashboard de Academia</h3>
+    <h3 class="mb-4 fw-bold text-#222A59">Dashboard de Academia</h3>
     <div class="row mb-4">
       <div class="col-md-4">
         <div class="card shadow-sm border-0 text-bg-primary mb-3">
