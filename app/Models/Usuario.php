@@ -8,7 +8,7 @@ use App\Traits\Encryptable;
 class Usuario extends Model
 {
     use Encryptable;
-    // protected $encrypted = ['password'];
+    protected $encrypted = ['password'];
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';

@@ -19,7 +19,6 @@
         <hr>
 
         {{-- Tabla --}}
-
         <div class="card table-card shadow">
             <div class="card-body p-3">
                 <div class="table-responsive" style="overflow-x: auto;">
@@ -30,7 +29,7 @@
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Correo</th>
                                 {{-- <th>Contraseña</th> --}}
-                                <th class="text-center">Imagen</th>
+                                {{-- <th class="text-center">Imagen</th> --}}
                                 <th class="text-center">Rol</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-center">Acciones</th>
@@ -44,12 +43,12 @@
                                     <td>{{ $item->nombre_completo }}</td>
                                     <td>{{ $item->email }}</td>
                                     {{-- <td>{{ $item->password }}</td> --}}
-                                    <td>
+                                    {{-- <td>
 
                                         <img src="{{ $item->imagen ? asset('storage/' . $item->imagen) : asset('images/placeholder.png') }}"
                                             alt="Foto de {{ $item->nombre_completo }}"
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
-                                    </td>
+                                    </td> --}}
 
                                     <td>{{ $item->rol }}</td>
                                     <td>
@@ -69,7 +68,8 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill" title="Editar"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
+                                            data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
+                                            data-usuario='@json($item)'>
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <form action="{{ route('usuarios.destroy', $item) }}" method="POST"
@@ -124,13 +124,14 @@
                                         <label for="correoUsuario" class="form-label">Correo Electrónico <span
                                                 class="text-danger">*</span></label>
                                         <input type="email" class="form-control form-control-sm" id="correoUsuario"
-                                            name="email" placeholder="Ej. correo@email.com" required>
+                                            autocomplete="new-email" name="email" placeholder="Ej. correo@email.com"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="contrasenaUsuario" class="form-label">Contraseña <span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" class="form-control form-control-sm"
-                                            id="contrasenaUsuario" name="password" placeholder="Mínimo 8 caracteres"
+                                        <input type="password" class="form-control form-control-sm" id="contrasenaUsuario"
+                                            autocomplete="new-password" name="password" placeholder="Mínimo 8 caracteres"
                                             required>
                                     </div>
                                     <div class="mb-3">
@@ -195,7 +196,11 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form>
+                        <form id="formEditarUsuario">
+                            @csrf
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="hidden" name="id_usuario" id="idUsuarioEditar">
+                            <input type="hidden" name="remove_imagen" id="removeImagen" value="0">
                             <div class="row g-4">
                                 <div class="col-md-6 border-end pe-md-4">
                                     <h6 class="text-secondary mb-3">Información Personal</h6>
@@ -203,31 +208,35 @@
                                         <label for="identificacionUsuarioEditar" class="form-label">Identificación <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm"
-                                            id="identificacionUsuarioEditar" placeholder="Ej. 123456789" required>
+                                            id="identificacionUsuarioEditar" name="identificacion"
+                                            placeholder="Ej. 123456789" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="nombreUsuarioEditar" class="form-label">Nombre <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm"
-                                            id="nombreUsuarioEditar" placeholder="Ej. Juan Pérez" required>
+                                            id="nombreUsuarioEditar" name="nombre_completo" placeholder="Ej. Juan Pérez"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="correoUsuarioEditar" class="form-label">Correo Electrónico <span
                                                 class="text-danger">*</span></label>
                                         <input type="email" class="form-control form-control-sm"
-                                            id="correoUsuarioEditar" placeholder="Ej. correo@email.com" required>
+                                            id="correoUsuarioEditar" name="email" placeholder="Ej. correo@email.com"
+                                            required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contrasenaUsuarioEditar" class="form-label">Contraseña <span
-                                                class="text-danger">*</span></label>
+                                        <label for="contrasenaUsuarioEditar" class="form-label">Contraseña</label>
                                         <input type="password" class="form-control form-control-sm"
-                                            id="contrasenaUsuarioEditar" placeholder="Mínimo 8 caracteres" required>
+                                            id="contrasenaUsuarioEditar" name="password"
+                                            placeholder="Mínimo 8 caracteres">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="confirmarContrasenaEditar" class="form-label">Confirmar Contraseña
-                                            <span class="text-danger">*</span></label>
+                                        <label for="confirmarContrasenaEditar" class="form-label">Confirmar
+                                            Contraseña</label>
                                         <input type="password" class="form-control form-control-sm"
-                                            id="confirmarContrasenaEditar" placeholder="Repetir la contraseña" required>
+                                            id="confirmarContrasenaEditar" name="password_confirmation"
+                                            placeholder="Repetir la contraseña">
                                     </div>
                                 </div>
                                 <div class="col-md-6 ps-md-4">
@@ -235,7 +244,8 @@
                                     <div class="mb-3">
                                         <label for="rolUsuarioEditar" class="form-label">Rol <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="rolUsuarioEditar" required>
+                                        <select class="form-select form-select-sm" id="rolUsuarioEditar" name="rol"
+                                            required>
                                             <option value="" selected disabled>Seleccione el rol</option>
                                             <option value="administrador">Administrador</option>
                                             <option value="academia">Academia</option>
@@ -245,7 +255,7 @@
                                     <div class="mb-3">
                                         <label for="fotoUsuarioEditar" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoUsuarioInput" type="file"
-                                            id="fotoUsuarioEditar" accept="image/*">
+                                            id="fotoUsuarioEditar" name="imagen" accept="image/*">
                                     </div>
                                     <div class="mb-3 d-flex flex-column align-items-center">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
@@ -256,16 +266,30 @@
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"> <i class="bi bi-trash"></i></button>
+                                            style="display: none;"> <i class="bi bi-trash"></i> Eliminar Foto</button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label d-block">Estado <span
+                                                class="text-danger">*</span></label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_activo" value="activo" required>
+                                            <label class="form-check-label" for="e_estado_activo">Activo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_inactivo" value="inactivo" required>
+                                            <label class="form-check-label" for="e_estado_inactivo">Inactivo</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                                <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
+                            </div>
                         </form>
-                    </div>
-                    <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
                     </div>
                 </div>
             </div>
@@ -273,7 +297,11 @@
 
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <script>
+        // CREAR
         document.addEventListener("DOMContentLoaded", function() {
             const crearModal = document.getElementById("modalUsuario");
             if (crearModal) {
@@ -361,6 +389,140 @@
                         previewText.style.display = "block";
                         removeBtn.style.display = "none";
                         inputFile.value = "";
+                    });
+                }
+            }
+        });
+
+        // EDITAR
+        document.addEventListener("DOMContentLoaded", function() {
+            const editarModal = document.getElementById("modalEditarUsuario");
+            if (editarModal) {
+                setupImagePreview(editarModal);
+            }
+
+            const formEditarUsuario = document.getElementById("formEditarUsuario");
+            if (formEditarUsuario) {
+                formEditarUsuario.addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const idUsuario = document.getElementById("idUsuarioEditar").value;
+
+                    // Excluir password y password_confirmation si están vacíos
+                    const password = formEditarUsuario.querySelector('#contrasenaUsuarioEditar').value;
+                    const passwordConfirmation = formEditarUsuario.querySelector(
+                        '#confirmarContrasenaEditar').value;
+                    if (!password && !passwordConfirmation) {
+                        formData.delete('password');
+                        formData.delete('password_confirmation');
+                    }
+
+                    console.log('Datos enviados:', [...formData]);
+
+                    $.ajax({
+                        url: `/usuarios/${idUsuario}`,
+                        method: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '¡Éxito!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    $('#modalEditarUsuario').modal('hide');
+                                    formEditarUsuario.reset();
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let errorMessage = 'Error al actualizar el usuario.';
+                            if (xhr.status === 422) {
+                                errorMessage = Object.values(xhr.responseJSON?.errors || {})
+                                    .flat().join('<br>');
+                            } else if (xhr.status === 500) {
+                                errorMessage = xhr.responseJSON?.error || 'Error interno.';
+                            }
+                            Swal.fire({
+                                title: 'Error',
+                                html: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    });
+                });
+            }
+
+            $('#modalEditarUsuario').on('show.bs.modal', function(event) {
+                const button = $(event.relatedTarget);
+                const usuario = button.data('usuario');
+                const modal = $(this);
+                modal.find('#idUsuarioEditar').val(usuario.id_usuario);
+                modal.find('#identificacionUsuarioEditar').val(usuario.identificacion);
+                modal.find('#nombreUsuarioEditar').val(usuario.nombre_completo);
+                modal.find('#correoUsuarioEditar').val(usuario.email);
+                modal.find('#rolUsuarioEditar').val(usuario.rol);
+                modal.find('input[name="estado"][value="' + usuario.estado + '"]').prop('checked', true);
+                modal.find('#contrasenaUsuarioEditar').val('');
+                modal.find('#confirmarContrasenaEditar').val('');
+                modal.find('#removeImagen').val('0');
+
+                const previewImage = modal.find('.previewImage');
+                const previewText = modal.find('.previewText');
+                const removeBtn = modal.find('.removeImageBtn');
+                const inputFile = modal.find('#fotoUsuarioEditar');
+
+                previewText.text('Sin foto'); // Forzar "Sin foto" por defecto
+                if (usuario.imagen && usuario.imagen !== '') {
+                    previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
+                    previewText.css('display', 'none');
+                    removeBtn.css('display', 'inline-block');
+                } else {
+                    previewImage.attr('src', '').css('display', 'none');
+                    previewText.css('display', 'block');
+                    removeBtn.css('display', 'none');
+                }
+                inputFile.val('');
+            });
+
+            function setupImagePreview(modalElement) {
+                const inputFile = modalElement.querySelector(".fotoUsuarioInput");
+                const previewImage = modalElement.querySelector(".previewImage");
+                const previewText = modalElement.querySelector(".previewText");
+                const removeBtn = modalElement.querySelector(".removeImageBtn");
+                const removeImagenInput = modalElement.querySelector("#removeImagen");
+
+                if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
+                    inputFile.addEventListener("change", function() {
+                        const file = this.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImage.src = e.target.result;
+                                previewImage.style.display = "block";
+                                previewText.style.display = "none";
+                                removeBtn.style.display = "inline-block";
+                                removeImagenInput.value = "0";
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    removeBtn.addEventListener("click", function() {
+                        previewImage.src = "";
+                        previewImage.style.display = "none";
+                        previewText.style.display = "block";
+                        removeBtn.style.display = "none";
+                        inputFile.value = "";
+                        removeImagenInput.value = "1";
                     });
                 }
             }
