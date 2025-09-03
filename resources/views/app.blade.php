@@ -17,7 +17,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
         /* Body adjustment to prevent overflow issues */
@@ -204,11 +204,13 @@
                 <path
                     d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
             </svg> Atletas</a>
-        <a href="{{ route('academias.index') }}"><i class="bi bi-layers"></i> Academias</a>
+        <a href="{{ route('academias.index') }}"><i class="bi bi-houses"></i> Academias</a>
         <a href="{{ route('usuarios.index') }}"><i class="bi bi-people"></i> Usuarios</a>
         <a href="{{ route('modalidades.index') }}"><i class="bi bi-columns-gap"></i> Modalidades</a>
         <a href="{{ route('inscripciones.index') }}"><i class="bi bi-ui-checks"></i> Inscripciones</a>
         <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Grados</a>
+        <a href=""><i class="bi bi-layers-half"></i> Divisiones</a>
+        <a href=""><i class="bi bi-list-stars"></i> Tipos de Eventos</a>
         <a href="{{ route('eventos.index') }}"><i class="bi bi-calendar3"></i> Eventos</a>
         <a href="{{ route('categorias.index') }}"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>

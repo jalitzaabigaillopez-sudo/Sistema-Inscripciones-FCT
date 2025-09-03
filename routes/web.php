@@ -123,10 +123,6 @@ Route::resource('/academias', AcademiaController::class);
 Route::get('/cantones/{provinciaId}', [AcademiaController::class, 'getCantones'])->name('cantones.get');
 Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])->name('distritos.get');
 
-// Si también tienes la ruta de distritos, cámbiala también
-// Route::get('/obtener_distritos/{cantonId}', [AcademiaController::class, 'getDistritos']);
-
-
 Route::resource('/atletas', AtletasController::class);
 Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 

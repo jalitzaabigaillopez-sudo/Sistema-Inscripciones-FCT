@@ -5,7 +5,7 @@
 @endsection
 
 @section('breadcrumb-title', 'Lista de Usuarios')
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
     <div class="container py-4">
 
@@ -45,13 +45,12 @@
                                     <td>{{ $item->email }}</td>
                                     {{-- <td>{{ $item->password }}</td> --}}
                                     <td>
-                                        @if ($item->imagen)
-                                            {{-- <img src="{{  $item->imagen }}" alt="Imagen"
-                                                width="100"> --}}
-                                        @else
-                                            No hay imagen
-                                        @endif
+
+                                        <img src="{{ $item->imagen ? asset('storage/' . $item->imagen) : asset('images/placeholder.png') }}"
+                                            alt="Foto de {{ $item->nombre_completo }}"
+                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
                                     </td>
+
                                     <td>{{ $item->rol }}</td>
                                     <td>
                                         @if ($item->estado === 'activo')
@@ -104,7 +103,7 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form>
+                        <form id="formCrearUsuario">
                             <div class="row g-4">
                                 <div class="col-md-6 border-end pe-md-4">
                                     <h6 class="text-secondary mb-3">Información Personal</h6>
@@ -112,40 +111,43 @@
                                         <label for="identificacionUsuario" class="form-label">Identificación <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm"
-                                            id="identificacionUsuario" placeholder="Ej. 123456789" required>
+                                            id="identificacionUsuario" name="identificacion" placeholder="Ej. 123456789"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="nombreUsuario" class="form-label">Nombre <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="nombreUsuario"
-                                            placeholder="Ej. Juan Pérez" required>
+                                            name="nombre_completo" placeholder="Ej. Juan Pérez" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="correoUsuario" class="form-label">Correo Electrónico <span
                                                 class="text-danger">*</span></label>
                                         <input type="email" class="form-control form-control-sm" id="correoUsuario"
-                                            placeholder="Ej. correo@email.com" required>
+                                            name="email" placeholder="Ej. correo@email.com" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="contrasenaUsuario" class="form-label">Contraseña <span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" class="form-control form-control-sm" id="contrasenaUsuario"
-                                            placeholder="Mínimo 8 caracteres" required>
+                                        <input type="password" class="form-control form-control-sm"
+                                            id="contrasenaUsuario" name="password" placeholder="Mínimo 8 caracteres"
+                                            required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="confirmarContrasena" class="form-label">Confirmar Contraseña <span
                                                 class="text-danger">*</span></label>
                                         <input type="password" class="form-control form-control-sm"
-                                            id="confirmarContrasena" placeholder="Repetir la contraseña" required>
+                                            id="confirmarContrasena" name="password_confirmation"
+                                            placeholder="Repetir la contraseña" required>
                                     </div>
                                 </div>
-
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Rol y Foto de Perfil</h6>
                                     <div class="mb-3">
                                         <label for="rolUsuario" class="form-label">Rol <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="rolUsuario" required>
+                                        <select class="form-select form-select-sm" id="rolUsuario" name="rol"
+                                            required>
                                             <option value="" selected disabled>Seleccione el rol</option>
                                             <option value="administrador">Administrador</option>
                                             <option value="academia">Academia</option>
@@ -155,7 +157,7 @@
                                     <div class="mb-3">
                                         <label for="fotoUsuario" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoUsuarioInput" type="file"
-                                            id="fotoUsuarioCrear" accept="image/*">
+                                            id="fotoUsuarioCrear" name="imagen" accept="image/*">
                                     </div>
                                     <div class="mb-3 d-flex flex-column align-items-center">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
@@ -272,47 +274,95 @@
     </div>
 
     <script>
-        function setupImagePreview(modalElement) {
-            const inputFile = modalElement.querySelector(".fotoUsuarioInput");
-            const previewImage = modalElement.querySelector(".previewImage");
-            const previewText = modalElement.querySelector(".previewText");
-            const removeBtn = modalElement.querySelector(".removeImageBtn");
-
-            if (inputFile && previewImage && previewText && removeBtn) {
-                inputFile.addEventListener("change", function() {
-                    const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            previewImage.src = e.target.result;
-                            previewImage.style.display = "block";
-                            previewText.style.display = "none";
-                            removeBtn.style.display = "inline-block";
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-
-                removeBtn.addEventListener("click", function() {
-                    previewImage.src = "";
-                    previewImage.style.display = "none";
-                    previewText.style.display = "block";
-                    removeBtn.style.display = "none";
-                    inputFile.value = "";
-                });
-            }
-        }
-
-        // Llama a la función para cada modal
         document.addEventListener("DOMContentLoaded", function() {
             const crearModal = document.getElementById("modalUsuario");
-            const editarModal = document.getElementById("modalEditarUsuario");
-
             if (crearModal) {
                 setupImagePreview(crearModal);
             }
-            if (editarModal) {
-                setupImagePreview(editarModal);
+
+            const formCrearUsuario = document.getElementById("formCrearUsuario");
+            const guardarBtn = document.querySelector("#modalUsuario .btn-success");
+
+            if (formCrearUsuario && guardarBtn) {
+                guardarBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(formCrearUsuario);
+                    console.log([...formData]); // Registra datos para depuración
+
+                    $.ajax({
+                        url: "{{ route('usuarios.store') }}",
+                        method: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '¡Éxito!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    $('#modalUsuario').modal('hide');
+                                    formCrearUsuario.reset();
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let errorMessage = 'Ocurrió un error al registrar el usuario.';
+                            if (xhr.status === 422) {
+                                const errors = xhr.responseJSON?.errors || {};
+                                errorMessage = Object.values(errors).flat().join('<br>');
+                            } else if (xhr.status === 500) {
+                                errorMessage = xhr.responseJSON?.error ||
+                                    'Error interno del servidor.';
+                            }
+                            Swal.fire({
+                                title: 'Error',
+                                html: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    });
+                });
+            }
+
+            function setupImagePreview(modalElement) {
+                const inputFile = modalElement.querySelector(".fotoUsuarioInput");
+                const previewImage = modalElement.querySelector(".previewImage");
+                const previewText = modalElement.querySelector(".previewText");
+                const removeBtn = modalElement.querySelector(".removeImageBtn");
+
+                if (inputFile && previewImage && previewText && removeBtn) {
+                    inputFile.addEventListener("change", function() {
+                        const file = this.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImage.src = e.target.result;
+                                previewImage.style.display = "block";
+                                previewText.style.display = "none";
+                                removeBtn.style.display = "inline-block";
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    removeBtn.addEventListener("click", function() {
+                        previewImage.src = "";
+                        previewImage.style.display = "none";
+                        previewText.style.display = "block";
+                        removeBtn.style.display = "none";
+                        inputFile.value = "";
+                    });
+                }
             }
         });
 

@@ -124,9 +124,10 @@ class AtletasController extends Controller
     public function update(Request $request, string $id)
     {
         $atleta = Atleta::findOrFail($id);
+
         $data = $request->validate([
             'tipo_identificacion' => 'required|string',
-            'identificacion' => 'required|string|max:30',
+            'identificacion' => 'required|string|max:30|unique:atletas,identificacion,' . $atleta->id_atleta . ',id_atleta',
             'nombre' => 'required|string|max:255',
             'primer_apellido' => 'required|string|max:255',
             'segundo_apellido' => 'nullable|string|max:255',
@@ -140,8 +141,7 @@ class AtletasController extends Controller
 
         $atleta->update($data);
 
-        return redirect()->back()->with('success', 'Atleta actualizado correctamente.');
-
+    return response()->json(['success' => true, 'message' => 'Atleta actualizado correctamente.']);
     }
 
     /**

@@ -243,17 +243,6 @@
                                             id="correoAcademiaEditar" name="correo" value="{{ $item->correo }}"
                                             required>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="estadoAcademiaEditar" class="form-label">Estado <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="estadoAcademiaEditar"
-                                            name="estado" required>
-                                            <option value="activo" {{ $item->estado == 'activo' ? 'selected' : '' }}>
-                                                Activo</option>
-                                            <option value="inactivo" {{ $item->estado == 'inactivo' ? 'selected' : '' }}>
-                                                Inactivo</option>
-                                        </select>
-                                    </div>
                                 </div>
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Ubicación</h6>
@@ -294,6 +283,20 @@
                                             id="direccionAcademiaEditar" name="direccion" value="{{ $item->direccion }}"
                                             required>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label d-block">Estado <span
+                                                class="text-danger">*</span></label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_activo" value="activo" required>
+                                            <label class="form-check-label" for="e_estado_activo">Activo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_inactivo" value="inactivo" required>
+                                            <label class="form-check-label" for="e_estado_inactivo">Inactivo</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -311,6 +314,4 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/editar_academia.js') }}"></script>
-
-    <script></script>
 @endsection
