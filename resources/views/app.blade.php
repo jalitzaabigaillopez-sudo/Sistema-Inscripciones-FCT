@@ -209,8 +209,8 @@
         <a href="{{ route('modalidades.index') }}"><i class="bi bi-columns-gap"></i> Modalidades</a>
         <a href="{{ route('inscripciones.index') }}"><i class="bi bi-ui-checks"></i> Inscripciones</a>
         <a href="{{ route('grados.index') }}"><i class="bi bi-card-heading"></i> Grados</a>
-        <a href=""><i class="bi bi-layers-half"></i> Divisiones</a>
-        <a href=""><i class="bi bi-list-stars"></i> Tipos de Eventos</a>
+        <a href="{{ route('divisiones.index') }}"><i class="bi bi-layers-half"></i> Divisiones</a>
+        <a href="#"><i class="bi bi-list-stars"></i> Tipos de Eventos</a>
         <a href="{{ route('eventos.index') }}"><i class="bi bi-calendar3"></i> Eventos</a>
         <a href="{{ route('categorias.index') }}"><i class="bi bi-bookmarks"></i> Categorías</a>
     </nav>

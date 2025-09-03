@@ -17,6 +17,7 @@ use App\Http\Controllers\GradosController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\DivisionController;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -142,7 +143,8 @@ Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
 Route::resource('/inscripciones', InscripcionController::class);
 
 
-   
+Route::resource('/divisiones', DivisionController::class);
+
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               
     $data = request()->all();
