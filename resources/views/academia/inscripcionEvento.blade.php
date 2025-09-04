@@ -51,7 +51,7 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select id="atletas-select" class="form-select atletas-select" required>
+                        <select class="form-select atletas-select" required>
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
                                 <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
@@ -64,28 +64,28 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputSexo" type="text" class="form-control" placeholder="Sexo" readonly>
+                        <input type="text" class="form-control inputSexo" placeholder="Sexo" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputEdad" type="text" class="form-control inputEdad" placeholder="Edad" readonly>
+                        <input  type="text" class="form-control inputEdad" placeholder="Edad" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputRol" type="text" class="form-control inputRol" placeholder="Rol" readonly>
+                        <input type="text" class="form-control inputRol" placeholder="Rol" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input id="inputPeso" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
+                        <input type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
                     </div>
                 </div>
 
                 <div class="row g-3 mt-3">
                     <div class="col-md-4">
-                        <select id="modalidades-select" class="form-select modalidades-select" required>
+                        <select class="form-select modalidades-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select id="submodalidades-select" class="form-select submodalidades-select" required>
+                        <select class="form-select submodalidades-select" required>
                             <option selected disabled>Submodalidad</option>
 
                         </select>
