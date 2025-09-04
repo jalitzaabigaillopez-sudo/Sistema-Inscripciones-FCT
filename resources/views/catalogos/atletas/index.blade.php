@@ -158,69 +158,93 @@
                                             name="segundo_apellido" placeholder="Ej. Gómez">
                                     </div>
 
-                                </div>
-                                <div class="col-md-6 ps-md-4">
-                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
-                                    <div class="mb-3">
-                                        <label for="rol" class="form-label">Rol <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="rol" name="rol"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            <option value="atleta">Atleta</option>
-                                            <option value="entrenador">Entrenador</option>
-                                            <option value="asistente">Asistente</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="sexo" class="form-label">Sexo <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="sexo" name="sexo"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Femenino">Femenino</option>
-                                        </select>
-                                    </div>
                                     <div class="mb-3">
                                         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <span
                                                 class="text-danger">*</span></label>
                                         <input type="date" class="form-control form-control-sm" id="fecha_nacimiento"
                                             name="fecha_nacimiento" required>
                                     </div>
-                                    {{-- <div class="mb-3">
-                                        <label for="estado" class="form-label">Estado <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="estado" name="estado"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            <option value="activo">Activo</option>
-                                            <option value="inactivo">Inactivo</option>
-                                        </select>
-                                    </div> --}}
-                                    <div class="mb-3">
-                                        <label for="id_grado" class="form-label">Grado (Cinturón) <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="id_grado" name="id_grado"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            @foreach ($grados as $grado)
-                                                <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
-                                            @endforeach
-                                        </select>
+
+                                </div>
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="rol" class="form-label">Rol <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm" id="rol" name="rol"
+                                                    required>
+                                                    <option value="" disabled selected>Seleccione...</option>
+                                                    <option value="atleta">Atleta</option>
+                                                    <option value="entrenador">Entrenador</option>
+                                                    <option value="asistente">Asistente</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="sexo" class="form-label">Sexo <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm" id="sexo" name="sexo"
+                                                    required>
+                                                    <option value="" disabled selected>Seleccione...</option>
+                                                    <option value="Masculino">Masculino</option>
+                                                    <option value="Femenino">Femenino</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="id_grado" class="form-label">Grado (Cinturón) <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm" id="id_grado" name="id_grado"
+                                                    required>
+                                                    <option value="" disabled selected>Seleccione...</option>
+                                                    @foreach ($grados as $grado)
+                                                        <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="id_academia" class="form-label">Academia <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm" id="id_academia"
+                                                    name="id_academia" required>
+                                                    <option value="" disabled selected>Seleccione...</option>
+                                                    @foreach ($academias as $academia)
+                                                        <option value="{{ $academia->id_academia }}">
+                                                            {{ $academia->nombre }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
                                     <div class="mb-3">
-                                        <label for="id_academia" class="form-label">Academia <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="id_academia" name="id_academia"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            @foreach ($academias as $academia)
-                                                <option value="{{ $academia->id_academia }}">{{ $academia->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <label for="fotoAtleta" class="form-label">Foto de Perfil</label>
+                                        <input class="form-control form-control-sm fotoAtletaInput" type="file"
+                                            id="fotoAtletaCrear" name="imagen" accept="image/*">
+                                    </div>
+                                    <div class="mb-3 d-flex flex-column align-items-center">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
+                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                            style="display: none;"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -288,77 +312,114 @@
                                         <input type="text" class="form-control form-control-sm" id="e_apellido2"
                                             name="segundo_apellido">
                                     </div>
-                                </div>
 
-                                <div class="col-md-6 ps-md-4">
-                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
-                                    {{-- <div class="mb-3">
-                                        <label for="e_categoria" class="form-label">Categoría</label>
-                                        <input type="text" class="form-control form-control-sm" id="e_categoria"
-                                            name="categoria" readonly>
-                                    </div> --}}
-                                    <div class="mb-3">
-                                        <label for="e_rol" class="form-label">Rol <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="e_rol" name="rol"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            <option value="atleta">Atleta</option>
-                                            <option value="entrenador">Entrenador</option>
-                                            <option value="asistente">Asistente</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="e_sexo" class="form-label">Sexo <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="e_sexo" name="sexo"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            <option value="masculino">Masculino</option>
-                                            <option value="femenino">Femenino</option>
-                                        </select>
-                                    </div>
                                     <div class="mb-3">
                                         <label for="e_fecha_nacimiento" class="form-label">Fecha de Nacimiento <span
                                                 class="text-danger">*</span></label>
                                         <input type="date" class="form-control form-control-sm"
                                             id="e_fecha_nacimiento" name="fecha_nacimiento" required>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="e_grado" class="form-label">Grado (Cinturón) <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="e_grado" name="id_grado"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            @foreach ($grados as $grado)
-                                                <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="e_academia" class="form-label">Academia <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="e_academia" name="id_academia"
-                                            required>
-                                            <option value="" disabled selected>Seleccione...</option>
-                                            @foreach ($academias as $academia)
-                                                <option value="{{ $academia->id_academia }}">{{ $academia->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label d-block">Estado <span
-                                                class="text-danger">*</span></label>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="estado"
-                                                id="e_estado_activo" value="activo" required>
-                                            <label class="form-check-label" for="e_estado_activo">Activo</label>
+
+
+                                </div>
+
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="e_rol" class="form-label">Rol <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="e_rol" name="rol"
+                                                required>
+                                                <option value="" disabled selected>Seleccione...</option>
+                                                <option value="atleta">Atleta</option>
+                                                <option value="entrenador">Entrenador</option>
+                                                <option value="asistente">Asistente</option>
+                                            </select>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="estado"
-                                                id="e_estado_inactivo" value="inactivo" required>
-                                            <label class="form-check-label" for="e_estado_inactivo">Inactivo</label>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="e_sexo" class="form-label">Sexo <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="e_sexo" name="sexo"
+                                                required>
+                                                <option value="" disabled selected>Seleccione...</option>
+                                                <option value="masculino">Masculino</option>
+                                                <option value="femenino">Femenino</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="e_grado" class="form-label">Grado (Cinturón) <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="e_grado" name="id_grado"
+                                                required>
+                                                <option value="" disabled selected>Seleccione...</option>
+                                                @foreach ($grados as $grado)
+                                                    <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label d-block">Estado <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="d-flex gap-1">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="estado"
+                                                        id="e_estado_activo" value="activo" required>
+                                                    <label class="form-check-label" for="e_estado_activo">Activo</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="estado"
+                                                        id="e_estado_inactivo" value="inactivo" required>
+                                                    <label class="form-check-label"
+                                                        for="e_estado_inactivo">Inactivo</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-12 mb-3">
+                                            <label for="e_academia" class="form-label">Academia <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="e_academia" name="id_academia"
+                                                required>
+                                                <option value="" disabled selected>Seleccione...</option>
+                                                @foreach ($academias as $academia)
+                                                    <option value="{{ $academia->id_academia }}">{{ $academia->nombre }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <div class="mb-2">
+                                                <label for="e_fotoAtletaEditar" class="form-label">Foto de Perfil</label>
+                                                <input class="form-control form-control-sm fotoAtletaInput" type="file"
+                                                    id="e_fotoAtletaEditar" name="imagen" accept="image/*">
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column align-items-center">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                                    style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
+                                                    <span class="previewText text-muted">Sin foto</span>
+                                                    <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                        alt="Vista previa"
+                                                        style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                                    style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
+                                                <input type="hidden" name="remove_imagen" id="removeImagen"
+                                                    value="0">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
