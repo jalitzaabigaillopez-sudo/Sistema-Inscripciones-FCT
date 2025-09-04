@@ -157,7 +157,7 @@
                                         <input type="text" class="form-control form-control-sm" id="segundo_apellido"
                                             name="segundo_apellido" placeholder="Ej. Gómez">
                                     </div>
-                                    
+
                                 </div>
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Información Deportiva</h6>
@@ -173,7 +173,7 @@
                                         </select>
                                     </div>
 
-                                     <div class="mb-3">
+                                    <div class="mb-3">
                                         <label for="sexo" class="form-label">Sexo <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-select form-select-sm" id="sexo" name="sexo"
@@ -183,7 +183,7 @@
                                             <option value="Femenino">Femenino</option>
                                         </select>
                                     </div>
-                                     <div class="mb-3">
+                                    <div class="mb-3">
                                         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <span
                                                 class="text-danger">*</span></label>
                                         <input type="date" class="form-control form-control-sm" id="fecha_nacimiento"
@@ -348,13 +348,18 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="e_estado" class="form-label">Estado <span
+                                        <label class="form-label d-block">Estado <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="e_estado" name="estado"
-                                            required>
-                                            <option value="activo">Activo</option>
-                                            <option value="inactivo">Inactivo</option>
-                                        </select>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_activo" value="activo" required>
+                                            <label class="form-check-label" for="e_estado_activo">Activo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="e_estado_inactivo" value="inactivo" required>
+                                            <label class="form-check-label" for="e_estado_inactivo">Inactivo</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

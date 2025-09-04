@@ -9,5 +9,5 @@ class Division extends Model
     protected $table = 'divisiones';
     protected $primaryKey = 'id_division';
     public $timestamps = false;
-    protected $fillable = ['division', 'year_min', 'year_max'];
+    protected $fillable = ['division', 'year_inicio', 'year_final'];
 }
