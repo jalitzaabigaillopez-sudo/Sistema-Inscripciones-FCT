@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AcademiaController extends Controller
 {
@@ -185,30 +188,138 @@ class AcademiaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'profesor_encargado' => 'required|string|max:255',
-            'telefono' => 'required|string|max:20',
-            'correo' => 'required|email|max:255',
-            'estado' => 'required|in:activo,inactivo',
-            'provincia' => 'required|exists:provincias,id_provincia',
-            'canton' => 'required|exists:cantones,id_canton',
-            'distrito' => 'required|exists:distritos,id_distrito',
-            'direccion' => 'required|string|max:255',
-        ]);
+        try {
+            //validation messages
+            $messages = [
+                'nombre.required' => 'El nombre es obligatorio.',
+                'nombre.string' => 'El nombre debe ser una cadena de texto.',
+                'nombre.max' => 'El nombre no puede tener más de :max caracteres.',
+                'profesor_encargado.required' => 'El profesor encargado es obligatorio.',
+                'profesor_encargado.string' => 'El profesor encargado debe ser una cadena de texto.',
+                'profesor_encargado.max' => 'El profesor encargado no puede tener más de :max caracteres.',
+                'telefono.required' => 'El teléfono es obligatorio.',
+                'telefono.string' => 'El teléfono debe ser una cadena de texto.',
+                'telefono.max' => 'El teléfono no puede tener más de :max caracteres.',
+                'correo.required' => 'El correo electrónico es obligatorio.',
+                'correo.email' => 'El correo electrónico debe ser una dirección válida.',
+                'correo.max' => 'El correo electrónico no puede tener más de :max caracteres.',
+                'estado.required' => 'El estado es obligatorio.',
+                'estado.in' => 'El estado seleccionado no es válido.',
+                'provincia.required' => 'La provincia es obligatoria.',
+                'provincia.exists' => 'La provincia seleccionada no es válida.',
+                'canton.required' => 'El cantón es obligatorio.',
+                'canton.exists' => 'El cantón seleccionado no es válido.',
+                'distrito.required' => 'El distrito es obligatorio.',
+                'distrito.exists' => 'El distrito seleccionado no es válido.',
+                'direccion.required' => 'La dirección es obligatoria.',
+                'direccion.string' => 'La dirección debe ser una cadena de texto.',
+                'direccion.max' => 'La dirección no puede tener más de :max caracteres.',
+                'imagen.image' => 'El archivo debe ser una imagen.',
+                'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
+                'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
+                'remove_imagen.in' => 'El valor de remove_imagen no es válido.',
+            ];
 
-        $academia = Academia::findOrFail($id);
-        $academia->update([
-            'nombre' => $request->nombre,
-            'profesor_encargado' => $request->profesor_encargado,
-            'telefono' => $request->telefono,
-            'correo' => $request->correo,
-            'estado' => $request->estado,
-            'id_distrito' => $request->distrito,
-            'direccion' => $request->direccion,
-        ]);
+            // Find tacademy
+            $academia = Academia::findOrFail($id);
 
-        return response()->json(['success' => 'Academia actualizada correctamente.']);
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'nombre' => 'required|string|max:255',
+                'profesor_encargado' => 'required|string|max:255',
+                'telefono' => 'required|string|max:20',
+                'correo' => 'required|email|max:255',
+                'estado' => 'required|in:activo,inactivo',
+                'provincia' => 'required|exists:provincias,id_provincia',
+                'canton' => 'required|exists:cantones,id_canton',
+                'distrito' => 'required|exists:distritos,id_distrito',
+                'direccion' => 'required|string|max:255',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', // 10MB limit
+                'remove_imagen' => 'nullable|in:0,1',
+            ], $messages);
+
+            if ($validator->fails()) {
+                Log::warning('Validación fallida en update: ' . json_encode($validator->errors()));
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Update academy
+            $academia->nombre = $request->nombre;
+            $academia->profesor_encargado = $request->profesor_encargado;
+            $academia->telefono = $request->telefono;
+            $academia->correo = $request->correo;
+            $academia->estado = $request->estado;
+            $academia->id_distrito = $request->distrito;
+            $academia->direccion = $request->direccion;
+
+            // image
+            if ($request->input('remove_imagen') === '1') {
+                Log::info('Intentando eliminar imagen de la academia ID: ' . $id . ', Imagen actual: ' . $academia->imagen);
+                if ($academia->imagen && Storage::disk('public')->exists($academia->imagen)) {
+                    try {
+                        Storage::disk('public')->delete($academia->imagen);
+                        Log::info('Imagen eliminada exitosamente: ' . $academia->imagen);
+                        $academia->imagen = null;
+                    } catch (\Exception $e) {
+                        Log::error('Error al eliminar la imagen: ' . $e->getMessage());
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'Error al eliminar la imagen: ' . $e->getMessage()
+                        ], 500);
+                    }
+                } else {
+                    Log::warning('No se encontró la imagen para eliminar o ya estaba eliminada: ' . $academia->imagen);
+                    $academia->imagen = null;
+                }
+            } elseif ($request->hasFile('imagen')) {
+                Log::info('Subiendo nueva imagen para academia ID: ' . $id . ', Nombre archivo: ' . $request->file('imagen')->getClientOriginalName());
+                if ($academia->imagen && Storage::disk('public')->exists($academia->imagen)) {
+                    try {
+                        Storage::disk('public')->delete($academia->imagen);
+                        Log::info('Imagen anterior eliminada: ' . $academia->imagen);
+                    } catch (\Exception $e) {
+                        Log::warning('No se pudo eliminar la imagen anterior: ' . $e->getMessage());
+                    }
+                }
+                try {
+                    $path = $request->file('imagen')->store('perfiles', 'public');
+                    $academia->imagen = $path;
+                    Log::info('Nueva imagen guardada: ' . $path);
+                } catch (\Exception $e) {
+                    Log::error('Error al guardar la nueva imagen: ' . $e->getMessage());
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Error al guardar la imagen: ' . $e->getMessage()
+                    ], 500);
+                }
+            }
+
+            // Save academy
+            try {
+                $academia->save();
+                Log::info('Academia actualizada exitosamente: ID ' . $id);
+            } catch (\Exception $e) {
+                Log::error('Error al guardar la academia: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Error al guardar los datos de la academia: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Academia actualizada correctamente.'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error general en update: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Error interno del servidor: ' . $e->getMessage()
+            ], 500);
+        }
     }
     /**
      * Remove the specified resource from storage.

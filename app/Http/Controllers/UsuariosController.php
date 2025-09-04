@@ -34,28 +34,28 @@ class UsuariosController extends Controller
     public function store(Request $request)
     {
         try {
-             $messages = [
-            'identificacion.required' => 'La identificación es obligatoria.',
-            'identificacion.string' => 'La identificación debe ser una cadena de texto.',
-            'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
-            'identificacion.unique' => 'La identificación ya está en uso.',
-            'nombre_completo.required' => 'El nombre completo es obligatorio.',
-            'nombre_completo.string' => 'El nombre completo debe ser una cadena de texto.',
-            'nombre_completo.max' => 'El nombre completo no puede tener más de :max caracteres.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El correo electrónico debe ser una dirección válida.',
-            'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
-            'email.unique' => 'El correo electrónico ya está registrado.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.string' => 'La contraseña debe ser una cadena de texto.',
-            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
-            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'rol.required' => 'El rol es obligatorio.',
-            'rol.in' => 'El rol seleccionado no es válido.',
-            'imagen.image' => 'El archivo debe ser una imagen.',
-            'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-            'imagen.max' => 'La imagen no puede pesar más de 2048 KB.',
-        ];
+            $messages = [
+                'identificacion.required' => 'La identificación es obligatoria.',
+                'identificacion.string' => 'La identificación debe ser una cadena de texto.',
+                'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
+                'identificacion.unique' => 'La identificación ya está en uso.',
+                'nombre_completo.required' => 'El nombre completo es obligatorio.',
+                'nombre_completo.string' => 'El nombre completo debe ser una cadena de texto.',
+                'nombre_completo.max' => 'El nombre completo no puede tener más de :max caracteres.',
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'El correo electrónico debe ser una dirección válida.',
+                'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
+                'email.unique' => 'El correo electrónico ya está registrado.',
+                'password.required' => 'La contraseña es obligatoria.',
+                'password.string' => 'La contraseña debe ser una cadena de texto.',
+                'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+                'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+                'rol.required' => 'El rol es obligatorio.',
+                'rol.in' => 'El rol seleccionado no es válido.',
+                'imagen.image' => 'El archivo debe ser una imagen.',
+                'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
+                'imagen.max' => 'La imagen no puede pesar más de 2048 KB.',
+            ];
             // Validar los datos del formulario
             $validator = Validator::make($request->all(), [
                 'identificacion' => 'required|string|max:20|unique:usuarios,identificacion',
@@ -127,28 +127,28 @@ class UsuariosController extends Controller
     {
         try {
 
-             $messages = [
-            'identificacion.required' => 'La identificación es obligatoria.',
-            'identificacion.string' => 'La identificación debe ser una cadena de texto.',
-            'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
-            'identificacion.unique' => 'La identificación ya está en uso.',
-            'nombre_completo.required' => 'El nombre completo es obligatorio.',
-            'nombre_completo.string' => 'El nombre completo debe ser una cadena de texto.',
-            'nombre_completo.max' => 'El nombre completo no puede tener más de :max caracteres.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El correo electrónico debe ser una dirección válida.',
-            'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
-            'email.unique' => 'El correo electrónico ya está registrado.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.string' => 'La contraseña debe ser una cadena de texto.',
-            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
-            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'rol.required' => 'El rol es obligatorio.',
-            'rol.in' => 'El rol seleccionado no es válido.',
-            'imagen.image' => 'El archivo debe ser una imagen.',
-            'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-            'imagen.max' => 'La imagen no puede pesar más de 2048 KB.',
-        ];
+            $messages = [
+                'identificacion.required' => 'La identificación es obligatoria.',
+                'identificacion.string' => 'La identificación debe ser una cadena de texto.',
+                'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
+                'identificacion.unique' => 'La identificación ya está en uso.',
+                'nombre_completo.required' => 'El nombre completo es obligatorio.',
+                'nombre_completo.string' => 'El nombre completo debe ser una cadena de texto.',
+                'nombre_completo.max' => 'El nombre completo no puede tener más de :max caracteres.',
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'El correo electrónico debe ser una dirección válida.',
+                'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
+                'email.unique' => 'El correo electrónico ya está registrado.',
+                'password.required' => 'La contraseña es obligatoria.',
+                'password.string' => 'La contraseña debe ser una cadena de texto.',
+                'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+                'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+                'rol.required' => 'El rol es obligatorio.',
+                'rol.in' => 'El rol seleccionado no es válido.',
+                'imagen.image' => 'El archivo debe ser una imagen.',
+                'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
+                'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
+            ];
             // Buscar el usuario
             $usuario = Usuario::findOrFail($id);
 
@@ -160,7 +160,7 @@ class UsuariosController extends Controller
                 'password' => 'nullable|string|min:8|confirmed',
                 'rol' => 'required|in:administrador,academia,arbitro',
                 'estado' => 'required|in:activo,inactivo',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
                 'remove_imagen' => 'nullable|in:0,1',
             ], $messages);
 

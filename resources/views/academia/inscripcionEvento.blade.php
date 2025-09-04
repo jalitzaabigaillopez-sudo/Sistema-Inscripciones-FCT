@@ -73,7 +73,7 @@
                         <input type="text" class="form-control inputRol" placeholder="Rol" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
+                        <input id="pesoInput" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
                     </div>
                 </div>
 
