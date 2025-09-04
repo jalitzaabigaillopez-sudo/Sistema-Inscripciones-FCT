@@ -186,31 +186,33 @@
         .breadcrumb-item+.breadcrumb-item::before {
             color: #fff;
         }
+
         .submenu a.submenu-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    font-weight: 600;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-}
-.submenu a.submenu-toggle:hover {
-    background-color: #2e386e;
-}
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
 
-.submenu-items a {
-    display: block;
-    padding: 0.5rem 1.5rem;
-    font-weight: 500;
-    color: #34495e;
-    transition: background 0.2s ease-in-out;
-}
-.submenu-items a:hover {
-    background-color: #2e386e;
-}
+        .submenu a.submenu-toggle:hover {
+            background-color: #2e386e;
+        }
 
+        .submenu-items a {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            color: #34495e;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .submenu-items a:hover {
+            background-color: #2e386e;
+        }
     </style>
 </head>
 
@@ -226,48 +228,48 @@
             <span>Dashboard</span>
         </a>
         <a href="{{ route('atletas.index') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                fill="currentColor" class="bi bi-person-walking me-2" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-person-walking me-2" viewBox="0 0 16 16">
                 <path
                     d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
                 <path
                     d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
             </svg>
-            <span>Atletas</span>
+            <span>Atletas *</span>
         </a>
         <a href="{{ route('academias.index') }}">
             <i class="bi bi-layers me-2"></i>
-            <span>Academias</span>
+            <span>Academias *</span>
         </a>
         <a href="{{ route('inscripciones.index') }}">
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
 
-<!-- Submenú de Catálogos Generales -->
-<div class="submenu">
-    <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
-        <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-        <i class="bi bi-chevron-down ms-auto"></i>
-    </a>
-    <div class="submenu-items" id="catalogosItems">
-        <a href="{{ route('usuarios.index') }}" class="text-white">
-            <i class="bi bi-people me-2"></i> Usuarios
-        </a>       
-        <a href="{{ route('modalidades.index') }}" class="text-white">
-            <i class="bi bi-columns-gap me-2"></i> Modalidades
-        </a>
-        <a href="{{ route('grados.index') }}" class="text-white">
-            <i class="bi bi-card-heading me-2"></i> Grados
-        </a>
-        <a href="{{ route('eventos.index') }}" class="text-white">
-            <i class="bi bi-calendar3 me-2"></i> Eventos
-        </a>
-        <a href="{{ route('categorias.index') }}" class="text-white">
-            <i class="bi bi-bookmarks me-2"></i> Categorías
-        </a>
-    </div>
-</div>
+        <!-- Submenú de Catálogos Generales -->
+        <div class="submenu">
+            <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
+                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div class="submenu-items" id="catalogosItems">
+                <a href="{{ route('usuarios.index') }}" class="text-white">
+                    <i class="bi bi-people me-2"></i> Usuarios
+                </a>
+                <a href="{{ route('modalidades.index') }}" class="text-white">
+                    <i class="bi bi-columns-gap me-2"></i> Modalidades
+                </a>
+                <a href="{{ route('grados.index') }}" class="text-white">
+                    <i class="bi bi-card-heading me-2"></i> Grados
+                </a>
+                <a href="{{ route('eventos.index') }}" class="text-white">
+                    <i class="bi bi-calendar3 me-2"></i> Eventos ***
+                </a>
+                <a href="{{ route('categorias.index') }}" class="text-white">
+                    <i class="bi bi-bookmarks me-2"></i> Categorías
+                </a>
+            </div>
+        </div>
 
 
     </nav>
@@ -315,10 +317,10 @@
 
     <!-- Scripts -->
     <script>
-    document.getElementById('catalogosToggle').addEventListener('click', function (e) {
-        e.preventDefault();
-        document.getElementById('catalogosItems').classList.toggle('d-none');
-    });
+        document.getElementById('catalogosToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('catalogosItems').classList.toggle('d-none');
+        });
     </script>
 
 

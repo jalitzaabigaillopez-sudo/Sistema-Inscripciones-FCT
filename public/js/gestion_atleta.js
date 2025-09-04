@@ -44,13 +44,20 @@ $(document).ready(function () {
 
 // ACTUALIZAR
 $(document).ready(function () {
+    // Setup image preview for edit modal
+    const editarModal = document.getElementById("modalEditarAtleta");
+    if (editarModal) {
+        setupImagePreview(editarModal);
+    }
+
+    // Populate edit modal with athlete data
     $('.btn-edit').click(function (e) {
         e.preventDefault();
         let atletaId = $(this).data('id');
-        console.log('Click en editar, ID:', atletaId); // <-- Para depurar
+        console.log('Click en editar, ID:', atletaId);
 
         $.get('/atletas/' + atletaId + '/datos', function (data) {
-            console.log('Datos recibidos:', data); // <-- Para depurar
+            console.log('Datos recibidos:', data);
 
             $('#e_tipo_identificacion').val(data.tipo_identificacion);
             $('#e_identificacion').val(data.identificacion);
@@ -62,16 +69,128 @@ $(document).ready(function () {
             $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
             $('#e_grado').val(data.id_grado);
             $('#e_academia').val(data.id_academia);
-            // $('#e_categoria').val(data.categorias.division);
             $('input[name="estado"][value="' + data.estado + '"]').prop('checked', true);
+
+            // Handle image preview
+            const previewImage = $('#modalEditarAtleta').find('.previewImage');
+            const previewText = $('#modalEditarAtleta').find('.previewText');
+            const removeBtn = $('#modalEditarAtleta').find('.removeImageBtn');
+            const inputFile = $('#modalEditarAtleta').find('#e_fotoAtletaEditar');
+            const removeImagenInput = $('#modalEditarAtleta').find('#removeImagen');
+
+            previewText.text('Sin foto');
+            if (data.imagen && data.imagen !== '') {
+                previewImage.attr('src', '/storage/' + data.imagen).css('display', 'block');
+                previewText.css('display', 'none');
+                removeBtn.css('display', 'inline-block');
+            } else {
+                previewImage.attr('src', '').css('display', 'none');
+                previewText.css('display', 'block');
+                removeBtn.css('display', 'none');
+            }
+            inputFile.val('');
+            removeImagenInput.val('0');
 
             $('#formEditarAtleta').attr('action', '/atletas/' + atletaId);
 
-            // Abrir modal
+            // Show modal
             let modal = new bootstrap.Modal(document.getElementById('modalEditarAtleta'));
             modal.show();
         });
     });
+
+    // Handle form submission
+    $('#formEditarAtleta').on('submit', function (e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let actionUrl = form.attr('action');
+        let formData = new FormData(this); // Use FormData to handle file uploads
+
+        $.ajax({
+            url: actionUrl,
+            type: 'POST', // Use POST with _method=PUT
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'X-HTTP-Method-Override': 'PUT' // Override to PUT
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: response.message,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    $('#modalEditarAtleta').modal('hide');
+                    form[0].reset();
+                    window.location.reload();
+                });
+            },
+            error: function (xhr) {
+                let errorMessage = 'Error al actualizar el atleta.';
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    if (errors.identificacion) {
+                        let originalMessage = errors.identificacion[0];
+                        if (originalMessage.includes('has already been taken')) {
+                            errorMessage = 'Ya existe un/a atleta con esa identificación.';
+                        } else {
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        }
+                    } else {
+                        errorMessage = Object.values(errors).flat().join('<br>');
+                    }
+                } else if (xhr.status === 500) {
+                    errorMessage = xhr.responseJSON.error || 'Error interno del servidor.';
+                }
+
+                Swal.fire({
+                    title: 'Error',
+                    html: errorMessage,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    });
+
+    // Image preview setup
+    function setupImagePreview(modalElement) {
+        const inputFile = modalElement.querySelector(".fotoAtletaInput");
+        const previewImage = modalElement.querySelector(".previewImage");
+        const previewText = modalElement.querySelector(".previewText");
+        const removeBtn = modalElement.querySelector(".removeImageBtn");
+        const removeImagenInput = modalElement.querySelector("#removeImagen");
+
+        if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
+            inputFile.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewText.style.display = "none";
+                        removeBtn.style.display = "inline-block";
+                        removeImagenInput.value = "0";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeBtn.addEventListener("click", function () {
+                previewImage.src = "";
+                previewImage.style.display = "none";
+                previewText.style.display = "block";
+                removeBtn.style.display = "none";
+                inputFile.value = "";
+                removeImagenInput.value = "1";
+            });
+        }
+    }
 });
 
 function confirmarEliminacion(id) {
@@ -118,64 +237,3 @@ function confirmarEliminacion(id) {
     });
 }
 
-$(document).ready(function () {
-    $('#formEditarAtleta').on('submit', function (e) {
-        e.preventDefault();
-
-        let form = $(this);
-        let actionUrl = form.attr('action');
-        let formData = form.serialize();
-
-        $.ajax({
-            url: actionUrl,
-            type: 'PUT',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                Swal.fire({
-                    title: '¡Éxito!',
-                    text: 'Atleta actualizado correctamente.',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(() => {
-                    window.location.reload();
-                });
-            },
-            error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.errors;
-                    let errorMessage = '';
-
-                    if (errors.identificacion) {
-                        let originalMessage = errors.identificacion[0];
-                        if (originalMessage.includes('has already been taken')) {
-                            errorMessage = 'Ya existe un/a atleta con esa identificación.';
-                        } else {
-                            errorMessage = originalMessage;
-                        }
-                    } else {
-                        $.each(errors, function (key, error) {
-                            errorMessage += error[0] + '<br>';
-                        });
-                    }
-
-                    Swal.fire({
-                        title: 'Error de Validación',
-                        html: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Ocurrió un error al actualizar el atleta. Por favor, inténtalo de nuevo.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
-            }
-        });
-    });
-});

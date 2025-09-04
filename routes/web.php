@@ -125,9 +125,10 @@ Route::get('/cantones/{provinciaId}', [AcademiaController::class, 'getCantones']
 Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])->name('distritos.get');
 
 Route::resource('/atletas', AtletasController::class);
-Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 
 Route::resource('/categorias', CategoriaController::class);
+Route::get('/categorias/{id}/datos', [CategoriaController::class, 'edit']);
+
 
 Route::resource('/eventos', EventosController::class);
 
