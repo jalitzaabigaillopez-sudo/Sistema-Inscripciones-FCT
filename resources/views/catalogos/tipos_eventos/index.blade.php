@@ -1,17 +1,17 @@
 @extends('app')
 
 @section('tituloArriba')
-    Administrar Divisiones
+    Administrar Tipos de Eventos
 @endsection
 
-@section('breadcrumb-title', 'Lista de Divisiones')
+@section('breadcrumb-title', 'Lista de Tipos de Eventos')
 
 @section('content')
 <div class="container py-4">
     <div class="d-flex align-items-center mb-4">
-        <h4 class="fw-bold mb-0">Lista de Divisiones</h4>
-        <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal" data-bs-target="#modalDivision">
-            <i class="bi bi-plus-circle me-1"></i> Nueva División
+        <h4 class="fw-bold mb-0">Lista de Tipos de Eventos</h4>
+        <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal" data-bs-target="#modalTipoEvento">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo Tipo de Evento
         </button>
     </div>
     <hr>
@@ -23,78 +23,61 @@
                 <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center">División</th>
-                            <th class="text-center">Year_Inicio</th>
-                            <th class="text-center">Year_Final</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Descripción</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
     <tbody>
-    @forelse($divisiones as $division)
-        <tr>
-            <td>{{ $division->division }}</td>
-            <td>{{ $division->year_inicio }}</td>
-            <td>{{ $division->year_final }}</td>
-            <td>
-                <button class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalEditarDivision"
-                        data-id="{{ $division->id }}"
-                        data-nombre="{{ $division->division }}"
-                        data-inicio="{{ $division->year_inicio }}"
-                        data-final="{{ $division->year_final }}">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-
-                 <form action="{{ route('divisiones.destroy', $division) }}" method="POST" id="form-eliminar-{{ $division->id }}" class="d-inline">
+   @foreach ($data as $tipoEvento)
+                        <tr class="text-center">
+                            <td class="small">{{ $tipoEvento->nombre }}</td>
+                            <td class="small">{{ $tipoEvento->descripcion }}</td>
+                            <td class="text-center">
+                                <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit" 
+                                   data-id="{{ $tipoEvento->id_tipo_evento }}">
+                                   <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="{{ route('tipos_eventos.destroy', $tipoEvento) }}" method="POST" id="form-eliminar-{{ $tipoEvento->id_tipo_evento }}" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                        onclick="confirmarEliminacion({{ $division->id }})">
+                                        onclick="confirmarEliminacion({{ $tipoEvento->id_tipo_evento }})">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="4" class="text-muted">No hay divisiones registradas.</td>
-        </tr>
-    @endforelse
-</tbody>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
     {{-- Modal CREAR --}}
-    <div class="modal fade" id="modalDivision" tabindex="-1" aria-labelledby="modalDivisionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTipoEvento" tabindex="-1" aria-labelledby="modalTipoEventoLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                 <div class="modal-header border-bottom-0 pb-2">
-                    <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalDivisionLabel">
-                        Crear Nueva División
+                    <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalTipoEventoLabel">
+                        Crear Nuevo Tipo de Evento
                     </h5>
                     <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body p-0">
-                    <form method="POST" action="#">
+                    <form method="POST" action="{{ route('tipos_eventos.store') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="division" class="form-label">Division<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="division" name="division" required>
+                            <label for="nombreTipoEvento" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="nombreTipoEvento" name="nombre" required>
                         </div>
                         <div class="mb-3">
-                            <label for="year_inicio" class="form-label">Year_Inicio <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="year_inicio" name="year_inicio" required>
+                            <label for="descripcionTipoEvento" class="form-label">Descripción</label>
+                            <textarea class="form-control form-control-sm" id="descripcionTipoEvento" name="descripcion" rows="3"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="year_final" class="form-label">Year_Final <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="year_final" name="year_final" required>
-                        </div>
-
                         <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                             <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success rounded-pill">Guardar División</button>
+                            <button type="submit" class="btn btn-success rounded-pill">Guardar Tipo de Evento</button>
                         </div>
                     </form>
                 </div>
@@ -103,41 +86,39 @@
     </div>
 
     {{-- Modal EDITAR --}}
-    <div class="modal fade" id="modalEditarDivision" tabindex="-1" aria-labelledby="modalEditarDivisionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditarTipoEvento" tabindex="-1" aria-labelledby="modalEditarTipoEventoLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                 <div class="modal-header border-bottom-0 pb-2">
-                    <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarDivisionLabel">
-                        Editar División
+                    <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarTipoEventoLabel">
+                        Editar Tipo de Evento
                     </h5>
                     <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body p-0">
-                    <form method="POST" action="#">
+                    <form method="POST" id="formEditarTipoEvento">
                         @csrf
+                        @method('PUT')
                         <div class="mb-3">
-                            <label for="division" class="form-label">División<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="division" name="division" required>
+                            <label for="editNombreTipoEvento" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="editNombreTipoEvento" name="nombre" required>
                         </div>
                         <div class="mb-3">
-                            <label for="year_inicio" class="form-label">Year_Inicio <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="year_inicio" name="year_inicio" required>
+                            <label for="editDescripcionTipoEvento" class="form-label">Descripción</label>
+                            <textarea class="form-control form-control-sm" id="editDescripcionTipoEvento" name="descripcion" rows="3"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="year_final" class="form-label">Year_Final <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="year_final" name="year_final" required>
-                        </div>
-
                         <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                             <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary rounded-pill">Actualizar División</button>
+                            <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</div>
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {{-- Script para editar y eliminar --}}
 <script>
@@ -145,20 +126,19 @@
             // Script para editar
             $('.btn-edit').click(function(e) {
                 e.preventDefault();
-                let divisionId = $(this).data('id');
-                console.log('Click en editar, ID:', divisionId);
+                let tipoId = $(this).data('id');
+                console.log('Click en editar, ID:', tipoId);
 
-                $.get('/divisiones/' + divisionId + '/datos', function(data) {
+                $.get('/tipos_eventos/' + tipoId + '/datos', function(data) {
                     console.log('Datos recibidos:', data);
 
-                    $('#editNombreDivision').val(data.division);
-                    $('#editYearInicio').val(data.year_inicio);
-                    $('#editYearFinal').val(data.year_final);
+                    $('#editNombreTipoEvento').val(data.nombre);
+                    $('#editDescripcionTipoEvento').val(data.descripcion);
 
-                    $('#formEditarDivision').attr('action', '/divisiones/' + data.id_division);
+                    $('#formEditarTipoEvento').attr('action', '/tipos_eventos/' + data.id_tipo_evento);
 
                     let modal = new bootstrap.Modal(document.getElementById(
-                        'modalEditarDivision'));
+                        'modalEditarTipoEvento'));
                     modal.show();
                 });
             });
@@ -180,7 +160,7 @@
                     if (result.isConfirmed) {
                         // Enviamos la petición de eliminación al backend
                         $.ajax({
-                            url: '/divisiones/' + id,
+                            url: '/tipos_eventos/' + id,
                             method: 'POST', // Usamos POST y simulamos DELETE
                             data: {
                                 _token: '{{ csrf_token() }}',
@@ -189,7 +169,7 @@
                             success: function(response) {
                                 Swal.fire({
                                     title: '¡Eliminado!',
-                                    text: 'La división ha sido eliminada correctamente.',
+                                    text: 'El tipo de evento ha sido eliminada correctamente.',
                                     icon: 'success',
                                     confirmButtonText: 'Aceptar'
                                 }).then(() => {
@@ -199,7 +179,7 @@
                             error: function(xhr) {
                                 Swal.fire({
                                     title: 'Error',
-                                    text: 'Ocurrió un error al intentar eliminar la división.',
+                                    text: 'Ocurrió un error al intentar eliminar el tipo de evento.',
                                     icon: 'error',
                                     confirmButtonText: 'Aceptar'
                                 });
@@ -237,5 +217,4 @@
             @endif
         });
 </script>
-
 @endsection

@@ -266,6 +266,12 @@
         <a href="{{ route('categorias.index') }}" class="text-white">
             <i class="bi bi-bookmarks me-2"></i> Categorías
         </a>
+        <a href="{{ route('divisiones.index') }}" class="text-white">
+            <i class="bi bi-diagram-3 me-2"></i> Divisiones
+        </a>
+        <a href="{{ route('tipos_eventos.index') }}" class="text-white">
+            <i class="bi bi-globe me-2"></i> Tipos de Eventos
+        </a>
     </div>
 </div>
 

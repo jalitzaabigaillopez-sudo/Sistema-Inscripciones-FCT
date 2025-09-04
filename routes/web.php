@@ -18,6 +18,8 @@ use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\TipoEventosController;
+
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -144,6 +146,9 @@ Route::resource('/inscripciones', InscripcionController::class);
 
 
 Route::resource('/divisiones', DivisionController::class);
+
+Route::resource('tipos_eventos', TipoEventosController::class);
+Route::get('/tipos_eventos/{id}/datos', [TipoEventosController::class, 'edit']);
 
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               
