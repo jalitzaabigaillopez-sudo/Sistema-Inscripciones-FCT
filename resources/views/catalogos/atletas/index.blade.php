@@ -140,7 +140,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="nombre" class="form-label">Nombre <span
+                                        <label for="nombre" class="form-label">Nombres <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="nombre"
                                             name="nombre" required placeholder="Ej. Juan">
@@ -296,7 +296,7 @@
                                             name="identificacion" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="e_nombre" class="form-label">Nombre <span
+                                        <label for="e_nombre" class="form-label">Nombres <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="e_nombre"
                                             name="nombre" required>

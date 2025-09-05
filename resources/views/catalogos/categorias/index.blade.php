@@ -39,12 +39,9 @@
                                     <td>{{ $categoria->peso_min }}</td>
                                     <td>{{ $categoria->peso_max }}</td>
                                     <td class="text-center">
-                                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
-                                            data-id="{{ $categoria->id }}" data-division="{{ $categoria->division }}"
-                                            data-sexo="{{ $categoria->sexo }}"
-                                            data-peso_minimo="{{ $categoria->peso_minimo }}"
-                                            data-peso_maximo="{{ $categoria->peso_maximo }}" data-bs-toggle="modal"
-                                            data-bs-target="#modalEditarCategoria">
+                                        <a href="#"
+                                            class="btn btn-sm btn-warning me-1 rounded-pill btn-edit-categoria"
+                                            data-id="{{ $categoria->id_categoria }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <form action="{{ route('categorias.destroy', $categoria) }}" method="POST"
@@ -142,7 +139,7 @@
                                 <select class="form-select form-select-sm" id="editDivision" name="id_division" required>
                                     <option value="" disabled selected>Seleccione la división...</option>
                                     @foreach ($divisiones as $division)
-                                        <option value="{{ $division->id }}">{{ $division->division }}</option>
+                                        <option value="{{ $division->id_division }}">{{ $division->division }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -268,76 +265,89 @@
             }
         });
 
-   document.addEventListener('DOMContentLoaded', function() {
-    // Logic to fill the edit modal with data
-    $('.btn-edit').click(function(e) {
-        e.preventDefault();
-        let categoriaId = $(this).data('id');
-        console.log('Click on edit, ID:', categoriaId);
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cuando se hace clic en editar
+            $(document).on('click', '.btn-edit-categoria', function(e) {
+                e.preventDefault();
 
-        $.get('/categorias/' + categoriaId + '/edit', function(data) {
-            console.log('Data received:', data);
+                let id = $(this).data('id');
+                console.log("Editar categoría ID:", id);
 
-            // 1. Assign values using object properties from the `data` object
-            $('#editDivision').val(data.id_division);
-            $('#editSexo').val(data.sexo);
-            $('#editPesoMinimo').val(data.peso_min);
-            $('#editPesoMaximo').val(data.peso_max);
+                $.get('/categorias/' + id + '/edit', function(data) {
+                    console.log("Datos recibidos:", data);
 
-            // 2. Set the form action with the correct ID
-            $('#formEditarCategoria').attr('action', '/categorias/' + data.id);
+                    // Llenar el formulario con los datos recibidos
+                    $('#editDivision').val(data.id_division);
+                    $('#editSexo').val(data.sexo);
+                    $('#editPesoMinimo').val(data.peso_min);
+                    $('#editPesoMaximo').val(data.peso_max);
 
-            // 3. Show the modal
-            let modal = new bootstrap.Modal(document.getElementById('modalEditarCategoria'));
-            modal.show();
-        });
-    });
+                    // Cambiar la acción del formulario
+                    $('#formEditarCategoria').attr('action', '/categorias/' + id);
 
-    // Your existing AJAX logic for submitting the form (This part is mostly correct and can be used)
-    $('#formEditarCategoria').on('submit', function(e) {
-        e.preventDefault();
-
-        let form = $(this);
-        let formData = new FormData(form[0]);
-        formData.append('_method', 'PUT');
-
-        $.ajax({
-            url: form.attr('action'),
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: response.success,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    location.reload();
+                    // Mostrar el modal
+                    let modal = new bootstrap.Modal(document.getElementById(
+                        'modalEditarCategoria'));
+                    modal.show();
                 });
-            },
-            error: function(xhr) {
-                let errorMessage = 'An error occurred while updating the category.';
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).flat().join('<br>');
-                } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMessage = xhr.responseJSON.error;
+            });
+
+            // Enviar el formulario de edición por AJAX
+            $('#formEditarCategoria').on('submit', function(e) {
+                e.preventDefault();
+
+                let form = $(this);
+                let actionUrl = form.attr('action');
+                let formData = new FormData(this);
+
+
+                let pesoMin = parseFloat($('#editPesoMinimo').val());
+                let pesoMax = parseFloat($('#editPesoMaximo').val());
+                if (pesoMin >= pesoMax) {
+                    e.preventDefault();
+                    alert('El peso mínimo debe ser menor que el peso máximo.');
+                    return false;
                 }
 
-                Swal.fire({
-                    title: 'Error',
-                    html: errorMessage,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST', // Laravel espera POST con _method=PUT
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-HTTP-Method-Override': 'PUT'
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: response.message ||
+                                'Categoría actualizada correctamente.',
+                            confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            $('#modalEditarCategoria').modal('hide');
+                            form[0].reset();
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Error al actualizar la categoría.';
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: errorMessage,
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
                 });
-            }
+            });
         });
-    });
-});
 
         function confirmarEliminacion(id) {
             Swal.fire({

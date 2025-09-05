@@ -79,20 +79,25 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $item = Categoria::find($id);
+        $item = Categoria::findOrFail($id);
 
-        $request->validate([
-            'division' => 'required|string|max:255',
+        $validated = $request->validate([
+            'id_division' => 'required|numeric|exists:divisiones,id_division',
             'sexo' => 'required|string|max:255',
+            'peso_min' => 'required|numeric',
+            'peso_max' => 'required|numeric',
         ]);
 
-        $item->division = $request->division;
-        $item->sexo = $request->sexo;
-        $item->peso_min = $request->peso_min;
-        $item->peso_max = $request->peso_max;
+        $item->id_division = $validated['id_division'];
+        $item->sexo = $validated['sexo'];
+        $item->peso_min = $validated['peso_min'];
+        $item->peso_max = $validated['peso_max'];
         $item->save();
 
-        return redirect()->back()->with('success', 'Categoría actualizada correctamente.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoría actualizada correctamente.'
+        ], 200);
     }
 
     /**
