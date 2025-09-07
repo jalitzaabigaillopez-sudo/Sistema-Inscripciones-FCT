@@ -46,7 +46,7 @@
                                             <button type="button" class="btn btn-sm btn-danger rounded-pill"
                                                 data-bs-toggle="tooltip" title="Eliminar Modalidad"
                                                 onclick="confirmarEliminacion({{ $item->id_modalidad }})"
-                                                onclick="return confirm('¿Eliminar esta academia?')">
+                                                onclick="return confirm('¿Eliminar esta modalidad?')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>

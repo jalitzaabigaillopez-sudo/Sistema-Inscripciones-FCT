@@ -150,6 +150,8 @@ Route::resource('/inscripciones', InscripcionController::class);
 
 Route::resource('/divisiones', DivisionController::class);
 
+Route::get('/divisiones/{id_division}/datos', [DivisionController::class, 'datos']);
+
 Route::resource('tipos_eventos', TipoEventosController::class);
 Route::get('/tipos_eventos/{id}/datos', [TipoEventosController::class, 'edit']);
 

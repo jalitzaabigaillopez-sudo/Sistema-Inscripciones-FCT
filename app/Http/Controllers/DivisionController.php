@@ -5,24 +5,23 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Division;
-use App\Models\Atleta;
-
 
 class DivisionController extends Controller
 {
     public function index()
     {
-        $divisiones = Division::all();
-        return view('catalogos.divisiones.index', compact('divisiones'));
+        $data = Division::all();
+        return view('catalogos.divisiones.index', compact('data'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+      public function create()
+{
+    $divisiones = Division::all(); // o lo que corresponda
+    return view('divisiones.create', compact('divisiones'));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -30,17 +29,18 @@ class DivisionController extends Controller
     public function store(Request $request)
     {
          $mensajes = [
-            'nombre.unique' => 'Ya existe un grado con ese nombre.',
+            'division.unique' => 'Ya existe una división con ese nombre.',
         ];
 
         $request->validate([
-            'nombre' => 'required|string|max:200|unique:grados,nombre',
-            'descripcion' => 'nullable|string|max:255',
+            'division' => 'required|string|max:200|unique:divisiones,division',
+            'year_inicio' => 'nullable|string|max:255',
+            'year_final' => 'nullable|string|max:255',
         ], $mensajes);
 
         $item = new Division();
 
-        $item->division = $request->nombre;
+        $item->division = $request->division;
         $item->year_inicio = $request->year_inicio;
         $item->year_final = $request->year_final;
 
@@ -60,33 +60,34 @@ class DivisionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    
+    public function edit(string $id_division)
     {
-        $item = Division::find($id);
+        $item = Division::find($id_division);
         return response()->json($item);
     }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id_division)
     {
-        $item = Division::find($id);
+        $item = Division::find($id_division);
 
         if (!$item) {
             return redirect()->back()->with('error', 'División no encontrada.');
         }
 
         $mensajes = [
-            'nombre.unique' => 'Ya existe una división con ese nombre.',
+            'division.unique' => 'Ya existe una división con ese nombre.',
         ];
 
-        $request->validate([
-            'division' => 'required|string|max:255|unique:divisiones,nombre,' . $item->id_division . ',id_division',
-            'year_inicio' => 'nullable|string|max:255',
-            'year_final' => 'nullable|string|max:255',
-        ], $mensajes);
-
+   
+$request->validate([
+    'division' => 'required|string|max:255|unique:divisiones,division,' . $item->id_division . ',id_division',
+    'year_inicio' => 'nullable|string|max:255',
+    'year_final' => 'nullable|string|max:255',
+], $mensajes);
+        
         $item->division = $request->division;
         $item->year_inicio = $request->year_inicio;
         $item->year_final = $request->year_final;
@@ -98,12 +99,20 @@ class DivisionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id_division)
     {
-        $item = Division::find($id);
+        $item = Division::find($id_division);
 
         $item->delete();
 
-        return back();
+        return back()->with('success', 'División eliminada correctamente.');
     }
+
+
+    public function datos($id_division)
+{
+    $division = Division::findOrFail($id_division);
+    return response()->json($division);
+}
+
 }

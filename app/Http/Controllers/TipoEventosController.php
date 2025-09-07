@@ -106,7 +106,7 @@ class TipoEventosController extends Controller
 
         $item->delete();
 
-        return back();
+        return back()->with('success', 'Tipo de evento eliminado correctamente.');
     }
 
 }

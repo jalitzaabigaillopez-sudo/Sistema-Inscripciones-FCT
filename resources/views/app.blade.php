@@ -245,37 +245,36 @@
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
-
-<!-- Submenú de Catálogos Generales -->
-<div class="submenu">
-    <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
-        <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-        <i class="bi bi-chevron-down ms-auto"></i>
-    </a>
-    <div class="submenu-items" id="catalogosItems">
-        <a href="{{ route('usuarios.index') }}" class="text-white">
-            <i class="bi bi-people me-2"></i> Usuarios
-        </a>       
-        <a href="{{ route('modalidades.index') }}" class="text-white">
-            <i class="bi bi-columns-gap me-2"></i> Modalidades
-        </a>
-        <a href="{{ route('grados.index') }}" class="text-white">
-            <i class="bi bi-card-heading me-2"></i> Grados
-        </a>
-        <a href="{{ route('eventos.index') }}" class="text-white">
-            <i class="bi bi-calendar3 me-2"></i> Eventos
-        </a>
-        <a href="{{ route('categorias.index') }}" class="text-white">
-            <i class="bi bi-bookmarks me-2"></i> Categorías
-        </a>
-        <a href="{{ route('divisiones.index') }}" class="text-white">
-            <i class="bi bi-diagram-3 me-2"></i> Divisiones
-        </a>
-        <a href="{{ route('tipos_eventos.index') }}" class="text-white">
-            <i class="bi bi-globe me-2"></i> Tipos de Eventos
-        </a>
-    </div>
-</div>
+        <!-- Submenú de Catálogos Generales -->
+        <div class="submenu">
+            <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
+                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div class="submenu-items d-none" id="catalogosItems">
+                <a href="{{ route('usuarios.index') }}" class="text-white">
+                    <i class="bi bi-people me-2"></i> Usuarios
+                </a>       
+                <a href="{{ route('modalidades.index') }}" class="text-white">
+                    <i class="bi bi-columns-gap me-2"></i> Modalidades
+                </a>
+                <a href="{{ route('grados.index') }}" class="text-white">
+                    <i class="bi bi-card-heading me-2"></i> Grados
+                </a>
+                <a href="{{ route('eventos.index') }}" class="text-white">
+                    <i class="bi bi-calendar3 me-2"></i> Eventos
+                </a>
+                <a href="{{ route('categorias.index') }}" class="text-white">
+                    <i class="bi bi-bookmarks me-2"></i> Categorías
+                </a>
+                <a href="{{ route('divisiones.index') }}" class="text-white">
+                    <i class="bi bi-diagram-3 me-2"></i> Divisiones
+                </a>
+                <a href="{{ route('tipos_eventos.index') }}" class="text-white">
+                    <i class="bi bi-globe me-2"></i> Tipos de Eventos
+                </a>
+            </div>
+        </div>
 
 
     </nav>
