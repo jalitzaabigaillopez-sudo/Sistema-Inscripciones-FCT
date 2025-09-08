@@ -19,12 +19,11 @@ class CategoriaController extends Controller
 
     public function obtenerCategorias(Request $request)
     {
-        $id_atleta = $request->input('id_atleta');
-        $atleta = Atleta::find($id_atleta);
-        $division = Division::find($atleta->id_division);
+        $id_division = $request->input('id_division');
+        $sexo = $request->input('sexo');
 
-        $categorias = Categoria::where('division', $division->division)->where('sexo', $atleta->sexo)->get();
-
+        // $division = Division::find($id_division);
+        $categorias = Categoria::where('id_division', $id_division)->where('sexo', $sexo)->get();
 
         return response()->json($categorias);
     }

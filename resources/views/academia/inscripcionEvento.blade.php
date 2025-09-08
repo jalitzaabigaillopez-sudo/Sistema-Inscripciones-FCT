@@ -55,7 +55,7 @@
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
                                 <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
-                                    data-rol="{{ $atleta->rol }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
+                                    data-rol="{{ $atleta->rol }}" data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
                                     {{ $atleta->segundo_apellido }} -
                                     {{ $atleta->identificacion }} - 
                                     {{ $atleta->rol }}
@@ -226,7 +226,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                
+                            
                         </tbody>
                     </table>
                 </div>
@@ -236,7 +236,7 @@
 
         {{-- Botón final --}}
         <div class="text-end mt-4">
-            <button class="btn btn-primary">
+            <button id="bEnviar" class="btn btn-primary">
                 <i class="bi bi-send-check"></i> Enviar Inscripción
             </button>
         </div>
