@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evento;
+use App\Models\TipoEvento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class EventosController extends Controller
 {
@@ -14,7 +17,8 @@ class EventosController extends Controller
     public function index()
     {
         $data = Evento::all();
-        return view('catalogos.eventos.index', compact('data'));
+        $tipoEvento = TipoEvento::all();
+        return view('catalogos.eventos.index', compact('data', 'tipoEvento'));
     }
 
     /**
@@ -30,7 +34,22 @@ class EventosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $item = new Evento();
+        
+        $item->nombre = $request->nombre;
+        $item->descripcion = $request->descripcion ?? null;
+        $item->fecha_inicio_inscripcion = $request->fecha_inicio_inscripcion ?? null;
+        $item->fecha_final_inscripcion = $request->fecha_final_inscripcion ?? null;
+        $item->fecha_inicio = $request->fecha_inicio ?? null;
+        $item->fecha_final = $request->fecha_final ?? null;
+        $item->imagen = $request->imagen ?? null;
+        $item->estado = $request->estado ?? 'activo';
+        $item->id_tipo_evento = $request->id_tipo_evento;
+
+        $item->save();
+
+        return redirect()->route('eventos.index')->with('success', 'Evento creado correctamente.');
     }
 
     /**

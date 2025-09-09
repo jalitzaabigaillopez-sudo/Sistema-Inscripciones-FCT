@@ -68,10 +68,10 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <form action="{{ route('eventos.destroy', $evento) }}" method="POST"
-                                            id="form-eliminar-{{ $evento->id }}" class="d-inline">
+                                            id="form-eliminar-{{ $evento->id_evento }}" class="d-inline">
                                             @csrf @method('DELETE')
                                             <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                                onclick="confirmarEliminacion({{ $evento->id }})">
+                                                onclick="confirmarEliminacion({{ $evento->id_evento }})">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -113,10 +113,10 @@
                                         class="text-danger">*</span></label>
                                 <select class="form-select form-select-sm" id="id_tipo_evento" name="id_tipo_evento"
                                     required>
-                                    <option selected disabled>Selecciona un tipo</option>
-                                    {{-- @foreach ($tipos_evento as $tipo)
-                                    <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
-                                @endforeach --}}
+                                    <option value="">Selecciona un tipo</option>
+                                    @foreach ($tipoEvento as $tipo)
+                                        <option value="{{ $tipo->id_tipo_evento }}">{{ $tipo->nombre }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="row g-3">
@@ -128,7 +128,7 @@
                                 <div class="col-md-6">
                                     <label for="fechaFinInscripcion" class="form-label">Fecha Fin Inscripción</label>
                                     <input type="date" class="form-control form-control-sm" id="fechaFinInscripcion"
-                                        name="fecha_fin_inscripcion">
+                                        name="fecha_final_inscripcion">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="fechaInicio" class="form-label">Fecha Inicio</label>
@@ -138,7 +138,7 @@
                                 <div class="col-md-6">
                                     <label for="fechaFin" class="form-label">Fecha Fin</label>
                                     <input type="date" class="form-control form-control-sm" id="fechaFin"
-                                        name="fecha_fin">
+                                        name="fecha_final">
                                 </div>
                             </div>
                             <div class="mb-3 mt-3">
