@@ -176,27 +176,62 @@
                 /* Slightly smaller for mobile but still legible */
                 height: auto;
             }
+                  .submenu a.submenu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+.submenu a.submenu-toggle:hover {
+    background-color: #2e386e;
+}
+
+.submenu-items a {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    color: #f8fbff;
+    transition: background 0.2s ease-in-out;
+}
+.submenu-items a:hover {
+    background-color: #2e386e;
+}
         }
     </style>
 </head>
 
 <body>
-   
-    <!-- Sidebar -->
-    <nav class="sidebar sidebar-hidden" id="sidebar">
-        <div class="logo-container">
-            <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
-        </div>
-        <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <a href="{{ route('inscripcion.academia', ['id_academia' => $academia->id_academia]) }}"><i
-                class="bi bi-calendar-check"></i> Inscripciones a eventos</>
-            <a href="#"><i class="bi bi-person-plus"></i> Registro atletas</a>
-            <a href="{{ route('academias.perfil') }}"><i class="bi bi-person-badge"></i> Administracion de Perfil</a>
-            <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
-            <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
-    </nav>
 
+<!-- Sidebar -->
+<nav class="sidebar sidebar-hidden" id="sidebar">
+    <div class="logo-container">
+        <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
+    </div>
+    <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
+    <a href="{{ route('dashboard.academias') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+    <!-- Submenú de Inscripciones a eventos -->
+    <div class="submenu">
+        <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
+            <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
+            <i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <div class="submenu-items d-none" id="catalogosMenu">
+            <a href="{{ route('academia.inscripcionEvento') }}"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
+      <a href="{{ route('academia.misInscripciones') }}"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
+        </div>
+    </div>
+
+    <a href="{{ route('academia.registrosAtletas') }}"><i class="bi bi-people"></i> Gestión de atletas</a>
+    <a href="{{ route('academia.perfil-academia') }}"><i class="bi bi-person-badge"></i> Administración de Perfil</a>
+    <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
+    <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
+    <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span>Reportes</span></a>
+</nav>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -210,8 +245,13 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="{{ route('academias.perfil') }}">
-                                <i class="bi bi-person"></i> Perfil Academia
+                          <a class="dropdown-item" href="{{ route('academia.perfil-academia') }}">
+                            <i class="bi bi-person"></i> Perfil Academia
+                          </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('academia.misInscripciones') }}">
+                                <i class="bi bi-list-check"></i> Mis inscripciones
                             </a>
                         </li>
                         <li>
@@ -233,6 +273,22 @@
     </div>
 
     <!-- Scripts -->
+     <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Submenu toggle logic for sidebar
+        document.querySelectorAll('.submenu-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submenu = this.nextElementSibling;
+                if (submenu && submenu.classList.contains('submenu-items')) {
+                    submenu.classList.toggle('d-none');
+                }
+            });
+        });
+    });
+    
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
