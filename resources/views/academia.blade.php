@@ -215,11 +215,11 @@
 
     <!-- Submenú de Inscripciones a eventos -->
     <div class="submenu">
-        <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
+        <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#" id="inscripcionesToggle">
             <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
-            <i class="bi bi-chevron-down ms-auto"></i>
+            <i class="bi bi-chevron-down ms-2"></i>
         </a>
-        <div class="submenu-items d-none" id="catalogosMenu">
+        <div class="submenu-items d-none" id="inscripcionesItems">
             <a href="{{ route('academia.inscripcionEvento') }}"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
       <a href="{{ route('academia.misInscripciones') }}"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
         </div>
@@ -256,7 +256,7 @@
                         <li>
                             <form action="{{ route('logout.process') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i>  Cerrar sesión</button>
                             </form>
                         </li>
                     </ul>

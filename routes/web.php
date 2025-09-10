@@ -92,13 +92,16 @@ Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.m
 //registro de atletas
 Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
 
-//Route::get('/mis-inscripciones', [AcademiaController::class, 'misInscripciones'])->name('academia.misInscripciones');
+
+
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 
 //Editar perfil
-
+Route::get('/perfil', function () {
+    return view('admin.perfil-admin');
+})->name('perfil');
 
 // Catálogos generales
 
@@ -141,6 +144,11 @@ Route::post('/admin/profile/update', function () {
 Route::get('/restablecerContrasena', function () {
     return view('academia.restablecerContrasena');
 })->name('restablecerContraseña');
+
+// Vista de calendario
+Route::get('/calendario', function () {
+    return view('admin.calendario');
+})->name('calendario');
 
 //####################################### AMBOS ROLES #################################################
 /**

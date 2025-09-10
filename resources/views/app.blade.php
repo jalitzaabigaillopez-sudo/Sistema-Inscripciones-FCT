@@ -221,10 +221,11 @@
             <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ route('adminDash') }}">
             <i class="bi bi-speedometer2 me-2"></i>
             <span>Dashboard</span>
         </a>
+        <a href="{{ route('perfil') }}"> <i class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
         <a href="{{ route('atletas.index') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                 fill="currentColor" class="bi bi-person-walking me-2" viewBox="0 0 16 16">
@@ -242,6 +243,10 @@
         <a href="{{ route('inscripciones.index') }}">
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
+        </a>
+        <a href="{{ route('calendario') }}">
+            <i class="bi bi-calendar me-2"></i>
+            <span>Calendario</span>
         </a>
 
 <!-- Submenú de Catálogos Generales -->

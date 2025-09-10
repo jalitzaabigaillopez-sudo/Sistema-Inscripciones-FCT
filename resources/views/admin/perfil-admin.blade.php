@@ -34,11 +34,11 @@
     <div class="row g-3 mt-3">
         <div class="col-md-6">
             <label class="form-label fw-semibold">Nombre completo</label>
-            <p class="form-control-plaintext">Diana Castro</p>
+            <p class="form-control-plaintext">Ronny López</p>
         </div>
         <div class="col-md-3">
             <label class="form-label fw-semibold">Rol</label>
-            <p class="form-control-plaintext">Academia</p>
+            <p class="form-control-plaintext">Administrador</p>
         </div>
         <div class="col-md-3">
             <label class="form-label fw-semibold">Estado</label>
@@ -57,18 +57,13 @@
         </div>
     </div>
 
-   <div class="row g-3 mt-3">
+<div class="row g-3 mt-3">
     <div class="col-md-12 text-center">
-        <label class="form-label fw-semibold">Imagen de perfil</label>
-        <div>
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-                 alt="Imagen de perfil" 
-                 class="rounded-circle shadow-sm" 
-                 style="width: 180px; height: 180px; object-fit: cover;">
-        </div>
-    </div>
-</div>
+        <label class="form-label fw-semibold mb-2">Imagen de perfil</label>
+        <div class="d-flex flex-column align-items-center">
+            <img src="images/image.png" alt="Centered person silhouette representing user profile, light gray background, neutral tone, no visible text, surrounded by a clean card layout in the profile administration section" class="img-fluid rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover;">
 
+    </div>
 </div>
 
             </div>
@@ -102,7 +97,7 @@
                 <div class="row g-3 mt-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" value="Diana Castro">
+                        <input type="text" class="form-control" value="Ronny López">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Rol</label>
