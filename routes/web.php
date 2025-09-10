@@ -84,11 +84,15 @@ Route::get('/ranking', function () {
 // Dashboard de academias
 Route::view('/dashboard-academias', 'academia.dashboard-academia')->name('dashboard.academias');
 // Inscripción a eventos
-Route::view('/inscripcion-eventos', 'academia.inscripcionEvento')->name('academias.inscripcion');
-// perfil
-Route::view('/perfil', 'academia.perfil-academia')->name('academias.perfil');
+Route::view('/inscripcion-eventos', 'academia.inscripcionEvento')->name('academia.inscripcionEvento');
+// perfil de academia
+Route::view('/perfil-academia', 'academia.perfil-academia')->name('academia.perfil-academia');
+//mis inscripciones
+Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
+//registro de atletas
+Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
 
-
+//Route::get('/mis-inscripciones', [AcademiaController::class, 'misInscripciones'])->name('academia.misInscripciones');
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');

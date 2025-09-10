@@ -268,9 +268,7 @@
         </a>
     </div>
 </div>
-
-
-    </nav>
+ </nav>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
