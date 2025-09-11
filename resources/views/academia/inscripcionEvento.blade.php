@@ -196,7 +196,7 @@
         <!-- contenedor donde van las copias -->
         <div id="contenedor"></div>
 
-        <div class="mb-4 col-md-4 align-text-end">
+        <div id="containerButton" class="mb-4 col-md-4 align-text-end">
             <button id="bInscribir" class="btn btn-outline-success w-100">
                 <i class="bi bi-plus-circle"></i> Inscribir
             </button>
