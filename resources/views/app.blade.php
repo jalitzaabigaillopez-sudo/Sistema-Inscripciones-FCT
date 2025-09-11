@@ -223,10 +223,11 @@
             <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ route('adminDash') }}">
             <i class="bi bi-speedometer2 me-2"></i>
             <span>Dashboard</span>
         </a>
+        <a href="{{ route('perfil') }}"> <i class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
         <a href="{{ route('atletas.index') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-person-walking me-2" viewBox="0 0 16 16">
@@ -245,36 +246,10 @@
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
-        <!-- Submenú de Catálogos Generales -->
-        <div class="submenu">
-            <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
-                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-                <i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <div class="submenu-items d-none" id="catalogosItems">
-                <a href="{{ route('usuarios.index') }}" class="text-white">
-                    <i class="bi bi-people me-2"></i> Usuarios
-                </a>       
-                <a href="{{ route('modalidades.index') }}" class="text-white">
-                    <i class="bi bi-columns-gap me-2"></i> Modalidades
-                </a>
-                <a href="{{ route('grados.index') }}" class="text-white">
-                    <i class="bi bi-card-heading me-2"></i> Grados
-                </a>
-                <a href="{{ route('eventos.index') }}" class="text-white">
-                    <i class="bi bi-calendar3 me-2"></i> Eventos
-                </a>
-                <a href="{{ route('categorias.index') }}" class="text-white">
-                    <i class="bi bi-bookmarks me-2"></i> Categorías
-                </a>
-                <a href="{{ route('divisiones.index') }}" class="text-white">
-                    <i class="bi bi-diagram-3 me-2"></i> Divisiones
-                </a>
-                <a href="{{ route('tipos_eventos.index') }}" class="text-white">
-                    <i class="bi bi-globe me-2"></i> Tipos de Eventos
-                </a>
-            </div>
-        </div>
+        <a href="{{ route('calendario') }}">
+            <i class="bi bi-calendar me-2"></i>
+            <span>Calendario</span>
+        </a>
 
 
     </nav>

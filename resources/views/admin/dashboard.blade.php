@@ -7,25 +7,32 @@
   <h3 class="mb-4 fw-bold text-#222A59">Dashboard Administrativo</h3>
   <div class="row mb-4 g-3">
     <!-- Total de usuarios del sistema -->
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card text-bg-primary border-0 shadow-sm rounded-3 h-100">
-        <div class="card-body text-center">
-          <h6 class="card-title fw-semibold mb-2">Usuarios del Sistema</h6>
-          <p class="card-text fs-2 fw-bold mb-1">120</p>
-          <i class="bi bi-people-fill fs-3"></i>
-        </div>
+ 
+<div class="col-12 col-sm-6 col-lg-3">
+  <div class="card text-bg-primary border-0 shadow-sm rounded-3 h-100">
+    <div class="card-body text-center">
+      <h6 class="card-title fw-bold mb-2 text-white">Usuarios en el Sistema</h6>
+      <div class="d-flex justify-content-center align-items-center mb-2">
+        <i class="bi bi-person-badge fs-2 text-white me-2"></i>
+        <span class="fs-1 fw-bold text-white">{{ $usersCount ?? '7' }}</span>
       </div>
+      <small class="text-light">Actualizado hoy</small>
     </div>
-    <!-- Academias registradas -->
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card text-bg-success border-0 shadow-sm rounded-3 h-100">
-        <div class="card-body text-center">
-          <h6 class="card-title fw-semibold mb-2">Academias Registradas</h6>
-          <p class="card-text fs-2 fw-bold mb-1">15</p>
-          <i class="bi bi-building fs-3"></i>
-        </div>
+  </div>
+</div>
+<!-- Academias registradas -->
+<div class="col-12 col-sm-6 col-lg-3">
+  <div class="card text-bg-success border-0 shadow-sm rounded-3 h-100">
+    <div class="card-body text-center">
+      <h6 class="card-title fw-bold mb-2 text-white">Academias Registradas</h6>
+      <div class="d-flex justify-content-center align-items-center mb-2">
+        <i class="bi bi-building fs-2 text-white me-2"></i>
+        <span class="fs-1 fw-bold text-white">{{ $academiesCount ?? '7' }}</span>
       </div>
+      <small class="text-light">Actualizado hoy</small>
     </div>
+  </div>
+</div>
     <!-- Eventos activos -->
     <div class="col-12 col-sm-6 col-lg-3">
       <div class="card text-bg-warning border-0 shadow-sm rounded-3 h-100">
