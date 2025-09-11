@@ -171,7 +171,7 @@ $(document).ready(function () {
 
         var panelOriginal = $('#panelRegistro');
         var contenedor = $('#contenedor');
-        // contenedor.find('.baseCard').not('.clonEdit').remove();
+        contenedor.find('.baseCard').not('.clonEdit').remove();
 
         // Crear N-1 copias limpias
         for (let i = 1; i < cantidad_atletas; i++) {
@@ -723,6 +723,15 @@ $(document).ready(function () {
         let id = $fila.data("id");
         let tr_code = $fila.data("code");
         let grupo = $fila.find("td:eq(8)").text().trim();
+
+        $("#panelRegistro").show();
+        $("#contenedor .clonEdit").remove();
+
+        $("#containerButton").html(`
+            <button id="bInscribir" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle"></i> Inscribir
+            </button>
+        `);
 
         if (grupo.includes("#")) {// tiene grupo
             if (confirm("⚠️ Aviso! Este atleta esta en grupo, si lo elimina eliminara a los atletas de ese grupo. ¿Desea continuar?")) {

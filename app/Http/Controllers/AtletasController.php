@@ -11,10 +11,16 @@ use App\Models\PadronNacimiento;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Models\Usuario;
 
 class AtletasController extends Controller
 {
 
+    /**
+     * Administrador 🚩
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function index(Request $request)
     {
         $data = Atleta::all();
@@ -22,6 +28,20 @@ class AtletasController extends Controller
         $categorias = Categoria::all();
         $academias = Academia::where('estado', 'activo')->get();
         return view('catalogos.atletas.index', compact('data', 'grados', 'categorias', 'academias'));
+    }
+
+    /**
+     * Academia 🏳️
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indexAtltetasAcademia(Request $request)
+    {
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+        $atletas = $academia->atletas;
+        return view('academia/registrosAtletas',compact('atletas', 'academia'));
     }
 
     /**

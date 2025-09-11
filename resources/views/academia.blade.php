@@ -233,8 +233,8 @@
             </div>
         </div>
 
-        <a href="{{ route('academia.registrosAtletas') }}"><i class="bi bi-people"></i> Gestión de atletas</a>
-        <a href="{{ route('academia.perfil-academia') }}"><i class="bi bi-person-badge"></i> Administración de
+        <a href="{{ route('gestion.atletas') }}"><i class="bi bi-people"></i> Gestión de atletas</a>
+        <a href="#"><i class="bi bi-person-badge"></i> Administración de
             Perfil</a>
         <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
         <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
