@@ -31,7 +31,6 @@
                                 <th class="text-center">Fin Ins.</th>
                                 <th class="text-center">Inicio</th>
                                 <th class="text-center">Fin</th>
-                                <th class="text-center">Imagen</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -46,7 +45,6 @@
                                     <td>{{ \Carbon\Carbon::parse($evento->fecha_final_inscripcion)->format('d/m/Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($evento->fecha_final)->format('d/m/Y') }}</td>
-                                    <td>{{ $evento->imagen }}</td>
                                     <td>
                                         @if ($evento->estado === 'activo')
                                             <span class="badge rounded-pill bg-success">
@@ -64,7 +62,8 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditarEvento">
+                                            data-bs-toggle="modal" data-bs-target="#modalEditarEvento"
+                                            data-evento-id="{{ $evento->id_evento }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <form action="{{ route('eventos.destroy', $evento) }}" method="POST"
@@ -86,7 +85,7 @@
 
         {{-- Modal CREAR --}}
         <div class="modal fade" id="modalEvento" tabindex="-1" aria-labelledby="modalEventoLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
                         <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalEventoLabel">
@@ -96,64 +95,115 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form method="POST" action="{{ route('eventos.store') }}">
+                        {{-- Add 'enctype' for file uploads --}}
+                        <form id="create-event-form" method="POST" action="{{ route('eventos.store') }}"
+                            enctype="multipart/form-data">
                             @csrf
-                            <div class="mb-3">
-                                <label for="nombreEvento" class="form-label">Nombre <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="nombreEvento" name="nombre"
-                                    required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="descripcionEvento" class="form-label">Descripción</label>
-                                <textarea class="form-control form-control-sm" id="descripcionEvento" name="descripcion" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_tipo_evento" class="form-label">Tipo de Evento <span
-                                        class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="id_tipo_evento" name="id_tipo_evento"
-                                    required>
-                                    <option value="">Selecciona un tipo</option>
-                                    @foreach ($tipoEvento as $tipo)
-                                        <option value="{{ $tipo->id_tipo_evento }}">{{ $tipo->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="fechaInicioInscripcion" class="form-label">Fecha Inicio Inscripción</label>
-                                    <input type="date" class="form-control form-control-sm" id="fechaInicioInscripcion"
-                                        name="fecha_inicio_inscripcion">
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 class="text-secondary fw-bold mb-3">Información General</h6>
+                                    <div class="mb-3">
+                                        <label for="nombreEvento" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="nombreEvento"
+                                            name="nombre" value="{{ old('nombre') }}" required>
+                                        @error('nombre')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="descripcionEvento" class="form-label">Descripción</label>
+                                        <textarea class="form-control form-control-sm" id="descripcionEvento" name="descripcion" rows="3">{{ old('descripcion') }}</textarea>
+                                        @error('descripcion')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="imagenEventoCrear" class="form-label">Imagen del Evento</label>
+                                        <input class="form-control form-control-sm imagenEventoInput" type="file"
+                                            id="imagenEventoCrear" name="imagen" accept="image/*">
+                                        @error('imagen')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3 d-flex flex-column align-items-center">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
+                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                            style="display: none;"> <i class="bi bi-trash"></i> Eliminar Foto</button>
+                                    </div>
+
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="fechaFinInscripcion" class="form-label">Fecha Fin Inscripción</label>
-                                    <input type="date" class="form-control form-control-sm" id="fechaFinInscripcion"
-                                        name="fecha_final_inscripcion">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                                    <input type="date" class="form-control form-control-sm" id="fechaInicio"
-                                        name="fecha_inicio">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="fechaFin" class="form-label">Fecha Fin</label>
-                                    <input type="date" class="form-control form-control-sm" id="fechaFin"
-                                        name="fecha_final">
+                                <div class="col-sm-6">
+                                    <h6 class="text-secondary fw-bold mb-3">Detalles del Evento</h6>
+                                    <div class="mb-3">
+                                        <label for="id_tipo_evento" class="form-label">Tipo de Evento <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="id_tipo_evento"
+                                            name="id_tipo_evento" required>
+                                            <option value="" selected disabled>Selecciona un tipo</option>
+                                            @foreach ($tipoEvento as $tipo)
+                                                <option value="{{ $tipo->id_tipo_evento }}" @selected(old('id_tipo_evento') == $tipo->id_tipo_evento)>
+                                                    {{ $tipo->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('id_tipo_evento')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="row g-3">
+                                        <h6 class="text-secondary fw-bold">Fechas de inscripciones</h6>
+                                        <div class="col-md-6">
+                                            <label for="fechaInicioInscripcion" class="form-label">Inicio de Inscripción
+                                                <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="fechaInicioInscripcion" name="fecha_inicio_inscripcion"
+                                                value="{{ old('fecha_inicio_inscripcion') }}" required>
+                                            @error('fecha_inicio_inscripcion')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="fechaFinInscripcion" class="form-label">Fin de Inscripción <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="fechaFinInscripcion" name="fecha_final_inscripcion"
+                                                value="{{ old('fecha_final_inscripcion') }}" required>
+                                            @error('fecha_final_inscripcion')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <h6 class="text-secondary fw-bold mb-3">Fechas del evento</h6>
+
+                                        <div class="col-md-6">
+                                            <label for="fechaInicio" class="form-label">Fecha de Inicio <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm" id="fechaInicio"
+                                                name="fecha_inicio" value="{{ old('fecha_inicio') }}" required>
+                                            @error('fecha_inicio')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="fechaFin" class="form-label">Fecha Final <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm" id="fechaFin"
+                                                name="fecha_final" value="{{ old('fecha_final') }}" required>
+                                            @error('fecha_final')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3 mt-3">
-                                <label for="imagen" class="form-label">Imagen (URL)</label>
-                                <input type="text" class="form-control form-control-sm" id="imagen"
-                                    name="imagen">
-                            </div>
-                            <div class="mb-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <select class="form-select form-select-sm" id="estado" name="estado">
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3 mt-4">
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                                     data-bs-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn btn-success rounded-pill">Guardar Evento</button>
@@ -167,7 +217,7 @@
         {{-- Modal EDITAR --}}
         <div class="modal fade" id="modalEditarEvento" tabindex="-1" aria-labelledby="modalEditarEventoLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
                         <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarEventoLabel">
@@ -180,60 +230,97 @@
                         <form method="POST" id="formEditarEvento">
                             @csrf
                             @method('PUT')
-                            <div class="mb-3">
-                                <label for="editNombreEvento" class="form-label">Nombre <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="editNombreEvento"
-                                    name="nombre" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editDescripcionEvento" class="form-label">Descripción</label>
-                                <textarea class="form-control form-control-sm" id="editDescripcionEvento" name="descripcion" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editIdTipoEvento" class="form-label">Tipo de Evento <span
-                                        class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="editIdTipoEvento" name="id_tipo_evento"
-                                    required>
-                                    {{-- @foreach ($tipos_evento as $tipo)
-                                    <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
-                                @endforeach --}}
-                                </select>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="editFechaInicioInscripcion" class="form-label">Fecha Inicio
-                                        Inscripción</label>
-                                    <input type="date" class="form-control form-control-sm"
-                                        id="editFechaInicioInscripcion" name="fecha_inicio_inscripcion">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 class="text-secondary fw-bold mb-3">Información General</h6>
+
+                                    <div class="mb-3">
+                                        <label for="editNombreEvento" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="editNombreEvento"
+                                            name="nombre" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editDescripcionEvento" class="form-label">Descripción</label>
+                                        <textarea class="form-control form-control-sm" id="editDescripcionEvento" name="descripcion" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="imagenEventoEditar" class="form-label">Imagen del Evento</label>
+                                        <input class="form-control form-control-sm imagenEventoInputEditar" type="file"
+                                            id="imagenEventoEditar" name="imagen" accept="image/*">
+                                        @error('imagen')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3 d-flex flex-column align-items-center">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
+                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                        </div>
+                                        <input type="hidden" name="eliminar_imagen" id="eliminarImagenEvento"
+                                            value="0">
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                            style="display: none;"> <i class="bi bi-trash"></i> Eliminar Foto</button>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="editFechaFinInscripcion" class="form-label">Fecha Fin Inscripción</label>
-                                    <input type="date" class="form-control form-control-sm"
-                                        id="editFechaFinInscripcion" name="fecha_fin_inscripcion">
+
+                                <div class="col-sm-6">
+
+                                    <div class="row g-3">
+                                        <h6 class="text-secondary fw-bold mb-2">Detalles del Evento</h6>
+                                        <div class="col-md-12">
+                                            <label for="editIdTipoEvento" class="form-label">Tipo de Evento <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="editIdTipoEvento"
+                                                name="id_tipo_evento" required>
+                                                @foreach ($tipoEvento as $tipo)
+                                                    <option value="{{ $tipo->id_tipo_evento }}">{{ $tipo->nombre }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <h6 class="text-secondary fw-bold">Fechas de inscripciones</h6>
+
+                                        <div class="col-md-6">
+                                            <label for="editFechaInicioInscripcion" class="form-label">Inicio de
+                                                Inscripción <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="editFechaInicioInscripcion" name="fecha_inicio_inscripcion">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="editFechaFinInscripcion" class="form-label">Fin de
+                                                Inscripción <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="editFechaFinInscripcion" name="fecha_final_inscripcion">
+                                        </div>
+                                        <h6 class="text-secondary fw-bold">Fechas del Evento</h6>
+
+                                        <div class="col-md-6">
+                                            <label for="editFechaInicio" class="form-label">Fecha de Inicio <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="editFechaInicio" name="fecha_inicio">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="editFechaFin" class="form-label">Fecha Final <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm" id="editFechaFin"
+                                                name="fecha_final">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editEstado" class="form-label">Estado <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="editEstado" name="estado">
+                                                <option value="activo">Activo</option>
+                                                <option value="inactivo">Inactivo</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="editFechaInicio" class="form-label">Fecha Inicio</label>
-                                    <input type="date" class="form-control form-control-sm" id="editFechaInicio"
-                                        name="fecha_inicio">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="editFechaFin" class="form-label">Fecha Fin</label>
-                                    <input type="date" class="form-control form-control-sm" id="editFechaFin"
-                                        name="fecha_fin">
-                                </div>
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <label for="editImagen" class="form-label">Imagen (URL)</label>
-                                <input type="text" class="form-control form-control-sm" id="editImagen"
-                                    name="imagen">
-                            </div>
-                            <div class="mb-3">
-                                <label for="editEstado" class="form-label">Estado</label>
-                                <select class="form-select form-select-sm" id="editEstado" name="estado">
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                </select>
                             </div>
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
@@ -248,61 +335,30 @@
 
     </div>
 
-    {{-- Script para editar y eliminar --}}
-    <script>
-        $(document).on('click', '.btn-edit', function() {
-            let id = $(this).data('id');
-            $('#editNombreEvento').val($(this).data('nombre'));
-            $('#editDescripcionEvento').val($(this).data('descripcion'));
-            $('#editIdTipoEvento').val($(this).data('id_tipo_evento'));
-            $('#editFechaInicioInscripcion').val($(this).data('fecha_inicio_inscripcion'));
-            $('#editFechaFinInscripcion').val($(this).data('fecha_fin_inscripcion'));
-            $('#editFechaInicio').val($(this).data('fecha_inicio'));
-            $('#editFechaFin').val($(this).data('fecha_fin'));
-            $('#editImagen').val($(this).data('imagen'));
-            $('#editEstado').val($(this).data('estado'));
-            $('#formEditarEvento').attr('action', '/eventos/' + id);
-        });
 
-        function confirmarEliminacion(id) {
+    <script src="{{ asset('js/gestion_eventos.js') }}"></script>
+
+    <script>
+        // SweetAlert para mensajes de sesión
+        @if (session('success'))
             Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: $('#form-eliminar-' + id).attr('action'),
-                        method: $('#form-eliminar-' + id).attr('method'),
-                        data: $('#form-eliminar-' + id).serialize(),
-                        success: function(response) {
-                            Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'El evento ha sido eliminado correctamente.',
-                                icon: 'success',
-                                confirmButtonText: 'Aceptar'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Ocurrió un error al intentar eliminar el evento.',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                }
+                title: '¡Éxito!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
             });
-        }
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
+
+        // Pasa la URL de la ruta a una variable global para que el JS la use
+        const storeEventUrl = "{{ route('eventos.store') }}";
     </script>
 @endsection

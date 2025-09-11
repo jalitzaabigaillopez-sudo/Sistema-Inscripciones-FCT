@@ -359,22 +359,27 @@
             const sidebarClose = document.getElementById('sidebarClose');
 
             // Check screen size to set initial state
+            function setSidebarState() {
             const isSmallScreen = window.matchMedia('(max-width: 768px)').matches;
             if (isSmallScreen) {
                 sidebar.classList.add('sidebar-hidden');
+                sidebar.classList.remove('sidebar-open');
                 navbar.classList.add('navbar-full');
                 contentWrapper.classList.add('content-wrapper-full');
             } else {
                 sidebar.classList.remove('sidebar-hidden');
+                sidebar.classList.add('sidebar-open');
                 navbar.classList.remove('navbar-full');
                 contentWrapper.classList.remove('content-wrapper-full');
             }
+        }
+        setSidebarState();
 
             // Toggle sidebar on hamburger click
             toggleSidebar.addEventListener('click', function() {
                 sidebar.classList.toggle('sidebar-hidden');
                 sidebar.classList.toggle('sidebar-open');
-                if (!isSmallScreen) {
+                if (!window.matchMedia('(max-width: 768px)').matches) {
                     navbar.classList.toggle('navbar-full');
                     contentWrapper.classList.toggle('content-wrapper-full');
                 }
@@ -387,23 +392,10 @@
             });
 
             // Handle window resize
-            window.addEventListener('resize', function() {
-                const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
-                if (isNowSmallScreen) {
-                    sidebar.classList.add('sidebar-hidden');
-                    sidebar.classList.remove('sidebar-open');
-                    navbar.classList.add('navbar-full');
-                    contentWrapper.classList.add('content-wrapper-full');
-                } else {
-                    sidebar.classList.remove('sidebar-hidden');
-                    sidebar.classList.add('sidebar-open');
-                    navbar.classList.remove('navbar-full');
-                    contentWrapper.classList.remove('content-wrapper-full');
-                }
-            });
-        });
-
-
+           
+    window.addEventListener('resize', setSidebarState);
+});
+    
         $(document).ready(function() {
             $('#tabla').DataTable({
                 "ordering": false, // Desactiva el ordenamiento automático para todas las columnas
