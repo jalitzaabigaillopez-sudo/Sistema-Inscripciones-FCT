@@ -1,5 +1,5 @@
 // CREAR
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
     // Setup modal and image preview
     const crearModal = document.getElementById("modalEvento");
     if (crearModal) {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const guardarBtn = document.querySelector("#modalEvento .btn-success");
 
     if (formCrearEvento && guardarBtn) {
-        guardarBtn.addEventListener("click", function (e) {
+        guardarBtn.addEventListener("click", function(e) {
             e.preventDefault();
 
             // Client-side validation
@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 hasError = true;
             }
             if (!document.getElementById('fechaInicio').value || !document.getElementById(
-                'fechaFin').value ||
+                    'fechaFin').value ||
                 !document.getElementById('fechaInicioInscripcion').value || !document
-                    .getElementById('fechaFinInscripcion').value) {
+                .getElementById('fechaFinInscripcion').value) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log([...formData]); // Log form data for debugging
 
             $.ajax({
-                url: "{{ route('eventos.store') }}",
+                url: storeEventUrl, // Usa la variable global que definiste en la vista
                 method: "POST",
                 data: formData,
                 processData: false,
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response.success) {
                         Swal.fire({
                             title: '¡Éxito!',
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                     }
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     let errorMessage = 'Ocurrió un error al registrar el evento.';
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON?.errors || {};
@@ -131,11 +131,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const removeBtn = modalElement.querySelector(".removeImageBtn");
 
         if (inputFile && previewImage && previewText && removeBtn) {
-            inputFile.addEventListener("change", function () {
+            inputFile.addEventListener("change", function() {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         previewImage.src = e.target.result;
                         previewImage.style.display = "block";
                         previewText.style.display = "none";
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            removeBtn.addEventListener("click", function () {
+            removeBtn.addEventListener("click", function() {
                 previewImage.src = "";
                 previewImage.style.display = "none";
                 previewText.style.display = "block";

@@ -339,23 +339,26 @@
     <script src="{{ asset('js/gestion_eventos.js') }}"></script>
 
     <script>
-          // SweetAlert for session-based messages
-            @if (session('success'))
-                Swal.fire({
-                    title: '¡Éxito!',
-                    text: "{{ session('success') }}",
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                });
-            @endif
+        // SweetAlert para mensajes de sesión
+        @if (session('success'))
+            Swal.fire({
+                title: '¡Éxito!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
 
-            @if (session('error'))
-                Swal.fire({
-                    title: 'Error',
-                    text: "{{ session('error') }}",
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            @endif
+        @if (session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
+
+        // Pasa la URL de la ruta a una variable global para que el JS la use
+        const storeEventUrl = "{{ route('eventos.store') }}";
     </script>
 @endsection
