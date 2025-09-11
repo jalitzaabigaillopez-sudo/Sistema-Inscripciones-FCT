@@ -57,15 +57,11 @@
         </div>
     </div>
 
-   <div class="row g-3 mt-3">
+ <div class="row g-3 mt-3">
     <div class="col-md-12 text-center">
-        <label class="form-label fw-semibold">Imagen de perfil</label>
-        <div>
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" 
-                 alt="Imagen de perfil" 
-                 class="rounded-circle shadow-sm" 
-                 style="width: 180px; height: 180px; object-fit: cover;">
-        </div>
+        <label class="form-label fw-semibold mb-2">Imagen de perfil</label>
+        <div class="d-flex flex-column align-items-center">
+            <img src="images/image.png" alt="Centered person silhouette representing user profile, light gray background, neutral tone, no visible text, surrounded by a clean card layout in the profile administration section" class="img-fluid rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover;">
     </div>
 </div>
 

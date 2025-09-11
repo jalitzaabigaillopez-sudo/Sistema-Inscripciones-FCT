@@ -57,25 +57,47 @@
             cursor: pointer;
         }
 
-        /* Sidebar Styling */
-        .sidebar {
-            width: 250px;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            background-color: #222A59;
-            padding-top: 0;
-            /* Remove padding to ensure logo is at top */
-            color: white;
-            overflow-y: auto;
-            transition: transform 0.3s ease-in-out;
-            z-index: 1040;
-            /* Increased to ensure sidebar is above navbar */
-        }
+        
+       /* Sidebar visible por defecto en pantallas grandes */
+.sidebar {
+    width: 250px;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #222A59;
+    z-index: 1000;
+}
 
-        .sidebar-hidden {
-            transform: translateX(-100%);
-        }
+/* Oculto solo si se aplica la clase sidebar-hidden */
+.sidebar.sidebar-hidden {
+    transform: translateX(-100%);
+}
+
+/* En pantallas pequeñas, oculto por defecto */
+media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        z-index: 1040;
+    }
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+        background-color: #222A59;
+        z-index: 1040;
+    }
+    .sidebar-close {
+        display: block;
+    }
+    .navbar {
+        left: 0;
+        width: 100%;
+    }
+    .content-wrapper {
+        margin-left: 0;
+    }
+}
 
         .sidebar .logo-container {
             text-align: center;
@@ -153,10 +175,11 @@
                 /* Ensure sidebar is above content but below hamburger */
             }
 
-            .sidebar-open {
-                transform: translateX(0);
-                /* Show when toggled */
-            }
+           .sidebar.sidebar-open {
+           background-color: #222A59;
+           transform: translateX(0);
+           z-index: 1040;
+        }
 
             .sidebar-close {
                 display: block;
@@ -172,8 +195,14 @@
             }
 
             .content-wrapper {
-                margin-left: 0;
-                /* No margin shift on small screens */
+             margin-top: 60px;
+             margin-left: 250px;
+             padding: 1rem;
+             transition: margin-left 0.3s ease-in-out;
+            }
+
+            .sidebar.sidebar-hidden ~ .content-wrapper {
+             margin-left: 0;
             }
 
             .sidebar .logo-container img {
@@ -216,7 +245,7 @@
 
 <body>
     <!-- Sidebar -->
-    <nav class="sidebar sidebar-hidden" id="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="logo-container">
             <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
         </div>
@@ -346,58 +375,49 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const navbar = document.querySelector('.navbar');
-            const contentWrapper = document.getElementById('contentWrapper');
-            const toggleSidebar = document.getElementById('toggleSidebar');
-            const sidebarClose = document.getElementById('sidebarClose');
+   
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const contentWrapper = document.getElementById('contentWrapper');
+    const navbar = document.querySelector('.navbar');
 
-            // Check screen size to set initial state
-            const isSmallScreen = window.matchMedia('(max-width: 768px)').matches;
-            if (isSmallScreen) {
-                sidebar.classList.add('sidebar-hidden');
-                navbar.classList.add('navbar-full');
-                contentWrapper.classList.add('content-wrapper-full');
-            } else {
-                sidebar.classList.remove('sidebar-hidden');
-                navbar.classList.remove('navbar-full');
-                contentWrapper.classList.remove('content-wrapper-full');
-            }
+    function setContentMargin() {
+        if (sidebar.classList.contains('sidebar-hidden')) {
+            contentWrapper.classList.add('content-wrapper-full');
+            navbar.classList.add('navbar-full');
+        } else {
+            contentWrapper.classList.remove('content-wrapper-full');
+            navbar.classList.remove('navbar-full');
+        }
+    }
 
-            // Toggle sidebar on hamburger click
-            toggleSidebar.addEventListener('click', function() {
-                sidebar.classList.toggle('sidebar-hidden');
-                sidebar.classList.toggle('sidebar-open');
-                if (!isSmallScreen) {
-                    navbar.classList.toggle('navbar-full');
-                    contentWrapper.classList.toggle('content-wrapper-full');
-                }
-            });
+    // Sidebar visible por defecto en escritorio
+    function adjustSidebarOnLoad() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('sidebar-hidden');
+            setContentMargin();
+        } else {
+            sidebar.classList.add('sidebar-hidden');
+            setContentMargin();
+        }
+    }
 
-            // Close sidebar on close button click (small screens)
-            sidebarClose.addEventListener('click', function() {
-                sidebar.classList.add('sidebar-hidden');
-                sidebar.classList.remove('sidebar-open');
-            });
+    toggleSidebar.addEventListener('click', function () {
+        sidebar.classList.toggle('sidebar-hidden');
+        setContentMargin();
+    });
 
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                const isNowSmallScreen = window.matchMedia('(max-width: 768px)').matches;
-                if (isNowSmallScreen) {
-                    sidebar.classList.add('sidebar-hidden');
-                    sidebar.classList.remove('sidebar-open');
-                    navbar.classList.add('navbar-full');
-                    contentWrapper.classList.add('content-wrapper-full');
-                } else {
-                    sidebar.classList.remove('sidebar-hidden');
-                    sidebar.classList.add('sidebar-open');
-                    navbar.classList.remove('navbar-full');
-                    contentWrapper.classList.remove('content-wrapper-full');
-                }
-            });
-        });
+    sidebarClose.addEventListener('click', function () {
+        sidebar.classList.add('sidebar-hidden');
+        setContentMargin();
+    });
+
+    window.addEventListener('resize', adjustSidebarOnLoad);
+    adjustSidebarOnLoad();
+});
 
 
         $(document).ready(function() {
