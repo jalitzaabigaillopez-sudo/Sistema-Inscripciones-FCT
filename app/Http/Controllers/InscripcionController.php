@@ -18,7 +18,7 @@ class InscripcionController extends Controller
     public function index(Request $request)
     {
         $data = Inscripcion::all();
-        $eventos = Evento::all();
+        $eventos = Evento::where('estado', 'activo')->get();
         $academias = Academia::all();
         return view('catalogos.inscripciones.index', compact('data', 'eventos', 'academias'));
     }

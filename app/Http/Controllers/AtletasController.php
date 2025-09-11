@@ -20,7 +20,7 @@ class AtletasController extends Controller
         $data = Atleta::all();
         $grados = Grado::all();
         $categorias = Categoria::all();
-        $academias = Academia::all();
+        $academias = Academia::where('estado', 'activo')->get();
         return view('catalogos.atletas.index', compact('data', 'grados', 'categorias', 'academias'));
     }
 

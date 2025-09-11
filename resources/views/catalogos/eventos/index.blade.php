@@ -311,14 +311,17 @@
                                                 name="fecha_final">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="editEstado" class="form-label">Estado <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="editEstado" name="estado">
-                                                <option value="activo">Activo</option>
-                                                <option value="inactivo">Inactivo</option>
-                                            </select>
-                                        </div>
+                                      <div class="mb-3">
+    <label class="form-label d-block">Estado <span class="text-danger">*</span></label>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="estado" id="editEstadoActivo" value="activo" checked>
+        <label class="form-check-label" for="editEstadoActivo">Activo</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="estado" id="editEstadoInactivo" value="inactivo">
+        <label class="form-check-label" for="editEstadoInactivo">Inactivo</label>
+    </div>
+</div>
                                     </div>
                                 </div>
                             </div>
