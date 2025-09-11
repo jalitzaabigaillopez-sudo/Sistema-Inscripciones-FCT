@@ -59,15 +59,9 @@ Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cue
  * =============================================================================================================================================
  * Rutas inscripciones
  */
-// Route::get('/inscripciones-parte1', [InscripcionController::class, 'vistaInscripcionP1']);
+Route::get('/nuevaInscripcion', [InscripcionController::class, 'vistaInscripcionesAcademia'])->name('inscripcion.academia');
+Route::get('/misInscripciones', [InscripcionController::class, 'vistaMisInscripcionesAcademia'])->name('misInscripciones');
 
-// Route::post('/obtenerAtletasPorRol', [AtletasController::class, 'obtenerAtletasPorRol']);
-
-// Route::post('/inscripciones-parte2', [InscripcionController::class, 'vistaInscripcionP2'])->name('inscripciones-parte2');
-
-
-
-Route::get('/nueva-Inscripcion-Academia/{id_academia}', [InscripcionController::class, 'vistaInscripcionesAcademia'])->name('inscripcion.academia');
 Route::post('/obtenerModalidades', [ModalidadController::class, 'obtenerModalidades']);
 Route::post('/obtenerSubModalidades', [SubModalidadController::class, 'obtenerSubModalidades']);
 Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategorias']);
@@ -187,5 +181,9 @@ Route::get('/cambiar-contraseña-vencida/{id}', [PasswordController::class, 'vis
 Route::post('/cambiar-contraseña-vencida', [PasswordController::class, 'cambiarContraseñaVencida'])->name('cambiar.contraseñaVencida');
 
 Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona']);
+
+/**
+ * Rutas dashboard
+ */
 
 

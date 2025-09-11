@@ -14,10 +14,6 @@ $(document).ready(function () {
      * VARIABLES DE CONTROL
      */
     let editMode = false;
-    // |
-    // |
-    // |===> critical data variable                                          
-    let delta = 0;
 
     //================================== MEMORY ACCESS =======================================
     let listaAtletas = [];
@@ -175,7 +171,7 @@ $(document).ready(function () {
 
         var panelOriginal = $('#panelRegistro');
         var contenedor = $('#contenedor');
-        contenedor.find('.baseCard').not('.clonEdit').remove();
+        // contenedor.find('.baseCard').not('.clonEdit').remove();
 
         // Crear N-1 copias limpias
         for (let i = 1; i < cantidad_atletas; i++) {
@@ -589,8 +585,13 @@ $(document).ready(function () {
      * @param {*} id  Id del tr "id_atleta" que se edita.
      * @param {*} tr_code  codigo unico que vincula el atleta a un tr en la tabla.
      */
-    function actualizarTrTablaInscripciones(obj, id, tr_code) {
+    function actualizarTrTablaInscripciones(obj, tr_code) {
         let fila = $('tr[data-code="' + tr_code + '"]');
+
+        if (fila.length === 0) {
+            console.warn("⚠️ No se encontró fila con data-code:", tr_code);
+            return;
+        }
 
         fila.find('td:eq(0)').text('#');
         fila.find('td:eq(1)').text(obj.atleta);
@@ -602,7 +603,14 @@ $(document).ready(function () {
         fila.find('td:eq(7)').text(obj.categoria);
         fila.find('td:eq(8)').text(obj.grupo);
 
-        fila.attr('data-id', id);
+        // 🔹 Cambiar atributos al nuevo code y id
+        fila.attr({
+            "data-code": obj.tr_code,
+            "data-id": obj.id_atleta
+        });
+
+        fila.data("code", obj.tr_code);
+        fila.data("id", obj.id_atleta);
     }
 
     /**
@@ -693,15 +701,8 @@ $(document).ready(function () {
     }
 
     function actualizarListas(listaCompleta) {
-        listaAtletas = [];
-        gruposAtletas = [];
-        for (let atleta of listaCompleta) {
-            if (atleta.grupo.includes("#")) {
-                gruposAtletas.push(atleta);
-            } else {
-                listaAtletas.push(atleta);
-            }
-        }
+        listaAtletas = listaCompleta.filter(a => !a.grupo.startsWith("#"));
+        gruposAtletas = listaCompleta.filter(a => a.grupo.startsWith("#"));
     }
 
     //=========================== ========================= ===========================
@@ -720,21 +721,20 @@ $(document).ready(function () {
     $(document).on("click", ".bEliminar", function () {
         let $fila = $(this).closest("tr");
         let id = $fila.data("id");
+        let tr_code = $fila.data("code");
         let grupo = $fila.find("td:eq(8)").text().trim();
 
         if (grupo.includes("#")) {// tiene grupo
             if (confirm("⚠️ Aviso! Este atleta esta en grupo, si lo elimina eliminara a los atletas de ese grupo. ¿Desea continuar?")) {
-
-                for (let atleta of gruposAtletas) {
-
-                }
+                gruposAtletas = gruposAtletas.filter(atleta => atleta.grupo !== grupo);
+                $("#tabla-inscripcion tbody tr[data-grupo='" + grupo + "']").remove();
             } else {
 
             }
 
         } else {// no tiene grupo
             if (confirm("⚠️ Aviso! ¿Esta seguro que quieres eliminar este atleta?")) {
-                listaAtletas = listaAtletas.filter(atleta => atleta.id_atleta !== id);
+                listaAtletas = listaAtletas.filter(atleta => atleta.tr_code !== tr_code);
                 $fila.remove();
             } else {
 
@@ -745,7 +745,7 @@ $(document).ready(function () {
     // ☑️ Delegación
     $(document).on("click", ".bEditar", function () {
         let $fila = $(this).closest("tr");
-        let tr_code = $fila.data("code"); // ← este debe ser el id_atleta, viene del tr
+        let tr_code = $fila.attr("data-code"); // más seguro que .data()
         let grupo = $fila.find("td:eq(8)").text().trim();
         let totalCards = $(".clonEdit").length;
 
@@ -757,17 +757,15 @@ $(document).ready(function () {
         $("#contenedor .clonEdit").remove();
 
         if (!grupo.includes("#")) {// ATLETA INDIVIDUAL 
+
             for (let item of listaAtletas) {
 
                 if (item.tr_code === tr_code) {
+
                     let panelOriginal = $("#panelRegistro");
                     let contenedor = $("#contenedor");
 
-                    // Buscar atleta por id
-                    console.log("Lista: " + JSON.stringify(listaAtletas));
                     let atleta = item;
-                    console.log("El atleta es: " + JSON.stringify(atleta));
-
 
                     // Crear clon
                     let nuevaCard = panelOriginal.clone();
@@ -871,7 +869,6 @@ $(document).ready(function () {
                     var t = $(this).text().toLowerCase();
                     return t.includes('entrenador') || t.includes('asistente');
                 }).remove();
-
             });
         }
 
@@ -880,10 +877,18 @@ $(document).ready(function () {
                 <i class="bi bi-plus-circle"></i> Guardar
             </button>
         `);
+
+        $('html, body').animate({
+            scrollTop: $("#contenedor").offset().top
+        }, 500); // 500 ms de animación
     });
 
     // ☑️ Delegación
     $(document).on("click", "#bGuardar", function () {
+        let contAlertas = 0;
+        let totalCards = $(".clonEdit").length;
+        console.log("hay " + totalCards + " clonEdit");
+
         // GUARDAR EDICION INDIVIDUAL
         $(".clonEdit").not(".baseCard").each(function () {
             var id_atleta = $(this).find(".atletas-select option:selected").data("id");
@@ -900,22 +905,32 @@ $(document).ready(function () {
             let tr_code = $(this).data("code");
             let grupo = $(this).data("grupo");
 
+            contAlertas++;
+
             if (validarCampos(rol) === false) {
-                alert("⚠️ Verifique que no hayan campos vacíos en su formulario.");
+                if (contAlertas === totalCards) {
+                    alert("⚠️ Verifique que no hayan campos vacíos en su formulario.");
+                }
 
-            } else {
+            } else if (atletaRepetidoGrupo() === false) {
+                if (totalCards > 1) {
+                    if (contAlertas === totalCards) {
+                        alert("⚠️ Aviso! Uno o mas atletas estan repetidos en su formulario.");
+                    }
+                }
+                return;
+            } else if (!(peso >= pesoMin && peso <= pesoMax) && rol === 'atleta') {
+                alert("⚠️ Verifique que los pesos esten en el rango seleccionado");
+                return;
+            }
 
+            else {
                 let listaCompleta = listaAtletas.concat(gruposAtletas);
 
                 for (let i = 0; i < listaCompleta.length; i++) {
+
                     if (tr_code === listaCompleta[i].tr_code) {
-
                         let nuevo_tr_code = crypto.randomUUID();
-
-                        let $fila = $("tr[data-code='" + tr_code + "']");
-                        $fila.attr("data-code", nuevo_tr_code);
-                        // console.log("Usuario a modificar: " + JSON.stringify(data));
-                        // console.log("Usuario nuevo: " + JSON.stringify(listaCompleta[i]));
 
                         let obj = {
                             id_atleta: id_atleta,
@@ -931,13 +946,13 @@ $(document).ready(function () {
                             tr_code: nuevo_tr_code
                         };
 
+                        actualizarTrTablaInscripciones(obj, tr_code);
+
                         listaCompleta[i] = obj;
-                        // actualizar las lista separadas "listaAtletas, gruposAtletas"                                         🚩
-                        actualizarTrTablaInscripciones(listaCompleta[i], obj.id_atleta, nuevo_tr_code);
+                        actualizarListas(listaCompleta);
                     }
                 }
 
-                actualizarListas(listaCompleta);
                 alert("✅ Exito! Se han actualizado los datos correctamente.");
 
                 $("#panelRegistro").show();

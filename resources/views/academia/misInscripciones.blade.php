@@ -2,7 +2,7 @@
 
 @section('title', 'Mis Inscripciones')
 @section('content')
-<a href="{{ route('dashboard.academias') }}" class="btn btn-outline-primary float-end">
+<a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
     <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
 </a>
 

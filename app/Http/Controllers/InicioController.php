@@ -27,6 +27,7 @@ class InicioController extends Controller
             return view('admin/dashboard', compact('usuario'));
         }
         //academia
-        return view('academia/dashboard-academia', compact('usuario'));
+        $academia = $usuario->academia;
+        return view('academia/dashboard-academia', compact('usuario', 'academia'));
     }
 }

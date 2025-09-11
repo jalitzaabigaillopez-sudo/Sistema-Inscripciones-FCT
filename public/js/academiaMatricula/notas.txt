@@ -1,0 +1,6 @@
+EDITAR
+1.Al editar un grupo, hay muchos problemas si se permite seleccionar una actividad individual, ¿que pasa con los demas atletas?
+2.Igual que la anterior pero alrevez, si un atleta esta en una actividad individual y edita para hacer un grupo.
+3.Si se edita no se esta tomando en cuenta la restriccion de atleta repetido.
+4.Corregir la validacion de sexos en submodalidades
+5.Categorias no se selecciona automaticamente al editar

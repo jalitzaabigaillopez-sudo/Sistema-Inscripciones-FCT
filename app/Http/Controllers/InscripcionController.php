@@ -7,7 +7,7 @@ use App\Models\Evento;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
-use App\Models\Atleta;
+use App\Models\Usuario;
 
 class InscripcionController extends Controller
 {
@@ -56,32 +56,23 @@ class InscripcionController extends Controller
         $inscripcion->save();
     }
 
-    public function vistaInscripcionP1()
-    {
-        //vista, evento e inscricipcion de prueba
-        $academia = Academia::find(1);
-        $evento = Evento::with('modalidades')->find(7);
-
-        return view('inscripciones-parte1', compact('academia', 'evento'));
-    }
-
-    public function vistaInscripcionP2(Request $request)
-    {
-        $ids = json_decode($request->input('ids'), true);//son las ids de los atletas guardada en forma de arreglo en un input tipo hidden desde js
-        $atletas = Atleta::whereIn('id_atleta', $ids)->get();
-
-        $id_evento = $request->input('id_evento');
-        $evento = Evento::with('modalidades')->find($id_evento);        
-
-        return view('inscripciones-parte2', compact('atletas', 'evento'));
-    }
-
     //====================================================================================================================================
-    public function vistaInscripcionesAcademia($id_academia)
+    public function vistaInscripcionesAcademia(Request $request)
     {
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = Usuario::find($usuarioId);
+
         $eventos = Evento::all();
-        $academia = Academia::find($id_academia);
+        $academia = $usuario->academia;
         $atletas = $academia->atletas;
         return view('academia/inscripcionEvento', compact('eventos', 'academia','atletas'));
+    }
+
+    public function vistaMisInscripcionesAcademia(Request $request)
+    {
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+        return view('academia/misInscripciones', compact('academia'));
     }
 }

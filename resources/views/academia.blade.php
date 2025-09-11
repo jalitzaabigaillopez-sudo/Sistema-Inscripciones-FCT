@@ -212,7 +212,7 @@
         <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
     </div>
     <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-    <a href="{{ route('dashboard.academias') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
 
     <!-- Submenú de Inscripciones a eventos -->
     <div class="submenu">
@@ -221,8 +221,8 @@
             <i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <div class="submenu-items d-none" id="catalogosMenu">
-            <a href="{{ route('academia.inscripcionEvento') }}"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
-      <a href="{{ route('academia.misInscripciones') }}"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
+            <a href="{{ route('inscripcion.academia') }}"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
+      <a href="{{ route('misInscripciones') }}"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
         </div>
     </div>
 
@@ -353,7 +353,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->
-    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.min.js') }}"></script>
+    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
 </body>
 
 </html>
