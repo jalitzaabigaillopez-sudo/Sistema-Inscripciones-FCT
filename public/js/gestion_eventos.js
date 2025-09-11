@@ -181,7 +181,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 .value);
             const regEndDate = new Date(document.getElementById('editFechaFinInscripcion').value);
             const tipoEvento = document.getElementById('editIdTipoEvento').value;
-            const estado = document.getElementById('editEstado').value;
+            
+            // CAMBIO AQUÍ
+            const estado = document.querySelector('input[name="estado"]:checked')?.value || '';
 
             let hasError = false;
             let errorMessage = '';
@@ -202,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!document.getElementById('editFechaInicio').value || !document.getElementById(
                 'editFechaFin').value ||
                 !document.getElementById('editFechaInicioInscripcion').value || !document
-                    .getElementById('editFechaFinInscripcion').value) {
+                .getElementById('editFechaFinInscripcion').value) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -347,7 +349,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('editFechaInicio').value = evento.fecha_inicio;
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;
-                    document.getElementById('editEstado').value = evento.estado;
+                    
+                    // CAMBIO AQUÍ
+                    const radioEstado = document.querySelector(`input[name="estado"][value="${evento.estado}"]`);
+                    if (radioEstado) {
+                        radioEstado.checked = true;
+                    }
 
                     // Cargar imagen si existe
                     const previewImage = document.querySelector(
@@ -400,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 Swal.fire({
                     title: 'Error',
-                    text: errorMessage,
+                    html: errorMessage,
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
