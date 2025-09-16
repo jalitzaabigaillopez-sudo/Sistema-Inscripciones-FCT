@@ -119,7 +119,13 @@ Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.m
 Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
 
 
+//Preregistro de academias
 
+Route::get('/preregistro-academia', function () {
+    return view('academia.preregistro');
+})->name('academia.preregistro.form');
+
+Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAcademia'])->name('academia.preregistro.process');
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
