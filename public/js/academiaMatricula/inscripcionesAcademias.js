@@ -550,8 +550,6 @@ $(document).ready(function () {
     function actualizarTablaInscripciones(obj) {
         var tbody = $("#tabla-inscripcion tbody");
 
-        // let dataCode = crypto.randomUUID();
-
         var fila = `
         <tr data-id="${obj.id_atleta}" data-grupo="${obj.grupo}" data-code="${obj.tr_code}">
             <td>#</td>
@@ -683,7 +681,6 @@ $(document).ready(function () {
             let a2 = gruposAtletas.filter(a => a.rol === 'atleta').length;
             let atletas = a1 + a2
 
-
             // Si no hay atletas, no se permite ningún asistente
             if (atletas === 0) {
                 alert("⚠️ No se permiten asistentes sin atletas.");
@@ -729,7 +726,7 @@ $(document).ready(function () {
 
         $("#containerButton").html(`
             <button id="bInscribir" class="btn btn-outline-success w-100">
-                <i class="bi bi-plus-circle"></i> Inscribir
+                    <i class="bi bi-plus-circle"></i> Inscribir
             </button>
         `);
 
@@ -823,7 +820,6 @@ $(document).ready(function () {
             for (let item of gruposAtletas) {
 
                 if (item.grupo === grupo) {
-                    // atletasModificar.push(item);
 
                     // Buscar atleta por id
                     let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
@@ -889,7 +885,7 @@ $(document).ready(function () {
 
         $('html, body').animate({
             scrollTop: $("#contenedor").offset().top
-        }, 500); // 500 ms de animación
+        }, 500); 
     });
 
     // ☑️ Delegación

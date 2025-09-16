@@ -206,3 +206,4 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
  * Rutas atletas
  */
 Route::get('/atletas', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
+Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
