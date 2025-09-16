@@ -258,11 +258,6 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('academia.misInscripciones') }}">
-                                <i class="bi bi-list-check"></i> Mis inscripciones
-                            </a>
-                        </li>
-                        <li>
                             <form action="{{ route('logout.process') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Cerrar
