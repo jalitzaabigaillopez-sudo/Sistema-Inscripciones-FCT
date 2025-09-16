@@ -128,8 +128,8 @@
                                         <select class="form-select form-select-sm" id="tipo_identificacion"
                                             name="tipo_identificacion" required>
                                             <option value="" disabled selected>Seleccione...</option>
-                                            <option value="nacional">Nacional</option>
-                                            <option value="otro">Otro</option>
+                                            <option value="Nacional">Nacional</option>
+                                            <option value="Otro">Otro</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">

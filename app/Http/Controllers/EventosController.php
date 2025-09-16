@@ -16,6 +16,10 @@ class EventosController extends Controller
      */
     public function index()
     {
+        Evento::where('estado', 'activo')
+            ->where('fecha_final', '<', now())
+            ->update(['estado' => 'finalizado']);
+
         $data = Evento::all();
         $tipoEvento = TipoEvento::all();
         return view('catalogos.eventos.index', compact('data', 'tipoEvento'));

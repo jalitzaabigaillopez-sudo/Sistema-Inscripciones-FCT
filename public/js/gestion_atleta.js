@@ -68,6 +68,18 @@ $(document).ready(function () {
             $('#e_sexo').val(data.sexo.toLowerCase());
             $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
             $('#e_grado').val(data.id_grado);
+
+
+            if ($("#e_academia option[value='" + data.id_academia + "']").length === 0) {
+                // Solo se agrega si no está en la lista (porque es inactiva)
+                $("#e_academia").append(
+                    $("<option>", {
+                        value: data.id_academia,
+                        text: data.academias.nombre
+                    })
+                );
+            }
+
             $('#e_academia').val(data.id_academia);
             $('input[name="estado"][value="' + data.estado + '"]').prop('checked', true);
 
