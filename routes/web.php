@@ -66,7 +66,12 @@ Route::post('/obtenerModalidades', [ModalidadController::class, 'obtenerModalida
 Route::post('/obtenerSubModalidades', [SubModalidadController::class, 'obtenerSubModalidades']);
 Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategorias']);
 
-
+/**
+ * =============================================================================================================================================
+ * Rutas atletas
+ */
+Route::get('/atletas-academia', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
+Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
 
 
 //==============================================================================================================================================
@@ -201,9 +206,3 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 
 
 
-/**
- * =============================================================================================================================================
- * Rutas atletas
- */
-Route::get('/atletas', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
-Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
