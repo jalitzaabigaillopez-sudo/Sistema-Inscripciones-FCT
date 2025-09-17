@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\DB;
 
 class AtletasController extends Controller
 {
@@ -57,7 +58,127 @@ class AtletasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validateData = $request->validate([
+                'tipo_identificacion' => 'required|string|in:Nacional,Otro',
+                'identificacion' => 'required|string|max:30',
+                'rol' => 'required|string|in:entrenador,asistente,atleta',
+                'sexo' => 'required|string|in:Femenino,Masculino',
+                'id_grado' => 'required|integer',
+                'id_academia' => 'required|integer',
+                'nombre' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
+                'primer_apellido' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
+                'segundo_apellido' => 'nullable|string|max:255',
+                'fecha_nacimiento' => 'nullable|date|required_if:tipo_identificacion,Otro',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            // Verificar que no exista ya registrado
+            $atleta = Atleta::where('identificacion', $validateData['identificacion'])->first();
+            if ($atleta) {
+                return response()->json(['error' => 'Este atleta ya se encuentra registrado'], 422);
+            }
+
+            // Variables comunes
+            $nombre = $validateData['nombre'] ?? null;
+            $primer_apellido = $validateData['primer_apellido'] ?? null;
+            $segundo_apellido = $validateData['segundo_apellido'] ?? null;
+            $fecha_nacimiento = $validateData['fecha_nacimiento'] ?? null;
+            $id_padron = 1; // Valor por defecto para id_padron_nacimiento
+
+            if ($validateData['tipo_identificacion'] === 'Nacional') {
+                // Buscar en padrón
+                $padronNacimiento = PadronNacimiento::where('identificacion', $validateData['identificacion'])->first();
+                if (!$padronNacimiento) {
+                    return response()->json(['error' => 'Este número de cédula no está registrado en el padrón'], 422);
+                }
+
+                // Sobrescribir datos con los del padrón
+                $nombre = $padronNacimiento->nombre;
+                $primer_apellido = $padronNacimiento->primer_apellido;
+                $segundo_apellido = $padronNacimiento->segundo_apellido;
+                $fecha_nacimiento = $padronNacimiento->fecha_nacimiento;
+                $id_padron = $padronNacimiento->id_padron_nacimiento;
+            }
+
+            // Validar fecha_nacimiento final
+            if (!$fecha_nacimiento || !strtotime($fecha_nacimiento)) {
+                return response()->json(['error' => 'La fecha de nacimiento no es válida'], 422);
+            }
+
+            // Calcular división según el año de nacimiento
+            $anioNacimiento = date('Y', strtotime($fecha_nacimiento));
+            $division = DB::table('divisiones')
+                ->where('year_inicio', '<=', $anioNacimiento)
+                ->where('year_final', '>=', $anioNacimiento)
+                ->first();
+
+            if (!$division) {
+                return response()->json(['error' => 'No se encontró una división para el año de nacimiento'], 422);
+            }
+            $divisionId = $division->id_division;
+
+            // Crear atleta
+            // Crear atleta
+            $atleta = new Atleta();
+            $atleta->tipo_identificacion = $request->tipo_identificacion;
+            $atleta->identificacion = $request->identificacion;
+            $atleta->nombre = $nombre;
+            $atleta->primer_apellido = $primer_apellido;
+            $atleta->segundo_apellido = $segundo_apellido;
+            $atleta->rol = $request->rol;
+            $atleta->sexo = $request->sexo;
+            $atleta->fecha_nacimiento = $fecha_nacimiento;
+            $atleta->estado = 'activo';
+            $atleta->id_padron_nacimiento = $id_padron;
+            $atleta->id_grado = $request->id_grado;
+            $atleta->id_academia = $request->id_academia;
+            $atleta->id_division = $divisionId;
+
+            // Guardar imagen si se proporcionó
+            if ($request->hasFile('imagen')) {
+                $path = $request->file('imagen')->store('atletas', 'public');
+                $atleta->imagen = $path;
+            }
+
+            $atleta->save();
+
+            return response()->json(['message' => 'Atleta registrado con éxito'], 201);
+        } catch (\Exception $e) {
+            Log::error('Error al registrar atleta: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function buscarPadron($identificacion)
+    {
+        $padron = PadronNacimiento::where('identificacion', $identificacion)->first();
+
+        if ($padron) {
+            return response()->json([
+                'found' => true,
+                'nombre' => $padron->nombre,
+                'primer_apellido' => $padron->primer_apellido,
+                'segundo_apellido' => $padron->segundo_apellido,
+                'fecha_nacimiento' => $padron->fecha_nacimiento,
+            ]);
+        }
+
+        return response()->json(['found' => false]);
+    }
+
+    public function calcularDivision($fecha)
+    {
+        $anio = date('Y', strtotime($fecha));
+        $division = DB::table('divisiones')
+            ->where('year_inicio', '<=', $anio)
+            ->where('year_final', '>=', $anio)
+            ->first();
+
+        if ($division) {
+            return response()->json(['division' => $division->division]);
+        }
+        return response()->json(['division' => null]);
     }
 
     public function insertarAtleta(Request $request)

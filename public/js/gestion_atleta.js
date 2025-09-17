@@ -1,8 +1,121 @@
 // CREAR
 $(document).ready(function () {
+    // Configurar previsualización de imagen
+    function setupImagePreview(modalElement) {
+        const inputFile = modalElement.querySelector(".fotoAtletaInput");
+        const previewImage = modalElement.querySelector(".previewImage");
+        const previewText = modalElement.querySelector(".previewText");
+        const removeBtn = modalElement.querySelector(".removeImageBtn");
+
+        if (inputFile && previewImage && previewText && removeBtn) {
+            inputFile.addEventListener("change", function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewText.style.display = "none";
+                        removeBtn.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeBtn.addEventListener("click", function() {
+                previewImage.src = "";
+                previewImage.style.display = "none";
+                previewText.style.display = "block";
+                removeBtn.style.display = "none";
+                inputFile.value = "";
+            });
+        }
+    }
+
+    // Configurar previsualización en el modal
+    const atletaModal = document.getElementById("modalAtleta");
+    if (atletaModal) {
+        setupImagePreview(atletaModal);
+    }
+
+    function toggleCampos(tipo) {
+        if (tipo === "Nacional") {
+            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
+                .val("")
+                .prop("readonly", true);
+        } else {
+            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
+                .prop("readonly", false);
+        }
+    }
+
+    function actualizarDivision(fecha) {
+        if (!fecha) {
+            $("#division").val("");
+            return;
+        }
+        $.ajax({
+            url: "/calcular-division/" + fecha,
+            type: "GET",
+            success: function(data) {
+                if (data.division) {
+                    $("#division").val(data.division);
+                } else {
+                    $("#division").val("No disponible");
+                }
+            },
+            error: function() {
+                $("#division").val("Error al calcular");
+            }
+        });
+    }
+
+    // Cambio de tipo_identificacion
+    $("#tipo_identificacion").on("change", function () {
+        toggleCampos($(this).val());
+        $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
+        $("#division").val("");
+    });
+
+    // Buscar en padrón cuando pierde foco identificación
+    $("#identificacion").on("blur", function () {
+        if ($("#tipo_identificacion").val() === "Nacional") {
+            let identificacion = $(this).val();
+            if (identificacion) {
+                $.ajax({
+                    url: "/buscar-padron/" + identificacion,
+                    type: "GET",
+                    success: function (data) {
+                        if (data.found) {
+                            $("#nombre").val(data.nombre);
+                            $("#primer_apellido").val(data.primer_apellido);
+                            $("#segundo_apellido").val(data.segundo_apellido);
+                            $("#fecha_nacimiento").val(data.fecha_nacimiento);
+                            actualizarDivision(data.fecha_nacimiento);
+                        } else {
+                            alert("No se encontró en el padrón");
+                            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
+                            $("#division").val("");
+                        }
+                    },
+                    error: function () {
+                        alert("Error al consultar el padrón");
+                    }
+                });
+            }
+        }
+    });
+
+    // Actualizar división al cambiar fecha de nacimiento (para "Otro")
+    $("#fecha_nacimiento").on("change", function() {
+        let fecha = $(this).val();
+        actualizarDivision(fecha);
+    });
+
+    // Manejo del formulario
     $('#formRegistrarAtleta').on('submit', function (e) {
         e.preventDefault();
-        var formData = $(this).serialize();
+        var formData = new FormData(this); // Usar FormData para soportar imagen
         var actionUrl = $(this).attr('action');
         var $errorMessages = $('#errorMessages');
 
@@ -12,27 +125,34 @@ $(document).ready(function () {
             url: actionUrl,
             type: 'POST',
             data: formData,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
+            processData: false, // Necesario para FormData
+            contentType: false, // Necesario para FormData
             success: function (response) {
+                console.log('Éxito: Registro completado', response); // Para depuración
                 $('#modalAtleta').modal('hide');
                 alert(response.message);
-                // Opcional: recargar la tabla de atletas
-                // $('#tablaAtletas').DataTable().ajax.reload();
-                window.location.reload(); // O redirigir a la lista de atletas
+                $('#formRegistrarAtleta')[0].reset(); // Corregido: usar referencia directa al formulario
+                // Resetear previsualización de imagen
+                document.querySelector(".previewImage").style.display = "none";
+                document.querySelector(".previewText").style.display = "block";
+                document.querySelector(".removeImageBtn").style.display = "none";
+                window.location.href = window.location.href; // Refrescar la página
             },
             error: function (xhr) {
+                console.log('Respuesta del servidor:', xhr.responseText);
                 if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.error || xhr.responseJSON.errors;
+                    var errors = xhr.responseJSON?.errors || { error: [xhr.responseJSON?.error] };
                     if (typeof errors === 'string') {
                         $errorMessages.append('<p>' + errors + '</p>');
                     } else {
                         $.each(errors, function (key, error) {
-                            $errorMessages.append('<p>' + error[0] + '</p>');
+                            $errorMessages.append('<p>' + (Array.isArray(error) ? error[0] : error) + '</p>');
                         });
                     }
                     $errorMessages.removeClass('d-none');
+                } else if (xhr.status === 500) {
+                    $errorMessages.text('Error interno del servidor: ' + (xhr.responseJSON?.error || 'Revisa los logs de Laravel')).removeClass('d-none');
+                    alert('Error 500: ' + (xhr.responseJSON?.error || 'Error desconocido'));
                 } else {
                     alert('Error al registrar el atleta. Por favor, intenta de nuevo.');
                 }
@@ -40,6 +160,7 @@ $(document).ready(function () {
         });
     });
 });
+
 
 
 // ACTUALIZAR
