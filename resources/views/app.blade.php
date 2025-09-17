@@ -3,7 +3,6 @@
 
 <head>
     <title>@yield('tituloArriba')</title>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Federación Costarricense de Taekwondo')</title>
@@ -17,245 +16,197 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-
-
     <style>
-        /* Body adjustment to prevent overflow issues */
-        body {
-            overflow-x: hidden;
-        }
+        :root {
+  --color-primary: #222A59;
+  --color-hover: #2e386e;
+  --text-light: #ffffff;
+  --sidebar-width: 250px;
+}
 
-        /* Navbar Styling */
-        .navbar {
-            background-color: #222A59;
-            padding: 0.5rem 1rem;
-            position: fixed;
-            top: 0;
-            left: 250px;
-            /* Start after sidebar width on large screens */
-            width: calc(100% - 250px);
-            /* Span remaining width */
-            z-index: 1030;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
-        }
+/* Body */
+body {
+  overflow-x: hidden;
+  font-family: 'Roboto', sans-serif;
+}
 
-        .navbar-full {
-            left: 0;
-            width: 100%;
-        }
+/* Navbar */
+.navbar {
+  background-color: var(--color-primary);
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  z-index: 1030;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
 
-        .navbar-text {
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
+.navbar-full {
+  left: 0;
+  width: 100%;
+}
 
-        .user-icon {
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+.navbar-text,
+.user-icon,
+.hamburger {
+  color: var(--text-light);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 
-        
-       /* Sidebar visible por defecto en pantallas grandes */
+/* Sidebar */
 .sidebar {
-    width: 250px;
-    transition: transform 0.3s ease;
-    transform: translateX(0);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: #222A59;
-    z-index: 1000;
+  width: var(--sidebar-width);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-primary);
+  z-index: 1000;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
 
-/* Oculto solo si se aplica la clase sidebar-hidden */
 .sidebar.sidebar-hidden {
-    transform: translateX(-100%);
+  transform: translateX(-100%);
 }
 
-/* En pantallas pequeñas, oculto por defecto */
-media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 1040;
-    }
-    .sidebar.sidebar-open {
-        transform: translateX(0);
-        background-color: #222A59;
-        z-index: 1040;
-    }
-    .sidebar-close {
-        display: block;
-    }
-    .navbar {
-        left: 0;
-        width: 100%;
-    }
-    .content-wrapper {
-        margin-left: 0;
-    }
+.sidebar .logo-container {
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--color-primary);
+  z-index: 1041;
 }
 
-        .sidebar .logo-container {
-            text-align: center;
-            padding: 1rem;
-            background-color: #222A59;
-            /* Matches sidebar */
-            position: relative;
-            z-index: 1041;
-            /* Above sidebar and navbar */
-        }
-
-        .sidebar .logo-container img {
-            width: 150px;
-            /* Increased size for better legibility */
-            height: auto;
-            /* Maintain aspect ratio */
-            object-fit: contain;
-            /* Prevent distortion */
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 0.75rem 1.5rem;
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .sidebar a:hover {
-            background-color: #2e386e;
-        }
-
-        /* Content Wrapper */
-        .content-wrapper {
-            margin-top: 60px;
-            /* Match navbar height */
-            margin-left: 250px;
-            /* Align with navbar on large screens */
-            padding: 1rem;
-            transition: margin-left 0.3s ease-in-out;
-        }
-
-        .content-wrapper-full {
-            margin-left: 0;
-        }
-
-        /* Hamburger Menu */
-        .hamburger {
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            margin-right: 1rem;
-            z-index: 1050;
-            /* Above sidebar and navbar */
-        }
-
-        /* Close Button in Sidebar for Small Screens */
-        .sidebar-close {
-            display: none;
-            /* Hidden on large screens */
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1050;
-            /* Above sidebar */
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .sidebar {
-                z-index: 1040;
-                /* Ensure sidebar is above content but below hamburger */
-            }
-
-           .sidebar.sidebar-open {
-           background-color: #222A59;
-           transform: translateX(0);
-           z-index: 1040;
-        }
-
-            .sidebar-close {
-                display: block;
-                /* Show close button on small screens */
-            }
-
-            .navbar {
-                left: 0;
-                width: 100%;
-                /* Full width on small screens */
-                z-index: 1030;
-                /* Below sidebar when open */
-            }
-
-            .content-wrapper {
-             margin-top: 60px;
-             margin-left: 250px;
-             padding: 1rem;
-             transition: margin-left 0.3s ease-in-out;
-            }
-
-            .sidebar.sidebar-hidden ~ .content-wrapper {
-             margin-left: 0;
-            }
-
-            .sidebar .logo-container img {
-                width: 120px;
-                /* Slightly smaller for mobile but still legible */
-                height: auto;
-            }
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            color: #fff;
-        }
-        .submenu a.submenu-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    font-weight: 600;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
+.sidebar .logo-container img {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
 }
+
+.sidebar a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.2s ease-in-out;
+}
+
+.sidebar a:hover {
+  background-color: var(--color-hover);
+}
+
+/* Content */
+.content-wrapper {
+  margin-top: 60px;
+  margin-left: var(--sidebar-width);
+  padding: 1rem;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.content-wrapper-full {
+  margin-left: 0;
+}
+
+/* Submenu */
+.submenu a.submenu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
 .submenu a.submenu-toggle:hover {
-    background-color: #2e386e;
+  background-color: var(--color-hover);
 }
 
 .submenu-items a {
-    display: block;
-    padding: 0.5rem 1.5rem;
-    font-weight: 500;
-    color: #34495e;
-    transition: background 0.2s ease-in-out;
-}
-.submenu-items a:hover {
-    background-color: #2e386e;
+  display: block;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  color: hsl(0, 0%, 100%);
+  transition: background 0.2s ease-in-out
 }
 
-    </style>
+.submenu-items a:hover {
+  background-color: var(--color-hover);
+}
+
+/* Close Button */
+.sidebar-close {
+  display: none;
+  color: var(--text-light);
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 1040;
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    background-color: var(--color-primary);
+    z-index: 1040;
+  }
+
+  .sidebar-close {
+    display: block;
+  }
+
+  .navbar {
+    left: 0;
+    width: 100%;
+  }
+
+  .content-wrapper {
+    margin-left: 0;
+  }
+
+  .sidebar.sidebar-hidden ~ .content-wrapper {
+    margin-left: 0;
+  }
+
+  .sidebar .logo-container img {
+    width: 120px;
+  }
+}
+
+/* Breadcrumb */
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--text-light);
+}
+</style>
 </head>
 
 <body>
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="logo-container">
-            <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
+           <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager" style="max-width:100%;">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('adminDash') }}">
+        <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
             <i class="bi bi-speedometer2 me-2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('perfil') }}"> <i class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
-        <a href="{{ route('atletas.index') }}">
+        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
+        <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                 fill="currentColor" class="bi bi-person-walking me-2" viewBox="0 0 16 16">
                 <path
@@ -265,39 +216,39 @@ media (max-width: 768px) {
             </svg>
             <span>Atletas</span>
         </a>
-        <a href="{{ route('academias.index') }}">
+        <a href="{{ route('academias.index') }}" onclick="handleSidebarClick(event)">
             <i class="bi bi-layers me-2"></i>
             <span>Academias</span>
         </a>
-        <a href="{{ route('inscripciones.index') }}">
+        <a href="{{ route('inscripciones.index') }}" onclick="handleSidebarClick(event)">
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
-        <a href="{{ route('calendario') }}">
+        <a href="{{ route('calendario') }}" onclick="handleSidebarClick(event)">
             <i class="bi bi-calendar me-2"></i>
             <span>Calendario</span>
         </a>
 
 <!-- Submenú de Catálogos Generales -->
 <div class="submenu">
-    <a class="submenu-toggle text-white" href="#" id="catalogosToggle">
+    <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"  id="catalogosToggle">
         <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
         <i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <div class="submenu-items" id="catalogosItems">
-        <a href="{{ route('usuarios.index') }}" class="text-white">
+    <div class="submenu-items d-none" id="catalogosItems">
+        <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
             <i class="bi bi-people me-2"></i> Usuarios
-        </a>       
-        <a href="{{ route('modalidades.index') }}" class="text-white">
+        </a>
+        <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
             <i class="bi bi-columns-gap me-2"></i> Modalidades
         </a>
-        <a href="{{ route('grados.index') }}" class="text-white">
+        <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
             <i class="bi bi-card-heading me-2"></i> Grados
         </a>
-        <a href="{{ route('eventos.index') }}" class="text-white">
+        <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
             <i class="bi bi-calendar3 me-2"></i> Eventos
         </a>
-        <a href="{{ route('categorias.index') }}" class="text-white">
+        <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
             <i class="bi bi-bookmarks me-2"></i> Categorías
         </a>
     </div>
@@ -375,7 +326,6 @@ media (max-width: 768px) {
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-   
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sidebar = document.getElementById('sidebar');
@@ -403,19 +353,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     toggleSidebar.addEventListener('click', function () {
-        sidebar.classList.toggle('sidebar-hidden');
-        setContentMargin();
+        // En móvil, abre sidebar con clase sidebar-open
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('sidebar-open');
+            sidebar.classList.remove('sidebar-hidden');
+        } else {
+            sidebar.classList.toggle('sidebar-hidden');
+            setContentMargin();
+        }
     });
 
     sidebarClose.addEventListener('click', function () {
         sidebar.classList.add('sidebar-hidden');
+        sidebar.classList.remove('sidebar-open');
         setContentMargin();
     });
 
     window.addEventListener('resize', adjustSidebarOnLoad);
     adjustSidebarOnLoad();
-});
 
+    // Cerrar sidebar si se hace clic fuera (solo en móviles)
+    document.addEventListener('click', function (e) {
+        if (
+            window.innerWidth <= 768 &&
+            !sidebar.contains(e.target) &&
+            !toggleSidebar.contains(e.target)
+        ) {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-hidden');
+        }
+    });
+});
 
         $(document).ready(function() {
             $('#tabla').DataTable({

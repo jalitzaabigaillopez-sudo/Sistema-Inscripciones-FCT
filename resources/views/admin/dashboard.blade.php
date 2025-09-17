@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-  <h3 class="mb-4 fw-bold text-#222A59">Dashboard Administrativo</h3>
+  <h3 class="mb-4 fw-bold text-#222A59" >Dashboard Administrativo</h3>
   <div class="row mb-4 g-3">
     <!-- Total de usuarios del sistema -->
  
