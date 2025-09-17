@@ -396,13 +396,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Sidebar visible por defecto en escritorio
+    // Sidebar SIEMPRE visible en escritorio al cargar
     function adjustSidebarOnLoad() {
         if (window.innerWidth > 768) {
             sidebar.classList.remove('sidebar-hidden');
-            setContentMargin();
-        } else {
-            sidebar.classList.add('sidebar-hidden');
             setContentMargin();
         }
     }
