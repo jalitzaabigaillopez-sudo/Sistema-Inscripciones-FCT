@@ -246,7 +246,7 @@ $(document).ready(function () {
         let submodalidad;
 
         $('.baseCard').each(function () {
-            var id_atleta = $(this).find(".atletas-select option:selected").data("id");
+
             let atleta = $(this).find(".atletas-select option:selected").val();
             let sexo = $(this).find(".atletas-select option:selected").data("sexo");
             let edad = $(this).find(".inputEdad").val();
@@ -257,6 +257,14 @@ $(document).ready(function () {
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
             let pesoMax = $(this).find(".categorias-select option:selected").data('max');
 
+            //ids
+            var id_evento = $("#evento-select option:selected").val();
+            var id_atleta = $(this).find(".atletas-select option:selected").data("id");
+            var id_modalidad = $(this).find(".modalidades-select option:selected").val();
+            var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
+            var id_categoria = $(this).find(".categorias-select option:selected").val();
+
+            //otros
             contAlertas1++;
             sexosTemporal.push(sexo);
 
@@ -297,7 +305,6 @@ $(document).ready(function () {
                         return;
                     }
                     obj = {
-                        id_atleta: id_atleta,
                         atleta: recortarNombre(atleta),
                         sexo: sexo,
                         edad: edad,
@@ -307,7 +314,13 @@ $(document).ready(function () {
                         submodalidad: submodalidad,
                         categoria: pesoMin + " - " + pesoMax,
                         grupo: codigoGrupo,
-                        tr_code: crypto.randomUUID()
+                        tr_code: crypto.randomUUID(),
+                        //ids
+                        id_evento: id_evento,
+                        id_atleta: id_atleta,
+                        id_modalidad: id_modalidad,
+                        id_subModalidad: id_subModalidad,
+                        id_categoria: id_categoria
                     };
 
                 } else if (rol === 'asistente') {
@@ -319,7 +332,6 @@ $(document).ready(function () {
                         return;
                     }
                     obj = {
-                        id_atleta: id_atleta,
                         atleta: recortarNombre(atleta),
                         sexo: sexo,
                         edad: edad,
@@ -329,14 +341,19 @@ $(document).ready(function () {
                         submodalidad: '—',
                         categoria: '—',
                         grupo: '—',
-                        tr_code: crypto.randomUUID()
+                        tr_code: crypto.randomUUID(),
+                        //ids
+                        id_evento: id_evento,
+                        id_atleta: id_atleta,
+                        id_modalidad: 0,
+                        id_subModalidad: 0,
+                        id_categoria: 0
                     };
                 } else {
                     if (validarCantidadRol(rol) === false) {// Validacion para cantidad maxima segun el rol (1 entrenador, 2 asistentes x cada 10 atletas)
                         return;
                     }
                     obj = {
-                        id_atleta: id_atleta,
                         atleta: recortarNombre(atleta),
                         sexo: sexo,
                         edad: edad,
@@ -346,7 +363,13 @@ $(document).ready(function () {
                         submodalidad: '—',
                         categoria: '—',
                         grupo: '—',
-                        tr_code: crypto.randomUUID()
+                        tr_code: crypto.randomUUID(),
+                        //ids
+                        id_evento: id_evento,
+                        id_atleta: id_atleta,
+                        id_modalidad: 0,
+                        id_subModalidad: 0,
+                        id_categoria: 0
                     };
                 }
             }
@@ -365,6 +388,8 @@ $(document).ready(function () {
             } else {
                 listaAtletas.push(obj);
                 actualizarTablaInscripciones(obj);
+                guardarAtletaInscrito(obj);
+
                 limpiarCards();
                 alert("✅ Exito! Se ha añadido un atleta a su lista")
             }
@@ -375,6 +400,7 @@ $(document).ready(function () {
             for (let atleta of atletasGrupoTemporal) {
                 actualizarTablaInscripciones(atleta);
                 gruposAtletas.push(atleta);
+                guardarAtletaInscrito(atleta);
             }
             limpiarCards();
             alert("✅ Exito! Se ha añadido un grupo de atletas a su lista")
@@ -382,6 +408,30 @@ $(document).ready(function () {
     });
 
     //=========================== FUNCIONES INDEPENDIENTES ===========================
+
+    /**
+     * FUNCION QUE GUARDA EN TABLA INSCIPCIONES EL ATLETA PERO EN ESTADO INACTIVO
+     * @param {*} atleta 
+     */
+    function guardarAtletaInscrito(atleta) {
+        $.ajax({
+            url: '/inscripcionAtleta',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                atleta: atleta,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+                // console.log("Se guardo como atleta inactivo");
+                console.log(res);
+                
+            },
+            error: function (xhr, status, error) {
+                alert("⚠️ Lo sentimos, ha ocurrido un promebla al procesar la inscripcion.");
+            }
+        });
+    }
 
     /**
      * 
@@ -885,7 +935,7 @@ $(document).ready(function () {
 
         $('html, body').animate({
             scrollTop: $("#contenedor").offset().top
-        }, 500); 
+        }, 500);
     });
 
     // ☑️ Delegación
@@ -896,7 +946,6 @@ $(document).ready(function () {
 
         // GUARDAR EDICION INDIVIDUAL
         $(".clonEdit").not(".baseCard").each(function () {
-            var id_atleta = $(this).find(".atletas-select option:selected").data("id");
             let nombre = $(this).find(".atletas-select option:selected").val();
             let sexo = $(this).find(".atletas-select option:selected").data("sexo");
             let edad = $(this).find(".inputEdad").val();
@@ -906,6 +955,13 @@ $(document).ready(function () {
             submodalidad = $(this).find(".submodalidades-select option:selected").text();
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
             let pesoMax = $(this).find(".categorias-select option:selected").data('max');
+
+            //ids
+            var id_evento = $("#evento-select option:selected").val();
+            var id_atleta = $(this).find(".atletas-select option:selected").data("id");
+            var id_modalidad = $(this).find(".modalidades-select option:selected").val();
+            var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
+            var id_categoria = $(this).find(".categorias-select option:selected").val();
 
             let tr_code = $(this).data("code");
             let grupo = $(this).data("grupo");
@@ -938,7 +994,6 @@ $(document).ready(function () {
                         let nuevo_tr_code = crypto.randomUUID();
 
                         let obj = {
-                            id_atleta: id_atleta,
                             atleta: recortarNombre(nombre),
                             sexo: sexo,
                             edad: edad,
@@ -948,7 +1003,13 @@ $(document).ready(function () {
                             submodalidad: submodalidad,
                             categoria: pesoMin + " - " + pesoMax,
                             grupo: grupo,
-                            tr_code: nuevo_tr_code
+                            tr_code: nuevo_tr_code,
+                            //ids
+                            id_evento: id_evento,
+                            id_atleta: id_atleta,
+                            id_modalidad: id_modalidad,
+                            id_subModalidad: id_subModalidad,
+                            id_categoria: id_categoria
                         };
 
                         actualizarTrTablaInscripciones(obj, tr_code);

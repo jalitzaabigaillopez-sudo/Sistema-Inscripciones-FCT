@@ -9,7 +9,7 @@ class Inscripcion extends Model
     protected $table = 'inscripciones';
     protected $primaryKey = 'id_inscripcion';
     public $timestamps = false;
-    protected $fillable = ['id_atleta', 'id_modalidad_evento', 'fecha_inscripcion', 'estado'];
+    protected $fillable = ['id_atleta', 'id_evento', 'id_modalidad', 'id_subModalidad', 'id_categoria', 'fecha_inscripcion', 'estado', 'codigo_equipo'];
 
     public function atleta()
     {

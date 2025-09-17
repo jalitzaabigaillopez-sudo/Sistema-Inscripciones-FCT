@@ -31,29 +31,22 @@ class InscripcionController extends Controller
         //
     }
 
-    public function crearInscripcion(Request $request)
+    public function inscribirAtleta(Request $request)
     {
-        $validateData = $request->validate([
-            'atleta' => 'required|integer',// id
-            'evento' => 'required|integer',// id
-            'modalidad' => 'required|integer',// id
-        ]);
 
-        // Crear modalidades_eventos
-        $modalidaEvento = ModalidadEvento::create([
-            'id_evento' => $validateData['evento'],
-            'id_modalidad' => $validateData['modalidad'],
-        ]);
-        $modalidaEvento->save();
+        $atleta = $request->input('atleta');
 
-        // Crear inscripcion
         $inscripcion = Inscripcion::create([
-            'id_atleta' => $validateData['atleta'],
-            'id_modalidad_evento' => $modalidaEvento->id_modalidad_evento,
-            'fecha_inscripcion' => $validateData['fecha_inscripcion'],
-            'estado' => $validateData['estado'],
+            'id_atleta' => $atleta['id_atleta'],
+            'id_evento' => $atleta['id_evento'],
+            'id_modalidad' => $atleta['id_modalidad'],
+            'id_subModalidad' => $atleta['id_subModalidad'],
+            'id_categoria' => $atleta['id_categoria'],
+            'fecha_inscripcion' => date("Y-m-d H:i:s"),
+            'estado' => 'inactiva',
+            'codigo_equipo' => $atleta['grupo'],
         ]);
-        $inscripcion->save();
+        return response()->json($inscripcion, 201);
     }
 
     //====================================================================================================================================
@@ -65,7 +58,7 @@ class InscripcionController extends Controller
         $eventos = Evento::all();
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
-        return view('academia/inscripcionEvento', compact('eventos', 'academia','atletas'));
+        return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas'));
     }
 
     public function vistaMisInscripcionesAcademia(Request $request)

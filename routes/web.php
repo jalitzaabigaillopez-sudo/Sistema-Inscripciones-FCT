@@ -61,7 +61,11 @@ Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cue
  */
 Route::get('/nuevaInscripcion', [InscripcionController::class, 'vistaInscripcionesAcademia'])->name('inscripcion.academia');
 Route::get('/misInscripciones', [InscripcionController::class, 'vistaMisInscripcionesAcademia'])->name('misInscripciones');
+Route::post('/inscripcionAtleta', [InscripcionController::class, 'inscribirAtleta']);
 
+/**
+ * =============================================================================================================================================
+ */
 Route::post('/obtenerModalidades', [ModalidadController::class, 'obtenerModalidades']);
 Route::post('/obtenerSubModalidades', [SubModalidadController::class, 'obtenerSubModalidades']);
 Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategorias']);
@@ -71,7 +75,7 @@ Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategoria
  * Rutas atletas
  */
 Route::get('/atletas-academia', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
-Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
+
 
 
 //==============================================================================================================================================
@@ -135,6 +139,7 @@ Route::resource('/academias', AcademiaController::class);
 Route::get('/cantones/{provinciaId}', [AcademiaController::class, 'getCantones'])->name('cantones.get');
 Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])->name('distritos.get');
 
+Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
 Route::resource('/atletas', AtletasController::class);
 Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
 
