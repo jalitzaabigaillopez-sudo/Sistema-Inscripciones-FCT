@@ -41,7 +41,7 @@ class AtletasController extends Controller
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
-        return view('academia/registrosAtletas',compact('atletas', 'academia'));
+        return view('academia/registrosAtletas', compact('atletas', 'academia'));
     }
 
     /**
@@ -126,7 +126,13 @@ class AtletasController extends Controller
 
     public function datosAtleta($id)
     {
-        $atleta = Atleta::with('grados', 'academias', 'categorias')->findOrFail($id);
+        $atleta = Atleta::with('academias')->findOrFail($id);
+
+        // Si la academia está inactiva, la mando también en la respuesta
+        if ($atleta->academias && $atleta->academias->estado === 'inactivo') {
+            $atleta->academias->nombre .= ' (inactiva)';
+        }
+
         return response()->json($atleta);
     }
 

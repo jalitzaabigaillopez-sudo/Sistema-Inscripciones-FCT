@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
+
+
 class AcademiaController extends Controller
 {
 
@@ -332,4 +334,5 @@ class AcademiaController extends Controller
 
         return back();
     }
+
 }
