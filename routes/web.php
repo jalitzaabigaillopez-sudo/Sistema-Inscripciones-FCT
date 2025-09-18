@@ -150,6 +150,9 @@ Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])
 Route::get('/atletas', [AtletasController::class, 'index'])->name('atletas.index');
 Route::resource('/atletas', AtletasController::class);
 Route::get('/atletas/{id}/datos', [AtletasController::class, 'datosAtleta']);
+Route::get('/buscar-padron/{identificacion}', [AtletasController::class, 'buscarPadron']);
+// Calcular división según fecha
+Route::get('/calcular-division/{fecha}', [AtletasController::class, 'calcularDivision']);
 
 
 Route::resource('/categorias', CategoriaController::class);

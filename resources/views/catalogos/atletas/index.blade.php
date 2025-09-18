@@ -198,7 +198,7 @@
 
                                     <div class="row">
 
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="id_grado" class="form-label">Grado (Cinturón) <span
                                                         class="text-danger">*</span></label>
@@ -210,6 +210,14 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="division" class="form-label">División</label>
+                                                <input type="text" class="form-control form-control-sm" id="division"
+                                                    name="division" readonly>
                                             </div>
                                         </div>
 
@@ -244,7 +252,7 @@
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"><i class="bi bi-trash"></i></button>
+                                            style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
                                 </div>
                             </div>
@@ -416,7 +424,8 @@
                                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                                 </div>
                                                 <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                                    style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
+                                                    style="display: none;"><i class="bi bi-trash"></i> Eliminar
+                                                    Foto</button>
                                                 <input type="hidden" name="remove_imagen" id="removeImagen"
                                                     value="0">
                                             </div>
