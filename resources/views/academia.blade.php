@@ -208,6 +208,7 @@
 </head>
 
 <body>
+    <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}">
 
     <!-- Sidebar -->
     <nav class="sidebar sidebar-hidden" id="sidebar">
@@ -356,6 +357,8 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    @stack('scripts')
     <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->
     <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
 </body>

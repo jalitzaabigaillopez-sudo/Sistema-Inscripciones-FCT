@@ -62,6 +62,8 @@ Route::post('/activar', [AcademiaController::class, 'activarCuenta'])->name('cue
 Route::get('/nuevaInscripcion', [InscripcionController::class, 'vistaInscripcionesAcademia'])->name('inscripcion.academia');
 Route::get('/misInscripciones', [InscripcionController::class, 'vistaMisInscripcionesAcademia'])->name('misInscripciones');
 Route::post('/inscripcionAtleta', [InscripcionController::class, 'inscribirAtleta']);
+Route::get('/editarInscripcion/{id_evento}', [InscripcionController::class, 'editarInscripcion'])->name('editar.inscripcion');
+
 
 /**
  * =============================================================================================================================================

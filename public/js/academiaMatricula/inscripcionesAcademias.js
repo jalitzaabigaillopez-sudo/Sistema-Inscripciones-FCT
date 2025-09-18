@@ -239,6 +239,8 @@ $(document).ready(function () {
         let totalCards = $(".baseCard").length;
         let codigoGrupo = generarCodigoGrupo(totalCards);
 
+        var id_academia = $('#idAcademia').val();
+
         let atletasGrupoTemporal = [];
         let sexosTemporal = [];
         let contAlertas1 = 0;
@@ -320,7 +322,8 @@ $(document).ready(function () {
                         id_atleta: id_atleta,
                         id_modalidad: id_modalidad,
                         id_subModalidad: id_subModalidad,
-                        id_categoria: id_categoria
+                        id_categoria: id_categoria,
+                        id_academia: id_academia
                     };
 
                 } else if (rol === 'asistente') {
@@ -345,9 +348,10 @@ $(document).ready(function () {
                         //ids
                         id_evento: id_evento,
                         id_atleta: id_atleta,
-                        id_modalidad: 0,
-                        id_subModalidad: 0,
-                        id_categoria: 0
+                        id_modalidad: null,
+                        id_subModalidad: null,
+                        id_categoria: null,
+                        id_academia: id_academia
                     };
                 } else {
                     if (validarCantidadRol(rol) === false) {// Validacion para cantidad maxima segun el rol (1 entrenador, 2 asistentes x cada 10 atletas)
@@ -367,9 +371,10 @@ $(document).ready(function () {
                         //ids
                         id_evento: id_evento,
                         id_atleta: id_atleta,
-                        id_modalidad: 0,
-                        id_subModalidad: 0,
-                        id_categoria: 0
+                        id_modalidad: null,
+                        id_subModalidad: null,
+                        id_categoria: null,
+                        id_academia: id_academia
                     };
                 }
             }
@@ -425,7 +430,7 @@ $(document).ready(function () {
             success: function (res) {
                 // console.log("Se guardo como atleta inactivo");
                 console.log(res);
-                
+
             },
             error: function (xhr, status, error) {
                 alert("⚠️ Lo sentimos, ha ocurrido un promebla al procesar la inscripcion.");
@@ -755,14 +760,22 @@ $(document).ready(function () {
     //=========================== ========================= ===========================
 
 
-
-    // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-    // ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-    // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-    //                                                        ⏮️ Logica para botones eliminar y editar ⏭️
-    // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-    // ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-    // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    /*
+          ___       __   ________  ___       __   ________     
+         |\  \     |\  \|\   __  \|\  \     |\  \|\   __  \    
+         \ \  \    \ \  \ \  \|\  \ \  \    \ \  \ \  \|\  \   
+          \ \  \  __\ \  \ \  \\\  \ \  \  __\ \  \ \   __  \  
+           \ \  \|\__\_\  \ \  \\\  \ \  \|\__\_\  \ \  \ \  \ 
+            \ \____________\ \_______\ \____________\ \__\ \__\
+             \|____________|\|_______|\|____________|\|__|\|__|
+                                                                 
+    ███████████████████████████████████████████████████████████
+    █                                                         █
+    █  [DELETE] 🗑️    - Removes element                       █
+    █  [EDIT]   ✏️    - Editor for modification               █
+    █                                                         █
+    ███████████████████████████████████████████████████████████
+    */
 
     // ☑️ Delegación
     $(document).on("click", ".bEliminar", function () {
@@ -942,7 +955,8 @@ $(document).ready(function () {
     $(document).on("click", "#bGuardar", function () {
         let contAlertas = 0;
         let totalCards = $(".clonEdit").length;
-        console.log("hay " + totalCards + " clonEdit");
+        var id_academia = $('#idAcademia').val();
+        let obj;
 
         // GUARDAR EDICION INDIVIDUAL
         $(".clonEdit").not(".baseCard").each(function () {
@@ -993,27 +1007,49 @@ $(document).ready(function () {
                     if (tr_code === listaCompleta[i].tr_code) {
                         let nuevo_tr_code = crypto.randomUUID();
 
-                        let obj = {
-                            atleta: recortarNombre(nombre),
-                            sexo: sexo,
-                            edad: edad,
-                            rol: rol,
-                            peso: peso,
-                            modalidad: modalidad,
-                            submodalidad: submodalidad,
-                            categoria: pesoMin + " - " + pesoMax,
-                            grupo: grupo,
-                            tr_code: nuevo_tr_code,
-                            //ids
-                            id_evento: id_evento,
-                            id_atleta: id_atleta,
-                            id_modalidad: id_modalidad,
-                            id_subModalidad: id_subModalidad,
-                            id_categoria: id_categoria
-                        };
+                        if (rol === 'atleta') {
+                            obj = {
+                                atleta: recortarNombre(nombre),
+                                sexo: sexo,
+                                edad: edad,
+                                rol: rol,
+                                peso: peso,
+                                modalidad: modalidad,
+                                submodalidad: submodalidad,
+                                categoria: pesoMin + " - " + pesoMax,
+                                grupo: grupo,
+                                tr_code: nuevo_tr_code,
+                                //ids
+                                id_evento: id_evento,
+                                id_atleta: id_atleta,
+                                id_modalidad: id_modalidad,
+                                id_subModalidad: id_subModalidad,
+                                id_categoria: id_categoria,
+                                id_academia: id_academia
+                            };
+                        } else {
+                            obj = {
+                                atleta: recortarNombre(nombre),
+                                sexo: sexo,
+                                edad: edad,
+                                rol: rol,
+                                peso: '—',
+                                modalidad: '—',
+                                submodalidad: '—',
+                                categoria: '—',
+                                grupo: '—',
+                                tr_code: crypto.randomUUID(),
+                                //ids
+                                id_evento: id_evento,
+                                id_atleta: id_atleta,
+                                id_modalidad: null,
+                                id_subModalidad: null,
+                                id_categoria: null,
+                                id_academia: id_academia
+                            }
+                        }
 
                         actualizarTrTablaInscripciones(obj, tr_code);
-
                         listaCompleta[i] = obj;
                         actualizarListas(listaCompleta);
                     }
@@ -1038,4 +1074,83 @@ $(document).ready(function () {
         var eventoText = $('#evento-select option:selected').text();
         alert("✅ Su inscripcion para el evento " + eventoText + " se ha procesado con exito!");
     });
+
+
+
+    /*
+     ___       __   ________  ___       __   ________     
+     |\  \     |\  \|\   __  \|\  \     |\  \|\   __  \    
+     \ \  \    \ \  \ \  \|\  \ \  \    \ \  \ \  \|\  \   
+      \ \  \  __\ \  \ \  \\\  \ \  \  __\ \  \ \   __  \  
+       \ \  \|\__\_\  \ \  \\\  \ \  \|\__\_\  \ \  \ \  \ 
+        \ \____________\ \_______\ \____________\ \__\ \__\
+         \|____________|\|_______|\|____________|\|__|\|__|
+                                                                     
+    ████████████████████████████████████████████████████████
+    █                                                      █
+    █  🚀 CONTINUE EDIT LOGIC                             █
+    █                                                      █
+    █  ACTION:                                             █
+    █     - CONTINUE MODIFYING EXISTING REGISTRATION       █
+    █     - PRESERVE CHANGES AND UPDATE FIELDS            -█
+    █     - ENSURE DATA INTEGRITY                          █
+    █                                                      █
+    ████████████████████████████████████████████████████████
+    */
+    $(document).on('click', '.btn-edit', function (e) {
+        let id_evento = $(this).data('id-evento');
+
+
+    });
+
+    if (window.inscripcionApp && window.inscripcionApp.continuarEdicion) {
+        let $select = $("#evento-select");
+        if ($select.length) {
+            $select.prop("selectedIndex", 1).prop("disabled", true);
+        }
+
+
+        //distribuir
+        const atletasPHP = window.inscripcionApp.atletasInscripcion;
+        console.log(atletasPHP);
+
+        for (let atleta of atletasPHP) {
+
+            //HAY QUE RELLENAR TODO ESTO!!!
+            let obj = {
+                atleta: recortarNombre(atleta),
+                sexo: sexo,
+                edad: edad,
+                rol: rol,
+                peso: '—',
+                modalidad: '—',
+                submodalidad: '—',
+                categoria: '—',
+                grupo: '—',
+                tr_code: crypto.randomUUID(),
+                //ids
+                id_evento: id_evento,
+                id_atleta: id_atleta,
+                id_modalidad: null,
+                id_subModalidad: null,
+                id_categoria: null,
+                id_academia: id_academia
+            };
+
+            if (obj.grupo.includes("#")) {
+                gruposAtletas.push(atleta);
+            } else {
+                listaAtletas.push(atleta);
+            }
+        }
+
+        let listaCompleta = listaAtletas.concat(gruposAtletas);
+        for (let atleta of listaCompleta) {
+            actualizarTrTablaInscripciones();
+        }
+
+
+
+    }
+
 });

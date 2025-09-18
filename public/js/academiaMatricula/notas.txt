@@ -6,16 +6,5 @@ EDITAR
 5.Categorias no se selecciona automaticamente al editar
 
 
-
-UPDATE modalidades SET nombre = 'Combate' WHERE id_modalidad = 1;
-
-UPDATE submodalidades
-SET cantidad_atletas = CASE id_subModalidad
-    WHEN 1 THEN 1
-    WHEN 2 THEN 3
-    WHEN 3 THEN 1
-    WHEN 4 THEN 2
-    WHEN 5 THEN 5
-    ELSE cantidad_atletas
-END
-WHERE id_subModalidad IN (1, 2, 3, 4, 5);
+CONTINUAR INSCRIPCIONES
+1.Al editar atletas falta actualizar la tabla de inscripcion

@@ -35,4 +35,9 @@ class Academia extends Model
     {
         return $this->belongsTo(Usuario::class, 'id_usuario');
     }
+
+    public function inscripciones()
+    {
+        return $this->hasMany(Inscripcion::class, 'id_academia');
+    }
 }
