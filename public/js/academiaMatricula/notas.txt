@@ -8,3 +8,7 @@ EDITAR
 
 CONTINUAR INSCRIPCIONES
 1.Al editar atletas falta actualizar la tabla de inscripcion
+
+
+
+NORMALIZAR IDENTIFICACION DE ATLETA CUANDO SE CREA UNO

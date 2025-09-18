@@ -251,8 +251,7 @@
         atletasInscripcion: @json($atletasInscripcion ?? []),
         eventos: @json($eventos ?? []),
         academia: @json($academia ?? null)
-    };
-    console.log("Variable inyectada desde Blade:", window.inscripcionApp);
+    };  
 </script>
 @endpush
 
