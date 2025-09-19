@@ -98,6 +98,12 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
+                            
+                        
+                        <div class="mt-3 text-center">
+                            <span>¿No tienes una cuenta? </span>
+                            <a href="{{ route('preregistro') }}" class="link-primary">Regístrate</a>
+                        </div>
                         </form>
                     </div>
                 </div>

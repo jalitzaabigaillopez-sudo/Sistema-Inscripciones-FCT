@@ -166,4 +166,13 @@ Route::post('/cambiar-contraseña-vencida', [PasswordController::class, 'cambiar
 
 Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona']);
 
+/**
+ * Ruta para pre-registro de academias
+ */
+Route::get('/preregistro', function () {
+    return view('sections/preregistro');
+})->name('preregistro');
+//####################################### FIN #########################################################
+
+
 
