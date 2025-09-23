@@ -136,7 +136,7 @@
                                         <label for="identificacion" class="form-label">Identificación <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="identificacion"
-                                            name="identificacion" required placeholder="Ej. 123456789">
+                                            name="identificacion" required placeholder="Ej. 123456789" disabled>
                                     </div>
 
                                     <div class="mb-3">
