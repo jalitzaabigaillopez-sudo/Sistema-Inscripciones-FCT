@@ -98,8 +98,14 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
-                           <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a>
+                           <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
 
+                            
+                        
+                        <div class="mt-3 text-center">
+                            <span>¿No tienes una cuenta? </span>
+                            <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
+                        </div>
                         </form>
                     </div>
                 </div>
