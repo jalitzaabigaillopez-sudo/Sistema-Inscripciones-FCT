@@ -150,7 +150,25 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-3 mt-3">
+                                        <label for="fotoAcademiaCrear" class="form-label">Foto de Perfil</label>
+                                        <input class="form-control form-control-sm fotoAcademiaInput" type="file"
+                                            id="fotoAcademiaCrear" name="imagen" accept="image/*">
+                                    </div>
+                                       <div class="mb-3 d-flex flex-column align-items-center">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
+                                            <span class="previewText text-muted">Sin foto</span>
+                                            <img class="previewImage img-thumbnail rounded-circle" src=""
+                                                alt="Vista previa"
+                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                            style="display: none;"><i class="bi bi-trash"></i></button>
+                                    </div>
                                 </div>
+
+                               
 
                                 <div class="col-md-5 ps-md-4">
                                     <h6 class="text-secondary mb-3">Ubicación</h6>
@@ -196,6 +214,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                 </div>
                             </div>
 
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
@@ -364,5 +383,5 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ asset('js/editar_academia.js') }}"></script>
+    <script src="{{ asset('js/gestionar_academias.js') }}"></script>
 @endsection
