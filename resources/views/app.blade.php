@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
+        /* Estilos existentes mejorados */
         :root {
             --color-primary: #222A59;
             --color-hover: #2e386e;
@@ -24,13 +25,11 @@
             --sidebar-width: 250px;
         }
 
-        /* Body */
         body {
             overflow-x: hidden;
             font-family: 'Roboto', sans-serif;
         }
 
-        /* Navbar */
         .navbar {
             background-color: var(--color-primary);
             padding: 0.5rem 1rem;
@@ -56,7 +55,7 @@
             cursor: pointer;
         }
 
-        /* Sidebar */
+        /* Sidebar con scroll */
         .sidebar {
             width: var(--sidebar-width);
             position: fixed;
@@ -68,23 +67,36 @@
             transform: translateX(0);
             transition: transform 0.3s ease;
             will-change: transform;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar.sidebar-hidden {
             transform: translateX(-100%);
         }
 
+        .sidebar-header {
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: var(--color-primary);
+            z-index: 1041;
+        }
+
         .sidebar .logo-container {
             text-align: center;
             padding: 1rem;
-            background-color: var(--color-primary);
-            z-index: 1041;
         }
 
         .sidebar .logo-container img {
             width: 150px;
             height: auto;
             object-fit: contain;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 1rem;
         }
 
         .sidebar a {
@@ -94,13 +106,14 @@
             text-decoration: none;
             font-size: 1rem;
             transition: background 0.2s ease-in-out;
+            border-left: 3px solid transparent;
         }
 
         .sidebar a:hover {
             background-color: var(--color-hover);
+            border-left-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Content */
         .content-wrapper {
             margin-top: 60px;
             margin-left: var(--sidebar-width);
@@ -112,35 +125,116 @@
             margin-left: 0;
         }
 
-        /* Submenu */
+        /* Submenu - Estilos mejorados con scroll interno si es necesario */
+        .submenu {
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .submenu::before {
+            content: "";
+            display: block;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
+            margin: 0 1rem 0.75rem 1rem;
+        }
+
         .submenu a.submenu-toggle {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-            font-weight: 600;
+            padding: 0.85rem 1rem;
             color: var(--text-light);
             cursor: pointer;
-            transition: background 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
+            background-color: rgba(80, 130, 200, 0.15);
+            border-left: 3px solid rgba(100, 160, 240, 0.6);
+            margin: 0 0.5rem;
+            border-radius: 4px 0 0 4px;
+            /* font-weight: 600; */
+            font-size: 15px;
+            position: relative;
         }
 
         .submenu a.submenu-toggle:hover {
-            background-color: var(--color-hover);
+            background-color: rgba(80, 150, 220, 0.25);
+            border-left-color: rgba(120, 180, 255, 0.8);
+        }
+
+        .submenu a.submenu-toggle i:last-child {
+            transition: transform 0.3s ease;
+            margin-left: auto;
+        }
+
+        .submenu a.submenu-toggle.active i:last-child {
+            transform: rotate(180deg);
+        }
+
+        .submenu-items {
+            background-color: rgba(40, 70, 120, 0.1);
+            border-left: 3px solid rgba(70, 120, 200, 0.4);
+            margin: 0.25rem 0.5rem 0.5rem 1.5rem;
+            border-radius: 0 0 0 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            max-height: 600px;
+            /* Altura máxima antes de mostrar scroll */
+            overflow-y: auto;
+        }
+
+        /* Scrollbar personalizado para el submenú */
+        .submenu-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .submenu-items::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .submenu-items::-webkit-scrollbar-thumb {
+            background: rgba(100, 160, 240, 0.5);
+            border-radius: 3px;
+        }
+
+        .submenu-items::-webkit-scrollbar-thumb:hover {
+            background: rgba(120, 180, 255, 0.7);
         }
 
         .submenu-items a {
             display: block;
-            padding: 0.5rem 1.5rem;
+            padding: 0.65rem 1.5rem;
             font-weight: 500;
-            color: hsl(0, 0%, 100%);
-            transition: background 0.2s ease-in-out
+            color: hsl(0, 0%, 90%);
+            transition: all 0.2s ease-in-out;
+            border-left: none;
+            position: relative;
+            padding-left: 2.5rem;
+            margin-left: 0.5rem;
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .submenu-items a:hover {
-            background-color: var(--color-hover);
+            background-color: rgba(70, 130, 210, 0.2);
+            transform: translateX(3px);
         }
 
-        /* Close Button */
+        .submenu-items a::before {
+            content: "›";
+            position: absolute;
+            left: 1.5rem;
+            color: rgba(150, 200, 255, 0.7);
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .submenu-items a:hover::before {
+            transform: translateX(3px);
+            color: rgba(180, 220, 255, 0.9);
+        }
+
         .sidebar-close {
             display: none;
             color: var(--text-light);
@@ -152,7 +246,25 @@
             z-index: 1050;
         }
 
-        /* Responsive */
+        /* Scrollbar personalizado para el sidebar */
+        .sidebar-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -185,9 +297,13 @@
             .sidebar .logo-container img {
                 width: 120px;
             }
+
+            .submenu-items {
+                max-height: 200px;
+                /* Menor altura máxima en móviles */
+            }
         }
 
-        /* Breadcrumb */
         .breadcrumb-item+.breadcrumb-item::before {
             color: var(--text-light);
         }
@@ -197,65 +313,98 @@
 <body>
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="logo-container">
-            <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager"
-                style="max-width:100%;">
-        </div>
-        <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-speedometer2 me-2"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i
-                class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
-        <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-person-walking me-2" viewBox="0 0 16 16">
-                <path
-                    d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
-                <path
-                    d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
-            </svg>
-            <span>Atletas</span>
-        </a>
-        <a href="{{ route('academias.index') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-layers me-2"></i>
-            <span>Academias *</span>
-        </a>
-        <a href="{{ route('inscripciones.index') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-ui-checks me-2"></i>
-            <span>Inscripciones</span>
-        </a>
-        <a href="{{ route('calendario') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-calendar me-2"></i>
-            <span>Calendario</span>
-        </a>
-        <!-- Submenú de Catálogos Generales -->
-        <div class="submenu">
-            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                id="catalogosToggle">
-                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-                <i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <div class="submenu-items d-none" id="catalogosItems">
-                <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-people me-2"></i> Usuarios
-                </a>
-                <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-columns-gap me-2"></i> Modalidades
-                </a>
-                <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-card-heading me-2"></i> Grados
-                </a>
-                <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-calendar3 me-2"></i> Eventos
-                </a>
-                <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-bookmarks me-2"></i> Categorías
-                </a>
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto"
+                    loading="eager" style="max-width:100%;">
             </div>
+            <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         </div>
 
+        <div class="sidebar-content">
+            <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-person-badge me-2"></i>Perfil Administrador
+            </a>
+            <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-person-walking me-2" viewBox="0 0 16 16">
+                    <path
+                        d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
+                    <path
+                        d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
+                </svg>
+                <span>Atletas</span>
+            </a>
+            <a href="{{ route('academias.index') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-layers me-2"></i>
+                <span>Academias *</span>
+            </a>
+            <a href="{{ route('inscripciones.index') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-ui-checks me-2"></i>
+                <span>Inscripciones</span>
+            </a>
+            {{-- <a href="{{ route('calendario') }}" onclick="handleSidebarClick(event)">
+            <i class="bi bi-calendar me-2"></i>
+            <span>Calendario</span>
+        </a> --}}
+
+            <!-- Submenú de Catálogos Generales -->
+            <div class="submenu">
+                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                    id="catalogosToggle">
+                    <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <div class="submenu-items d-none" id="catalogosItems">
+                    <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-people me-2"></i> Usuarios
+                    </a>
+                    <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-columns-gap me-2"></i> Modalidades
+                    </a>
+                    <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-card-heading me-2"></i> Grados
+                    </a>
+                    <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-calendar3 me-2"></i> Eventos
+                    </a>
+                    <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-bookmarks me-2"></i> Categorías
+                    </a>
+                    <!-- Elementos adicionales para demostrar el scroll -->
+                    {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-gear me-2"></i> Configuración
+                </a>
+                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-graph-up me-2"></i> Reportes
+                </a>
+                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-shield-check me-2"></i> Permisos
+                </a> --}}
+                </div>
+            </div>
+
+            <!-- Otros submenús de ejemplo -->
+            {{-- <div class="submenu">
+            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                id="configuracionToggle">
+                <span><i class="bi bi-gear me-2"></i> Configuración</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div class="submenu-items d-none" id="configuracionItems">
+                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-sliders me-2"></i> Ajustes Generales
+                </a>
+                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-palette me-2"></i> Apariencia
+                </a>
+            </div>
+        </div> --}}
+        </div>
     </nav>
 
     <!-- Navbar -->
@@ -300,12 +449,7 @@
     </div>
 
     <!-- Scripts -->
-    <script>
-        document.getElementById('catalogosToggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('catalogosItems').classList.toggle('d-none');
-        });
-    </script>
+    <script></script>
 
 
     <!-- jQuery -->
@@ -330,7 +474,49 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Función para guardar el estado del submenú
+        function guardarEstadoSubmenu(abierto) {
+            localStorage.setItem('submenuCatalogosAbierto', abierto ? 'true' : 'false');
+        }
+
+        // Función para cargar el estado del submenú
+        function cargarEstadoSubmenu() {
+            const estado = localStorage.getItem('submenuCatalogosAbierto');
+            return estado === 'true';
+        }
+
+        // Configuración del submenú con persistencia
         document.addEventListener('DOMContentLoaded', function() {
+            const catalogosToggle = document.getElementById('catalogosToggle');
+            const catalogosItems = document.getElementById('catalogosItems');
+
+            // Cargar estado guardado al iniciar
+            const estadoInicial = cargarEstadoSubmenu();
+            if (estadoInicial) {
+                catalogosItems.classList.remove('d-none');
+                catalogosToggle.classList.add('active');
+            } else {
+                catalogosItems.classList.add('d-none');
+                catalogosToggle.classList.remove('active');
+            }
+
+            // Evento para abrir/cerrar el submenú
+            catalogosToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const estaAbierto = !catalogosItems.classList.contains('d-none');
+
+                if (estaAbierto) {
+                    catalogosItems.classList.add('d-none');
+                    catalogosToggle.classList.remove('active');
+                    guardarEstadoSubmenu(false);
+                } else {
+                    catalogosItems.classList.remove('d-none');
+                    catalogosToggle.classList.add('active');
+                    guardarEstadoSubmenu(true);
+                }
+            });
+
+            // Código existente del sidebar
             const sidebar = document.getElementById('sidebar');
             const toggleSidebar = document.getElementById('toggleSidebar');
             const sidebarClose = document.getElementById('sidebarClose');
@@ -388,9 +574,16 @@
             });
         });
 
+        // Función para manejar clics en enlaces del sidebar (opcional)
+        function handleSidebarClick(event) {
+            // Opcional: puedes agregar lógica adicional aquí si es necesario
+            console.log('Navegando a: ', event.currentTarget.href);
+        }
+
+        // Código de DataTable (existente)
         $(document).ready(function() {
             $('#tabla').DataTable({
-                "ordering": false, // Desactiva el ordenamiento automático para todas las columnas
+                "ordering": false,
                 "language": {
                     "decimal": "",
                     "emptyTable": "No hay datos disponibles en la tabla",

@@ -1,3 +1,71 @@
+// CREAR
+// --- Lógica para el modal de CREAR ACADEMIA ---
+// Cargar cantones al cambiar la provincia en el modal de creación
+$('#provinciaAcademia').on('change', function () {
+    var provinciaId = $(this).val();
+    var cantonSelect = $('#cantonAcademia');
+    var distritoSelect = $('#distritoAcademia');
+
+    cantonSelect.html('<option value="" disabled selected>Cargando cantones...</option>');
+    distritoSelect.html('<option value="" disabled selected>Seleccione un distrito...</option>');
+
+    if (provinciaId) {
+        $.ajax({
+            url: '/cantones/' + provinciaId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                cantonSelect.html('<option value="" disabled selected>Seleccione un cantón...</option>');
+                $.each(data, function (index, canton) {
+                    cantonSelect.append('<option value="' + canton.id_canton + '">' + canton.nombre + '</option>');
+                });
+            },
+            error: function (xhr) {
+                cantonSelect.html('<option value="" disabled selected>Error al cargar cantones</option>');
+                console.error('Error al cargar cantones:', xhr.responseText);
+            }
+        });
+    }
+});
+
+// Cargar distritos al cambiar el cantón en el modal de creación
+$('#cantonAcademia').on('change', function () {
+    var cantonId = $(this).val();
+    var distritoSelect = $('#distritoAcademia');
+
+    distritoSelect.html('<option value="" disabled selected>Cargando distritos...</option>');
+
+    if (cantonId) {
+        $.ajax({
+            url: '/distritos/' + cantonId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                distritoSelect.html('<option value="" disabled selected>Seleccione un distrito...</option>');
+                $.each(data, function (index, distrito) {
+                    distritoSelect.append('<option value="' + distrito.id_distrito + '">' + distrito.nombre + '</option>');
+                });
+            },
+            error: function (xhr) {
+                distritoSelect.html('<option value="" disabled selected>Error al cargar distritos</option>');
+                console.error('Error al cargar distritos:', xhr.responseText);
+            }
+        });
+    }
+});
+
+// Resetear el modal de creación al cerrarse
+$('#modalAcademia').on('hidden.bs.modal', function () {
+    const form = $('#formCrearAcademia');
+    form[0].reset();
+    $('#cantonAcademia').html('<option value="" disabled selected>Seleccione un cantón...</option>');
+    $('#distritoAcademia').html('<option value="" disabled selected>Seleccione un distrito...</option>');
+});
+
+
+
+
+// EDITAR
 $(document).ready(function () {
     // Setup image preview for edit modal
     const editarModal = document.getElementById("modalEditarAcademia");

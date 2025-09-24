@@ -114,7 +114,8 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form>
+                        <form method="POST" action="{{ route('academias.store') }}" id="formCrearAcademia">
+                            @csrf
                             <div class="row g-4">
                                 <div class="col-md-7 border-end pe-md-4">
                                     <h6 class="text-secondary mb-3">Información General</h6>
@@ -123,49 +124,32 @@
                                             <label for="nombreAcademia" class="form-label">Nombre <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="nombreAcademia"
-                                                placeholder="Ej. Academia Central" required>
+                                                name="nombre" placeholder="Ej. Academia Central" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="telefonoAcademia" class="form-label">Teléfono <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="telefonoAcademia"
-                                                placeholder="Ej. +506 8888-8888" required>
+                                                name="telefono" placeholder="Ej. +506 8888-8888" required>
                                         </div>
-
                                     </div>
                                     <div class="row">
-
                                         <div class="col-md-6 mb-3">
                                             <label for="profesorAcademia" class="form-label">Profesor Encargado <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm"
-                                                id="profesorAcademia" placeholder="Ej. Guillermo Pérez" required>
+                                                id="profesorAcademia" name="profesor_encargado"
+                                                placeholder="Ej. Guillermo Pérez" required>
                                         </div>
-
                                         <div class="col-md-6 mb-3">
                                             <label for="correoAcademia" class="form-label">Correo Electrónico <span
                                                     class="text-danger">*</span></label>
                                             <input type="email" class="form-control form-control-sm"
-                                                id="correoAcademia" placeholder="Ej. academia@email.com" required>
+                                                id="correoAcademia" name="correo" placeholder="Ej. academia@email.com"
+                                                required>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3 mt-3">
-                                        <label for="fotoAcademiaCrear" class="form-label">Foto de Perfil</label>
-                                        <input class="form-control form-control-sm fotoAcademiaInput" type="file"
-                                            id="fotoAcademiaCrear" name="imagen" accept="image/*">
-                                    </div>
-                                    <div class="mb-3 d-flex flex-column align-items-center">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
-                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
-                                            <span class="previewText text-muted">Sin foto</span>
-                                            <img class="previewImage img-thumbnail rounded-circle" src=""
-                                                alt="Vista previa"
-                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"><i class="bi bi-trash"></i></button>
-                                    </div>
                                 </div>
 
                                 <div class="col-md-5 ps-md-4">
@@ -174,22 +158,22 @@
                                         <div class="col-md-12 mb-3">
                                             <label for="provinciaAcademia" class="form-label">Provincia <span
                                                     class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="provinciaAcademia" required>
+                                            <select class="form-select form-select-sm" id="provinciaAcademia"
+                                                name="provincia_id" required>
                                                 <option value="" disabled selected>Seleccione una provincia...
                                                 </option>
-                                                <option value="San Jose">San José</option>
-                                                <option value="Alajuela">Alajuela</option>
-                                                <option value="Cartago">Cartago</option>
-                                                <option value="Heredia">Heredia</option>
-                                                <option value="Guanacaste">Guanacaste</option>
-                                                <option value="Puntarenas">Puntarenas</option>
-                                                <option value="Limon">Limón</option>
+                                                @foreach ($provincias as $provincia)
+                                                    <option value="{{ $provincia->id_provincia }}">
+                                                        {{ $provincia->nombre }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="cantonAcademia" class="form-label">Cantón <span
                                                     class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="cantonAcademia" required>
+                                            <select class="form-select form-select-sm" id="cantonAcademia"
+                                                name="canton_id" required>
                                                 <option value="" disabled selected>Seleccione un cantón...</option>
                                             </select>
                                         </div>
@@ -198,7 +182,8 @@
                                         <div class="col-md-12 mb-3">
                                             <label for="distritoAcademia" class="form-label">Distrito <span
                                                     class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="distritoAcademia" required>
+                                            <select class="form-select form-select-sm" id="distritoAcademia"
+                                                name="distrito_id" required>
                                                 <option value="" disabled selected>Seleccione un distrito...</option>
                                             </select>
                                         </div>
@@ -206,18 +191,21 @@
                                             <label for="direccionAcademia" class="form-label">Dirección <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm"
-                                                id="direccionAcademia" placeholder="Ej. Santa Teresa, calle 13" required>
+                                                id="direccionAcademia" name="direccion"
+                                                placeholder="Ej. Santa Teresa, calle 13" required>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                                <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-success rounded-pill">Guardar Academia</button>
+                            </div>
                         </form>
                     </div>
-                    <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill">Guardar Academia</button>
-                    </div>
+
                 </div>
             </div>
         </div>
