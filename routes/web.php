@@ -20,6 +20,8 @@ use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\TipoEventosController;
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Types\Relations\Role;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
@@ -195,10 +197,11 @@ Route::get('/restablecerContrasena', function () {
     return view('academia.restablecerContrasena');
 })->name('restablecerContraseña');
 
-// Vista de calendario
-Route::get('/calendario', function () {
-    return view('admin.calendario');
-})->name('calendario');
+
+// Rutas para el calendario y eventos en formato JSON
+Route::get('/calendario', [EventosController::class, 'calendario'])->name('calendario');
+Route::get('/eventos-json', [EventosController::class, 'eventosJson'])->name('eventos.json');
+
 
 //####################################### AMBOS ROLES #################################################
 /**
@@ -219,7 +222,6 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 /**
  * Rutas dashboard
  */
-
 
 
 
