@@ -54,6 +54,10 @@ $(document).ready(function () {
     $(document).on('change', '.modalidades-select', function () {
         var id_modalidad = $(this).val();
 
+        // ⬅️ buscar la tarjeta que contiene a este select
+        var card = $(this).closest('.card');
+        var select = card.find('.submodalidades-select'); // ⬅️ solo la submodalidad de esa tarjeta
+
         $.ajax({
             url: '/obtenerSubModalidades',
             method: 'POST',
@@ -63,17 +67,26 @@ $(document).ready(function () {
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (res) {
-                var select = $('.submodalidades-select');
                 select.empty();
-
                 select.append('<option value="">Seleccione una submodalidad</option>');
 
                 res.forEach(function (item) {
-                    select.append('<option value="' + item.id_subModalidad + '" data-cantidad-atletas="' + item.cantidad_atletas + '" data-nombre="' + item.nombre + '">' + item.nombre + '</option>');
+                    select.append(
+                        '<option value="' + item.id_subModalidad + '" ' +
+                        'data-nombre="' + item.nombre + '">' + item.nombre + '</option>'
+                    );
                 });
+
+                // 🔹 Seleccionar automáticamente si tienes el nombre guardado
+                var nombreSub = card.data('submodalidad-nombre');
+                if (nombreSub) {
+                    select.find('option').filter(function () {
+                        return $(this).data('nombre') == nombreSub;
+                    }).prop('selected', true);
+                }
             },
-            error: function (xhr, status, error) {
-                alert("⚠️ Lo sentimos, al parecer a ocurrido un error al cargar las modalidades.");
+            error: function () {
+                alert("⚠️ Error al cargar las submodalidades.");
             }
         });
     });
@@ -199,6 +212,7 @@ $(document).ready(function () {
             selectCategorias.append('<option value="">Seleccione una categoría</option>');
             selectCategorias.prop('disabled', false);
 
+            nuevaCard.show();
             contenedor.append(nuevaCard);
         }
 
@@ -255,6 +269,7 @@ $(document).ready(function () {
             let rol = $(this).find(".inputRol").val();
             let modalidad = $(this).find(".modalidades-select option:selected").text();
             submodalidad = $(this).find(".submodalidades-select option:selected").text();
+            let sexo_mixto = $(this).find(".submodalidades-select option:selected").data('sexo-mixto');
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
             let pesoMax = $(this).find(".categorias-select option:selected").data('max');
 
@@ -395,7 +410,7 @@ $(document).ready(function () {
                 guardarAtletaInscrito(obj);
 
                 limpiarCards();
-                alert("✅ Exito! Se ha añadido un atleta a su lista")
+                alert("✅ Exito! Se ha añadido un atleta a tu lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "");
             }
         });
 
@@ -407,7 +422,7 @@ $(document).ready(function () {
                 guardarAtletaInscrito(atleta);
             }
             limpiarCards();
-            alert("✅ Exito! Se ha añadido un grupo de atletas a su lista")
+            alert("✅ Exito! Se ha añadido un atleta a tu lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "");
         }
     });
 
@@ -450,9 +465,9 @@ $(document).ready(function () {
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (res) {
+                alert("✅ Exito! Se han actualizado los datos correctamente.");
                 atletasModificar = [];
                 console.log(res);
-
             },
             error: function (xhr, status, error) {
                 alert("⚠️ Lo sentimos, ha ocurrido un promebla al procesar la inscripcion.");
@@ -490,7 +505,7 @@ $(document).ready(function () {
      * @param {*} sexosTemporal 
      * @returns 
      */
-    function validarSexos(submodalidad, busqueda, sexosTemporal) {
+    function validarSexos(submodalidad, busqueda, sexosTemporal) {//@audit-info - validar sexos
         // Normalizar: quitar espacios y pasar a minúsculas
         let normalizado = submodalidad.replace(/\s+/g, "").toLowerCase();
         let normalizadoBusqueda = busqueda.replace(/\s+/g, "").toLowerCase();
@@ -681,7 +696,7 @@ $(document).ready(function () {
      * Funcion para añadir un atleta a la tabla "lista de inscritos".
      * @param {*} obj Objeto "atleta" que se añade  en fila a la tabla.
      */
-    function actualizarTablaInscripciones2(obj) {
+    function actualizarTablaInscripciones2(obj) {//@audit actualizarTabla tr 2
         var tbody = $("#tabla-inscripcion tbody");
 
         var fila = `
@@ -919,6 +934,8 @@ $(document).ready(function () {
         let grupo = $fila.find("td:eq(8)").text().trim();
         let totalCards = $(".clonEdit").length;
 
+        atletasModificar = [];
+
         editMode = true;
         $("#panelRegistro").hide();
 
@@ -941,7 +958,7 @@ $(document).ready(function () {
                         grupo: item.grupo
                     }
                     atletasModificar.push(datos);
-                    console.log(atletasModificar);
+                    console.log("atleta a modificar: ", atletasModificar);
 
 
                     let panelOriginal = $("#panelRegistro");
@@ -963,13 +980,16 @@ $(document).ready(function () {
 
                     // 🔹 Copiar selects del padre
                     nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
-                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
-                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
+                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
+                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                     // 🔹 Limpiar inputs de texto
                     nuevaCard.find("input").val("");
 
+                    console.log("la submodalidad es: ", atleta.submodalidad);
+
+                    //@audit aqui
                     // 🔹 Seleccionar automáticamente 
                     nuevaCard.find(".atletas-select option").filter(function () {
                         return $(this).data("id") == atleta.id_atleta;
@@ -1095,7 +1115,10 @@ $(document).ready(function () {
     });
 
     // ☑️ Delegación
-    $(document).on("click", "#bGuardar", function () {
+    $(document).on("click", "#bGuardar", function () {//@audit bGuardar
+
+        console.log("SE TOCA BGUARDAR");
+
         let contAlertas = 0;
         let totalCards = $(".clonEdit").length;
         var id_academia = $('#idAcademia').val();
@@ -1201,7 +1224,11 @@ $(document).ready(function () {
                 // Actualizar inscripcion
                 modificarAtletaInscrito(obj);
 
-                alert("✅ Exito! Se han actualizado los datos correctamente.");
+                if (totalCards > 1) {
+                    if (contAlertas === totalCards) {
+                        alert("✅ Exito! Se han actualizado los datos correctamente.");
+                    }
+                }
 
                 $("#panelRegistro").show();
                 $("#contenedor .clonEdit").remove();
@@ -1213,6 +1240,9 @@ $(document).ready(function () {
                 `);
             }
         });
+
+        $("#contenedor .baseCard").remove();
+        $("#contenedor .clonEdit").remove();
     });
 
     // ☑️ Delegación
@@ -1289,6 +1319,7 @@ $(document).ready(function () {
                     // ids
                     id_evento: atleta.evento?.id_evento || null,
                     id_atleta: atleta.id_atleta || null,
+                    id_division: atleta.categoria.id_division || null,
                     id_modalidad: atleta.modalidad?.id_modalidad || null,
                     id_subModalidad: atleta.subModalidad?.id_subModalidad || null,
                     id_categoria: atleta.categoria?.id_categoria || null,
@@ -1309,6 +1340,7 @@ $(document).ready(function () {
                     // ids
                     id_evento: atleta.evento?.id_evento || null,
                     id_atleta: atleta.id_atleta || null,
+                    id_division: atleta.categoria.id_division || null,
                     id_modalidad: null,
                     id_subModalidad: null,
                     id_categoria: null,
@@ -1379,11 +1411,13 @@ $(document).ready(function () {
 
 
 
-    $(document).on("click", ".bEditar2", function () {
+    $(document).on("click", ".bEditar2", function () {//@follow-up - 1
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code"); // más seguro que .data()
         let grupo = $fila.find("td:eq(8)").text().trim();
         let totalCards = $(".clonEdit").length;
+
+        let tr_idAtleta = $fila.attr("data-id");
 
         editMode = true;
         $("#panelRegistro").hide();
@@ -1397,6 +1431,17 @@ $(document).ready(function () {
             for (let item of listaAtletas) {
 
                 if (item.tr_code === tr_code) {
+                    let datos = {
+                        id_atleta: item.id_atleta,
+                        id_academia: item.id_academia,
+                        id_evento: item.id_evento,
+                        id_modalidad: item.id_modalidad,
+                        id_subModalidad: item.id_subModalidad,
+                        id_categoria: item.id_categoria,
+                        grupo: item.grupo
+                    }
+                    atletasModificar.push(datos);
+                    console.log("atleta a modificar: ", atletasModificar);
 
                     let panelOriginal = $("#panelRegistro");
                     let contenedor = $("#contenedor");
@@ -1421,6 +1466,34 @@ $(document).ready(function () {
                     nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
+                    /**
+                     * PARCHE 
+                     * Las categorias no se estaban lleando posiblemente por tema de sincronizacion 
+                     */
+                    $.ajax({
+                        url: '/obtenerCategorias',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            id_division: atleta.id_division,
+                            sexo: atleta.sexo,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (res) {
+                            var select = nuevaCard.find('.categorias-select');
+                            select.empty();
+
+                            select.append('<option value="">Seleccione una categoria</option>');
+
+                            res.forEach(function (item) {
+                                select.append('<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' + 'Peso minimo: ' + item.peso_min + ' - Peso maximo: ' + item.peso_max + '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            alert("⚠️ Lo sentimos, al parecer a ocurrido un error al cargar las categorias.");
+                        }
+                    });
+
                     // 🔹 Limpiar inputs de texto
                     nuevaCard.find("input").val("");
 
@@ -1444,7 +1517,7 @@ $(document).ready(function () {
                 }
             }
         } else { // ATLETAS EN GRUPO
-            let panelOriginal = $("#panelRegistro");
+            /*let panelOriginal = $("#panelRegistro");
             let contenedor = $("#contenedor");
 
             for (let item of gruposAtletas) {
@@ -1504,7 +1577,7 @@ $(document).ready(function () {
                     var t = $(this).text().toLowerCase();
                     return t.includes('entrenador') || t.includes('asistente');
                 }).remove();
-            });
+            });*/
         }
 
         $("#containerButton").html(`
@@ -1516,5 +1589,5 @@ $(document).ready(function () {
         $('html, body').animate({
             scrollTop: $("#contenedor").offset().top
         }, 500);
-    });
+    });//@follow-up - 2
 });

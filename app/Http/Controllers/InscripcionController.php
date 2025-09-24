@@ -209,6 +209,8 @@ class InscripcionController extends Controller
             $atleta->categoria = $inscripcion->categoria;
             $atleta->evento = $inscripcion->evento;
 
+            $atleta->id_division = $inscripcion->categoria->id_division ?? null;
+
             return $atleta;
         });
 
