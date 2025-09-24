@@ -224,10 +224,7 @@ body {
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
-        <a href="{{ route('calendario') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-calendar me-2"></i>
-            <span>Calendario</span>
-        </a>
+      
 
 <!-- Submenú de Catálogos Generales -->
 <div class="submenu">

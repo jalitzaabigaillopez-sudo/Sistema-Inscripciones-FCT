@@ -3,7 +3,7 @@
 @section('title', 'Administración de Perfil')
 
 @section('content')
-<a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
+<a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
     <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
 </a>
 

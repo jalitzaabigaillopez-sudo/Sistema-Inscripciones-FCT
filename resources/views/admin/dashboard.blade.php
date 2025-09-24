@@ -7,7 +7,6 @@
   <h3 class="mb-4 fw-bold text-#222A59" >Dashboard Administrativo</h3>
   <div class="row mb-4 g-3">
     <!-- Total de usuarios del sistema -->
- 
 <div class="col-12 col-sm-6 col-lg-3">
   <div class="card text-bg-primary border-0 shadow-sm rounded-3 h-100">
     <div class="card-body text-center">
@@ -97,7 +96,55 @@
       </div>
       </div>
     </div>
+<!-- Tarjeta de Calendario de Eventos (pantalla completa) -->
+<div class="col-12 mb-4">
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-secondary text-white fw-semibold">
+      <i class="bi bi-calendar3-week me-2"></i> Calendario de Eventos
+    </div>
+    <div class="card-body">
+      <div id="calendar" style="width: 100%; height: 600px;"></div>
+    </div>
   </div>
 </div>
+
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<!-- SweetAlert2 (opcional para mostrar detalles) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'es',
+      height: 'auto',
+      contentHeight: 600,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,listWeek'
+      },
+      events: '{{ route('eventos.json') }}',
+      eventClick(info) {
+        Swal.fire({
+          title: info.event.title,
+          text: info.event.extendedProps.description || 'Sin descripción',
+          icon: 'info',
+          confirmButtonColor: '#222A59'
+        });
+      }
+    });
+
+    calendar.render();
+  });
+</script>
+
+
+
 @endsection
 
