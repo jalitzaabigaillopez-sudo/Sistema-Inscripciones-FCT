@@ -23,6 +23,7 @@ use App\Http\Controllers\TipoEventosController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Types\Relations\Role;
 
+
 //####################################### SOLO ADMINISTRADOR ###########################################
 /**
  * Rutas de login
@@ -127,6 +128,10 @@ Route::view('/perfil-academia', 'academia.perfil-academia')->name('academia.perf
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas
 Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
+//Registro Nuevo
+Route::get('/registro-nuevo', function () {
+    return view('academia.registro-nuevo');
+})->name('registro.nuevo');
 
 
 //Preregistro de academias
@@ -222,7 +227,4 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 /**
  * Rutas dashboard
  */
-
-
-
 
