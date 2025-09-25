@@ -260,7 +260,7 @@
                                                 required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span
+                                            <label for="telefonoAcademiaEditar" class="form-label">Teléfon00o <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm"
                                                 id="telefonoAcademiaEditar" name="telefono"
