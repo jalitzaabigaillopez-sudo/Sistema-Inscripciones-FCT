@@ -121,7 +121,7 @@ class InscripcionController extends Controller
             if ($inscripcion) {
                 $inscripcion->delete();
                 $response = true;
-            }else{
+            } else {
                 $response = false;
             }
         }
@@ -129,6 +129,11 @@ class InscripcionController extends Controller
     }
 
     //====================================================================================================================================
+    /**
+     * Dirige a la vista de "inscripcionEvento" y lleva los datos necesarios
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function vistaInscripcionesAcademia(Request $request)
     {
         $usuarioId = $request->session()->get('usuario');
@@ -142,6 +147,11 @@ class InscripcionController extends Controller
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'bloquearSelectEventos'));
     }
 
+    /**
+     * Dirige a la vista de "misInscripciones" y lleva un grupo de datos basicos para mostrar
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function vistaMisInscripcionesAcademia(Request $request)
     {
         $usuarioId = $request->session()->get('usuario');
@@ -182,6 +192,12 @@ class InscripcionController extends Controller
         return view('academia/misInscripciones', compact('inscripcionesAgrupadas', 'academia'));
     }
 
+    /**
+     * Carga la vista de "inscripcionEvento" pero desde otra ruta para usarla como editor
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $id_evento
+     * @return \Illuminate\Contracts\View\View
+     */
     public function editarInscripcion(Request $request, $id_evento)
     {
         $usuarioId = $request->session()->get('usuario');
@@ -219,5 +235,24 @@ class InscripcionController extends Controller
         $modalidades = $evento->modalidades;
 
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos'));
+    }
+
+    public function confirmarInscripcion(Request $request)
+    {
+        $id_academia = $request->input('id_academia');
+        $id_evento = $request->input('id_evento');
+
+        $datosActualizar = [
+            'estado' => 'activa'
+        ];
+
+        $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
+
+        if ($inscripcion) {
+            $inscripcion->update($datosActualizar);
+            return response()->json(['success' => true, 'msg' => 'Inscripción actualizada']);
+        }
+
+        return response()->json(['success' => false, 'msg' => 'No se encontró inscripción']);
     }
 }

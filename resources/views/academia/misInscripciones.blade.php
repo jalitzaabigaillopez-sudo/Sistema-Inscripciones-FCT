@@ -58,16 +58,29 @@
 
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item btn-edit" href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}">
+                                            @if($ins->estado == 'activa')
+                                                <a class="dropdown-item disabled" href="javascript:void(0)" tabindex="-1"
+                                                    aria-disabled="true">
                                                     <i class="bi bi-pencil-square"></i> Editar
                                                 </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="#">
-                                                    <i class="bi bi-trash"></i> Eliminar
+
+                                                <li>
+                                                    <a class="dropdown-item disabled" href="javascript:void(0)">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </a>
+                                                </li>
+                                            @else
+                                                <a class="dropdown-item btn-edit"
+                                                    href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}">
+                                                    <i class="bi bi-pencil-square"></i> Editar
                                                 </a>
-                                            </li>
+
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="#">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </a>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </td>

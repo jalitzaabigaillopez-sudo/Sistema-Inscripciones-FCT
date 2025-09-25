@@ -67,7 +67,7 @@ Route::post('/inscripcionAtleta', [InscripcionController::class, 'inscribirAtlet
 Route::post('/modificarInscripcionAtleta', [InscripcionController::class, 'modificarInscripcionAtleta']);
 Route::post('/eliminarInscripcionAtleta', [InscripcionController::class, 'eliminarInscripcionAtleta']);
 Route::get('/editarInscripcion/{id_evento}', [InscripcionController::class, 'editarInscripcion'])->name('editar.inscripcion');
-
+Route::post('/procesarInscripcion', [InscripcionController::class, 'confirmarInscripcion']);
 
 /**
  * =============================================================================================================================================
