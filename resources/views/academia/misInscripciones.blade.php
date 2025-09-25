@@ -33,8 +33,8 @@
                     <tbody>
                         @foreach($inscripcionesAgrupadas as $index => $ins)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $ins->evento->nombre }}</td>
+                                <td data-id-evento="{{ $ins->evento->id_evento }}">{{ $index + 1 }}</td>
+                                <td >{{ $ins->evento->nombre }}</td>
                                 <td>{{ $academia->nombre }}</td>
                                 <td>{{ $academia->profesor_encargado }}</td>
                                 <td>{{ $ins->entrenador }}</td>
@@ -76,7 +76,7 @@
                                                 </a>
 
                                                 <li>
-                                                    <a class="dropdown-item text-danger" href="#">
+                                                    <a class="dropdown-item text-danger bEliminarMiInscripcion" href="#">
                                                         <i class="bi bi-trash"></i> Eliminar
                                                     </a>
                                                 </li>

@@ -15,6 +15,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+  <link rel="stylesheet" href="{{ asset('css/alertasInscripciones.css') }}">
 
   <!-- Bootstrap JS + Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -269,6 +270,23 @@
   <div class="content-wrapper" id="contentWrapper">
     <!-- {{ $academia->id_academia }} -->
     @yield('content')
+  </div>
+
+
+  <!-- Modal de alerta -->
+  <div id="customAlertOverlay" class="overlay">
+    <div class="custom-alert">
+      <div class="custom-alert-header">
+        <span class="custom-alert-icon">⚠️</span>
+        <h3 id="customAlertTitle">Alerta</h3>
+      </div>
+      <div class="custom-alert-body">
+        <p id="customAlertMessage"></p>
+      </div>
+      <div class="custom-alert-footer">
+        <button id="btnCerrarAlerta">Entendido</button>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->

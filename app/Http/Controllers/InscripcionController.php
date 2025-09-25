@@ -189,6 +189,8 @@ class InscripcionController extends Controller
                 'estado' => $primera->estado,
             ];
         }
+
+        // dd($inscripcionesAgrupadas);
         return view('academia/misInscripciones', compact('inscripcionesAgrupadas', 'academia'));
     }
 
@@ -235,6 +237,21 @@ class InscripcionController extends Controller
         $modalidades = $evento->modalidades;
 
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos'));
+    }
+
+    public function eliminarInscripcion(Request $request)
+    {
+        $id_academia = $request->input('id_academia');
+        $id_evento = $request->input('id_evento');
+
+        $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
+
+        if ($inscripcion) {
+            $inscripcion->delete();
+            return response()->json(['success' => true, 'msg' => 'Inscripción eliminada']);
+        }
+
+        return response()->json(['success' => true, 'msg' => 'No se pudo eliminar esta inscripcion']);
     }
 
     public function confirmarInscripcion(Request $request)
