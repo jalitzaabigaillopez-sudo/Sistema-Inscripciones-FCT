@@ -64,4 +64,23 @@ class EventosController extends Controller
     {
         //
     }
+
+   public function api()
+{
+    $eventos = Evento::where('estado', 'activo')->get();
+
+    $formateados = $eventos->map(function ($evento) {
+        return [
+            'id' => $evento->id_evento,
+            'title' => $evento->nombre,
+            'start' => $evento->fecha_inicio,
+            'end' => $evento->fecha_final,
+        ];
+    });
+
+    return response()->json($formateados);
 }
+
+}
+    
+  
