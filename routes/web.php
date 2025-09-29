@@ -170,9 +170,7 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 Route::get('/preregistro', function () {
     return view('sections/preregistro');
 })->name('preregistro');
-//####################################### FIN #########################################################
 
 // routes/api.php
 Route::get('/events', [EventosController::class, 'api']);    
 
-//####################################### FIN #########################################################
