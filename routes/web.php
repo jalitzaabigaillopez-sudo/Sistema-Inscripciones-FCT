@@ -147,10 +147,6 @@ Route::get('/restablecerContrasena', function () {
 })->name('restablecerContraseña');
 
 
-// Rutas para el calendario y eventos en formato JSON
-Route::get('/calendario', [EventosController::class, 'calendario'])->name('calendario');
-Route::get('/eventos-json', [EventosController::class, 'eventosJson'])->name('eventos.json');
-
 
 //####################################### AMBOS ROLES #################################################
 /**
