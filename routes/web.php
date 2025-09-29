@@ -231,7 +231,9 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 Route::get('/preregistro', function () {
     return view('sections/preregistro');
 })->name('preregistro');
-//####################################### FIN #########################################################
 
+/**
+ * Rutas API
+ */
 
-//####################################### FIN #########################################################
+Route::get('/events', [EventosController::class, 'api']);    
