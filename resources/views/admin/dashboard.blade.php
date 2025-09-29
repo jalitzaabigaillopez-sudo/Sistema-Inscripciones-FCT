@@ -96,6 +96,7 @@
       </div>
       </div>
     </div>
+
 <!-- Tarjeta de Calendario de Eventos (pantalla completa) -->
 <div class="col-12 mb-4">
   <div class="card border-0 shadow-sm rounded-3">
@@ -116,35 +117,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
+document.addEventListener('DOMContentLoaded', function () {
+  const calendarEl = document.getElementById('calendar');
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      locale: 'es',
-      height: 'auto',
-      contentHeight: 600,
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,listWeek'
-      },
-      events: '{{ route('eventos.json') }}',
-      eventClick(info) {
-        Swal.fire({
-          title: info.event.title,
-          text: info.event.extendedProps.description || 'Sin descripción',
-          icon: 'info',
-          confirmButtonColor: '#222A59'
-        });
-      }
-    });
-
-    calendar.render();
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: '/events', // ← usa esta ruta si es la que funciona en tu backend
+    eventClick: function(info) {
+      alert(info.event.title);
+    }
   });
+
+  calendar.render();
+});
+
 </script>
-
-
 
 @endsection
 

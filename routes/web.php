@@ -228,4 +228,10 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 /**
  * Rutas dashboard
  */
+Route::get('/preregistro', function () {
+    return view('sections/preregistro');
+})->name('preregistro');
+//####################################### FIN #########################################################
 
+
+//####################################### FIN #########################################################
