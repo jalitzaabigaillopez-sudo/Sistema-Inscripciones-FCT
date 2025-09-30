@@ -239,3 +239,9 @@ Route::get('/preregistro', function () {
  */
 
 Route::get('/events', [EventosController::class, 'api']);    
+
+
+Route::get('/cambiar-contraseña/{id_usuario}', function ($id_usuario) {
+    $usuario = \App\Models\Usuario::findOrFail($id_usuario);
+    return view('sections.completarCambioContraseña', compact('usuario'));
+})->name('completar.cambio.contraseña');

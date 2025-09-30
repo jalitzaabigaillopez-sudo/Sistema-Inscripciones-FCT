@@ -96,6 +96,7 @@
                                 <a href="{{ route('restablecerContraseña') }}" class="link-primary">¿Olvidaste tu
                                     contraseña?</a>
                             </div>
+  
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
                            <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
@@ -105,6 +106,9 @@
                         <div class="mt-3 text-center">
                             <span>¿No tienes una cuenta? </span>
                             <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
+                                                     <a href="{{ route('completar.cambio.contraseña', ['id_usuario' => 1]) }}" class="link-primary" style="margin-left: 10px;">
+    Cambiar contraseña
+</a>
                         </div>
                         </form>
                     </div>
