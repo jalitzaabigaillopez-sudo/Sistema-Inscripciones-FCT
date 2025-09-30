@@ -34,6 +34,7 @@ Route::get('/', function () {
 Route::post('/login-process', [AuthController::class, 'verificarUsuario'])->name('login.process');// verificar credenciales
 Route::post('/logout-process', [AuthController::class, 'cerrarSesion'])->name('logout.process');// cerrar sesion
 
+
 /**
  * DashBoard
  */
@@ -52,6 +53,13 @@ Route::get('/prueba', function () {
 
 
 //####################################### SOLO ACADEMIA #######################################################################################
+/**
+ * =============================================================================================================================================
+ * Rutas Perfil
+ */
+// Route::get('/getProfile', [AcademiaController::class, 'getProfile']);
+
+
 /**
  * Ruta para completar pre-registro
  */
@@ -83,8 +91,6 @@ Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategoria
  * Rutas atletas
  */
 Route::get('/atletas-academia', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
-
-
 
 //==============================================================================================================================================
 
@@ -228,4 +234,6 @@ Route::post('/buscar-datos', [PadronNacimientoController::class, 'buscarPersona'
 /**
  * Rutas dashboard
  */
+
+
 

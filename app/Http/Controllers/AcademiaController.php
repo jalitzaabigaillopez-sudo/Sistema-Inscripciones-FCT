@@ -42,7 +42,7 @@ class AcademiaController extends Controller
             // 'password' => 'required|string',
             'rol' => 'required|string|in:administrador,academia,arbitro',
             'estado' => 'required|string|in:activo,inactivo,pendiente', //debe de venir como pendiente
-            'imagen'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             // academia
             'nombre' => 'required|string', //nombre de academia
@@ -120,8 +120,8 @@ class AcademiaController extends Controller
         ]);
         -
 
-        // Verificar que exista el usuario
-        $id = $request['id_usuario'];
+            // Verificar que exista el usuario
+            $id = $request['id_usuario'];
         $usuario = Usuario::find($id);
         if (!$usuario) {
             return response()->json(['error' => 'Ha ocurrido un error con el proceso de registro'], 404);
@@ -333,6 +333,11 @@ class AcademiaController extends Controller
         $item->delete();
 
         return back();
+    }
+
+    public function getProfile()
+    {
+        return view('academia/perfil-academia');
     }
 
 }
