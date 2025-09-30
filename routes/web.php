@@ -45,11 +45,7 @@ Route::get('/dashboard', [InicioController::class, 'index'])->name('dashboard');
  */
 Route::get('/insertUser', [DBController::class, 'insertUser']);
 Route::get('/selectUser', [DBController::class, 'selectUser']);
-Route::get('/pre_registroAcademia', [DBController::class, 'pre_registroAcademia']);
-Route::get('/pre_registroAcademia1', [DBController::class, 'pre_registroAcademia1']);
-Route::get('/prueba', function () {
-    return view('prueba');
-});
+Route::post('/pre_registroAcademia', [AcademiaController::class, 'pre_registroAcademia'])->name('pre.registro.academia');
 
 
 //####################################### SOLO ACADEMIA #######################################################################################

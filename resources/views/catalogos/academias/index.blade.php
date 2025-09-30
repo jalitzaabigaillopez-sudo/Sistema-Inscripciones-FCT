@@ -103,6 +103,7 @@
         </div>
 
         {{-- Modal CREAR ACADEMIA --}}
+        <!-- @audit Inicio Modal Nueva Academia -->
         <div class="modal fade" id="modalAcademia" tabindex="-1" aria-labelledby="modalAcademiaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered ">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
@@ -114,7 +115,7 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form method="POST" action="{{ route('academias.store') }}" id="formCrearAcademia">
+                        <form method="POST" action="{{ route('pre.registro.academia') }}">
                             @csrf
                             <div class="row g-4">
                                 <div class="col-md-7 border-end pe-md-4">
@@ -130,7 +131,7 @@
                                             <label for="telefonoAcademia" class="form-label">Teléfono <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="telefonoAcademia"
-                                                name="telefono" placeholder="Ej. +506 8888-8888" required>
+                                                name="telefono" placeholder="88888888" required>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -145,7 +146,7 @@
                                             <label for="correoAcademia" class="form-label">Correo Electrónico <span
                                                     class="text-danger">*</span></label>
                                             <input type="email" class="form-control form-control-sm"
-                                                id="correoAcademia" name="correo" placeholder="Ej. academia@email.com"
+                                                id="correoAcademia" name="email" placeholder="Ej. academia@email.com"
                                                 required>
                                         </div>
                                     </div>
@@ -217,10 +218,11 @@
                                  </div>
                             </div>
 
+                            <!-- @audit bGuardar Academia -->
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                                     data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-success rounded-pill">Guardar Academia</button>
+                                <button type="submit" class="btn btn-success rounded-pill">Guardar Academia</button>
                             </div>
                         </form>
                     </div>

@@ -33,24 +33,22 @@ class AcademiaController extends Controller
     //####################################### SOLO ADMINISTRADOR ############################################
     public function pre_registroAcademia(Request $request)
     {
+        
         // VERIFICAR DATOS  DE ENTRADA
         $validateData = $request->validate([
             // usuario
-            'identificacion' => 'required|string', //no requerido
-            'nombre_completo' => 'required|string', //encargado de academia
+            'profesor_encargado' => 'required|string', //encargado de academia
             'email' => 'required|string|email',
             // 'password' => 'required|string',
-            'rol' => 'required|string|in:administrador,academia,arbitro',
-            'estado' => 'required|string|in:activo,inactivo,pendiente', //debe de venir como pendiente
+            // 'rol' => 'required|string|in:administrador,academia,arbitro',
+            // 'estado' => 'required|string|in:activo,inactivo,pendiente',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             // academia
             'nombre' => 'required|string', //nombre de academia
             'direccion' => 'required|string',
-            'correo' => 'required|string|email',
             'telefono' => 'required|string',
-            'estado' => 'required|string|in:activo,inactivo', //activo por defecto
-            'id_distrito' => 'required|integer',
+            'distrito_id' => 'required',
         ]);
 
         // Generar contraseña temporal
@@ -59,12 +57,12 @@ class AcademiaController extends Controller
 
         // Guardar el usuario academia como inactivo
         $usuario = Usuario::create([
-            'identificacion' => $validateData['identificacion'], //se puede completar despues si no se sabe
-            'nombre_completo' => $validateData['nombre_completo'], //encargado de academia
+            // 'identificacion' => $validateData['identificacion'], //se puede completar despues si no se sabe
+            'nombre_completo' => $validateData['profesor_encargado'], //encargado de academia
             'email' => $validateData['email'], //c
             'password' => $temporalPass, //contraseña temporal
-            'rol' => $validateData['rol'],
-            'estado' => $validateData['estado'],
+            'rol' => 'academia',
+            'estado' => 'inactivo', //inactivo por defecto
             'imagen' => $validateData['imagen'],
         ]);
         $usuario->save();
@@ -76,9 +74,9 @@ class AcademiaController extends Controller
             'direccion' => $validateData['direccion'],
             'correo' => $usuario->email,
             'telefono' => $validateData['telefono'],
-            'estado' => 'activo', //activo por defecto
+            'estado' => 'inactivo', //activo por defecto
             'id_usuario' => $usuario->id_usuario,
-            'id_distrito' => $validateData['id_distrito'], //c  
+            'id_distrito' => $validateData['distrito_id'], //c  
         ]);
         $academia->save();
 
@@ -121,7 +119,7 @@ class AcademiaController extends Controller
         -
 
             // Verificar que exista el usuario
-            $id = $request['id_usuario'];
+        $id = $request['id_usuario'];
         $usuario = Usuario::find($id);
         if (!$usuario) {
             return response()->json(['error' => 'Ha ocurrido un error con el proceso de registro'], 404);
@@ -149,6 +147,10 @@ class AcademiaController extends Controller
                     $usuario->password = $validateData['password'];
                     $usuario->estado = 'activo';
                     $usuario->save();
+
+                    $academia = $usuario->academia;
+                    $academia->estado = 'activo';
+                    $academia->save();
 
                     $contraseñaTemporal->vigente = 'no';
                     $contraseñaTemporal->save();
