@@ -65,9 +65,9 @@ class EventosController extends Controller
         //
     }
 
-   public function api()
+public function api()
 {
-    $eventos = Evento::where('estado', 'activo')->get();
+    $eventos = Evento::all(); // ← ya no filtramos por estado
 
     $formateados = $eventos->map(function ($evento) {
         return [
@@ -75,11 +75,14 @@ class EventosController extends Controller
             'title' => $evento->nombre,
             'start' => $evento->fecha_inicio,
             'end' => $evento->fecha_final,
+            'status' => $evento->estado,
+            'color' => $evento->estado === 'activo' ? '#3788d8' : '#d9534f', // azul para activos, rojo para inactivos
         ];
     });
 
     return response()->json($formateados);
 }
+
 
 }
     
