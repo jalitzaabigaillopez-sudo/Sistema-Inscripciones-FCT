@@ -216,6 +216,7 @@
             <button type="button" class="btn btn-primary px-4" id="btnPreregistro">Enviar Solicitud</button>
             <a href="{{ route('registro.nuevo') }}" class="btn btn-secondary px-4">Nuevo Registro</a>
             <a href="{{ route('login') }}" class="btn btn-secondary px-4">Cancelar</a>
+
         </form>
     </div>
          </div>

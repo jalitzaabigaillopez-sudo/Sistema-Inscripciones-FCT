@@ -24,11 +24,66 @@ class AtletasController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Atleta::all();
+        // Para solicitudes AJAX de DataTables (paginación del servidor)
+        if ($request->ajax()) {
+            $query = Atleta::with(['grados', 'academias']); // Cargar relaciones necesarias
+
+            // Aplicar búsqueda si existe
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('primer_apellido', 'like', "%{$search}%")
+                        ->orWhere('identificacion', 'like', "%{$search}%");
+                });
+            }
+
+            // Obtener el total de registros
+            $totalRecords = $query->count();
+
+            // Aplicar ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumn = $request->columns[$request->order[0]['column']]['data'];
+                $orderDirection = $request->order[0]['dir'];
+                $query->orderBy($orderColumn, $orderDirection);
+            }
+
+            // Aplicar paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $query->skip($start)->take($length)->get();
+
+            // Formatear datos para DataTables
+            $formattedData = [];
+            foreach ($data as $item) {
+                $formattedData[] = [
+                    'tipo_identificacion' => $item->tipo_identificacion,
+                    'identificacion' => $item->identificacion,
+                    'nombre' => $item->nombre . ' ' . $item->primer_apellido . ' ' . $item->segundo_apellido,
+                    'rol' => $item->rol,
+                    'sexo' => $item->sexo,
+                    'fecha_nacimiento' => \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y'),
+                    'grado' => $item->grados->nombre ?? '',
+                    'academia' => $item->academias->nombre ?? '',
+                    'estado' => $item->estado,
+                    'acciones' => $item->id_atleta
+                ];
+            }
+
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $totalRecords,
+                'data' => $formattedData
+            ]);
+        }
+
+        // Para la carga inicial de la página
         $grados = Grado::all();
         $categorias = Categoria::all();
         $academias = Academia::where('estado', 'activo')->get();
-        return view('catalogos.atletas.index', compact('data', 'grados', 'categorias', 'academias'));
+
+        return view('catalogos.atletas.index', compact('grados', 'categorias', 'academias'));
     }
 
     /**
@@ -70,7 +125,7 @@ class AtletasController extends Controller
                 'primer_apellido' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
                 'segundo_apellido' => 'nullable|string|max:255',
                 'fecha_nacimiento' => 'nullable|date|required_if:tipo_identificacion,Otro',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
 
             // Verificar que no exista ya registrado
@@ -118,7 +173,6 @@ class AtletasController extends Controller
             }
             $divisionId = $division->id_division;
 
-            // Crear atleta
             // Crear atleta
             $atleta = new Atleta();
             $atleta->tipo_identificacion = $request->tipo_identificacion;
@@ -330,19 +384,7 @@ class AtletasController extends Controller
                 ], 422);
             }
 
-            // Update
-            $atleta->tipo_identificacion = $request->tipo_identificacion;
-            $atleta->identificacion = $request->identificacion;
-            $atleta->nombre = $request->nombre;
-            $atleta->primer_apellido = $request->primer_apellido;
-            $atleta->segundo_apellido = $request->segundo_apellido;
-            $atleta->rol = $request->rol;
-            $atleta->sexo = $request->sexo;
-            $atleta->fecha_nacimiento = $request->fecha_nacimiento;
-            $atleta->estado = $request->estado;
-            $atleta->id_grado = $request->id_grado;
-            $atleta->id_academia = $request->id_academia;
-
+            // Lógica de MANEJO DE IMAGEN completa:
             if ($request->input('remove_imagen') === '1') {
                 Log::info('Eliminando imagen del atleta: ' . $atleta->imagen);
                 if ($atleta->imagen) {
@@ -358,6 +400,20 @@ class AtletasController extends Controller
                 $atleta->imagen = $path;
                 Log::info('Imagen guardada en update: ' . $path);
             }
+
+
+            // Update
+            $atleta->tipo_identificacion = $request->tipo_identificacion;
+            $atleta->identificacion = $request->identificacion;
+            $atleta->nombre = $request->nombre;
+            $atleta->primer_apellido = $request->primer_apellido;
+            $atleta->segundo_apellido = $request->segundo_apellido;
+            $atleta->rol = $request->rol;
+            $atleta->sexo = $request->sexo;
+            $atleta->fecha_nacimiento = $request->fecha_nacimiento;
+            $atleta->estado = $request->estado;
+            $atleta->id_grado = $request->id_grado;
+            $atleta->id_academia = $request->id_academia;
 
             $atleta->save();
 

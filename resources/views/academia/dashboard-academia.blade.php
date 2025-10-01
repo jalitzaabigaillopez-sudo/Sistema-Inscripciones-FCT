@@ -9,7 +9,6 @@
 
     <h3 class="mb-4 fw-bold text-">Dashboard de Academia</h3>
     <div class="row mb-4">
-      <div class="row mb-4">
   <div class="col-md-4">
     <div class="card text-bg-success mb-3">
       <div class="card-body">
@@ -105,20 +104,38 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
+  if (!calendarEl) return;
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
-    events: '/events', // ← usa esta ruta si es la que funciona en tu backend
+    events: '/events',
     eventClick: function(info) {
-      alert(info.event.title);
+      if (info.event.extendedProps.status === 'activo') {
+        Swal.fire({
+          icon: 'question',
+          title: '¿Deseas inscribirte al evento?',
+          showCancelButton: true,
+          confirmButtonText: 'Inscribirme',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/inscripcion-eventos'; // Redirigir a la página de inscripciones
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Evento no activo',
+          text: 'No puedes inscribirte a este evento porque no está activo.'
+        });
+      }
     }
   });
 
   calendar.render();
 });
 
+
 </script>
-  </div>
-
-
+    </div>
 @endsection

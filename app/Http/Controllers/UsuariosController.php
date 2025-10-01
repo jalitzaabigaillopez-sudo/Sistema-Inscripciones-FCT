@@ -11,13 +11,76 @@ use Illuminate\Support\Facades\Log;
 
 class UsuariosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        $data = Usuario::all();
-        return view('catalogos.usuarios.index', compact('data'));
+        // Si es una solicitud AJAX, procesamos los datos para DataTables
+        if ($request->ajax()) {
+            $query = Usuario::query(); // Inicia la consulta del modelo
+
+            // 1. Aplicar Búsqueda Global (si existe)
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    // Se busca en todas las columnas relevantes
+                    $q->where('identificacion', 'like', "%{$search}%")
+                        ->orWhere('nombre_completo', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('rol', 'like', "%{$search}%");
+                });
+            }
+
+            // Obtener el total de registros después de aplicar el filtro (recordsFiltered)
+            $recordsFiltered = $query->count();
+            $totalRecords = Usuario::count(); // Total de registros sin filtros
+
+            // 2. Aplicar Ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                // Se puede ordenar directamente si el nombre de la columna coincide con el campo de la DB
+                if ($orderColumnName !== 'acciones') {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                }
+            } else {
+                // Orden predeterminado
+                $query->orderBy('id_usuario', 'asc');
+            }
+
+            // 3. Aplicar Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $query->skip($start)->take($length)->get();
+
+            // 4. Formatear Datos para DataTables
+            $formattedData = [];
+            foreach ($data as $item) {
+                $formattedData[] = [
+                    // Asegúrarse de que estas claves coincidan con el 'data' del JS
+                    'id_usuario'      => $item->id_usuario,
+                    'identificacion' => $item->identificacion,
+                    'nombre_completo' => $item->nombre_completo,
+                    'email' => $item->email,
+                    'rol' => $item->rol,
+                    'estado' => $item->estado,
+                    'imagen' => $item->imagen,   
+                    'acciones' => $item->id_usuario, // Se usa el ID para generar los botones
+                ];
+            }
+
+            // Devolver la respuesta JSON
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
+        // Si no es AJAX, se carga la vista normalmente
+        return view('catalogos.usuarios.index');
     }
 
     /**
@@ -54,7 +117,7 @@ class UsuariosController extends Controller
                 'rol.in' => 'El rol seleccionado no es válido.',
                 'imagen.image' => 'El archivo debe ser una imagen.',
                 'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-                'imagen.max' => 'La imagen no puede pesar más de 2048 KB.',
+                'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
             ];
             // Validar los datos del formulario
             $validator = Validator::make($request->all(), [
@@ -63,7 +126,7 @@ class UsuariosController extends Controller
                 'email' => 'required|email|max:255|unique:usuarios,email',
                 'password' => 'required|string|min:8|confirmed',
                 'rol' => 'required|in:administrador,academia,arbitro',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             ], $messages);
 
             if ($validator->fails()) {

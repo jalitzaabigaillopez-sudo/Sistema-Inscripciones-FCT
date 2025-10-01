@@ -37,54 +37,7 @@
                         </thead>
                         <tbody>
 
-                            @foreach ($data as $item)
-                                <tr class="text-center">
-                                    <td>{{ $item->identificacion }}</td>
-                                    <td>{{ $item->nombre_completo }}</td>
-                                    <td>{{ $item->email }}</td>
-                                    {{-- <td>{{ $item->password }}</td> --}}
-                                    {{-- <td>
 
-                                        <img src="{{ $item->imagen ? asset('storage/' . $item->imagen) : asset('images/placeholder.png') }}"
-                                            alt="Foto de {{ $item->nombre_completo }}"
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
-                                    </td> --}}
-
-                                    <td>{{ $item->rol }}</td>
-                                    <td>
-                                        @if ($item->estado === 'activo')
-                                            <span class="badge rounded-pill bg-success">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @elseif($item->estado === 'inactivo')
-                                            <span class="badge rounded-pill bg-danger">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @else
-                                            <span class="badge rounded-pill bg-secondary">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill" title="Editar"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"
-                                            data-usuario='@json($item)'>
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ route('usuarios.destroy', $item) }}" method="POST"
-                                            id="form-eliminar-{{ $item->id_usuario }}" class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                                data-bs-toggle="tooltip" title="Eliminar Usuario"
-                                                onclick="confirmarEliminacion({{ $item->id_usuario }})"
-                                                onclick="return confirm('¿Eliminar esta academia?')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -130,16 +83,27 @@
                                     <div class="mb-3">
                                         <label for="contrasenaUsuario" class="form-label">Contraseña <span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" class="form-control form-control-sm" id="contrasenaUsuario"
-                                            autocomplete="new-password" name="password" placeholder="Mínimo 8 caracteres"
-                                            required>
+                                        <div class="input-group input-group-sm">
+                                            <input type="password" class="form-control" id="contrasenaUsuario"
+                                                autocomplete="new-password" name="password"
+                                                placeholder="Mínimo 8 caracteres" required>
+                                            <button class="btn btn-outline-primary toggle-password" type="button"
+                                                data-target="#contrasenaUsuario">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="confirmarContrasena" class="form-label">Confirmar Contraseña <span
                                                 class="text-danger">*</span></label>
-                                        <input type="password" class="form-control form-control-sm"
-                                            id="confirmarContrasena" name="password_confirmation"
-                                            placeholder="Repetir la contraseña" required>
+                                        <div class="input-group input-group-sm">
+                                            <input type="password" class="form-control" id="confirmarContrasena"
+                                                name="password_confirmation" placeholder="Repetir la contraseña" required>
+                                            <button class="btn btn-outline-primary toggle-password" type="button"
+                                                data-target="#confirmarContrasena">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 ps-md-4">
@@ -169,7 +133,7 @@
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"> <i class="bi bi-trash"></i></button>
+                                            style="display: none;"> <i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
                                 </div>
                             </div>
@@ -227,16 +191,28 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="contrasenaUsuarioEditar" class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control form-control-sm"
-                                            id="contrasenaUsuarioEditar" name="password"
-                                            placeholder="Mínimo 8 caracteres">
+                                        <div class="input-group input-group-sm">
+                                            <input type="password" class="form-control form-control-sm"
+                                                id="contrasenaUsuarioEditar" name="password"
+                                                placeholder="Mínimo 8 caracteres">
+                                            <button class="btn btn-outline-primary toggle-password" type="button"
+                                                data-target="#contrasenaUsuarioEditar">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="confirmarContrasenaEditar" class="form-label">Confirmar
                                             Contraseña</label>
-                                        <input type="password" class="form-control form-control-sm"
-                                            id="confirmarContrasenaEditar" name="password_confirmation"
-                                            placeholder="Repetir la contraseña">
+                                        <div class="input-group input-group-sm">
+                                            <input type="password" class="form-control form-control-sm"
+                                                id="confirmarContrasenaEditar" name="password_confirmation"
+                                                placeholder="Repetir la contraseña">
+                                            <button class="btn btn-outline-primary toggle-password" type="button"
+                                                data-target="#confirmarContrasenaEditar">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 ps-md-4">
@@ -298,278 +274,354 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('js/datatable.js') }}"></script>
 
-
+@section('scripts')
     <script>
-        // CREAR
-        document.addEventListener("DOMContentLoaded", function() {
-            const crearModal = document.getElementById("modalUsuario");
-            if (crearModal) {
-                setupImagePreview(crearModal);
-            }
+        $(document).ready(function() {
+            let columnsConfig = [{
+                    data: "identificacion",
+                    title: "ID"
+                },
+                {
+                    data: "nombre_completo",
+                    title: "Nombre" // Coincide con 'nombre_completo'
+                },
+                {
+                    data: "email",
+                    title: "Correo"
+                },
+                {
+                    data: "rol",
+                    title: "Rol"
+                },
+                {
+                    data: "estado",
+                    title: "Estado"
+                },
+                {
+                    data: "acciones",
+                    title: "Acciones",
+                    orderable: false, // Las acciones no se ordenan
+                    render: function(data, type, row) {
+                        // 'data' es el ID del usuario
+                        return `
+                            <a href="#" 
+                                   class="btn btn-sm btn-warning rounded-pill btn-edit" 
+                                   title="Editar"
+                                   data-id="${row.id_usuario}" 
+                                    data-usuario='${JSON.stringify(row)}'
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#modalEditarUsuario">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
 
-            const formCrearUsuario = document.getElementById("formCrearUsuario");
-            const guardarBtn = document.querySelector("#modalUsuario .btn-success");
-
-            if (formCrearUsuario && guardarBtn) {
-                guardarBtn.addEventListener("click", function(e) {
-                    e.preventDefault();
-
-                    const formData = new FormData(formCrearUsuario);
-                    console.log([...formData]); // Registra datos para depuración
-
-                    $.ajax({
-                        url: "{{ route('usuarios.store') }}",
-                        method: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: '¡Éxito!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonColor: '#3085d6',
-                                    confirmButtonText: 'Aceptar'
-                                }).then(() => {
-                                    $('#modalUsuario').modal('hide');
-                                    formCrearUsuario.reset();
-                                    location.reload();
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            let errorMessage = 'Ocurrió un error al registrar el usuario.';
-                            if (xhr.status === 422) {
-                                const errors = xhr.responseJSON?.errors || {};
-                                errorMessage = Object.values(errors).flat().join('<br>');
-                            } else if (xhr.status === 500) {
-                                errorMessage = xhr.responseJSON?.error ||
-                                    'Error interno del servidor.';
-                            }
-                            Swal.fire({
-                                title: 'Error',
-                                html: errorMessage,
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                });
-            }
-
-            function setupImagePreview(modalElement) {
-                const inputFile = modalElement.querySelector(".fotoUsuarioInput");
-                const previewImage = modalElement.querySelector(".previewImage");
-                const previewText = modalElement.querySelector(".previewText");
-                const removeBtn = modalElement.querySelector(".removeImageBtn");
-
-                if (inputFile && previewImage && previewText && removeBtn) {
-                    inputFile.addEventListener("change", function() {
-                        const file = this.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                previewImage.src = e.target.result;
-                                previewImage.style.display = "block";
-                                previewText.style.display = "none";
-                                removeBtn.style.display = "inline-block";
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-
-                    removeBtn.addEventListener("click", function() {
-                        previewImage.src = "";
-                        previewImage.style.display = "none";
-                        previewText.style.display = "block";
-                        removeBtn.style.display = "none";
-                        inputFile.value = "";
-                    });
-                }
-            }
-        });
-
-        // EDITAR
-        document.addEventListener("DOMContentLoaded", function() {
-            const editarModal = document.getElementById("modalEditarUsuario");
-            if (editarModal) {
-                setupImagePreview(editarModal);
-            }
-
-            const formEditarUsuario = document.getElementById("formEditarUsuario");
-            if (formEditarUsuario) {
-                formEditarUsuario.addEventListener("submit", function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    const idUsuario = document.getElementById("idUsuarioEditar").value;
-
-                    // Excluir password y password_confirmation si están vacíos
-                    const password = formEditarUsuario.querySelector('#contrasenaUsuarioEditar').value;
-                    const passwordConfirmation = formEditarUsuario.querySelector(
-                        '#confirmarContrasenaEditar').value;
-                    if (!password && !passwordConfirmation) {
-                        formData.delete('password');
-                        formData.delete('password_confirmation');
+                                <form action="/usuarios/${data}" method="POST" id="form-eliminar-${data}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-danger rounded-pill"
+                                            data-bs-toggle="tooltip" 
+                                            title="Eliminar Usuario"
+                                            onclick="confirmarEliminacion(${data})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                        `;
                     }
-
-                    console.log('Datos enviados:', [...formData]);
-
-                    $.ajax({
-                        url: `/usuarios/${idUsuario}`,
-                        method: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: '¡Éxito!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'Aceptar'
-                                }).then(() => {
-                                    $('#modalEditarUsuario').modal('hide');
-                                    formEditarUsuario.reset();
-                                    location.reload();
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            let errorMessage = 'Error al actualizar el usuario.';
-                            if (xhr.status === 422) {
-                                errorMessage = Object.values(xhr.responseJSON?.errors || {})
-                                    .flat().join('<br>');
-                            } else if (xhr.status === 500) {
-                                errorMessage = xhr.responseJSON?.error || 'Error interno.';
-                            }
-                            Swal.fire({
-                                title: 'Error',
-                                html: errorMessage,
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                });
-            }
-
-            $('#modalEditarUsuario').on('show.bs.modal', function(event) {
-                const button = $(event.relatedTarget);
-                const usuario = button.data('usuario');
-                const modal = $(this);
-                modal.find('#idUsuarioEditar').val(usuario.id_usuario);
-                modal.find('#identificacionUsuarioEditar').val(usuario.identificacion);
-                modal.find('#nombreUsuarioEditar').val(usuario.nombre_completo);
-                modal.find('#correoUsuarioEditar').val(usuario.email);
-                modal.find('#rolUsuarioEditar').val(usuario.rol);
-                modal.find('input[name="estado"][value="' + usuario.estado + '"]').prop('checked', true);
-                modal.find('#contrasenaUsuarioEditar').val('');
-                modal.find('#confirmarContrasenaEditar').val('');
-                modal.find('#removeImagen').val('0');
-
-                const previewImage = modal.find('.previewImage');
-                const previewText = modal.find('.previewText');
-                const removeBtn = modal.find('.removeImageBtn');
-                const inputFile = modal.find('#fotoUsuarioEditar');
-
-                previewText.text('Sin foto'); // Forzar "Sin foto" por defecto
-                if (usuario.imagen && usuario.imagen !== '') {
-                    previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
-                    previewText.css('display', 'none');
-                    removeBtn.css('display', 'inline-block');
-                } else {
-                    previewImage.attr('src', '').css('display', 'none');
-                    previewText.css('display', 'block');
-                    removeBtn.css('display', 'none');
                 }
-                inputFile.val('');
+            ];
+
+            // Pintar headers dinámicamente
+            let headersRow = $('#tabla-headers');
+            headersRow.empty();
+            columnsConfig.forEach(col => {
+                headersRow.append(`<th class="text-center">${col.title}</th>`);
             });
 
-            function setupImagePreview(modalElement) {
-                const inputFile = modalElement.querySelector(".fotoUsuarioInput");
-                const previewImage = modalElement.querySelector(".previewImage");
-                const previewText = modalElement.querySelector(".previewText");
-                const removeBtn = modalElement.querySelector(".removeImageBtn");
-                const removeImagenInput = modalElement.querySelector("#removeImagen");
-
-                if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
-                    inputFile.addEventListener("change", function() {
-                        const file = this.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                previewImage.src = e.target.result;
-                                previewImage.style.display = "block";
-                                previewText.style.display = "none";
-                                removeBtn.style.display = "inline-block";
-                                removeImagenInput.value = "0";
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-
-                    removeBtn.addEventListener("click", function() {
-                        previewImage.src = "";
-                        previewImage.style.display = "none";
-                        previewText.style.display = "block";
-                        removeBtn.style.display = "none";
-                        inputFile.value = "";
-                        removeImagenInput.value = "1";
-                    });
-                }
-            }
+            // Inicializar DataTable con tu script genérico
+            initDataTable({
+                ajaxUrl: "{{ route('usuarios.index') }}",
+                columns: columnsConfig
+            });
         });
+    </script>
+@endsection
 
-        function confirmarEliminacion(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Envía el formulario usando AJAX para manejar la respuesta
-                    $.ajax({
-                        url: $('#form-eliminar-' + id).attr('action'),
-                        method: $('#form-eliminar-' + id).attr('method'),
-                        data: $('#form-eliminar-' + id).serialize(),
-                        success: function(response) {
+<script>
+    // CREAR
+    document.addEventListener("DOMContentLoaded", function() {
+        const crearModal = document.getElementById("modalUsuario");
+        if (crearModal) {
+            setupImagePreview(crearModal);
+        }
+
+        const formCrearUsuario = document.getElementById("formCrearUsuario");
+        const guardarBtn = document.querySelector("#modalUsuario .btn-success");
+
+        if (formCrearUsuario && guardarBtn) {
+            guardarBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(formCrearUsuario);
+                console.log([...formData]); // Registra datos para depuración
+
+                $.ajax({
+                    url: "{{ route('usuarios.store') }}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
                             Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'El registro ha sido eliminado correctamente.',
+                                title: '¡Éxito!',
+                                text: response.message,
                                 icon: 'success',
                                 confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Aceptar'
                             }).then(() => {
-                                // Recarga la página o actualiza la tabla
+                                $('#modalUsuario').modal('hide');
+                                formCrearUsuario.reset();
                                 location.reload();
                             });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Ocurrió un error al intentar eliminar el registro.',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
                         }
-                    });
-                }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Ocurrió un error al registrar el usuario.';
+                        if (xhr.status === 422) {
+                            const errors = xhr.responseJSON?.errors || {};
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        } else if (xhr.status === 500) {
+                            errorMessage = xhr.responseJSON?.error ||
+                                'Error interno del servidor.';
+                        }
+                        Swal.fire({
+                            title: 'Error',
+                            html: errorMessage,
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
             });
         }
-    </script>
+
+        function setupImagePreview(modalElement) {
+            const inputFile = modalElement.querySelector(".fotoUsuarioInput");
+            const previewImage = modalElement.querySelector(".previewImage");
+            const previewText = modalElement.querySelector(".previewText");
+            const removeBtn = modalElement.querySelector(".removeImageBtn");
+
+            if (inputFile && previewImage && previewText && removeBtn) {
+                inputFile.addEventListener("change", function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = "block";
+                            previewText.style.display = "none";
+                            removeBtn.style.display = "inline-block";
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener("click", function() {
+                    previewImage.src = "";
+                    previewImage.style.display = "none";
+                    previewText.style.display = "block";
+                    removeBtn.style.display = "none";
+                    inputFile.value = "";
+                });
+            }
+        }
+    });
+
+    // EDITAR
+    document.addEventListener("DOMContentLoaded", function() {
+        const editarModal = document.getElementById("modalEditarUsuario");
+        if (editarModal) {
+            setupImagePreview(editarModal);
+        }
+
+        const formEditarUsuario = document.getElementById("formEditarUsuario");
+        if (formEditarUsuario) {
+            formEditarUsuario.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const idUsuario = document.getElementById("idUsuarioEditar").value;
+
+                // Excluir password y password_confirmation si están vacíos
+                const password = formEditarUsuario.querySelector('#contrasenaUsuarioEditar').value;
+                const passwordConfirmation = formEditarUsuario.querySelector(
+                    '#confirmarContrasenaEditar').value;
+                if (!password && !passwordConfirmation) {
+                    formData.delete('password');
+                    formData.delete('password_confirmation');
+                }
+
+                console.log('Datos enviados:', [...formData]);
+
+                $.ajax({
+                    url: `/usuarios/${idUsuario}`,
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Aceptar'
+                            }).then(() => {
+                                $('#modalEditarUsuario').modal('hide');
+                                formEditarUsuario.reset();
+                                location.reload();
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Error al actualizar el usuario.';
+                        if (xhr.status === 422) {
+                            errorMessage = Object.values(xhr.responseJSON?.errors || {})
+                                .flat().join('<br>');
+                        } else if (xhr.status === 500) {
+                            errorMessage = xhr.responseJSON?.error || 'Error interno.';
+                        }
+                        Swal.fire({
+                            title: 'Error',
+                            html: errorMessage,
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            });
+        }
+
+        $('#modalEditarUsuario').on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            const usuario = button.data('usuario');
+            const modal = $(this);
+            modal.find('#idUsuarioEditar').val(usuario.id_usuario);
+            modal.find('#identificacionUsuarioEditar').val(usuario.identificacion);
+            modal.find('#nombreUsuarioEditar').val(usuario.nombre_completo);
+            modal.find('#correoUsuarioEditar').val(usuario.email);
+            modal.find('#rolUsuarioEditar').val(usuario.rol);
+            modal.find('input[name="estado"][value="' + usuario.estado + '"]').prop('checked', true);
+            modal.find('#contrasenaUsuarioEditar').val('');
+            modal.find('#confirmarContrasenaEditar').val('');
+            modal.find('#removeImagen').val('0');
+
+            const previewImage = modal.find('.previewImage');
+            const previewText = modal.find('.previewText');
+            const removeBtn = modal.find('.removeImageBtn');
+            const inputFile = modal.find('#fotoUsuarioEditar');
+
+            previewText.text('Sin foto'); // Forzar "Sin foto" por defecto
+            if (usuario.imagen && usuario.imagen !== '') {
+                previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
+                previewText.css('display', 'none');
+                removeBtn.css('display', 'inline-block');
+            } else {
+                previewImage.attr('src', '').css('display', 'none');
+                previewText.css('display', 'block');
+                removeBtn.css('display', 'none');
+            }
+            inputFile.val('');
+        });
+
+        function setupImagePreview(modalElement) {
+            const inputFile = modalElement.querySelector(".fotoUsuarioInput");
+            const previewImage = modalElement.querySelector(".previewImage");
+            const previewText = modalElement.querySelector(".previewText");
+            const removeBtn = modalElement.querySelector(".removeImageBtn");
+            const removeImagenInput = modalElement.querySelector("#removeImagen");
+
+            if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
+                inputFile.addEventListener("change", function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = "block";
+                            previewText.style.display = "none";
+                            removeBtn.style.display = "inline-block";
+                            removeImagenInput.value = "0";
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                removeBtn.addEventListener("click", function() {
+                    previewImage.src = "";
+                    previewImage.style.display = "none";
+                    previewText.style.display = "block";
+                    removeBtn.style.display = "none";
+                    inputFile.value = "";
+                    removeImagenInput.value = "1";
+                });
+            }
+        }
+    });
+
+    function confirmarEliminacion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Envía el formulario usando AJAX para manejar la respuesta
+                $.ajax({
+                    url: $('#form-eliminar-' + id).attr('action'),
+                    method: $('#form-eliminar-' + id).attr('method'),
+                    data: $('#form-eliminar-' + id).serialize(),
+                    success: function(response) {
+                        Swal.fire({
+                            title: '¡Eliminado!',
+                            text: 'El registro ha sido eliminado correctamente.',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            // Recarga la página o actualiza la tabla
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ocurrió un error al intentar eliminar el registro.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+
 @endsection

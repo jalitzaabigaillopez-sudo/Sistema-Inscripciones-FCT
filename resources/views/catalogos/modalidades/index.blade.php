@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $item)
+                            {{-- @foreach ($data as $item)
                                 <tr class="text-center">
                                     <td class="small">{{ $item->nombre }}</td>
                                     <td class="small">{{ $item->descripcion }}</td>
@@ -52,7 +52,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforeach --}}
                         </tbody>
                     </table>
                 </div>
@@ -131,101 +131,169 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('js/datatable.js') }}"></script>
+
+
+@section('scripts') ...
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Script para editar
-            $('.btn-edit').click(function(e) {
-                e.preventDefault();
-                let modalidadId = $(this).data('id');
-                console.log('Click en editar, ID:', modalidadId);
+        $(document).ready(function() {
+            let columnsConfig = [{
+                    data: "nombre",
+                    title: "Nombre"
+                },
+                {
+                    data: "descripcion",
+                    title: "Descripción"
+                },
+                {
+                    data: "acciones",
+                    title: "Acciones",
+                    orderable: false,
+                    searchable: false,
+                    // Función para renderizar los botones de acción
+                    render: function(data, type, row) {
+                        // 'data' aquí será el 'id' de la modalidad
+                        let id_modalidad = data;
 
-                $.get('/modalidades/' + modalidadId + '/datos', function(data) {
-                    console.log('Datos recibidos:', data);
+                        return `
+                         <div class="d-flex justify-content-center">
+                            
+                            <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
+                                title="Editar" 
+                                data-id="${id_modalidad}">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
 
-                    $('#editNombreModalidad').val(data.nombre);
-                    $('#editDescripcionModalidad').val(data.descripcion);
+                            <form action="/modalidades/${id_modalidad}" method="POST"
+                                id="form-eliminar-${id_modalidad}" class="d-inline">
+                                
+                                <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                                    data-bs-toggle="tooltip" title="Eliminar Modalidad"
+                                    onclick="confirmarEliminacion(${id_modalidad}, 'modalidades')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    `;
+                    }
+                }
+            ];
 
-                    $('#formEditarModalidad').attr('action', '/modalidades/' + data.id_modalidad);
-
-                    let modal = new bootstrap.Modal(document.getElementById(
-                        'modalEditarModalidad'));
-                    modal.show();
-                });
+            // Pintar headers dinámicamente
+            let headersRow = $('#tabla-headers'); // Asumiendo que tienes un <thead> con id="tabla-headers"
+            headersRow.empty();
+            columnsConfig.forEach(col => {
+                headersRow.append(`<th class="text-center">${col.title}</th>`);
             });
 
-            // Función para confirmar eliminación
-            window.confirmarEliminacion = function(id) {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esta acción!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Enviamos la petición de eliminación al backend
-                        $.ajax({
-                            url: '/modalidades/' + id,
-                            method: 'POST', // Usamos POST y simulamos DELETE
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                _method: 'DELETE'
-                            },
-                            success: function(response) {
-                                Swal.fire({
-                                    title: '¡Eliminado!',
-                                    text: 'La modalidad ha sido eliminada correctamente.',
-                                    icon: 'success',
-                                    confirmButtonText: 'Aceptar'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: 'Error',
-                                    text: 'Ocurrió un error al intentar eliminar la modalidad.',
-                                    icon: 'error',
-                                    confirmButtonText: 'Aceptar'
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-            // Manejo de SweetAlert para mensajes de sesión (éxito y errores)
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            @endif
-
-            @if ($errors->any())
-                const errores = @json($errors->all());
-                let htmlErrors = '<ul>';
-                errores.forEach(error => {
-                    htmlErrors += error;
-                });
-                htmlErrors += '</ul>';
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de validación',
-                    html: htmlErrors,
-                    confirmButtonText: 'Aceptar'
-                });
-            @endif
+            // Inicializar DataTable con tu script genérico
+            // Asegúrate de reemplazar 'modalidades.index' con el nombre de tu ruta
+            initDataTable({
+                ajaxUrl: "{{ route('modalidades.index') }}",
+                columns: columnsConfig
+            });
         });
     </script>
+@endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Script para editar
+        $(document).on('click', '.btn-edit', function(e) {
+            e.preventDefault();
+            let modalidadId = $(this).data('id');
+            console.log('Click en editar, ID:', modalidadId);
+
+            $.get('/modalidades/' + modalidadId + '/datos', function(data) {
+                console.log('Datos recibidos:', data);
+
+                $('#editNombreModalidad').val(data.nombre);
+                $('#editDescripcionModalidad').val(data.descripcion);
+
+                $('#formEditarModalidad').attr('action', '/modalidades/' + data.id_modalidad);
+
+                new bootstrap.Modal(document.getElementById('modalEditarModalidad')).show();
+
+            });
+        });
+
+        // Función para confirmar eliminación
+        window.confirmarEliminacion = function(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esta acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviamos la petición de eliminación al backend
+                    $.ajax({
+                        url: '/modalidades/' + id,
+                        method: 'POST', // Usamos POST y simulamos DELETE
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE'
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: '¡Eliminado!',
+                                text: 'La modalidad ha sido eliminada correctamente.',
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Aceptar',
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Ocurrió un error al intentar eliminar la modalidad.',
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Aceptar',
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Manejo de SweetAlert para mensajes de sesión (éxito y errores)
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6', 
+                confirmButtonText: "Aceptar",
+                // timer: 1000
+            });
+        @endif
+
+        @if ($errors->any())
+            const errores = @json($errors->all());
+            let htmlErrors = '<ul>';
+            errores.forEach(error => {
+                htmlErrors += error;
+            });
+            htmlErrors += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de validación',
+                html: htmlErrors,
+                confirmButtonColor: '#3085d6'
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
+    });
+</script>
 @endsection

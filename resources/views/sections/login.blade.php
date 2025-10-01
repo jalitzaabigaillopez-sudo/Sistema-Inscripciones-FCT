@@ -66,7 +66,7 @@
         }
 
         .card-body {
-            border-radius: 1rem; 
+            border-radius: 1rem;
         }
     </style>
 </head>
@@ -78,10 +78,10 @@
         <div class="row centered-row">
             <div class="col-md-6 login-container me-3">
                 <div class="card" style="height: 530px;">
-                    <div class="card-body shadow-lg" >
+                    <div class="card-body shadow-lg">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
-                        <form action="{{route('login.process')}}" method="POST">
+                        <form action="{{ route('login.process') }}" method="POST">
                             @csrf
                             <div class="mb-3 p-1">
                                 <label for="email" class="form-label">Correo</label>
@@ -90,22 +90,33 @@
                             </div>
                             <div class="mb-3 p-1">
                                 <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" name="password" id="password">
+                                <div class="input-group input-group-sm">
+                                    <input type="password" class="form-control" name="password" id="password">
+                                    <button class="btn btn-outline-primary toggle-password" type="button"
+                                        data-target="#password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <a href="{{ route('restablecerContraseña') }}" class="link-primary">¿Olvidaste tu
                                     contraseña?</a>
                             </div>
+
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
-                           <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
+                            <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
 
-                            
-                        
-                        <div class="mt-3 text-center">
-                            <span>¿No tienes una cuenta? </span>
-                            <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
-                        </div>
+
+
+                            <div class="mt-3 text-center">
+                                <span>¿No tienes una cuenta? </span>
+                                <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
+                                <a href="{{ route('completar.cambio.contraseña', ['id_usuario' => 1]) }}"
+                                    class="link-primary" style="margin-left: 10px;">
+                                    Cambiar contraseña
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -121,6 +132,25 @@
     <!-- use bootstrap 5.3.7 -->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+
+    <script>
+        // VISUALIZAR CONTRA CON OJO
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = document.querySelector(this.dataset.target);
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye', 'bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash', 'bi-eye');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

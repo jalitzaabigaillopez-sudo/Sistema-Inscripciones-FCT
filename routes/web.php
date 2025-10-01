@@ -206,10 +206,6 @@ Route::get('/restablecerContrasena', function () {
 })->name('restablecerContraseña');
 
 
-// Rutas para el calendario y eventos en formato JSON
-Route::get('/calendario', [EventosController::class, 'calendario'])->name('calendario');
-Route::get('/eventos-json', [EventosController::class, 'eventosJson'])->name('eventos.json');
-
 
 //####################################### AMBOS ROLES #################################################
 /**
@@ -239,3 +235,9 @@ Route::get('/preregistro', function () {
  */
 
 Route::get('/events', [EventosController::class, 'api']);    
+
+
+Route::get('/cambiar-contraseña/{id_usuario}', function ($id_usuario) {
+    $usuario = \App\Models\Usuario::findOrFail($id_usuario);
+    return view('sections.completarCambioContraseña', compact('usuario'));
+})->name('completar.cambio.contraseña');

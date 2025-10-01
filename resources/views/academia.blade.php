@@ -242,9 +242,9 @@
       <nav aria-label="breadcrumb" class="flex-grow-1">
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item">
-            <a class="fw-bold text-white" href="{{ route('dashboard.academias') }}">Dashboard</a>
+            <a class=" text-white text-decoration-none" href="{{ route('dashboard') }}">Dashboard</a>
           </li>
-          <li class="breadcrumb-item active text-white" aria-current="page">
+          <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
             @yield('breadcrumb-title', '')
           </li>
         </ol>

@@ -96,6 +96,8 @@
       </div>
       </div>
     </div>
+  
+
 
 <!-- Tarjeta de Calendario de Eventos (pantalla completa) -->
 <div class="col-12 mb-4">
@@ -104,6 +106,10 @@
       <i class="bi bi-calendar3-week me-2"></i> Calendario de Eventos
     </div>
     <div class="card-body">
+    <div class="mb-3" align="right">
+     <span class="badge bg-primary">Activo</span>
+     <span class="badge bg-danger">Inactivo</span>
+     </div>
       <div id="calendar" style="width: 100%; height: 600px;"></div>
     </div>
   </div>
@@ -119,12 +125,40 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
+  if (!calendarEl) return;
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
-    events: '/events', // ← usa esta ruta si es la que funciona en tu backend
+    events: '/events',
     eventClick: function(info) {
-      alert(info.event.title);
+      if (info.event.extendedProps.status === 'activo') {
+        Swal.fire({
+          icon: 'question',
+          title: '¿Deseas inscribirte al evento?',
+          showCancelButton: true,
+          confirmButtonText: 'Inscribirme',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (info.event.id) {
+            window.location.href = '/inscripciones';
+             const inscripcionesUrl = "{{ route('inscripciones.index') }}";
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo obtener el ID del evento.'
+              });
+            }
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Evento no activo',
+          text: 'No puedes inscribirte a este evento porque no está activo.'
+        });
+      }
     }
   });
 

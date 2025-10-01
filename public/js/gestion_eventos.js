@@ -1,5 +1,5 @@
 // CREAR
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Setup modal and image preview
     const crearModal = document.getElementById("modalEvento");
     if (crearModal) {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const guardarBtn = document.querySelector("#modalEvento .btn-success");
 
     if (formCrearEvento && guardarBtn) {
-        guardarBtn.addEventListener("click", function(e) {
+        guardarBtn.addEventListener("click", function (e) {
             e.preventDefault();
 
             // Client-side validation
@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 hasError = true;
             }
             if (!document.getElementById('fechaInicio').value || !document.getElementById(
-                    'fechaFin').value ||
+                'fechaFin').value ||
                 !document.getElementById('fechaInicioInscripcion').value || !document
-                .getElementById('fechaFinInscripcion').value) {
+                    .getElementById('fechaFinInscripcion').value) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         Swal.fire({
                             title: '¡Éxito!',
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         });
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     let errorMessage = 'Ocurrió un error al registrar el evento.';
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON?.errors || {};
@@ -131,11 +131,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const removeBtn = modalElement.querySelector(".removeImageBtn");
 
         if (inputFile && previewImage && previewText && removeBtn) {
-            inputFile.addEventListener("change", function() {
+            inputFile.addEventListener("change", function () {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         previewImage.src = e.target.result;
                         previewImage.style.display = "block";
                         previewText.style.display = "none";
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            removeBtn.addEventListener("click", function() {
+            removeBtn.addEventListener("click", function () {
                 previewImage.src = "";
                 previewImage.style.display = "none";
                 previewText.style.display = "block";
@@ -157,7 +157,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // EDITAR
-
 document.addEventListener("DOMContentLoaded", function () {
     // Configurar vista previa de la imagen para el modal de edición
     const editarModal = document.getElementById("modalEditarEvento");
@@ -181,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .value);
             const regEndDate = new Date(document.getElementById('editFechaFinInscripcion').value);
             const tipoEvento = document.getElementById('editIdTipoEvento').value;
-            
+
             // CAMBIO AQUÍ
             const estado = document.querySelector('input[name="estado"]:checked')?.value || '';
 
@@ -204,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!document.getElementById('editFechaInicio').value || !document.getElementById(
                 'editFechaFin').value ||
                 !document.getElementById('editFechaInicioInscripcion').value || !document
-                .getElementById('editFechaFinInscripcion').value) {
+                    .getElementById('editFechaFinInscripcion').value) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -349,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('editFechaInicio').value = evento.fecha_inicio;
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;
-                    
+
                     // CAMBIO AQUÍ
                     const radioEstado = document.querySelector(`input[name="estado"][value="${evento.estado}"]`);
                     if (radioEstado) {
@@ -416,22 +415,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Escuchar clics en botones de edición
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault(); // Evitar comportamiento por defecto del enlace
-            const eventoId = this.dataset.eventoId; // Obtener ID del evento
-            if (!eventoId) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'ID del evento no encontrado.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-                return;
-            }
-            cargarDatosEvento(eventoId);
-        });
+    $(document).on('click', '.btn-edit', function (e) {
+        e.preventDefault(); // Evitar comportamiento por defecto del enlace
+        const eventoId = this.dataset.eventoId; // Obtener ID del evento
+        if (!eventoId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'ID del evento no encontrado.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+        cargarDatosEvento(eventoId);
     });
+
 
     // Resetear el formulario y la vista previa al cerrar el modal
     $('#modalEditarEvento').on('hidden.bs.modal', function () {
@@ -480,6 +478,7 @@ function confirmarEliminacion(id) {
                         title: '¡Eliminado!',
                         text: 'El evento ha sido eliminado correctamente.',
                         icon: 'success',
+                        confirmButtonColor: '#3085d6',
                         confirmButtonText: 'Aceptar'
                     }).then(() => {
                         location.reload();
@@ -490,6 +489,7 @@ function confirmarEliminacion(id) {
                         title: 'Error',
                         text: 'Ocurrió un error al intentar eliminar el evento.',
                         icon: 'error',
+                        confirmButtonColor: '#3085d6',
                         confirmButtonText: 'Aceptar'
                     });
                 }
