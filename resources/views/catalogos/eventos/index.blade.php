@@ -7,6 +7,7 @@
 @section('breadcrumb-title', 'Lista de Eventos')
 
 @section('content')
+
     <div class="container py-4">
         <div class="d-flex align-items-center mb-4">
             <h4 class="fw-bold mb-0">Lista de Eventos</h4>
@@ -20,8 +21,8 @@
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
-                <div class="table-responsive" style="overflow-x: auto;">
-                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                <div class="table-responsive"  style="width: 100%; overflow-x: auto;">
+                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border" style="width: 100% !important;">
                         <thead class="table-light small">
                             <tr>
                                 <th class="text-center">Nombre</th>
@@ -36,7 +37,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $evento)
+                            {{-- @foreach ($data as $evento)
                                 <tr class="text-center">
                                     <td>{{ $evento->nombre }}</td>
                                     <td>{{ $evento->descripcion }}</td>
@@ -76,7 +77,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforeach --}}
                         </tbody>
                     </table>
                 </div>
@@ -145,8 +146,8 @@
                                     <div class="mb-3">
                                         <label for="id_tipo_evento" class="form-label">Tipo de Evento <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="id_tipo_evento"
-                                            name="id_tipo_evento" required>
+                                        <select class="form-select form-select-sm" id="id_tipo_evento" name="id_tipo_evento"
+                                            required>
                                             <option value="" selected disabled>Selecciona un tipo</option>
                                             @foreach ($tipoEvento as $tipo)
                                                 <option value="{{ $tipo->id_tipo_evento }}" @selected(old('id_tipo_evento') == $tipo->id_tipo_evento)>
@@ -324,6 +325,12 @@
                                                     id="editEstadoInactivo" value="inactivo">
                                                 <label class="form-check-label" for="editEstadoInactivo">Inactivo</label>
                                             </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="estado"
+                                                    id="editEstadoFinalizado" value="finalizado">
+                                                <label class="form-check-label"
+                                                    for="editEstadoInactivo">Finalizado</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -343,28 +350,133 @@
 
 
     <script src="{{ asset('js/gestion_eventos.js') }}"></script>
+    <script src="{{ asset('js/datatable.js') }}"></script>
 
+@section('scripts')
     <script>
-        // SweetAlert para mensajes de sesión
-        @if (session('success'))
-            Swal.fire({
-                title: '¡Éxito!',
-                text: "{{ session('success') }}",
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
-        @endif
+        $(document).ready(function() {
+            // Configuración de columnas para la tabla de Eventos
+            let columnsConfig = [{
+                    data: "nombre",
+                    title: "Nombre del Evento"
+                },
+                {
+                    data: "descripcion",
+                    title: "Descripción"
+                },
+                {
+                    data: "tipo_evento",
+                    title: "Tipo",
+                    defaultContent: ""
+                },
+                {
+                    data: "fecha_inicio_inscripcion",
+                    title: "Inicio Ins.",
+                    render: function(data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                    }
+                },
+                {
+                    data: "fecha_final_inscripcion",
+                    title: "Fin Ins.",
+                    render: function(data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                    }
+                },
+                {
+                    data: "fecha_inicio",
+                    title: "Inicio",
+                    render: function(data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                    }
+                },
+                {
+                    data: "fecha_final",
+                    title: "Fin",
+                    render: function(data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                    }
+                },
+                {
+                    data: "estado",
+                    title: "Estado"
+                },
+                {
+                    data: "acciones",
+                    title: "Acciones",
+                    orderable: false,
+                    searchable: false,
+                    // Función para renderizar los botones de acción
+                    render: function(data, type, row) {
+                        let id_evento = row.id_evento;
 
-        @if (session('error'))
-            Swal.fire({
-                title: 'Error',
-                text: "{{ session('error') }}",
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        @endif
+                        return `
+                         <div class="d-flex justify-content-center">
+                            
+                            <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
+                                title="Editar" 
+                                data-evento-id="${id_evento}">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
 
-        // Pasa la URL de la ruta a una variable global para que el JS la use
-        const storeEventUrl = "{{ route('eventos.store') }}";
+                            <form action="/eventos/${id_evento}" method="POST"
+                                id="form-eliminar-${id_evento}" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                                    data-bs-toggle="tooltip" title="Eliminar Evento"
+                                    onclick="confirmarEliminacion(${id_evento}, 'eventos')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                         </div>
+                        `;
+                    }
+                }
+            ];
+
+            // Pintar headers dinámicamente
+            let headersRow = $('#tabla-headers');
+            headersRow.empty();
+            columnsConfig.forEach(col => {
+                headersRow.append(`<th class="text-center">${col.title}</th>`);
+            });
+
+            // Inicializar DataTable
+            initDataTable({
+                ajaxUrl: "{{ route('eventos.index') }}",
+                columns: columnsConfig,
+                rowId: 'id_evento'
+            });
+
+
+        });
     </script>
+@endsection
+
+<script>
+    // SweetAlert para mensajes de sesión
+    @if (session('success'))
+        Swal.fire({
+            title: '¡Éxito!',
+            text: "{{ session('success') }}",
+            icon: 'success',
+            confirmButtonColor: '#3085d6'
+            confirmButtonText: 'Aceptar'
+        });
+    @endif
+
+    @if (session('error'))
+        Swal.fire({
+            title: 'Error',
+            text: "{{ session('error') }}",
+            icon: 'error',
+            confirmButtonColor: '#3085d6'
+            confirmButtonText: 'Aceptar'
+        });
+    @endif
+
+    // Pasa la URL de la ruta a una variable global para que el JS la use
+    const storeEventUrl = "{{ route('eventos.store') }}";
+</script>
 @endsection

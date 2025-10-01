@@ -11,11 +11,65 @@ class GradosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Grado::all();
-        return view('catalogos.grados.index', compact('data'));
+        // Para solicitudes AJAX de DataTables
+        if ($request->ajax()) {
+            $query = Grado::query();
+
+            // Aplica búsqueda si existe
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    // Ajustar la búsqueda a los campos de Grado
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            }
+
+            // Obtener el total de registros ANTES de la paginación
+            $recordsFiltered = $query->count();
+            $totalRecords = Grado::count(); // Total sin filtros
+
+            // Aplicar ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                if (in_array($orderColumnName, ['nombre', 'descripcion'])) {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                }
+            }
+
+            // Aplicar paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $query->skip($start)->take($length)->get();
+
+            // Formatear datos para DataTables
+            $formattedData = [];
+            foreach ($data as $item) {
+                $formattedData[] = [
+                    'id_grado' => $item->id_grado, // Asumiendo campo 'id'
+                    'nombre' => $item->nombre,
+                    'descripcion' => $item->descripcion,
+                    'acciones' => $item->id_grado, // Usamos el ID para las acciones
+                ];
+            }
+
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
+        // Para la carga inicial de la página (retorna la vista)
+        return view('catalogos.grados.index');
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,7 +84,7 @@ class GradosController extends Controller
      */
     public function store(Request $request)
     {
-         $mensajes = [
+        $mensajes = [
             'nombre.unique' => 'Ya existe un grado con ese nombre.',
         ];
 

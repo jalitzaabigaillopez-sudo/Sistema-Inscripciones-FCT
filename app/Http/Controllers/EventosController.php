@@ -14,15 +14,95 @@ class EventosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Actualizar estado de eventos finalizados automáticamente
         Evento::where('estado', 'activo')
             ->where('fecha_final', '<', now())
             ->update(['estado' => 'finalizado']);
 
-        $data = Evento::all();
+        // Si es petición AJAX para DataTables
+        if ($request->ajax()) {
+            $query = Evento::with('tipoEvento'); // Cargar relación
+
+            // Columnas permitidas para búsqueda y ordenamiento
+            $allowedColumns = [
+                'nombre',
+                'descripcion',
+                'fecha_inicio_inscripcion',
+                'fecha_final_inscripcion',
+                'fecha_inicio',
+                'fecha_final',
+                'estado'
+            ];
+
+            // Búsqueda global
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search, $allowedColumns) {
+                    foreach ($allowedColumns as $column) {
+                        $q->orWhere($column, 'like', "%{$search}%");
+                    }
+
+                    // Buscar también en el nombre del tipo de evento
+                    $q->orWhereHas('tipoEvento', function ($q2) use ($search) {
+                        $q2->where('nombre', 'like', "%{$search}%");
+                    });
+                });
+            }
+
+            // Total de registros filtrados
+            $recordsFiltered = $query->count();
+            $totalRecords = Evento::count();
+
+            // Ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                if (in_array($orderColumnName, $allowedColumns)) {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                } elseif ($orderColumnName === 'tipo_evento') {
+                    // Ordenar por relación tipoEvento
+                    $query->join('tipo_eventos', 'eventos.id_tipo_evento', '=', 'tipo_eventos.id_tipo_evento')
+                        ->orderBy('tipo_eventos.nombre', $orderDirection)
+                        ->select('eventos.*');
+                }
+            }
+
+            // Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $query->skip($start)->take($length)->get();
+
+            // Formatear datos
+            $formattedData = $data->map(function ($item) {
+                return [
+                    'id_evento' => $item->id_evento,
+                    'nombre' => $item->nombre,
+                    'descripcion' => $item->descripcion,
+                    'fecha_inicio_inscripcion' => $item->fecha_inicio_inscripcion ? \Carbon\Carbon::parse($item->fecha_inicio_inscripcion)->format('m/d/Y') : '',
+                    'fecha_final_inscripcion' => $item->fecha_final_inscripcion ? \Carbon\Carbon::parse($item->fecha_final_inscripcion)->format('m/d/Y') : '',
+                    'fecha_inicio' => $item->fecha_inicio ? \Carbon\Carbon::parse($item->fecha_inicio)->format('m/d/Y') : '',
+                    'fecha_final' => $item->fecha_final ? \Carbon\Carbon::parse($item->fecha_final)->format('m/d/Y') : '',
+                    'estado' => $item->estado,
+                    'tipo_evento' => $item->tipoEvento->nombre ?? 'N/A',
+                    'acciones' => $item->id_evento,
+                ];
+            });
+
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
+        // Para la carga inicial de la vista
         $tipoEvento = TipoEvento::all();
-        return view('catalogos.eventos.index', compact('data', 'tipoEvento'));
+        return view('catalogos.eventos.index', compact('tipoEvento'));
     }
 
     /**
@@ -200,25 +280,21 @@ class EventosController extends Controller
         return back();
     }
 
-public function api()
-{
-    $eventos = Evento::all(); // ← ya no filtramos por estado
+    public function api()
+    {
+        $eventos = Evento::all(); // ← ya no filtramos por estado
 
-    $formateados = $eventos->map(function ($evento) {
-        return [
-            'id' => $evento->id_evento,
-            'title' => $evento->nombre,
-            'start' => $evento->fecha_inicio,
-            'end' => $evento->fecha_final,
-            'status' => $evento->estado,
-            'color' => $evento->estado === 'activo' ? '#3788d8' : '#d9534f', // azul para activos, rojo para inactivos
-        ];
-    });
+        $formateados = $eventos->map(function ($evento) {
+            return [
+                'id' => $evento->id_evento,
+                'title' => $evento->nombre,
+                'start' => $evento->fecha_inicio,
+                'end' => $evento->fecha_final,
+                'status' => $evento->estado,
+                'color' => $evento->estado === 'activo' ? '#3788d8' : '#d9534f', // azul para activos, rojo para inactivos
+            ];
+        });
 
-    return response()->json($formateados);
+        return response()->json($formateados);
+    }
 }
-
-
-}
-    
-  
