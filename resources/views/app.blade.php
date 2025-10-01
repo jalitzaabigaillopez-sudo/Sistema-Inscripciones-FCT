@@ -325,10 +325,11 @@
             <i class="bi bi-speedometer2 me-2"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
+        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i
+                class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
         <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                fill="currentColor" class="bi bi-person-walking me-2" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-person-walking me-2" viewBox="0 0 16 16">
                 <path
                     d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
                 <path
@@ -344,33 +345,33 @@
             <i class="bi bi-ui-checks me-2"></i>
             <span>Inscripciones</span>
         </a>
-      
 
-            <!-- Submenú de Catálogos Generales -->
-            <div class="submenu">
-                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                    id="catalogosToggle">
-                    <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-                    <i class="bi bi-chevron-down ms-auto"></i>
+
+        <!-- Submenú de Catálogos Generales -->
+        <div class="submenu">
+            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                id="catalogosToggle">
+                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div class="submenu-items d-none" id="catalogosItems">
+                <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-people me-2"></i> Usuarios
                 </a>
-                <div class="submenu-items d-none" id="catalogosItems">
-                    <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                        <i class="bi bi-people me-2"></i> Usuarios
-                    </a>
-                    <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                        <i class="bi bi-columns-gap me-2"></i> Modalidades
-                    </a>
-                    <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                        <i class="bi bi-card-heading me-2"></i> Grados
-                    </a>
-                    <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                        <i class="bi bi-calendar3 me-2"></i> Eventos
-                    </a>
-                    <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                        <i class="bi bi-bookmarks me-2"></i> Categorías
-                    </a>
-                    <!-- Elementos adicionales para demostrar el scroll -->
-                    {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-columns-gap me-2"></i> Modalidades
+                </a>
+                <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-card-heading me-2"></i> Grados
+                </a>
+                <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-calendar3 me-2"></i> Eventos
+                </a>
+                <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <i class="bi bi-bookmarks me-2"></i> Categorías
+                </a>
+                <!-- Elementos adicionales para demostrar el scroll -->
+                {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
                     <i class="bi bi-gear me-2"></i> Configuración
                 </a>
                 <a href="#" onclick="handleSidebarClick(event)" class="text-white">
@@ -379,11 +380,11 @@
                 <a href="#" onclick="handleSidebarClick(event)" class="text-white">
                     <i class="bi bi-shield-check me-2"></i> Permisos
                 </a> --}}
-                </div>
             </div>
+        </div>
 
-            <!-- Otros submenús de ejemplo -->
-            {{-- <div class="submenu">
+        <!-- Otros submenús de ejemplo -->
+        {{-- <div class="submenu">
             <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
                 id="configuracionToggle">
                 <span><i class="bi bi-gear me-2"></i> Configuración</span>
@@ -443,8 +444,6 @@
     </div>
 
     <!-- Scripts -->
-    <script></script>
-
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -453,8 +452,11 @@
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/ripple.js') }}"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    {{-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"> --}}
+    {{-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> --}}
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -574,35 +576,28 @@
             console.log('Navegando a: ', event.currentTarget.href);
         }
 
-        // Código de DataTable (existente)
-        $(document).ready(function() {
-            $('#tabla').DataTable({
-                "ordering": false,
-                "language": {
-                    "decimal": "",
-                    "emptyTable": "No hay datos disponibles en la tabla",
-                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                    "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
-                    "infoFiltered": "(filtrado de _MAX_ entradas totales)",
-                    "lengthMenu": "Mostrar _MENU_ entradas",
-                    "loadingRecords": "Cargando...",
-                    "processing": "Procesando...",
-                    "search": "Buscar:",
-                    "zeroRecords": "No se encontraron registros coincidentes",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    },
-                    "aria": {
-                        "sortAscending": ": activar para ordenar la columna ascendente",
-                        "sortDescending": ": activar para ordenar la columna descendente"
+
+        // VISUALIZAR CONTRA CON OJO
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = document.querySelector(this.dataset.target);
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye', 'bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash', 'bi-eye');
                     }
-                }
+                });
             });
         });
     </script>
+
+    {{-- Aquí se van a inyectar los scripts personalizados de cada vista --}}
+    @yield('scripts')
+
 </body>
 
 </html>
