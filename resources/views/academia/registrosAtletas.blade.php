@@ -20,7 +20,6 @@
                 <table class="table table-striped table-hover table-bordered text-center border">
                     <thead class="table-light">
                         <tr>
-                            <th>#</th>
                             <th>Identificación</th>
                             <th>Nombre</th>
                             <th>Apellidos</th>
@@ -33,7 +32,6 @@
                     <tbody>
                         @foreach($atletas as $atleta)
                             <tr>
-                                <td>#</td>
                                 <td>{{$atleta->identificacion}}</td>
                                 <td>{{$atleta->nombre}}</td>
                                 <td>{{ $atleta->primer_apellido }} {{ $atleta->segundo_apellido }}</td>

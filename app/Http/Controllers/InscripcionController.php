@@ -47,6 +47,9 @@ class InscripcionController extends Controller
             'estado' => 'inactiva',
             'peso' => $atleta['peso'],
             'codigo_equipo' => $atleta['grupo'],
+            'peso' => $atleta['peso'],
+            'codigo_equipo' => $atleta['grupo'],
+            'rol' => $atleta['rol'],
         ]);
         return response()->json($inscripcion, 201);
     }
@@ -174,17 +177,10 @@ class InscripcionController extends Controller
 
             $atletas = $grupo->pluck('atletas')->flatten();// Todos los atletas del grupo
 
-            // Entrenadores de este grupo
-            $entrenadores = $atletas->where('rol', 'entrenador')
-                ->map(function ($a) {
-                    return trim("{$a->nombre} {$a->primer_apellido} {$a->segundo_apellido}");
-                })->unique()->implode(', ');
-
             $cantidad_inscritos = $atletas->count();// Cantidad de inscritos
 
             $inscripcionesAgrupadas[] = (object) [
                 'evento' => $primera->evento,
-                'entrenador' => $entrenadores ?: '-',
                 'cantidad_inscritos' => $cantidad_inscritos,
                 'estado' => $primera->estado,
             ];
@@ -220,6 +216,7 @@ class InscripcionController extends Controller
             $atleta = $inscripcion->atleta;
 
             // todos los datos
+            $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
             $atleta->modalidad = $inscripcion->modalidad;

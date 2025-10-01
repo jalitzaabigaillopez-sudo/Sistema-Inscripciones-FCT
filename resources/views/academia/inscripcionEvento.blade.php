@@ -51,16 +51,24 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select class="form-select atletas-select" required>
+                        <select class="form-control atletas-select" required>
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
+                            <!-- @audit rol IE -->
                                 <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
-                                    data-rol="{{ $atleta->rol }}" data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
+                                    data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
                                     {{ $atleta->segundo_apellido }} -
-                                    {{ $atleta->identificacion }} - 
-                                    {{ $atleta->rol }}
+                                    {{ $atleta->identificacion }} 
                                 </option>
                             @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select rol-select" required>
+                            <option value="">Rol</option>
+                            <option value="atleta">Atleta</option>
+                            <option value="entrenador">Entrenador</option>
+                            <option value="asistente">Asistente</option> 
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -68,9 +76,6 @@
                     </div>
                     <div class="col-md-2">
                         <input  type="text" class="form-control inputEdad" placeholder="Edad" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control inputRol" placeholder="Rol" readonly>
                     </div>
                     <div class="col-md-2">
                         <input id="pesoInput" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
@@ -121,7 +126,6 @@
                     <table id="tabla-inscripcion" class="table table-bordered table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
                                 <th>Nombre</th>
                                 <th>Sexo</th>
                                 <th>Edad</th>

@@ -103,7 +103,6 @@
         </div>
 
         {{-- Modal CREAR ACADEMIA --}}
-        <!-- @audit Inicio Modal Nueva Academia -->
         <div class="modal fade" id="modalAcademia" tabindex="-1" aria-labelledby="modalAcademiaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered ">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
@@ -218,7 +217,6 @@
                                  </div>
                             </div>
 
-                            <!-- @audit bGuardar Academia -->
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                                     data-bs-dismiss="modal">Cancelar</button>

@@ -23,7 +23,6 @@
                             <th>Evento</th>
                             <th>Academia</th>
                             <th>Encargado</th>
-                            <th>Entrenador</th>
                             <th>Cantidad de inscritos</th>
                             <th>Estado</th>
                             <th>Inicio del evento</th>
@@ -37,11 +36,10 @@
                                 <td >{{ $ins->evento->nombre }}</td>
                                 <td>{{ $academia->nombre }}</td>
                                 <td>{{ $academia->profesor_encargado }}</td>
-                                <td>{{ $ins->entrenador }}</td>
                                 <td>{{ $ins->cantidad_inscritos }}</td>
                                 <td>
                                     @if($ins->estado == 'activa')
-                                        Vigente
+                                        Enviado
                                     @elseif($ins->estado == 'inactiva')
                                         Pendiente
                                     @elseif($ins->estado == 'cancelada')

@@ -1,3 +1,8 @@
+.bigdrop .select2-results {
+    max-height: 1000px !important;
+    /* más alto que el default (~200px) */
+}
+
 /* Fondo oscuro */
 .overlay {
     position: fixed;
