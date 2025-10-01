@@ -241,7 +241,7 @@
                         success: function(response) {
                             Swal.fire({
                                 title: '¡Eliminado!',
-                                text: 'El grado ha sido eliminada correctamente.',
+                                text: 'El grado ha sido eliminado correctamente.',
                                 icon: 'success',
                                 confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Aceptar'

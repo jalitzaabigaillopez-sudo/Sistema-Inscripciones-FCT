@@ -100,7 +100,7 @@ class GradosController extends Controller
 
         $item->save();
 
-        return redirect()->back()->with('success', 'Grado creada correctamente.');
+        return redirect()->back()->with('success', 'Grado creado correctamente.');
     }
 
     /**
