@@ -404,15 +404,15 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <i class="bi bi-list hamburger" id="toggleSidebar"></i>
+        <div class="container-fluid d-flex align-items-center">
+            <i class="bi bi-list hamburger me-3" id="toggleSidebar"></i>
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item">
-                        <label class="fw-bold text-white" href="{{ route('adminDash') }}">Dashboard</label>
+                        <a class="text-white text-decoration-none" href="{{ route('adminDash') }}">Dashboard</a>
                     </li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">
+                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
                         @yield('breadcrumb-title', '')
                     </li>
                 </ol>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 
     <style>
         .custom-card {
@@ -18,22 +21,27 @@
             max-width: 430px;
             margin: 2rem auto;
         }
+
         .btn-primary {
             background-color: #222A59;
             border-radius: 0.5rem;
             transition: background 0.2s;
         }
+
         .btn-primary:hover {
             background-color: #2b4ba5;
         }
+
         .footer {
             background-color: #222A59;
         }
+
         .form-label {
             color: #222A59;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex flex-col justify-between">
 
     <div class="container py-5 flex-grow">
@@ -44,10 +52,10 @@
                 <p class="text-gray-600">Ingrese su contraseña temporal y cree una nueva contraseña segura.</p>
             </div>
 
-            @if(session('error'))
+            @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
@@ -57,18 +65,38 @@
 
                 <div class="mb-3">
                     <label for="temporaryPassword" class="form-label fw-bold">Contraseña Temporal</label>
-                    <input type="password" class="form-control" name="temporaryPassword" id="temporaryPassword" required minlength="6" autocomplete="new-password">
+                    <div class="input-group input-group-sm">
+                        <input type="password" class="form-control" name="temporaryPassword" id="temporaryPassword"
+                            required minlength="6" autocomplete="new-password">
+                        <button class="btn btn-outline-primary toggle-password" type="button"
+                            data-target="#temporaryPassword">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label fw-bold">Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password" id="password" required minlength="8" autocomplete="new-password">
+                    <div class="input-group input-group-sm">
+                        <input type="password" class="form-control" name="password" id="password" required
+                            minlength="8" autocomplete="new-password">
+                        <button class="btn btn-outline-primary toggle-password" type="button" data-target="#password">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                     <small class="text-muted">Mínimo 8 caracteres, incluye mayúsculas, minúsculas y números.</small>
                 </div>
 
                 <div class="mb-3">
                     <label for="password_confirmation" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" required minlength="8" autocomplete="new-password">
+                     <div class="input-group input-group-sm">
+                    <input type="password" class="form-control" name="password_confirmation" id="password_confirmation"
+                        required minlength="8" autocomplete="new-password">
+                          <button class="btn btn-outline-primary toggle-password" type="button"
+                                                data-target="#password_confirmation">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                 </div>
 
                 <div class="d-grid gap-2 d-md-block text-center">
@@ -86,11 +114,13 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <script>
         document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
             const password = document.getElementById('password').value;
             const confirm = document.getElementById('password_confirmation').value;
-            if(password !== confirm) {
+            if (password !== confirm) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'error',
@@ -99,6 +129,24 @@
                 });
             }
         });
+
+        // VISUALIZAR CONTRA CON OJO
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = document.querySelector(this.dataset.target);
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye', 'bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash', 'bi-eye');
+                    }
+                });
+            });
+        });
     </script>
 </body>
+
 </html>
