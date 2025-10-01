@@ -482,6 +482,7 @@
                                 title: '¡Éxito!',
                                 text: response.message,
                                 icon: 'success',
+                                confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Aceptar'
                             }).then(() => {
                                 $('#modalEditarUsuario').modal('hide');
@@ -502,6 +503,7 @@
                             title: 'Error',
                             html: errorMessage,
                             icon: 'error',
+                            confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Aceptar'
                         });
                     }

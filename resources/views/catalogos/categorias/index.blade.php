@@ -32,7 +32,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $categoria)
+                            {{-- @foreach ($data as $categoria)
                                 <tr class="text-center">
                                     <td>{{ $categoria->division->division }}</td>
                                     <td>{{ $categoria->sexo }}</td>
@@ -55,7 +55,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforeach --}}
                         </tbody>
                     </table>
                 </div>
@@ -122,8 +122,7 @@
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
-                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3"
-                            id="modalEditarCategoriaLabel">
+                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarCategoriaLabel">
                             Editar Categoría
                         </h5>
                         <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
@@ -176,218 +175,264 @@
 
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+    <script src="{{ asset('js/datatable.js') }}"></script>
 
-
-    {{-- Script para editar y eliminar --}}
+@section('scripts')
     <script>
-        // Espera a que el DOM (el documento HTML) esté completamente cargado
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // Selecciona el formulario usando su ID
-            const formCrearCategoria = document.getElementById('formCrearCategoria');
-            const modalCategoria = document.getElementById('modalCategoria');
-
-            // Verifica que ambos elementos existen antes de añadir el 'listener'
-            if (formCrearCategoria && modalCategoria) {
-
-                // Añade un 'listener' para el evento 'submit' del formulario
-                formCrearCategoria.addEventListener('submit', function(event) {
-                    // Detiene el envío del formulario tradicional para manejarlo con AJAX
-                    event.preventDefault();
-
-                    // Deshabilita el botón de enviar para evitar múltiples clics
-                    const submitBtn = formCrearCategoria.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-
-                    // Prepara los datos del formulario
-                    const formData = new FormData(formCrearCategoria);
-
-                    // Realiza la petición AJAX con fetch
-                    fetch(formCrearCategoria.action, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-                            }
-                        })
-                        .then(response => {
-                            // El servidor respondió, ahora procesamos la respuesta
-                            // Si la respuesta no es OK (por ejemplo, 409, 422, 500), lanzamos un error
-                            if (!response.ok) {
-                                return response.json().then(errorData => {
-                                    // Concatenamos los mensajes de error para una mejor presentación
-                                    let errorMessage = 'Error al procesar la solicitud.';
-                                    if (errorData.error) {
-                                        errorMessage = errorData.error;
-                                    } else if (errorData.errors) {
-                                        errorMessage = Object.values(errorData.errors).flat()
-                                            .join('<br>');
-                                    }
-                                    throw new Error(errorMessage);
-                                });
-                            }
-                            // Si la respuesta es OK, devolvemos los datos JSON
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Si la promesa se resuelve correctamente (éxito)
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Éxito!',
-                                html: data.success,
-                                showConfirmButton: false,
-                                timer: 1000
-                            }).then(() => {
-                                // Oculta el modal de manera segura
-                                const modal = bootstrap.Modal.getInstance(modalCategoria);
-                                if (modal) {
-                                    modal.hide();
-                                }
-                                // Recarga la página para mostrar la nueva categoría
-                                location.reload();
-                            });
-                        })
-                        .catch(error => {
-                            // Si la promesa falla (error)
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                html: error.message,
-                            });
-                        })
-                        .finally(() => {
-                            // Habilita el botón de nuevo, sin importar el resultado
-                            submitBtn.disabled = false;
-                        });
-                });
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cuando se hace clic en editar
-            $(document).on('click', '.btn-edit-categoria', function(e) {
-                e.preventDefault();
-
-                let id = $(this).data('id');
-                console.log("Editar categoría ID:", id);
-
-                $.get('/categorias/' + id + '/edit', function(data) {
-                    console.log("Datos recibidos:", data);
-
-                    // Llenar el formulario con los datos recibidos
-                    $('#editDivision').val(data.id_division);
-                    $('#editSexo').val(data.sexo);
-                    $('#editPesoMinimo').val(data.peso_min);
-                    $('#editPesoMaximo').val(data.peso_max);
-
-                    // Cambiar la acción del formulario
-                    $('#formEditarCategoria').attr('action', '/categorias/' + id);
-
-                    // Mostrar el modal
-                    let modal = new bootstrap.Modal(document.getElementById(
-                        'modalEditarCategoria'));
-                    modal.show();
-                });
-            });
-
-            // Enviar el formulario de edición por AJAX
-            $('#formEditarCategoria').on('submit', function(e) {
-                e.preventDefault();
-
-                let form = $(this);
-                let actionUrl = form.attr('action');
-                let formData = new FormData(this);
-
-
-                let pesoMin = parseFloat($('#editPesoMinimo').val());
-                let pesoMax = parseFloat($('#editPesoMaximo').val());
-                if (pesoMin >= pesoMax) {
-                    e.preventDefault();
-                    alert('El peso mínimo debe ser menor que el peso máximo.');
-                    return false;
+        $(document).ready(function() {
+            let columnsConfig = [{
+                    data: "division",
+                    title: "División"
+                },
+                {
+                    data: "sexo",
+                    title: "Sexo"
+                },
+                {
+                    data: "peso_min",
+                    title: "Peso Mínimo"
+                },
+                {
+                    data: "peso_max",
+                    title: "Peso Máximo"
+                },
+                {
+                    data: "acciones",
+                    title: "Acciones",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        let id_categoria = data;
+                        return `
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
+                           data-id="${id_categoria}" title="Editar">
+                           <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="/categorias/${id_categoria}" method="POST"
+                              id="form-eliminar-${id_categoria}" class="d-inline">
+                              @csrf
+                              @method('DELETE')
+                            <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                                    onclick="confirmarEliminacion(${id_categoria})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                `;
+                    }
                 }
+            ];
 
-                $.ajax({
-                    url: actionUrl,
-                    type: 'POST', // Laravel espera POST con _method=PUT
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'X-HTTP-Method-Override': 'PUT'
-                    },
-                    success: function(response) {
+            initDataTable({
+                ajaxUrl: "{{ route('categorias.index') }}",
+                columns: columnsConfig,
+                tableId: "tabla-categorias"
+            });
+        });
+    </script>
+@endsection
+
+
+
+{{-- Script para editar y eliminar --}}
+<script>
+    // CREAR
+    document.addEventListener('DOMContentLoaded', function() {
+        const formCrearCategoria = document.getElementById('formCrearCategoria');
+        const modalCategoria = document.getElementById('modalCategoria');
+
+        if (formCrearCategoria && modalCategoria) {
+            formCrearCategoria.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const submitBtn = formCrearCategoria.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+
+                const formData = new FormData(formCrearCategoria);
+
+                fetch(formCrearCategoria.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(async response => {
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            // Manejo de errores
+                            let errorMessage = 'Error al procesar la solicitud.';
+                            if (data.error) errorMessage = data.error;
+                            else if (data.errors) errorMessage = Object.values(data.errors)
+                                .flat().join('<br>');
+                            throw new Error(errorMessage);
+                        }
+                        return data;
+                    })
+                    .then(data => {
                         Swal.fire({
                             icon: 'success',
                             title: '¡Éxito!',
-                            text: response.message ||
-                                'Categoría actualizada correctamente.',
+                            html: data.success,
+                            confirmButtonColor: '#3085d6',
+
+                            showConfirmButton: "Aceptar",
+                            // timer: 1000
+                        }).then(() => {
+                            const modal = bootstrap.Modal.getInstance(modalCategoria);
+                            if (modal) modal.hide();
+                            location.reload();
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: error.message,
+                        });
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                    });
+            });
+        }
+    });
+
+
+    // EDITAR
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cuando se hace clic en editar
+        $(document).on('click', '.btn-edit', function(e) {
+            e.preventDefault();
+
+            let id = $(this).data('id');
+            console.log("Editar categoría ID:", id);
+
+            $.get('/categorias/' + id + '/edit', function(data) {
+                console.log("Datos recibidos:", data);
+
+                // Llenar el formulario con los datos recibidos
+                $('#editDivision').val(data.id_division);
+                $('#editSexo').val(data.sexo);
+                $('#editPesoMinimo').val(data.peso_min);
+                $('#editPesoMaximo').val(data.peso_max);
+
+                // Cambiar la acción del formulario
+                $('#formEditarCategoria').attr('action', '/categorias/' + id);
+
+                // Mostrar el modal
+                let modal = new bootstrap.Modal(document.getElementById(
+                    'modalEditarCategoria'));
+                modal.show();
+            });
+        });
+
+        // Enviar el formulario de edición por AJAX
+        $('#formEditarCategoria').on('submit', function(e) {
+            e.preventDefault();
+
+            let form = $(this);
+            let actionUrl = form.attr('action');
+            let formData = new FormData(this);
+
+
+            let pesoMin = parseFloat($('#editPesoMinimo').val());
+            let pesoMax = parseFloat($('#editPesoMaximo').val());
+            if (pesoMin >= pesoMax) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¡Error de Validación!',
+                    text: 'El peso mínimo debe ser menor que el peso máximo.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#3085d6'
+                });
+                return false;
+            }
+
+            $.ajax({
+                url: actionUrl,
+                type: 'POST', // Laravel espera POST con _method=PUT
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'X-HTTP-Method-Override': 'PUT'
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: response.message ||
+                            'Categoría actualizada correctamente.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        $('#modalEditarCategoria').modal('hide');
+                        form[0].reset();
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error al actualizar la categoría.';
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        errorMessage = Object.values(errors).flat().join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        html: errorMessage,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            });
+        });
+    });
+
+    function confirmarEliminacion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: $('#form-eliminar-' + id).attr('action'),
+                    method: $('#form-eliminar-' + id).attr('method'),
+                    data: $('#form-eliminar-' + id).serialize(),
+                    success: function(response) {
+                        Swal.fire({
+                            title: '¡Eliminado!',
+                            text: 'La categoría ha sido eliminada correctamente.',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Aceptar'
                         }).then(() => {
-                            $('#modalEditarCategoria').modal('hide');
-                            form[0].reset();
                             location.reload();
                         });
                     },
                     error: function(xhr) {
-                        let errorMessage = 'Error al actualizar la categoría.';
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            errorMessage = Object.values(errors).flat().join('<br>');
-                        }
                         Swal.fire({
-                            icon: 'error',
                             title: 'Error',
-                            html: errorMessage,
+                            text: 'Ocurrió un error al intentar eliminar la categoría.',
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Aceptar'
                         });
                     }
                 });
-            });
+            }
         });
-
-        function confirmarEliminacion(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: $('#form-eliminar-' + id).attr('action'),
-                        method: $('#form-eliminar-' + id).attr('method'),
-                        data: $('#form-eliminar-' + id).serialize(),
-                        success: function(response) {
-                            Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'La categoría ha sido eliminada correctamente.',
-                                icon: 'success',
-                                confirmButtonText: 'Aceptar'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Ocurrió un error al intentar eliminar la categoría.',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    </script>
+    }
+</script>
 @endsection

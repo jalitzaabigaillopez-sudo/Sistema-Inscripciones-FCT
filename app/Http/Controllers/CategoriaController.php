@@ -10,12 +10,69 @@ use App\Models\Atleta;
 class CategoriaController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Categoria::all();
+        if ($request->ajax()) {
+            $query = Categoria::with('division'); // si tienes relación con Division
+
+            // Búsqueda
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('sexo', 'like', "%{$search}%")
+                        ->orWhere('peso_min', 'like', "%{$search}%")
+                        ->orWhere('peso_max', 'like', "%{$search}%")
+
+                        // Buscar en la relación division
+                        ->orWhereHas('division', function ($q2) use ($search) {
+                            $q2->where('division', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+            $recordsFiltered = $query->count();
+            $totalRecords = Categoria::count();
+
+            // Ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                if (in_array($orderColumnName, ['sexo', 'peso_min', 'peso_max'])) {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                }
+            }
+
+            // Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $categorias = $query->skip($start)->take($length)->get();
+
+            $formattedData = [];
+            foreach ($categorias as $item) {
+                $formattedData[] = [
+                    'id_categoria' => $item->id_categoria,
+                    'division' => $item->division ? $item->division->division : 'N/A',
+                    'sexo' => $item->sexo,
+                    'peso_min' => $item->peso_min,
+                    'peso_max' => $item->peso_max,
+                    'acciones' => $item->id_categoria,
+                ];
+            }
+
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
         $divisiones = Division::all();
-        return view('catalogos.categorias.index', compact('data', 'divisiones'));
+        return view('catalogos.categorias.index', compact('divisiones'));
     }
+
 
     public function obtenerCategorias(Request $request)
     {

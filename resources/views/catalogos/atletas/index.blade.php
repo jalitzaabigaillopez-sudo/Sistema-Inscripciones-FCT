@@ -24,80 +24,11 @@
                 <div class="table-responsive" style="overflow-x: auto;">
                     <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
                         <thead class="table-light">
-                            <tr>
-                                <th class="text-center">Tipo ID</th>
-                                <th class="text-center">ID</th>
-                                <th class="text-center">Nombre</th>
-                                <th class="text-center">Rol</th>
-                                <th class="text-center">Sexo</th>
-                                <th class="text-center">Fecha N.</th>
-                                {{-- <th class="text-center">Categoría</th> --}}
-                                <th class="text-center">Grado</th>
-                                <th class="text-center">Academia</th>
-                                <th class="text-center">Estado</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
+                            <tr id="tabla-headers"></tr>
+
                         </thead>
                         <tbody>
-                            @foreach ($data as $item)
-                                <tr class="text-center">
-                                    <td class="small">{{ $item->tipo_identificacion }}</td>
-                                    <td class="small">{{ $item->identificacion }}</td>
-                                    <td class="small">{{ $item->nombre }} {{ $item->primer_apellido }}
-                                        {{ $item->segundo_apellido }}</td>
-                                    <td class="small">{{ $item->rol }}</td>
-                                    <td class="small">{{ $item->sexo }}</td>
-                                    <td class="small" data-bs-toggle="tooltip" title="{{ $item->fecha_nacimiento }}">
-                                        {{ \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y') }}
-                                    </td>
-                                    {{-- <td class="small">{{ $item->categorias->division }}</td> --}}
-                                    <td class="small">{{ $item->grados->nombre }}</td>
-                                    <td><span class="small">{{ $item->academias->nombre }}</span></td>
-                                    <td>
-                                        @if ($item->estado === 'activo')
-                                            <span class="badge rounded-pill bg-success">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @elseif($item->estado === 'inactivo')
-                                            <span class="badge rounded-pill bg-danger">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @else
-                                            <span class="badge rounded-pill bg-secondary">
-                                                {{ ucfirst($item->estado) }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill"
-                                                type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                    <a class="dropdown-item btn-edit" href="#"
-                                                        data-id="{{ $item->id_atleta }}">
-                                                        <i class="bi bi-pencil-square"></i> Editar
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <form action="{{ route('atletas.destroy', $item) }}" method="POST"
-                                                        id="form-eliminar-{{ $item->id_atleta }}" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="button" class="dropdown-item text-danger"
-                                                            data-bs-toggle="tooltip" title="Eliminar Atleta"
-                                                            onclick="confirmarEliminacion({{ $item->id_atleta }})">
-                                                            <i class="bi bi-trash"></i> Eliminar
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+
 
                         </tbody>
                     </table>
@@ -352,8 +283,8 @@
                                             <select class="form-select form-select-sm" id="e_sexo" name="sexo"
                                                 required>
                                                 <option value="" disabled selected>Seleccione...</option>
-                                                <option value="masculino">Masculino</option>
-                                                <option value="femenino">Femenino</option>
+                                                <option value="Masculino">Masculino</option>
+                                                <option value="Femenino">Femenino</option>
                                             </select>
                                         </div>
                                     </div>
@@ -371,6 +302,14 @@
                                                     <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
                                                 @endforeach
                                             </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="division" class="form-label">División</label>
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="e_division" name="division" readonly>
+                                            </div>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -448,5 +387,96 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="{{ asset('js/gestion_atleta.js') }}"></script>
+        <script src="{{ asset('js/datatable.js') }}"></script>
 
+        {{-- Aquí va el JS específico de esta tabla --}}
+    @section('scripts')
+        <script>
+            $(document).ready(function() {
+                let columnsConfig = [{
+                        data: "tipo_identificacion",
+                        title: "Tipo ID"
+                    },
+                    {
+                        data: "identificacion",
+                        title: "ID"
+                    },
+                    {
+                        data: "nombre",
+                        title: "Nombre"
+                    },
+                    {
+                        data: "rol",
+                        title: "Rol"
+                    },
+                    {
+                        data: "sexo",
+                        title: "Sexo"
+                    },
+                    {
+                        data: "fecha_nacimiento",
+                        title: "Fecha N."
+                    },
+                    {
+                        data: "grado",
+                        title: "Grado",
+                        orderable: false,
+                    },
+                    {
+                        data: "academia",
+                        title: "Academia",
+                        orderable: false,
+                    },
+                    {
+                        data: "estado",
+                        title: "Estado"
+                    },
+                    {
+                        data: "acciones",
+                        title: "Acciones",
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return `
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item btn-edit" href="#" data-id="${data}">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+                    </li>
+                    <li>
+                        <form action="/atletas/${data}" method="POST" id="form-eliminar-${data}" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="dropdown-item text-danger" onclick="confirmarEliminacion(${data})">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        `;
+                        }
+                    }
+                ];
+
+                // Pintar headers dinámicamente
+                let headersRow = $('#tabla-headers');
+                headersRow.empty();
+                columnsConfig.forEach(col => {
+                    headersRow.append(`<th class="text-center">${col.title}</th>`);
+                });
+
+                // Inicializar DataTable con tu script genérico
+                initDataTable({
+                    ajaxUrl: "{{ route('atletas.index') }}",
+                    columns: columnsConfig
+                });
+            });
+        </script>
     @endsection
+
+@endsection

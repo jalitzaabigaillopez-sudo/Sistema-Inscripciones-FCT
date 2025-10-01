@@ -1,5 +1,4 @@
 // CREAR
-// CREAR
 $(document).ready(function () {
     // Configurar previsualización de imagen
     function setupImagePreview(modalElement) {
@@ -184,34 +183,97 @@ $(document).ready(function () {
 
 // ACTUALIZAR
 $(document).ready(function () {
-    // Setup image preview for edit modal
+    // Función para configurar la previsualización de la imagen
+    function setupImagePreview(modalElement) {
+        const inputFile = modalElement.querySelector(".fotoAtletaInput");
+        const previewImage = modalElement.querySelector(".previewImage");
+        const previewText = modalElement.querySelector(".previewText");
+        const removeBtn = modalElement.querySelector(".removeImageBtn");
+        const removeImagenInput = modalElement.querySelector("#removeImagen");
+
+        if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
+            inputFile.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewText.style.display = "none";
+                        removeBtn.style.display = "inline-block";
+                        removeImagenInput.value = "0";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeBtn.addEventListener("click", function () {
+                previewImage.src = "";
+                previewImage.style.display = "none";
+                previewText.style.display = "block";
+                removeBtn.style.display = "none";
+                inputFile.value = "";
+                removeImagenInput.value = "1";
+            });
+        }
+    }
+
+    // Función para alternar la lectura de los campos de datos personales
+    function toggleCamposEditar(tipo) {
+        const fields = $('#e_nombre, #e_apellido1, #e_apellido2, #e_fecha_nacimiento');
+        if (tipo === "Nacional") {
+            fields.prop("readonly", true);
+        } else {
+            fields.prop("readonly", false);
+        }
+    }
+
+    // Función para calcular y mostrar la división
+    function actualizarDivisionEditar(fecha) {
+        const divisionField = $('#e_division');
+        if (!fecha) {
+            divisionField.val("");
+            return;
+        }
+        $.ajax({
+            url: "/calcular-division/" + fecha,
+            type: "GET",
+            success: function(data) {
+                if (data.division) {
+                    divisionField.val(data.division);
+                } else {
+                    divisionField.val("No disponible");
+                }
+            },
+            error: function() {
+                divisionField.val("Error al calcular");
+            }
+        });
+    }
+
+    // Configurar la previsualización de la imagen en el modal de edición
     const editarModal = document.getElementById("modalEditarAtleta");
     if (editarModal) {
         setupImagePreview(editarModal);
     }
 
-    // Populate edit modal with athlete data
-    $('.btn-edit').click(function (e) {
+    // Rellenar el modal de edición con los datos del atleta
+    $(document).on('click', '.btn-edit', function (e) {
         e.preventDefault();
         let atletaId = $(this).data('id');
-        console.log('Click en editar, ID:', atletaId);
 
         $.get('/atletas/' + atletaId + '/datos', function (data) {
-            console.log('Datos recibidos:', data);
-
             $('#e_tipo_identificacion').val(data.tipo_identificacion);
             $('#e_identificacion').val(data.identificacion);
             $('#e_nombre').val(data.nombre);
             $('#e_apellido1').val(data.primer_apellido);
             $('#e_apellido2').val(data.segundo_apellido);
             $('#e_rol').val(data.rol);
-            $('#e_sexo').val(data.sexo.toLowerCase());
+            $('#e_sexo').val(data.sexo);
             $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
             $('#e_grado').val(data.id_grado);
 
-
             if ($("#e_academia option[value='" + data.id_academia + "']").length === 0) {
-                // Solo se agrega si no está en la lista (porque es inactiva)
                 $("#e_academia").append(
                     $("<option>", {
                         value: data.id_academia,
@@ -219,11 +281,10 @@ $(document).ready(function () {
                     })
                 );
             }
-
             $('#e_academia').val(data.id_academia);
             $('input[name="estado"][value="' + data.estado + '"]').prop('checked', true);
 
-            // Handle image preview
+            // Manejo de la imagen
             const previewImage = $('#modalEditarAtleta').find('.previewImage');
             const previewText = $('#modalEditarAtleta').find('.previewText');
             const removeBtn = $('#modalEditarAtleta').find('.removeImageBtn');
@@ -245,29 +306,85 @@ $(document).ready(function () {
 
             $('#formEditarAtleta').attr('action', '/atletas/' + atletaId);
 
-            // Show modal
+            // Llamar a las funciones para el modal de edición
+            toggleCamposEditar(data.tipo_identificacion);
+            actualizarDivisionEditar(data.fecha_nacimiento);
+
             let modal = new bootstrap.Modal(document.getElementById('modalEditarAtleta'));
             modal.show();
         });
     });
 
-    // Handle form submission
+    // Evento para el cambio de tipo de identificación en el modal de edición
+    $("#e_tipo_identificacion").on("change", function () {
+        toggleCamposEditar($(this).val());
+        // Limpiar campos relacionados cuando el tipo de identificación cambia
+        $("#e_identificacion, #e_nombre, #e_apellido1, #e_apellido2, #e_fecha_nacimiento").val("");
+        $("#e_division").val("");
+    });
+
+    // Evento para buscar en el padrón al perder el foco en la identificación
+    $("#e_identificacion").on("blur", function () {
+        if ($("#e_tipo_identificacion").val() === "Nacional") {
+            let identificacion = $(this).val();
+            if (identificacion) {
+                $.ajax({
+                    url: "/buscar-padron/" + identificacion,
+                    type: "GET",
+                    success: function (data) {
+                        if (data.found) {
+                            $("#e_nombre").val(data.nombre);
+                            $("#e_apellido1").val(data.primer_apellido);
+                            $("#e_apellido2").val(data.segundo_apellido);
+                            $("#e_fecha_nacimiento").val(data.fecha_nacimiento);
+                            actualizarDivisionEditar(data.fecha_nacimiento);
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Identificación no encontrada',
+                                text: 'No se encontró una persona con esa identificación en el padrón.',
+                                confirmButtonColor: '#3085d6'
+                            });
+                            $("#e_nombre, #e_apellido1, #e_apellido2, #e_fecha_nacimiento").val("");
+                            $("#e_division").val("");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de conexión',
+                            text: 'Hubo un error al consultar el padrón. Por favor, intenta de nuevo.',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+    // Evento para actualizar la división al cambiar la fecha de nacimiento
+    $("#e_fecha_nacimiento").on("change", function() {
+        let fecha = $(this).val();
+        actualizarDivisionEditar(fecha);
+    });
+
+    // Manejo del envío del formulario de edición
     $('#formEditarAtleta').on('submit', function (e) {
         e.preventDefault();
 
         let form = $(this);
         let actionUrl = form.attr('action');
-        let formData = new FormData(this); // Use FormData to handle file uploads
+        let formData = new FormData(this);
 
         $.ajax({
             url: actionUrl,
-            type: 'POST', // Use POST with _method=PUT
+            type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'X-HTTP-Method-Override': 'PUT' // Override to PUT
+                'X-HTTP-Method-Override': 'PUT'
             },
             success: function (response) {
                 Swal.fire({
@@ -308,41 +425,6 @@ $(document).ready(function () {
             }
         });
     });
-
-    // Image preview setup
-    function setupImagePreview(modalElement) {
-        const inputFile = modalElement.querySelector(".fotoAtletaInput");
-        const previewImage = modalElement.querySelector(".previewImage");
-        const previewText = modalElement.querySelector(".previewText");
-        const removeBtn = modalElement.querySelector(".removeImageBtn");
-        const removeImagenInput = modalElement.querySelector("#removeImagen");
-
-        if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
-            inputFile.addEventListener("change", function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewImage.src = e.target.result;
-                        previewImage.style.display = "block";
-                        previewText.style.display = "none";
-                        removeBtn.style.display = "inline-block";
-                        removeImagenInput.value = "0";
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            removeBtn.addEventListener("click", function () {
-                previewImage.src = "";
-                previewImage.style.display = "none";
-                previewText.style.display = "block";
-                removeBtn.style.display = "none";
-                inputFile.value = "";
-                removeImagenInput.value = "1";
-            });
-        }
-    }
 });
 
 function confirmarEliminacion(id) {
