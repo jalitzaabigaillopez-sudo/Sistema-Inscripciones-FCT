@@ -7,6 +7,12 @@
 @section('breadcrumb-title', 'Lista de Atletas')
 
 @section('content')
+
+<style>
+    .dropdown-menu {
+    position: fixed !important;
+}
+</style>
     <div class="container py-4">
 
         <div class="d-flex align-items-center mb-4">
@@ -438,7 +444,7 @@
                         render: function(data, type, row) {
                             return `
             <div class="dropdown">
-                <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown" data-bs-display="dynamic">
                     <i class="bi bi-three-dots"></i>
                 </button>
                 <ul class="dropdown-menu">

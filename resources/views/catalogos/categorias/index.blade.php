@@ -247,6 +247,21 @@
             formCrearCategoria.addEventListener('submit', function(event) {
                 event.preventDefault();
 
+                // VALIDACIÓN DE PESOS
+                const pesoMin = parseFloat(document.getElementById('peso_min').value);
+                const pesoMax = parseFloat(document.getElementById('peso_max').value);
+
+                if (pesoMin >= pesoMax) {
+                    Swal.fire({
+                        title: '¡Error de Validación!',
+                        text: 'El peso mínimo debe ser menor que el peso máximo.',
+                        icon: 'warning',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return; // No enviar el formulario
+                }
+
                 const submitBtn = formCrearCategoria.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
 
@@ -260,7 +275,6 @@
                         const data = await response.json();
 
                         if (!response.ok) {
-                            // Manejo de errores
                             let errorMessage = 'Error al procesar la solicitud.';
                             if (data.error) errorMessage = data.error;
                             else if (data.errors) errorMessage = Object.values(data.errors)
@@ -275,9 +289,7 @@
                             title: '¡Éxito!',
                             html: data.success,
                             confirmButtonColor: '#3085d6',
-
-                            showConfirmButton: "Aceptar",
-                            // timer: 1000
+                            showConfirmButton: true
                         }).then(() => {
                             const modal = bootstrap.Modal.getInstance(modalCategoria);
                             if (modal) modal.hide();
@@ -297,6 +309,7 @@
             });
         }
     });
+
 
 
     // EDITAR

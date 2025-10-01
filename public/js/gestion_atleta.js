@@ -1,183 +1,184 @@
 // CREAR
 $(document).ready(function () {
-    // Configurar previsualización de imagen
-    function setupImagePreview(modalElement) {
-        const inputFile = modalElement.querySelector(".fotoAtletaInput");
-        const previewImage = modalElement.querySelector(".previewImage");
-        const previewText = modalElement.querySelector(".previewText");
-        const removeBtn = modalElement.querySelector(".removeImageBtn");
+    // Configurar previsualización de imagen
+    function setupImagePreview(modalElement) {
+        const inputFile = modalElement.querySelector(".fotoAtletaInput");
+        const previewImage = modalElement.querySelector(".previewImage");
+        const previewText = modalElement.querySelector(".previewText");
+        const removeBtn = modalElement.querySelector(".removeImageBtn");
 
-        if (inputFile && previewImage && previewText && removeBtn) {
-            inputFile.addEventListener("change", function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        previewImage.style.display = "block";
-                        previewText.style.display = "none";
-                        removeBtn.style.display = "block";
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+        if (inputFile && previewImage && previewText && removeBtn) {
+            inputFile.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewText.style.display = "none";
+                        removeBtn.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
 
-            removeBtn.addEventListener("click", function() {
-                previewImage.src = "";
-                previewImage.style.display = "none";
-                previewText.style.display = "block";
-                removeBtn.style.display = "none";
-                inputFile.value = "";
-            });
-        }
-    }
+            removeBtn.addEventListener("click", function () {
+                previewImage.src = "";
+                previewImage.style.display = "none";
+                previewText.style.display = "block";
+                removeBtn.style.display = "none";
+                inputFile.value = "";
+            });
+        }
+    }
 
-    // Configurar previsualización en el modal
-    const atletaModal = document.getElementById("modalAtleta");
-    if (atletaModal) {
-        setupImagePreview(atletaModal);
-    }
+    // Configurar previsualización en el modal
+    const atletaModal = document.getElementById("modalAtleta");
+    if (atletaModal) {
+        setupImagePreview(atletaModal);
+    }
 
-    function toggleCampos(tipo) {
-        if (tipo === "Nacional") {
-            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
-                .val("")
-                .prop("readonly", true);
-        } else {
-            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
-                .prop("readonly", false);
-        }
-    }
+    function toggleCampos(tipo) {
+        if (tipo === "Nacional") {
+            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
+                .val("")
+                .prop("readonly", true);
+        } else {
+            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento")
+                .prop("readonly", false);
+        }
+    }
 
-    function actualizarDivision(fecha) {
-        if (!fecha) {
-            $("#division").val("");
-            return;
-        }
-        $.ajax({
-            url: "/calcular-division/" + fecha,
-            type: "GET",
-            success: function(data) {
-                if (data.division) {
-                    $("#division").val(data.division);
-                } else {
-                    $("#division").val("No disponible");
-                }
-            },
-            error: function() {
-                $("#division").val("Error al calcular");
-            }
-        });
-    }
+    function actualizarDivision(fecha) {
+        if (!fecha) {
+            $("#division").val("");
+            return;
+        }
+        $.ajax({
+            url: "/calcular-division/" + fecha,
+            type: "GET",
+            success: function (data) {
+                if (data.division) {
+                    $("#division").val(data.division);
+                } else {
+                    $("#division").val("No disponible");
+                }
+            },
+            error: function () {
+                $("#division").val("Error al calcular");
+            }
+        });
+    }
 
-    // Cambio de tipo_identificacion
-    $("#tipo_identificacion").on("change", function () {
-        toggleCampos($(this).val());
-        $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
-        $("#division").val("");
-    });
+    // Cambio de tipo_identificacion
+    $("#tipo_identificacion").on("change", function () {
+        toggleCampos($(this).val());
+        $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
+        $("#division").val("");
+    });
 
-    // Buscar en padrón cuando pierde foco identificación
-    $("#identificacion").on("blur", function () {
-        if ($("#tipo_identificacion").val() === "Nacional") {
-            let identificacion = $(this).val();
-            if (identificacion) {
-                $.ajax({
-                    url: "/buscar-padron/" + identificacion,
-                    type: "GET",
-                    success: function (data) {
-                        if (data.found) {
-                            $("#nombre").val(data.nombre);
-                            $("#primer_apellido").val(data.primer_apellido);
-                            $("#segundo_apellido").val(data.segundo_apellido);
-                            $("#fecha_nacimiento").val(data.fecha_nacimiento);
-                            actualizarDivision(data.fecha_nacimiento);
-                        } else {
-                            // Reemplazo de alert por SweetAlert
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Identificación no encontrada',
-                                text: 'No se encontró una persona con esa identificación en el padrón.',
-                                confirmButtonColor: '#3085d6'
-                            });
-                            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
-                            $("#division").val("");
-                        }
-                    },
-                    error: function () {
-                        // Reemplazo de alert por SweetAlert
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error de conexión',
-                            text: 'Hubo un error al consultar el padrón. Por favor, intenta de nuevo.',
-                            confirmButtonColor: '#d33'
-                        });
-                    }
-                });
-            }
-        }
-    });
+    // Buscar en padrón cuando pierde foco identificación
+    $("#identificacion").on("blur", function () {
+        if ($("#tipo_identificacion").val() === "Nacional") {
+            let identificacion = $(this).val();
+            if (identificacion) {
+                $.ajax({
+                    url: "/buscar-padron/" + identificacion,
+                    type: "GET",
+                    success: function (data) {
+                        if (data.found) {
+                            $("#nombre").val(data.nombre);
+                            $("#primer_apellido").val(data.primer_apellido);
+                            $("#segundo_apellido").val(data.segundo_apellido);
+                            $("#fecha_nacimiento").val(data.fecha_nacimiento);
+                            actualizarDivision(data.fecha_nacimiento);
+                        } else {
+                            // Reemplazo de alert por SweetAlert
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Identificación no encontrada',
+                                text: 'No se encontró una persona con esa identificación en el padrón.',
+                                confirmButtonColor: '#3085d6'
+                            });
+                            $("#nombre, #primer_apellido, #segundo_apellido, #fecha_nacimiento").val("");
+                            $("#division").val("");
+                        }
+                    },
+                    error: function () {
+                        // Reemplazo de alert por SweetAlert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de conexión',
+                            text: 'Hubo un error al consultar el padrón. Por favor, intenta de nuevo.',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                });
+            }
+        }
+    });
 
-    // Actualizar división al cambiar fecha de nacimiento (para "Otro")
-    $("#fecha_nacimiento").on("change", function() {
-        let fecha = $(this).val();
-        actualizarDivision(fecha);
-    });
+    // Actualizar división al cambiar fecha de nacimiento (para "Otro")
+    $("#fecha_nacimiento").on("change", function () {
+        let fecha = $(this).val();
+        actualizarDivision(fecha);
+    });
 
-    // Manejo del formulario
-    $('#formRegistrarAtleta').on('submit', function (e) {
-        e.preventDefault();
-        var formData = new FormData(this);
-        var actionUrl = $(this).attr('action');
+    // Manejo del formulario
+    $('#formRegistrarAtleta').on('submit', function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        var actionUrl = $(this).attr('action');
 
-        $.ajax({
-            url: actionUrl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                // SweetAlert para éxito con temporizador
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: response.message,
-                    showConfirmButton: false,
-                    timer: 2500 // El mensaje se cerrará automáticamente en 2.5 segundos
-                }).then(() => {
-                    $('#modalAtleta').modal('hide');
-                    $('#formRegistrarAtleta')[0].reset();
-                    // Resetear previsualización de imagen
-                    document.querySelector(".previewImage").style.display = "none";
-                    document.querySelector(".previewText").style.display = "block";
-                    document.querySelector(".removeImageBtn").style.display = "none";
-                    window.location.href = window.location.href;
-                });
-            },
-            error: function (xhr) {
-                let errorText = 'Ha ocurrido un error. Por favor, intenta de nuevo.';
+        $.ajax({
+            url: actionUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // SweetAlert para éxito con temporizador
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: response.message,
+                    confirmButtonColor: '#3085d6',
+                    showConfirmButton: "Aceptar",
+                }).then(() => {
+                    $('#modalAtleta').modal('hide');
+                    $('#formRegistrarAtleta')[0].reset();
+                    // Resetear previsualización de imagen
+                    document.querySelector(".previewImage").style.display = "none";
+                    document.querySelector(".previewText").style.display = "block";
+                    document.querySelector(".removeImageBtn").style.display = "none";
+                    window.location.href = window.location.href;
+                });
+            },
+            error: function (xhr) {
+                let errorText = 'Ha ocurrido un error. Por favor, intenta de nuevo.';
 
-                if (xhr.responseJSON) {
-                    // Manejo de errores de validación de Laravel (422)
-                    if (xhr.status === 422) {
-                        const errors = xhr.responseJSON.errors || {};
-                        const firstError = Object.values(errors)[0] || [xhr.responseJSON.error];
-                        errorText = Array.isArray(firstError) ? firstError[0] : firstError;
-                    } else if (xhr.status === 500) {
-                        errorText = xhr.responseJSON.error || 'Error interno del servidor.';
-                    }
-                }
+                if (xhr.responseJSON) {
+                    // Manejo de errores de validación de Laravel (422)
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors || {};
+                        const firstError = Object.values(errors)[0] || [xhr.responseJSON.error];
+                        errorText = Array.isArray(firstError) ? firstError[0] : firstError;
+                    } else if (xhr.status === 500) {
+                        errorText = xhr.responseJSON.error || 'Error interno del servidor.';
+                    }
+                }
 
-                // SweetAlert para errores
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al registrar',
-                    text: errorText,
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        });
-    });
+                // SweetAlert para errores
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al registrar',
+                    text: errorText,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    });
 });
 
 
@@ -238,14 +239,14 @@ $(document).ready(function () {
         $.ajax({
             url: "/calcular-division/" + fecha,
             type: "GET",
-            success: function(data) {
+            success: function (data) {
                 if (data.division) {
                     divisionField.val(data.division);
                 } else {
                     divisionField.val("No disponible");
                 }
             },
-            error: function() {
+            error: function () {
                 divisionField.val("Error al calcular");
             }
         });
@@ -363,7 +364,7 @@ $(document).ready(function () {
     });
 
     // Evento para actualizar la división al cambiar la fecha de nacimiento
-    $("#e_fecha_nacimiento").on("change", function() {
+    $("#e_fecha_nacimiento").on("change", function () {
         let fecha = $(this).val();
         actualizarDivisionEditar(fecha);
     });
@@ -391,6 +392,7 @@ $(document).ready(function () {
                     title: '¡Éxito!',
                     text: response.message,
                     icon: 'success',
+                    confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
                     $('#modalEditarAtleta').modal('hide');
@@ -420,6 +422,7 @@ $(document).ready(function () {
                     title: 'Error',
                     html: errorMessage,
                     icon: 'error',
+                    confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 });
             }
@@ -473,15 +476,15 @@ function confirmarEliminacion(id) {
 
 // Campo identificación
 const tipoSelect = document.getElementById('tipo_identificacion');
-    const identificacionInput = document.getElementById('identificacion');
+const identificacionInput = document.getElementById('identificacion');
 
-    tipoSelect.addEventListener('change', function () {
-        if (this.value !== "") {
-            identificacionInput.disabled = false;
-            identificacionInput.focus();
-        } else {
-            identificacionInput.disabled = true;
-            identificacionInput.value = "";
-        }
-    });
+tipoSelect.addEventListener('change', function () {
+    if (this.value !== "") {
+        identificacionInput.disabled = false;
+        identificacionInput.focus();
+    } else {
+        identificacionInput.disabled = true;
+        identificacionInput.value = "";
+    }
+});
 

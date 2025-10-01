@@ -125,7 +125,7 @@ class AtletasController extends Controller
                 'primer_apellido' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
                 'segundo_apellido' => 'nullable|string|max:255',
                 'fecha_nacimiento' => 'nullable|date|required_if:tipo_identificacion,Otro',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             ]);
 
             // Verificar que no exista ya registrado
