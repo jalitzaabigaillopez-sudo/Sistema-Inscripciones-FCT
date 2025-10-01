@@ -112,10 +112,6 @@
                             <div class="mt-3 text-center">
                                 <span>¿No tienes una cuenta? </span>
                                 <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
-                                <a href="{{ route('completar.cambio.contraseña', ['id_usuario' => 1]) }}"
-                                    class="link-primary" style="margin-left: 10px;">
-                                    Cambiar contraseña
-                                </a>
                             </div>
                         </form>
                     </div>
