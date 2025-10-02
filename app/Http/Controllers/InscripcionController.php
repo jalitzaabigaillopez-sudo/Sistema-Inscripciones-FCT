@@ -17,10 +17,17 @@ class InscripcionController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Inscripcion::all();
-        $eventos = Evento::where('estado', 'activo')->get();
+        $eventos = Evento::all();
         $academias = Academia::all();
-        return view('catalogos.inscripciones.index', compact('data', 'eventos', 'academias'));
+
+        $inscripciones = Inscripcion::with(['evento', 'academia'])
+            ->select('id_evento', 'id_academia', 'estado')
+            ->selectRaw('COUNT(id_inscripcion) as total_atletas')
+            ->groupBy('id_evento', 'id_academia', 'estado')
+            ->get();
+
+        // dd($inscripciones);
+        return view('catalogos.inscripciones.index', compact('inscripciones', 'eventos', 'academias'));
     }
 
     /**
@@ -265,5 +272,86 @@ class InscripcionController extends Controller
         }
 
         return response()->json(['success' => false, 'msg' => 'No se encontró inscripción']);
+    }
+
+
+
+
+
+
+
+
+
+
+    //=?=?=?=?=?=?=?=?=?=?=?=?=??=?=?=?=?=?=?=?=?=?=?=?=?=?=?=?=?=?=?=?=??=?==?=?=?=?=?=?=??=?=?=?=?=?=?=?=?=??=?=?=?=
+/*
+   ╔════════════════════════════════════════════════════════════════╗
+
+   ║                         ADMINISTRADOR                          ║ 
+
+   ╚════════════════════════════════════════════════════════════════╝
+*/
+
+    public function administradorEditarInscripcion(Request $request, $id_evento, $id_academia)
+    {
+        $eventos = Evento::where('id_evento', $id_evento)->get();
+        $bloquearSelectEventos = true;
+
+        $academia = Academia::find($id_academia);
+        $atletas = $academia->atletas;
+
+        $inscripciones = Inscripcion::with(['atleta', 'modalidad', 'subModalidad', 'categoria', 'evento'])
+            ->where('id_evento', $id_evento)
+            ->where('id_academia', $academia->id_academia)
+            ->get();
+
+        $atletasInscripcion = $inscripciones->map(function ($inscripcion) {
+            $atleta = $inscripcion->atleta;
+
+            // todos los datos
+            $atleta->rol = $inscripcion->rol;
+            $atleta->grupo = $inscripcion->codigo_equipo;
+            $atleta->peso = $inscripcion->peso;
+            $atleta->modalidad = $inscripcion->modalidad;
+            $atleta->subModalidad = $inscripcion->subModalidad;
+            $atleta->categoria = $inscripcion->categoria;
+            $atleta->evento = $inscripcion->evento;
+
+            $atleta->id_division = $inscripcion->categoria->id_division ?? null;
+
+            return $atleta;
+        });
+
+        // MODALIDADES - SUBMODALIDADE Y CATEGORIAS
+        $evento = Evento::find($id_evento);
+        $modalidades = $evento->modalidades;
+
+        $id_academia = $academia->id_academia;
+
+        return view('admin/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos', 'id_academia'));
+    }
+
+
+    public function AdministradorInscribirAtleta(Request $request)
+    {
+
+        $atleta = $request->input('atleta');
+
+        $inscripcion = Inscripcion::create([
+            'id_academia' => $atleta['id_academia'],
+            'id_atleta' => $atleta['id_atleta'],
+            'id_evento' => $atleta['id_evento'],
+            'id_modalidad' => $atleta['id_modalidad'],
+            'id_subModalidad' => $atleta['id_subModalidad'],
+            'id_categoria' => $atleta['id_categoria'],
+            'fecha_inscripcion' => date("Y-m-d H:i:s"),
+            'estado' => 'activa',
+            'peso' => $atleta['peso'],
+            'codigo_equipo' => $atleta['grupo'],
+            'peso' => $atleta['peso'],
+            'codigo_equipo' => $atleta['grupo'],
+            'rol' => $atleta['rol'],
+        ]);
+        return response()->json($inscripcion, 201);
     }
 }

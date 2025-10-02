@@ -166,6 +166,12 @@ Route::get('/buscar-padron/{identificacion}', [AtletasController::class, 'buscar
 // Calcular división según fecha
 Route::get('/calcular-division/{fecha}', [AtletasController::class, 'calcularDivision']);
 
+/**
+ * 
+ */
+Route::get('/adminEditarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEditarInscripcion'])->name('admin.editar.inscripcion');
+Route::post('/adminInscripcionAtleta', [InscripcionController::class, 'AdministradorInscribirAtleta']);
+
 
 Route::resource('/categorias', CategoriaController::class);
 Route::get('/categorias/{id}/datos', [CategoriaController::class, 'edit']);

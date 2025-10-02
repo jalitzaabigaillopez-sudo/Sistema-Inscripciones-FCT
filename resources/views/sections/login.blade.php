@@ -1,3 +1,9 @@
+@if(request()->has('session_expired'))
+    <div class="alert alert-warning">
+        Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.
+    </div>
+@endif
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -72,6 +78,7 @@
 </head>
 
 <body class="bg-gray-100">
+
     <div class="header-image"></div>
 
     <div class="container p-5">
@@ -131,9 +138,9 @@
 
     <script>
         // VISUALIZAR CONTRA CON OJO
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {

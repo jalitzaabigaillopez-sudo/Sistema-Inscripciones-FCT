@@ -42,7 +42,6 @@ class AcademiaController extends Controller
             // 'password' => 'required|string',
             // 'rol' => 'required|string|in:administrador,academia,arbitro',
             // 'estado' => 'required|string|in:activo,inactivo,pendiente',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             // academia
             'nombre' => 'required|string', //nombre de academia
@@ -63,7 +62,6 @@ class AcademiaController extends Controller
             'password' => $temporalPass, //contraseña temporal
             'rol' => 'academia',
             'estado' => 'inactivo', //inactivo por defecto
-            'imagen' => $validateData['imagen'],
         ]);
         $usuario->save();
 
@@ -98,7 +96,7 @@ class AcademiaController extends Controller
         $url = route('activar.cuenta', ['id' => $usuario->id_usuario]);
         Mail::to($usuario->email)->send(new FCTMail($usuario, $contraseñaTemporal, $url));
 
-        return redirect()->back();
+        return redirect()->back()->with('alerta', 'Se ha enviando un correo a esta academia. Ahora se encuentra en proceso de registro.');
     }
 
     //####################################### SOLO ACADEMIA #################################################

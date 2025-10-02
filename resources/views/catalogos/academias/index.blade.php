@@ -6,6 +6,12 @@
 
 @section('breadcrumb-title', 'Lista de Academias')
 
+@if(session('alerta'))
+<script>
+     mostrarAlerta("{{ session('alerta') }}", "Aviso", "⚠️");
+</script>
+@endif
+
 @section('content')
     <div class="container py-4">
         <div class="d-flex align-items-center mb-4">
@@ -150,6 +156,7 @@
                                         </div>
                                     </div>
 
+                                    <!--  
                                     <div class="mb-3 mt-3">
                                         <label for="fotoAcademiaCrear" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoAcademiaInput" type="file"
@@ -166,6 +173,7 @@
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
                                             style="display: none;"><i class="bi bi-trash"></i></button>
                                     </div>
+                                    -->
                                 </div>
 
                                

@@ -2,17 +2,19 @@
 <html lang="en">
 
 <head>
-    <title>@yield('tituloArriba')</title>
+    <title>@yield('title', 'Federación Costarricense de Taekwondo')</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Federación Costarricense de Taekwondo')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="https://via.placeholder.com/32?text=FCT">
+    <link rel="stylesheet" href="{{ asset('css/alertasInscripciones.css') }}">
 
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
@@ -315,8 +317,8 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-container">
-                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto"
-                    loading="eager" style="max-width:100%;">
+                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager"
+                    style="max-width:100%;">
             </div>
             <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         </div>
@@ -373,14 +375,14 @@
                     </a>
                     <!-- Elementos adicionales para demostrar el scroll -->
                     {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-gear me-2"></i> Configuración
-                </a>
-                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-graph-up me-2"></i> Reportes
-                </a>
-                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-shield-check me-2"></i> Permisos
-                </a> --}}
+                        <i class="bi bi-gear me-2"></i> Configuración
+                    </a>
+                    <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-graph-up me-2"></i> Reportes
+                    </a>
+                    <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-shield-check me-2"></i> Permisos
+                    </a> --}}
                 </div>
             </div>
 
@@ -444,6 +446,22 @@
         @yield('content')
     </div>
 
+    <!-- Modal de alerta -->
+    <div id="customAlertOverlay" class="overlay">
+        <div class="custom-alert">
+            <div class="custom-alert-header">
+                <span class="custom-alert-icon">⚠️</span>
+                <h3 id="customAlertTitle">Alerta</h3>
+            </div>
+            <div class="custom-alert-body">
+                <p id="customAlertMessage"></p>
+            </div>
+            <div class="custom-alert-footer">
+                <button id="btnCerrarAlerta">Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
 
     <!-- jQuery -->
@@ -453,8 +471,11 @@
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/ripple.js') }}"></script>
 
-    {{-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"> --}}
-    {{-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> --}}
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"> --}}
+    {{--
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> --}}
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -462,7 +483,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -483,7 +504,7 @@
         }
 
         // Configuración del submenú con persistencia
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const catalogosToggle = document.getElementById('catalogosToggle');
             const catalogosItems = document.getElementById('catalogosItems');
 
@@ -498,7 +519,7 @@
             }
 
             // Evento para abrir/cerrar el submenú
-            catalogosToggle.addEventListener('click', function(e) {
+            catalogosToggle.addEventListener('click', function (e) {
                 e.preventDefault();
                 const estaAbierto = !catalogosItems.classList.contains('d-none');
 
@@ -538,7 +559,7 @@
                 }
             }
 
-            toggleSidebar.addEventListener('click', function() {
+            toggleSidebar.addEventListener('click', function () {
                 // En móvil, abre sidebar con clase sidebar-open
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('sidebar-open');
@@ -549,7 +570,7 @@
                 }
             });
 
-            sidebarClose.addEventListener('click', function() {
+            sidebarClose.addEventListener('click', function () {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
                 setContentMargin();
@@ -559,7 +580,7 @@
             adjustSidebarOnLoad();
 
             // Cerrar sidebar si se hace clic fuera (solo en móviles)
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (
                     window.innerWidth <= 768 &&
                     !sidebar.contains(e.target) &&
@@ -579,9 +600,9 @@
 
 
         // VISUALIZAR CONTRA CON OJO
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -596,8 +617,16 @@
         });
     </script>
 
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     {{-- Aquí se van a inyectar los scripts personalizados de cada vista --}}
     @yield('scripts')
+
+    @stack('scripts')
+    <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->
+    <script src="{{ asset('js/academiaMatricula/inscripcionesAdministradores.js') }}"></script>
 
 </body>
 

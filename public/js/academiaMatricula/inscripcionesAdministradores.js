@@ -451,6 +451,8 @@ $(document).ready(function () {
                 }
             }
 
+            //@audit trabajar aqui
+
             //🤪
             // UPDATE (Aqui se actualiza la tabla) SI es un atleta🔄️
             if (totalCards > 1) {
@@ -489,7 +491,7 @@ $(document).ready(function () {
         console.log("AQUI: ", atleta);
 
         $.ajax({
-            url: '/inscripcionAtleta',
+            url: '/adminInscripcionAtleta',
             method: 'POST',
             dataType: 'json',
             data: {
@@ -728,10 +730,10 @@ $(document).ready(function () {
             <td>${obj.grupo}</td>
             <td class="text-center">
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar" title="Editar">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar" title="Editar" disabled>
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}" disabled>
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -761,10 +763,10 @@ $(document).ready(function () {
             <td>${obj.grupo}</td>
             <td class="text-center">
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar2" title="Editar">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar2" title="Editar" disabled>
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}" disabled>
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1395,49 +1397,6 @@ $(document).ready(function () {
         });
     });
 
-    // ☑️ Delegación
-    $('#bEnviar').on('click', function () {
-        let eventoText = $('#evento-select option:selected').text();
-        let id_evento = $('#evento-select option:selected').val();
-        let id_academia = $('#idAcademia').val();
-        let modeView = $('#modeView').val();
-
-        let listaCompleta = listaAtletas.concat(gruposAtletas);
-        if (listaAtletas.length >= 2) {
-
-            
-
-
-            $.ajax({
-                url: '/procesarInscripcion',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    id_academia: id_academia,
-                    id_evento: id_evento,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (res) {
-                    mostrarAlerta("Su inscripción para el evento " + eventoText + " se ha procesado con éxito!", "Éxito", "✅",
-                        function () {
-                            if (modeView == false) {
-                                window.location.href = "/nuevaInscripcion";
-                            } else {
-                                window.location.href = "/misInscripciones";
-                            }
-                        }
-                    );
-                },
-                error: function (xhr, status, error) {
-                    mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al procesar su inscripcion.", "Aviso", "⚠️");
-                }
-            });
-        }else{
-            mostrarAlerta("Verifique la cantidad de atletas inscritos en su lista antes de continuar.", "Aviso", "⚠️");
-        }
-    });
-
-
 
     /*
      ___       __   ________  ___       __   ________     
@@ -1936,6 +1895,8 @@ $(document).ready(function () {
 
     // Mostrar alerta personalizada
     function mostrarAlerta(mensaje, titulo = "Alerta", icono = "⚠️", callback = null) {
+        console.log("SALTA");
+        
         $("#customAlertMessage").text(mensaje);
         $("#customAlertTitle").text(titulo);
         $(".custom-alert-icon").text(icono);
