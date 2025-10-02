@@ -396,10 +396,10 @@ $(document).ready(function () {
                     if (validarCantidadRol(rol) === false) {// Validacion para cantidad maxima segun el rol (1 entrenador, 2 asistentes x cada 10 atletas)
                         return;
                     }
-                    if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
-                        mostrarAlerta("Al parecer este asistente ya se encuentra en lista.", "Aviso", "⚠️");
-                        return;
-                    }
+                    // if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
+                    //     mostrarAlerta("Al parecer este asistente ya se encuentra en lista.", "Aviso", "⚠️");
+                    //     return;
+                    // }
                     obj = {
                         atleta: recortarNombre(atleta),
                         sexo: sexo,
