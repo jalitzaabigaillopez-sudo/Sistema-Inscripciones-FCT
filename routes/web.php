@@ -101,10 +101,12 @@ Route::get('/adminDash', function () {
 
 
 // Ruta para perfil
-Route::get('/perfil', function () {
-    return view('admin.perfil');
-})->name('perfil');
+// Route::get('/perfil', function () {
+//     return view('admin.perfil');
+// })->name('perfil');
 
+Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
+Route::put('/perfil/{id}', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
 
 
 // Ruta para estadísticas
@@ -149,9 +151,9 @@ Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAc
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 
 //Editar perfil
-Route::get('/perfil', function () {
-    return view('admin.perfil-admin');
-})->name('perfil');
+// Route::get('/perfil', function () {
+//     return view('admin.perfil-admin');
+// })->name('perfil');
 
 // Catálogos generales
 Route::resource('/academias', AcademiaController::class);
@@ -198,12 +200,7 @@ Route::get('/divisiones/{id_division}/datos', [DivisionController::class, 'datos
 Route::resource('tipos_eventos', TipoEventosController::class);
 Route::get('/tipos_eventos/{id}/datos', [TipoEventosController::class, 'edit']);
 
-Route::post('/admin/profile/update', function () {
-    // Lógica para actualizar el perfil del admin                               
-    $data = request()->all();
-    // Actualiza el perfil según tu lógica
-    return redirect()->route('perfil')->with('success', 'Perfil actualizado correctamente.');
-})->name('admin.profile.update');
+
 
 
 // Vista de prueba restablecer contra

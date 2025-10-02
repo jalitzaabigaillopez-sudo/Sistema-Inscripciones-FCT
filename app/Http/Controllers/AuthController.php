@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -37,9 +38,8 @@ class AuthController extends Controller
                     return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
                 }
 
-                $request->session()->put('usuario', $usuario->id_usuario);// colocar usuario en sesion
+                $request->session()->put('usuario', $usuario->id_usuario); // colocar usuario en sesion
                 return redirect()->route('dashboard');
-
             } else {
                 // Contraseña vencida
                 $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);
@@ -57,5 +57,23 @@ class AuthController extends Controller
     {
         $request->session()->forget('usuario');
         return redirect()->route('login');
+    }
+
+    // DATOS PARA EL PERFIL 
+    public function perfil(Request $request)
+    {
+        $userId = $request->session()->get('usuario');
+
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión primero.');
+        }
+
+        $usuario = Usuario::find($userId);
+
+        if (!$usuario) {
+            return redirect()->route('login')->with('error', 'Usuario no encontrado.');
+        }
+
+        return view('admin.perfil-admin', ['usuario' => $usuario]);
     }
 }
