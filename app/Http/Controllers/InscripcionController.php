@@ -59,8 +59,6 @@ class InscripcionController extends Controller
         $atletasModificar = $request->input('atletasModificar', []);
         $datosNuevos = $request->input('datosNuevos', []); // Datos nuevos para actualizar
 
-        $resultado = [];
-
         foreach ($atletasModificar as $atleta) {
             // Buscar la inscripción que coincida con todos los datos "actuales"
             $inscripcion = Inscripcion::where('id_atleta', $atleta['id_atleta'])
@@ -70,39 +68,32 @@ class InscripcionController extends Controller
                 ->where('id_subModalidad', $atleta['id_subModalidad'])
                 ->where('id_categoria', $atleta['id_categoria'])
                 ->where('codigo_equipo', $atleta['grupo'])
+                ->where('rol', $atleta['rol'])
                 ->first();
 
             if ($inscripcion) {
                 // Reemplazar con los datos nuevos
-                $inscripcion->id_atleta = $datosNuevos['id_atleta'] ?? $inscripcion->id_atleta;
-                $inscripcion->id_evento = $datosNuevos['id_evento'] ?? $inscripcion->id_evento;
-                $inscripcion->id_academia = $datosNuevos['id_academia'] ?? $inscripcion->id_academia;
+                $inscripcion->id_atleta = $datosNuevos['id_atleta'];
+                $inscripcion->id_evento = $datosNuevos['id_evento'];
+                $inscripcion->id_academia = $datosNuevos['id_academia'];
 
-                $inscripcion->id_modalidad = $datosNuevos['id_modalidad'] ?? $inscripcion->id_modalidad;
-                $inscripcion->id_subModalidad = $datosNuevos['id_subModalidad'] ?? $inscripcion->id_subModalidad;
-                $inscripcion->id_categoria = $datosNuevos['id_categoria'] ?? $inscripcion->id_categoria;
-                $inscripcion->codigo_equipo = $datosNuevos['grupo'] ?? $inscripcion->codigo_equipo;
+                $inscripcion->id_modalidad = $datosNuevos['id_modalidad'];
+                $inscripcion->id_subModalidad = $datosNuevos['id_subModalidad'];
+
+                $inscripcion->id_categoria = $datosNuevos['id_categoria'];
+                $inscripcion->codigo_equipo = $datosNuevos['grupo'];
+                $inscripcion->rol = $datosNuevos['rol'];
                 $inscripcion->estado = 'inactiva';
-                $inscripcion->peso = $datosNuevos['peso'] ?? $inscripcion->peso;
+                $inscripcion->peso = $datosNuevos['peso'];
                 $inscripcion->fecha_inscripcion = now();
 
                 $inscripcion->save();
-
-                $resultado[] = [
-                    'id_atleta' => $atleta['id_atleta'],
-                    'modificado' => true,
-                    'inscripcion' => $inscripcion
-                ];
-            } else {
-                $resultado[] = [
-                    'id_atleta' => $atleta['id_atleta'],
-                    'modificado' => false,
-                    'mensaje' => 'No se encontró inscripción que coincida exactamente'
-                ];
             }
         }
 
-        return response()->json($resultado);
+        return response()->json([
+            'debug' => $request->all()
+        ]);
     }
 
     public function eliminarInscripcionAtleta(Request $request)
@@ -141,13 +132,19 @@ class InscripcionController extends Controller
     {
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+
+        // OBTENER EN QUE EVENTOS ESTOY INSCRITOS
+        $eventosIds = Inscripcion::where('id_academia', $academia->id_academia)
+            ->distinct()                // elimina duplicados
+            ->pluck('id_evento');
 
         $bloquearSelectEventos = false;
 
         $eventos = Evento::all();
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
-        return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'bloquearSelectEventos'));
+        return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
     }
 
     /**

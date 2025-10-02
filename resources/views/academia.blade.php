@@ -14,8 +14,9 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
   <link rel="stylesheet" href="{{ asset('css/alertasInscripciones.css') }}">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 
   <!-- Bootstrap JS + Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -195,8 +196,6 @@
     .breadcrumb-item+.breadcrumb-item::before {
       color: var(--text-light);
     }
-
-    
   </style>
 </head>
 
@@ -390,9 +389,8 @@
   <!-- jQuery primero -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- Select2 -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Bootstrap-Select -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
   @stack('scripts')
   <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->

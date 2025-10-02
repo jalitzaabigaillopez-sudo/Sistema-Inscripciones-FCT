@@ -4,6 +4,8 @@
 
 @section('content')
 
+    <input type="hidden" id="modeView"  value="{{ $bloquearSelectEventos }}">
+
     <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
     </a>
@@ -20,7 +22,16 @@
                 <select id="evento-select" class="form-select" required>
                     <option selected disabled>Selecciona un evento</option>
                     @foreach($eventos as $evento)
-                        <option value="{{ $evento->id_evento }}">{{ $evento->nombre }}</option>
+                        @if ($bloquearSelectEventos == false)
+                            <option value="{{ $evento->id_evento }}" @if($eventosIds->contains($evento->id_evento)) disabled @endif>
+                                {{ $evento->nombre }}
+                            </option>
+                        @else
+                            <option value="{{ $evento->id_evento }}">
+                                {{ $evento->nombre }}
+                            </option>
+                        @endif
+
                     @endforeach
                 </select>
             </div>
@@ -51,14 +62,17 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select class="form-control atletas-select" required>
+                        <select class="form-control atletas-select" data-live-search="true">
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
-                            <!-- @audit rol IE -->
-                                <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}" data-id_atleta="{{ $atleta->id_atleta }}" data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
-                                    data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }} {{ $atleta->primer_apellido }}
+                                <!-- @audit rol IE -->
+                                <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}"
+                                    data-id_atleta="{{ $atleta->id_atleta }}"
+                                    data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
+                                    data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }}
+                                    {{ $atleta->primer_apellido }}
                                     {{ $atleta->segundo_apellido }} -
-                                    {{ $atleta->identificacion }} 
+                                    {{ $atleta->identificacion }}
                                 </option>
                             @endforeach
                         </select>
@@ -68,14 +82,14 @@
                             <option value="">Rol</option>
                             <option value="atleta">Atleta</option>
                             <option value="entrenador">Entrenador</option>
-                            <option value="asistente">Asistente</option> 
+                            <option value="asistente">Asistente</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <input type="text" class="form-control inputSexo" placeholder="Sexo" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input  type="text" class="form-control inputEdad" placeholder="Edad" readonly>
+                        <input type="text" class="form-control inputEdad" placeholder="Edad" readonly>
                     </div>
                     <div class="col-md-2">
                         <input id="pesoInput" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
@@ -99,8 +113,8 @@
                         <select class="form-select categorias-select" required>
                             <option selected disabled>Categoria</option>
                             <!-- <option>Pareja A</option>
-                                            <option>Equipo B</option>
-                                            <option>-</option> -->
+                                                            <option>Equipo B</option>
+                                                            <option>-</option> -->
                         </select>
                     </div>
                 </div>
@@ -138,7 +152,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -157,13 +171,12 @@
 @endsection
 
 @push('scripts')
-<script>
-    window.inscripcionApp = {
-        continuarEdicion: {{ $bloquearSelectEventos ? 'true' : 'false' }},
-        atletasInscripcion: @json($atletasInscripcion ?? []),
-        eventos: @json($eventos ?? []),
-        academia: @json($academia ?? null)
-    };  
-</script>
+    <script>
+        window.inscripcionApp = {
+            continuarEdicion: {{ $bloquearSelectEventos ? 'true' : 'false' }},
+            atletasInscripcion: @json($atletasInscripcion ?? []),
+            eventos: @json($eventos ?? []),
+            academia: @json($academia ?? null)
+        };  
+    </script>
 @endpush
-

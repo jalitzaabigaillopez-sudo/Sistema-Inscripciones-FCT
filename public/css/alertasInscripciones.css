@@ -1,6 +1,8 @@
-.bigdrop .select2-results {
-    max-height: 1000px !important;
-    /* más alto que el default (~200px) */
+.bootstrap-select .btn {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
 }
 
 /* Fondo oscuro */
