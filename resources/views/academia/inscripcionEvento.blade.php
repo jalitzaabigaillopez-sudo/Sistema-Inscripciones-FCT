@@ -62,10 +62,9 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <select class="form-control atletas-select" data-live-search="true">
+                        <select class="form-control atletas-select">
                             <option selected disabled>Selecciona un atleta</option>
                             @foreach($atletas as $atleta)
-                                <!-- @audit rol IE -->
                                 <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}"
                                     data-id_atleta="{{ $atleta->id_atleta }}"
                                     data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
