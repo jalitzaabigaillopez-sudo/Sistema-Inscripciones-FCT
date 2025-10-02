@@ -34,8 +34,21 @@ class AtletasController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('nombre', 'like', "%{$search}%")
                         ->orWhere('primer_apellido', 'like', "%{$search}%")
-                        ->orWhere('identificacion', 'like', "%{$search}%");
-                });
+                        ->orWhere('identificacion', 'like', "%{$search}%")
+                        ->orWhere('sexo', 'like', "%{$search}%")
+                        ->orWhere('fecha_nacimiento', 'like', "%{$search}%")
+                        ->orWhere('estado', 'like', "%{$search}%")
+                        ->orWhere('rol', 'like', "%{$search}%")
+                        ->orWhere('tipo_identificacion', 'like', "%{$search}%");
+                })
+                    // Búsqueda en la relación Grado
+                    ->orWhereHas('grados', function ($q) use ($search) {
+                        $q->where('nombre', 'like', "%{$search}%");
+                    })
+                    // Búsqueda en la relación Academia
+                    ->orWhereHas('academias', function ($q) use ($search) {
+                        $q->where('nombre', 'like', "%{$search}%");
+                    });
             }
 
             // Obtener el total de registros

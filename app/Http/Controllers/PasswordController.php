@@ -11,10 +11,11 @@ use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 
+
 class PasswordController extends Controller
 {
     /**
-     * METODO para asiganar una contraseña temporal al usuario
+     * METODO para asignar una contraseña temporal al usuario
      */
     public function correoCambiarContraseña(Request $request)
     {
@@ -48,8 +49,8 @@ class PasswordController extends Controller
         $contraseñaTemporal->vigente = 'si'; 
         $contraseñaTemporal->save();
 
-        // url que llevara a la ventana de cambio de contraseña al ususario r
-        $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
+        // url que llevara a la ventana de cambio de contraseña al usuario
+         $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
 
         // Enviar correo usando una clase Mailable
         Mail::to($usuario->email)->send(new PasswordMail($usuario, $contraseñaTemporal, $url));
@@ -155,4 +156,5 @@ class PasswordController extends Controller
         $usuario->save(); 
         return redirect()->route('login');
     }
+
 }
