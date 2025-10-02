@@ -22,7 +22,7 @@
             --color-primary: #222A59;
             --color-hover: #2e386e;
             --text-light: #ffffff;
-            --sidebar-width: 250px;
+            --sidebar-width: 270px;
         }
 
         body {
@@ -110,8 +110,8 @@
         }
 
         .sidebar a:hover {
-            background-color: var(--color-hover);
-            border-left-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(80, 150, 220, 0.25);
+            border-left-color: rgba(120, 180, 255, 0.8);
         }
 
         .content-wrapper {
@@ -320,58 +320,59 @@
             </div>
             <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         </div>
-        <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-speedometer2 me-2"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i
-                class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
-        <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-person-walking me-2" viewBox="0 0 16 16">
-                <path
-                    d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
-                <path
-                    d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
-            </svg>
-            <span>Atletas</span>
-        </a>
-        <a href="{{ route('academias.index') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-layers me-2"></i>
-            <span>Academias</span>
-        </a>
-        <a href="{{ route('inscripciones.index') }}" onclick="handleSidebarClick(event)">
-            <i class="bi bi-ui-checks me-2"></i>
-            <span>Inscripciones</span>
-        </a>
 
-
-        <!-- Submenú de Catálogos Generales -->
-        <div class="submenu">
-            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                id="catalogosToggle">
-                <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
-                <i class="bi bi-chevron-down ms-auto"></i>
+        <div class="sidebar-content">
+            <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>Dashboard</span>
             </a>
-            <div class="submenu-items d-none" id="catalogosItems">
-                <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-people me-2"></i> Usuarios
+            <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i
+                    class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
+            <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-person-walking me-2" viewBox="0 0 16 16">
+                    <path
+                        d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
+                    <path
+                        d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
+                </svg>
+                <span>Atletas</span>
+            </a>
+            <a href="{{ route('academias.index') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-layers me-2"></i>
+                <span>Academias</span>
+            </a>
+            <a href="{{ route('inscripciones.index') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-ui-checks me-2"></i>
+                <span>Inscripciones</span>
+            </a>
+
+
+            <!-- Submenú de Catálogos Generales -->
+            <div class="submenu">
+                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                    id="catalogosToggle">
+                    <span><i class="bi bi-folder2-open me-2"></i> Catálogos Generales</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-columns-gap me-2"></i> Modalidades
-                </a>
-                <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-card-heading me-2"></i> Grados
-                </a>
-                <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-calendar3 me-2"></i> Eventos
-                </a>
-                <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-bookmarks me-2"></i> Categorías
-                </a>
-                <!-- Elementos adicionales para demostrar el scroll -->
-                {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                <div class="submenu-items d-none" id="catalogosItems">
+                    <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-people me-2"></i> Usuarios
+                    </a>
+                    <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-columns-gap me-2"></i> Modalidades
+                    </a>
+                    <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-card-heading me-2"></i> Grados
+                    </a>
+                    <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-calendar3 me-2"></i> Eventos
+                    </a>
+                    <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-bookmarks me-2"></i> Categorías
+                    </a>
+                    <!-- Elementos adicionales para demostrar el scroll -->
+                    {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
                     <i class="bi bi-gear me-2"></i> Configuración
                 </a>
                 <a href="#" onclick="handleSidebarClick(event)" class="text-white">
@@ -380,25 +381,25 @@
                 <a href="#" onclick="handleSidebarClick(event)" class="text-white">
                     <i class="bi bi-shield-check me-2"></i> Permisos
                 </a> --}}
+                </div>
             </div>
-        </div>
 
-        <!-- Otros submenús de ejemplo -->
-        {{-- <div class="submenu">
-            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                id="configuracionToggle">
-                <span><i class="bi bi-gear me-2"></i> Configuración</span>
-                <i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <div class="submenu-items d-none" id="configuracionItems">
-                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-sliders me-2"></i> Ajustes Generales
+            <!-- Otros submenús de ejemplo -->
+            {{-- <div class="submenu">
+                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                    id="configuracionToggle">
+                    <span><i class="bi bi-gear me-2"></i> Configuración</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <a href="#" onclick="handleSidebarClick(event)" class="text-white">
-                    <i class="bi bi-palette me-2"></i> Apariencia
-                </a>
-            </div>
-        </div> --}}
+                <div class="submenu-items d-none" id="configuracionItems">
+                    <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-sliders me-2"></i> Ajustes Generales
+                    </a>
+                    <a href="#" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-palette me-2"></i> Apariencia
+                    </a>
+                </div>
+            </div> --}}
         </div>
     </nav>
 
