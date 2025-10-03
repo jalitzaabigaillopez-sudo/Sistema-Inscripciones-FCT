@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.href = '/inscripcion-eventos'; // Redirigir a la página de inscripciones
+            window.location.href = '/nuevaInscripcion'; // Redirigir a la página de inscripciones
           }
         });
       } else {
