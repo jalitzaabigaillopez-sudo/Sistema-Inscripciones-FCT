@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Evento;
+use App\Models\Modalidad;
 use App\Models\TipoEvento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -102,7 +103,9 @@ class EventosController extends Controller
 
         // Para la carga inicial de la vista
         $tipoEvento = TipoEvento::all();
-        return view('catalogos.eventos.index', compact('tipoEvento'));
+        $modalidades = Modalidad::with('submodalidades')->get();
+
+        return view('catalogos.eventos.index', compact('tipoEvento', 'modalidades'));
     }
 
     /**
@@ -128,6 +131,8 @@ class EventosController extends Controller
                 'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
                 'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
                 'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
+                'id_modalidad' => 'required|exists:modalidades,id_modalidad',
+                'id_submodalidad' => 'required|exists:submodalidades,id_submodalidad',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -154,6 +159,11 @@ class EventosController extends Controller
                 $path = $request->file('imagen')->store('eventos', 'public');
                 $evento->imagen = $path;
             }
+
+            // Guardar relación con modalidad y submodalidad
+            $evento->modalidades()->attach($request->id_modalidad, [
+                'id_submodalidad' => $request->id_submodalidad
+            ]);
 
             $evento->save();
 

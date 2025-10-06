@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class SubModalidad extends Model
 {
     protected $table = 'submodalidades';
-    protected $primaryKey= 'id_subModalidad';
-    public $timestamps = false;    
+    protected $primaryKey = 'id_subModalidad';
+    public $timestamps = false;
     protected $fillable = ['nombre', 'descripcion'];
+
+
+    public function modalidades()
+    {
+        return $this->belongsTo(Modalidad::class, 'id_modalidad');
+    }
 }
