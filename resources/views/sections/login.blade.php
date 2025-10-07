@@ -118,7 +118,7 @@
 
                             <div class="mt-3 text-center">
                                 <span>¿No tienes una cuenta? </span>
-                                <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Regístrate</a>
+                                <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Solicitar</a>
                             </div>
                         </form>
                     </div>

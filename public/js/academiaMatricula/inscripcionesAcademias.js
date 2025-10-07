@@ -223,8 +223,12 @@ $(document).ready(function () {
         var contenedor = $('#contenedor');
         contenedor.find('.baseCard').not('.clonEdit').remove();
 
+        // Eliminar Select2
+        panelOriginal.find('.atletas-select').select2('destroy');
+
         // Crear N-1 copias limpias
         for (let i = 1; i < cantidad_atletas; i++) {
+            
             var nuevaCard = panelOriginal.clone().removeAttr('id');
 
             // 🔹 Limpiar inputs editables
@@ -266,7 +270,18 @@ $(document).ready(function () {
 
             nuevaCard.show();
             contenedor.append(nuevaCard);
+
+            // volver a inicializar Select2 en los selects del clon
+            nuevaCard.find('.atletas-select').select2({
+                placeholder: "Selecciona un atleta",
+                width: '100%'
+            });
         }
+
+        panelOriginal.find('.atletas-select').select2({
+            placeholder: "Selecciona un atleta",
+            width: '100%'
+        });
 
         actualizarAtletasEnClones();
         //Hace que solo aparescan atletas en los cards clones
@@ -298,7 +313,7 @@ $(document).ready(function () {
     });
 
 
-    //☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩
+    //☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩 //@audit bInscribir
     //=========================== BOTON INSCRIBIRSE ===========================
     $(document).on("click", "#bInscribir", function () {
         let totalCards = $(".baseCard").length;
@@ -396,10 +411,12 @@ $(document).ready(function () {
                     if (validarCantidadRol(rol) === false) {// Validacion para cantidad maxima segun el rol (1 entrenador, 2 asistentes x cada 10 atletas)
                         return;
                     }
-                    // if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
-                    //     mostrarAlerta("Al parecer este asistente ya se encuentra en lista.", "Aviso", "⚠️");
-                    //     return;
-                    // }
+
+                    //@audit problema aqui
+                    if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
+                        mostrarAlerta("Al parecer este asistente ya se encuentra en lista.", "Aviso", "⚠️");
+                        return;
+                    }
                     obj = {
                         atleta: recortarNombre(atleta),
                         sexo: sexo,
@@ -475,6 +492,22 @@ $(document).ready(function () {
             limpiarCards();
             mostrarAlerta("Se ha añadido un atleta a tu lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "", "Éxito", "✅");
         }
+
+        $("#contenedor .baseCard").remove();
+        $("#panelRegistro").show();
+
+        $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+
+        $("#panelRegistro").find('.modalidades-select').show();
+        $("#panelRegistro").find('.submodalidades-select').show();
+        $("#panelRegistro").find('.categorias-select').show();
+        $("#panelRegistro").find('#pesoInput').show();
+
+        $("#containerButton").html(`
+            <button id="bInscribir" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle"></i> Inscribir
+            </button>
+        `);
     });
 
 
@@ -667,12 +700,6 @@ $(document).ready(function () {
                             salida = true;
                         }
                     }
-                }
-            }
-        } else {
-            for (let atleta of atletas) {
-                if (atleta.atleta === nombre) {
-                    salida = true;
                 }
             }
         }
@@ -1071,7 +1098,7 @@ $(document).ready(function () {
                         rol: item.rol
                     }
                     atletasModificar.push(datos);
-                    console.log("atleta a modificar: ", atletasModificar);
+                    // console.log("atleta a modificar: ", atletasModificar);
 
 
                     let panelOriginal = $("#panelRegistro");
@@ -1176,9 +1203,6 @@ $(document).ready(function () {
 
                     // Buscar atleta por id
                     let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
-
-                    // Eliminar Select2
-                    panelOriginal.find('.atletas-select').select2('destroy');
 
                     // Crear clon
                     let nuevaCard = panelOriginal.clone();
@@ -1318,7 +1342,6 @@ $(document).ready(function () {
                         let nuevo_tr_code = crypto.randomUUID();
 
                         if (rol === 'atleta') {
-                            console.log("VOY AQUI 1");
                             obj = {
                                 atleta: recortarNombre(nombre),
                                 sexo: sexo,
@@ -1339,7 +1362,6 @@ $(document).ready(function () {
                                 id_academia: id_academia
                             };
                         } else {
-                            console.log("VOY AQUI 2");
                             obj = {
                                 atleta: recortarNombre(nombre),
                                 sexo: sexo,
@@ -1403,10 +1425,7 @@ $(document).ready(function () {
         let modeView = $('#modeView').val();
 
         let listaCompleta = listaAtletas.concat(gruposAtletas);
-        if (listaAtletas.length >= 2) {
-
-            
-
+        if (listaCompleta.length >= 2) {
 
             $.ajax({
                 url: '/procesarInscripcion',
@@ -1432,7 +1451,7 @@ $(document).ready(function () {
                     mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al procesar su inscripcion.", "Aviso", "⚠️");
                 }
             });
-        }else{
+        } else {
             mostrarAlerta("Verifique la cantidad de atletas inscritos en su lista antes de continuar.", "Aviso", "⚠️");
         }
     });
@@ -1789,9 +1808,6 @@ $(document).ready(function () {
 
                     // Buscar atleta por id
                     let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
-
-                    // Eliminar Select2
-                    panelOriginal.find('.atletas-select').select2('destroy');
 
                     // Crear clon
                     let nuevaCard = panelOriginal.clone();

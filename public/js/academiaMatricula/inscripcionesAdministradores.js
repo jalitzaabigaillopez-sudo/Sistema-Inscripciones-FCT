@@ -223,8 +223,12 @@ $(document).ready(function () {
         var contenedor = $('#contenedor');
         contenedor.find('.baseCard').not('.clonEdit').remove();
 
+        // Eliminar Select2
+        panelOriginal.find('.atletas-select').select2('destroy');
+
         // Crear N-1 copias limpias
         for (let i = 1; i < cantidad_atletas; i++) {
+
             var nuevaCard = panelOriginal.clone().removeAttr('id');
 
             // 🔹 Limpiar inputs editables
@@ -266,7 +270,18 @@ $(document).ready(function () {
 
             nuevaCard.show();
             contenedor.append(nuevaCard);
+
+            // volver a inicializar Select2 en los selects del clon
+            nuevaCard.find('.atletas-select').select2({
+                placeholder: "Selecciona un atleta",
+                width: '100%'
+            });
         }
+
+        panelOriginal.find('.atletas-select').select2({
+            placeholder: "Selecciona un atleta",
+            width: '100%'
+        });
 
         actualizarAtletasEnClones();
         //Hace que solo aparescan atletas en los cards clones
@@ -477,6 +492,22 @@ $(document).ready(function () {
             limpiarCards();
             mostrarAlerta("Se ha añadido un atleta a tu lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "", "Éxito", "✅");
         }
+
+        $("#contenedor .baseCard").remove();
+        $("#panelRegistro").show();
+
+        $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+
+        $("#panelRegistro").find('.modalidades-select').show();
+        $("#panelRegistro").find('.submodalidades-select').show();
+        $("#panelRegistro").find('.categorias-select').show();
+        $("#panelRegistro").find('#pesoInput').show();
+
+        $("#containerButton").html(`
+            <button id="bInscribir" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle"></i> Inscribir
+            </button>
+        `);
     });
 
 
@@ -671,13 +702,7 @@ $(document).ready(function () {
                     }
                 }
             }
-        } else {
-            for (let atleta of atletas) {
-                if (atleta.atleta === nombre) {
-                    salida = true;
-                }
-            }
-        }
+        } 
         return salida;
     }
 
@@ -730,10 +755,10 @@ $(document).ready(function () {
             <td>${obj.grupo}</td>
             <td class="text-center">
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar" title="Editar" disabled>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar" title="Editar" >
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}" disabled>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -763,10 +788,10 @@ $(document).ready(function () {
             <td>${obj.grupo}</td>
             <td class="text-center">
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar2" title="Editar" disabled>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill bEditar2" title="Editar">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}" disabled>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill bEliminar" title="Eliminar" value="${obj.id_atleta}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1073,7 +1098,7 @@ $(document).ready(function () {
                         rol: item.rol
                     }
                     atletasModificar.push(datos);
-                    console.log("atleta a modificar: ", atletasModificar);
+                    // console.log("atleta a modificar: ", atletasModificar);
 
 
                     let panelOriginal = $("#panelRegistro");
@@ -1099,8 +1124,8 @@ $(document).ready(function () {
                     // 🔹 Copiar selects del padre  descativar con: .prop("disabled", true)
                     nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                     nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
-                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
+                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                     // 🔹 Limpiar inputs de texto
@@ -1179,9 +1204,6 @@ $(document).ready(function () {
                     // Buscar atleta por id
                     let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
 
-                    // Eliminar Select2
-                    panelOriginal.find('.atletas-select').select2('destroy');
-
                     // Crear clon
                     let nuevaCard = panelOriginal.clone();
 
@@ -1197,8 +1219,8 @@ $(document).ready(function () {
                     // 🔹 Copiar selects del padre
                     nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                     nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
-                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
+                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                     // 🔹 Limpiar inputs de texto
@@ -1320,7 +1342,6 @@ $(document).ready(function () {
                         let nuevo_tr_code = crypto.randomUUID();
 
                         if (rol === 'atleta') {
-                            console.log("VOY AQUI 1");
                             obj = {
                                 atleta: recortarNombre(nombre),
                                 sexo: sexo,
@@ -1341,7 +1362,6 @@ $(document).ready(function () {
                                 id_academia: id_academia
                             };
                         } else {
-                            console.log("VOY AQUI 2");
                             obj = {
                                 atleta: recortarNombre(nombre),
                                 sexo: sexo,
@@ -1641,8 +1661,8 @@ $(document).ready(function () {
                     // 🔹 Copiar selects del padre .prop("disabled", true)
                     nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                     nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
-                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
+                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                     /**
@@ -1767,8 +1787,8 @@ $(document).ready(function () {
                     // 🔹 Copiar selects del padre
                     nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                     nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
-                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                    nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
+                    nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                     nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                     /**
@@ -1896,7 +1916,7 @@ $(document).ready(function () {
     // Mostrar alerta personalizada
     function mostrarAlerta(mensaje, titulo = "Alerta", icono = "⚠️", callback = null) {
         console.log("SALTA");
-        
+
         $("#customAlertMessage").text(mensaje);
         $("#customAlertTitle").text(titulo);
         $(".custom-alert-icon").text(icono);
@@ -1931,23 +1951,4 @@ $(document).ready(function () {
         }
     });
 
-
-
-
-
-    /*
-       ___       __   ________  ___       __   ________     
-       |\  \     |\  \|\   __  \|\  \     |\  \|\   __  \    
-       \ \  \    \ \  \ \  \|\  \ \  \    \ \  \ \  \|\  \   
-        \ \  \  __\ \  \ \  \\\  \ \  \  __\ \  \ \   __  \  
-         \ \  \|\__\_\  \ \  \\\  \ \  \|\__\_\  \ \  \ \  \ 
-          \ \____________\ \_______\ \____________\ \__\ \__\
-           \|____________|\|_______|\|____________|\|__|\|__|
-                                                                       
-      ████████████████████████████████████████████████████████
-      █                                                      █
-      █  🚀                    Selct2                       █
-      █                                                      █
-      ████████████████████████████████████████████████████████
-      */
-});
+});//READY

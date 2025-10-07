@@ -172,6 +172,7 @@ Route::get('/calcular-division/{fecha}', [AtletasController::class, 'calcularDiv
  * 
  */
 Route::get('/adminEditarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEditarInscripcion'])->name('admin.editar.inscripcion');
+Route::get('/adminEliminarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEliminarInscripcion'])->name('admin.eliminar.inscripcion');
 Route::post('/adminInscripcionAtleta', [InscripcionController::class, 'AdministradorInscribirAtleta']);
 
 

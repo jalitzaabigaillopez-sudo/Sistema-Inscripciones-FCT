@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Inscripcion;
 use App\Models\ModalidadEvento;
 use App\Models\Usuario;
+use Carbon\Carbon;
 
 class InscripcionController extends Controller
 {
@@ -148,7 +149,8 @@ class InscripcionController extends Controller
 
         $bloquearSelectEventos = false;
 
-        $eventos = Evento::all();
+        $eventos = Evento::where('fecha_final', '>=', Carbon::now())->get();
+
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
@@ -329,6 +331,18 @@ class InscripcionController extends Controller
         $id_academia = $academia->id_academia;
 
         return view('admin/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos', 'id_academia'));
+    }
+
+    public function administradorEliminarInscripcion($id_academia, $id_evento)
+    {
+        $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
+
+        if ($inscripcion) {
+            $inscripcion->delete();
+             return redirect()->back();
+        }
+
+        return response()->json(['success' => true, 'msg' => 'No se pudo eliminar esta inscripcion']);
     }
 
 

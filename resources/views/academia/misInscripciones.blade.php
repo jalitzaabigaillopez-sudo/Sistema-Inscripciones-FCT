@@ -59,7 +59,7 @@
                                             @if($ins->estado == 'activa')
                                                 <a class="dropdown-item disabled" href="javascript:void(0)" tabindex="-1"
                                                     aria-disabled="true">
-                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                    <i class="bi bi-pencil-square"></i>Ver/Editar
                                                 </a>
 
                                                 <li>
@@ -70,7 +70,7 @@
                                             @else
                                                 <a class="dropdown-item btn-edit"
                                                     href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}">
-                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                    <i class="bi bi-pencil-square"></i>Ver/Editar
                                                 </a>
 
                                                 <li>
