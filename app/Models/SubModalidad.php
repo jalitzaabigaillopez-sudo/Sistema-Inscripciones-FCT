@@ -9,7 +9,11 @@ class SubModalidad extends Model
     protected $table = 'submodalidades';
     protected $primaryKey = 'id_subModalidad';
     public $timestamps = false;
-    protected $fillable = ['nombre', 'descripcion'];
+    protected $fillable = ['nombre', 'descripcion', 'cantidad_atletas', 'sexo_mixto'];
+
+    protected $casts = [
+        'sexo_mixto' => 'boolean',
+    ];
 
 
     public function modalidades()

@@ -168,6 +168,8 @@ Route::get('/buscar-padron/{identificacion}', [AtletasController::class, 'buscar
 // Calcular división según fecha
 Route::get('/calcular-division/{fecha}', [AtletasController::class, 'calcularDivision']);
 
+Route::resource('/submodalidades', SubModalidadController::class);
+
 /**
  * 
  */

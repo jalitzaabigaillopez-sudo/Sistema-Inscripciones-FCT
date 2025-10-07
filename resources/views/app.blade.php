@@ -317,8 +317,8 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-container">
-                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager"
-                    style="max-width:100%;">
+                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto"
+                    loading="eager" style="max-width:100%;">
             </div>
             <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
         </div>
@@ -361,8 +361,12 @@
                     <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-people me-2"></i> Usuarios
                     </a>
+
                     <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-columns-gap me-2"></i> Modalidades
+                    </a>
+                    <a href="{{ route('submodalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-grid-3x2-gap"></i> SubModalidades
                     </a>
                     <a href="{{ route('grados.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-card-heading me-2"></i> Grados
@@ -483,7 +487,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-        </script>
+    </script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -504,7 +508,7 @@
         }
 
         // Configuración del submenú con persistencia
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const catalogosToggle = document.getElementById('catalogosToggle');
             const catalogosItems = document.getElementById('catalogosItems');
 
@@ -519,7 +523,7 @@
             }
 
             // Evento para abrir/cerrar el submenú
-            catalogosToggle.addEventListener('click', function (e) {
+            catalogosToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const estaAbierto = !catalogosItems.classList.contains('d-none');
 
@@ -559,7 +563,7 @@
                 }
             }
 
-            toggleSidebar.addEventListener('click', function () {
+            toggleSidebar.addEventListener('click', function() {
                 // En móvil, abre sidebar con clase sidebar-open
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('sidebar-open');
@@ -570,7 +574,7 @@
                 }
             });
 
-            sidebarClose.addEventListener('click', function () {
+            sidebarClose.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
                 setContentMargin();
@@ -580,7 +584,7 @@
             adjustSidebarOnLoad();
 
             // Cerrar sidebar si se hace clic fuera (solo en móviles)
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 if (
                     window.innerWidth <= 768 &&
                     !sidebar.contains(e.target) &&
@@ -600,9 +604,9 @@
 
 
         // VISUALIZAR CONTRA CON OJO
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {

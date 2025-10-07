@@ -23,13 +23,13 @@ class Modalidad extends Model
     }
 
     // Eventos donde aparece esta modalidad
-    // public function eventos()
-    // {
-    //     return $this->belongsToMany(
-    //         Evento::class,
-    //         'modalidades_eventos',
-    //         'id_modalidad',   
-    //         'id_evento'       
-    //     );
-    // }
+    public function eventos()
+    {
+        return $this->belongsToMany(
+            Evento::class,
+            'modalidades_eventos',
+            'id_modalidad',   
+            'id_evento'       
+        );
+    }
 }

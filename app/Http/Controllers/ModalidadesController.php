@@ -27,7 +27,12 @@ class ModalidadesController extends Controller
                 $query->where(function ($q) use ($search) {
                     // Ajustar la búsqueda a los campos de Modalidad
                     $q->where('nombre', 'like', "%{$search}%")
-                        ->orWhere('descripcion', 'like', "%{$search}%");
+                        ->orWhere('descripcion', 'like', "%{$search}%")
+                        // Buscar también dentro de las submodalidades asociadas
+                        ->orWhereHas('subModalidades', function ($sub) use ($search) {
+                            $sub->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('descripcion', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -55,11 +60,18 @@ class ModalidadesController extends Controller
             // Formatear datos para DataTables
             $formattedData = [];
             foreach ($data as $item) {
+                $subModalidadesList = $item->subModalidades->isEmpty()
+                    ? '<span class="text-muted fst-italic">Sin submodalidades</span>'
+                    : '<ul class="list-unstyled mb-0">' .
+                    implode('', $item->subModalidades->map(fn($sub) => "<li>• {$sub->nombre}</li>")->toArray()) .
+                    '</ul>';
+
                 $formattedData[] = [
-                    'id' => $item->id, // Asumiendo un campo 'id' para acciones
+                    'id_modalidad' => $item->id_modalidad,
                     'nombre' => $item->nombre,
-                    'descripcion' => $item->descripcion,
-                    'acciones' => $item->id_modalidad, // Usar el ID para las acciones
+                    'descripcion' => $item->descripcion ?? '<span class="text-muted">—</span>',
+                    'submodalidades' => $subModalidadesList, // 👈 agregado
+                    'acciones' => $item->id_modalidad,
                 ];
             }
 

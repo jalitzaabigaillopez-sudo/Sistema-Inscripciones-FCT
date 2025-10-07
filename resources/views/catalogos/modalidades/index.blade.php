@@ -26,33 +26,12 @@
                             <tr>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Descripción</th>
+                                <th class="text-center"></th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data as $item)
-                                <tr class="text-center">
-                                    <td class="small">{{ $item->nombre }}</td>
-                                    <td class="small">{{ $item->descripcion }}</td>
-                                    <td class="text-center">
-                                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
-                                            title="Editar" data-id="{{ $item->id_modalidad }}">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
 
-                                        <form action="{{ route('modalidades.destroy', $item) }}" method="POST"
-                                            id="form-eliminar-{{ $item->id_modalidad }}" class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                                data-bs-toggle="tooltip" title="Eliminar Modalidad"
-                                                onclick="confirmarEliminacion({{ $item->id_modalidad }})"
-                                                onclick="return confirm('¿Eliminar esta modalidad?')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach --}}
                         </tbody>
                     </table>
                 </div>
@@ -203,48 +182,39 @@
                         title: "Descripción"
                     },
                     {
+                        data: "submodalidades",
+                        title: "Submodalidades",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: "acciones",
                         title: "Acciones",
                         orderable: false,
                         searchable: false,
-                        // Función para renderizar los botones de acción
-                        render: function(data, type, row) {
-                            // 'data' aquí será el 'id' de la modalidad
+                        render: function(data) {
                             let id_modalidad = data;
-
                             return `
-                         <div class="d-flex justify-content-center">
-                            
-                            <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
-                                title="Editar" 
-                                data-id="${id_modalidad}">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
+                            title="Editar" data-id="${id_modalidad}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
 
-                            <form action="/modalidades/${id_modalidad}" method="POST"
-                                id="form-eliminar-${id_modalidad}" class="d-inline">
-                                
-                                <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                    data-bs-toggle="tooltip" title="Eliminar Modalidad"
-                                    onclick="confirmarEliminacion(${id_modalidad}, 'modalidades')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    `;
+                        <form action="/modalidades/${id_modalidad}" method="POST"
+                            id="form-eliminar-${id_modalidad}" class="d-inline">
+                            <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                                data-bs-toggle="tooltip" title="Eliminar Modalidad"
+                                onclick="confirmarEliminacion(${id_modalidad}, 'modalidades')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                `;
                         }
                     }
                 ];
 
-                // Pintar headers dinámicamente
-                let headersRow = $('#tabla-headers'); // Asumiendo que tienes un <thead> con id="tabla-headers"
-                headersRow.empty();
-                columnsConfig.forEach(col => {
-                    headersRow.append(`<th class="text-center">${col.title}</th>`);
-                });
-
-                // Inicializar DataTable con tu script genérico
-                // Asegúrate de reemplazar 'modalidades.index' con el nombre de tu ruta
                 initDataTable({
                     ajaxUrl: "{{ route('modalidades.index') }}",
                     columns: columnsConfig
