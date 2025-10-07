@@ -26,6 +26,9 @@ class EventosController extends Controller
         if ($request->ajax()) {
             $query = Evento::with('tipoEvento'); // Cargar relación
 
+            $query->orderBy('id_evento', 'desc'); // más reciente primero
+
+
             // Columnas permitidas para búsqueda y ordenamiento
             $allowedColumns = [
                 'nombre',
@@ -131,8 +134,8 @@ class EventosController extends Controller
                 'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
                 'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
                 'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
-                'id_modalidad' => 'required|exists:modalidades,id_modalidad',
-                'id_submodalidad' => 'required|exists:submodalidades,id_submodalidad',
+                'modalidades' => 'array|required',
+                'modalidades.*' => 'exists:modalidades,id_modalidad',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -160,12 +163,8 @@ class EventosController extends Controller
                 $evento->imagen = $path;
             }
 
-            // Guardar relación con modalidad y submodalidad
-            $evento->modalidades()->attach($request->id_modalidad, [
-                'id_submodalidad' => $request->id_submodalidad
-            ]);
-
             $evento->save();
+            $evento->modalidades()->attach($request->modalidades);
 
             return response()->json([
                 'success' => true,
@@ -193,7 +192,12 @@ class EventosController extends Controller
     public function edit(string $id)
     {
         try {
-            $evento = Evento::findOrFail($id);
+            // Cargar evento con sus modalidades
+            $evento = Evento::with('modalidades')->findOrFail($id);
+
+            // Obtener solo los IDs de las modalidades relacionadas
+            $modalidades_ids = $evento->modalidades->pluck('id_modalidad');
+
             return response()->json([
                 'success' => true,
                 'evento' => [
@@ -207,12 +211,15 @@ class EventosController extends Controller
                     'id_tipo_evento' => $evento->id_tipo_evento,
                     'estado' => $evento->estado,
                     'imagen' => $evento->imagen
-                ]
+                ],
+                // Devolvemos las modalidades asociadas
+                'modalidades_ids' => $modalidades_ids,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'No se encontró el evento o ocurrió un error.'
+                'error' => 'No se encontró el evento o ocurrió un error.',
+                'exception' => $e->getMessage()
             ], 404);
         }
     }
@@ -225,46 +232,58 @@ class EventosController extends Controller
         try {
             $evento = Evento::findOrFail($id);
 
-            // ... (Tu código de validación existente) ...
+            // Validación de datos
             $validator = Validator::make($request->all(), [
-                // ... (Reglas de validación) ...
+                'nombre' => 'required|string|max:255',
+                'descripcion' => 'nullable|string',
+                'fecha_inicio_inscripcion' => 'required|date',
+                'fecha_final_inscripcion' => 'required|date|after_or_equal:fecha_inicio_inscripcion',
+                'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
+                'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
+                'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
+                'estado' => 'required|in:activo,inactivo,finalizado',
+                'modalidades' => 'required|array|min:1',
+                'modalidades.*' => 'exists:modalidades,id_modalidad',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'eliminar_imagen' => 'nullable|boolean', // Añadir esta regla de validación
+                'eliminar_imagen' => 'nullable|boolean',
             ]);
 
             if ($validator->fails()) {
-                // ...
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
             }
 
-            // Lógica de manejo de imagen
+            // Manejo de imagen
             if ($request->has('eliminar_imagen') && $request->eliminar_imagen == '1') {
-                // El usuario solicitó eliminar la imagen
                 if ($evento->imagen) {
                     Storage::disk('public')->delete($evento->imagen);
-                    $evento->imagen = null; // Borrar la ruta de la imagen en la base de datos
+                    $evento->imagen = null;
                 }
             } elseif ($request->hasFile('imagen')) {
-                // El usuario subió una nueva imagen
-                // 1. Eliminar la imagen anterior si existe
+                // Eliminar anterior si existe
                 if ($evento->imagen) {
                     Storage::disk('public')->delete($evento->imagen);
                 }
-                // 2. Guardar la nueva imagen
                 $path = $request->file('imagen')->store('eventos', 'public');
                 $evento->imagen = $path;
             }
 
-            // ... (Actualizar el resto de los campos del evento) ...
-            $evento->nombre = $request->nombre;
-            $evento->descripcion = $request->descripcion;
-            $evento->fecha_inicio_inscripcion = $request->fecha_inicio_inscripcion;
-            $evento->fecha_final_inscripcion = $request->fecha_final_inscripcion;
-            $evento->fecha_inicio = $request->fecha_inicio;
-            $evento->fecha_final = $request->fecha_final;
-            $evento->id_tipo_evento = $request->id_tipo_evento;
-            $evento->estado = $request->estado;
+            // Actualizar campos generales
+            $evento->update([
+                'nombre' => $request->nombre,
+                'descripcion' => $request->descripcion,
+                'fecha_inicio_inscripcion' => $request->fecha_inicio_inscripcion,
+                'fecha_final_inscripcion' => $request->fecha_final_inscripcion,
+                'fecha_inicio' => $request->fecha_inicio,
+                'fecha_final' => $request->fecha_final,
+                'id_tipo_evento' => $request->id_tipo_evento,
+                'estado' => $request->estado,
+            ]);
 
-            $evento->save();
+            // Sincronizar modalidades seleccionadas
+            $evento->modalidades()->sync($request->modalidades);
 
             return response()->json([
                 'success' => true,
@@ -273,10 +292,11 @@ class EventosController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Ocurrió un error al actualizar el evento: ' . $e->getMessage()
+                'error' => 'Ocurrió un error al actualizar el evento: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

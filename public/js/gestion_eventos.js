@@ -349,6 +349,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;
 
+                    // Marcar modalidades asociadas
+                    $('.editModalidadCheckbox').prop('checked', false); // Limpia selección previa
+
+                    if (response.modalidades_ids && response.modalidades_ids.length > 0) {
+                        response.modalidades_ids.forEach(function (id) {
+                            $('#edit_mod_' + id).prop('checked', true);
+                        });
+                    }
+
                     // CAMBIO AQUÍ
                     const radioEstado = document.querySelector(`input[name="estado"][value="${evento.estado}"]`);
                     if (radioEstado) {
@@ -453,6 +462,8 @@ document.addEventListener("DOMContentLoaded", function () {
             inputFile.value = "";
         }
     });
+    $('.editModalidadCheckbox').prop('checked', false);
+
 });
 
 function confirmarEliminacion(id) {

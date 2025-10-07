@@ -60,17 +60,29 @@ class ModalidadesController extends Controller
             // Formatear datos para DataTables
             $formattedData = [];
             foreach ($data as $item) {
-                $subModalidadesList = $item->subModalidades->isEmpty()
-                    ? '<span class="text-muted fst-italic">Sin submodalidades</span>'
-                    : '<ul class="list-unstyled mb-0">' .
-                    implode('', $item->subModalidades->map(fn($sub) => "<li>• {$sub->nombre}</li>")->toArray()) .
-                    '</ul>';
+                if ($item->subModalidades->isEmpty()) {
+                    $subModalidadesList = '<span class="text-muted fst-italic">Sin submodalidades</span>';
+                } else {
+                    $names = $item->subModalidades->pluck('nombre')->toArray();
+                    $visible = array_slice($names, 0, 2);
+                    $hidden = array_slice($names, 2);
+
+                    $subModalidadesList = '<div class="d-inline-block">';
+                    $subModalidadesList .= implode(', ', array_map('e', $visible));
+
+                    if (count($hidden) > 0) {
+                        $tooltip = e(implode(', ', $hidden));
+                        $subModalidadesList .= ' <span class="text-primary fw-bold" data-bs-toggle="tooltip" title="' . $tooltip . '">+' . count($hidden) . '</span>';
+                    }
+
+                    $subModalidadesList .= '</div>';
+                }
 
                 $formattedData[] = [
                     'id_modalidad' => $item->id_modalidad,
                     'nombre' => $item->nombre,
                     'descripcion' => $item->descripcion ?? '<span class="text-muted">—</span>',
-                    'submodalidades' => $subModalidadesList, // 👈 agregado
+                    'submodalidades' => $subModalidadesList,
                     'acciones' => $item->id_modalidad,
                 ];
             }

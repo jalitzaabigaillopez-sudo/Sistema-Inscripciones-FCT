@@ -89,8 +89,6 @@
                                 </div>
                             </div>
 
-
-
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                                     data-bs-dismiss="modal">Cancelar</button>
