@@ -60,7 +60,7 @@ class AuthController extends Controller
     }
 
     // DATOS PARA EL PERFIL 
-    public function perfil(Request $request)
+    private function obtenerUsuarioSesion(Request $request)
     {
         $userId = $request->session()->get('usuario');
 
@@ -74,6 +74,18 @@ class AuthController extends Controller
             return redirect()->route('login')->with('error', 'Usuario no encontrado.');
         }
 
-        return view('admin.perfil-admin', ['usuario' => $usuario]);
+        return $usuario;
+    }
+
+    public function perfil(Request $request)
+    {
+        $usuario = $this->obtenerUsuarioSesion($request);
+        if ($usuario instanceof \Illuminate\Http\RedirectResponse) return $usuario;
+
+        $vista = $usuario->rol === 'administrador'
+            ? 'admin.perfil-admin'
+            : 'academia.perfilAcademia';
+
+        return view($vista, compact('usuario'));
     }
 }

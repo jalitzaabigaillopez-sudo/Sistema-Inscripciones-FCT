@@ -326,7 +326,7 @@
 </head>
 
 <body>
-    <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}">
+    {{-- <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}"> --}}
 
     <!-- Sidebar -->
     <nav class="sidebar sidebar-hidden" id="sidebar">
@@ -339,7 +339,7 @@
 
         <div class="sidebar-content">
             <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="#"><i class="bi bi-person-badge me-2"></i> Administración de Perfil</a>
+            <a href="{{ route('perfil') }}"><i class="bi bi-person-badge me-2"></i> Administración de Perfil</a>
             <a href="{{ route('gestion.atletas') }}"><i class="bi bi-people me-2"></i> Gestión de atletas</a>
 
 
@@ -399,7 +399,7 @@
                     <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.5rem;"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="{{ route('academia.perfil-academia') }}">Perfil</a></li>
+                    <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
                     <li>
                         <form action="{{ route('logout.process') }}" method="POST">
                             @csrf
@@ -413,7 +413,6 @@
     </nav>
     <!-- Main Content -->
     <div class="content-wrapper" id="contentWrapper">
-        <!-- {{ $academia->id_academia }} -->
         @yield('content')
     </div>
 

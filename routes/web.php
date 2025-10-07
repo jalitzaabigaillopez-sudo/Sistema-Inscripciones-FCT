@@ -108,6 +108,9 @@ Route::get('/adminDash', function () {
 Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
 Route::put('/perfil/{id}', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
 
+// Route::get('/perfilAcademia', [AuthController::class, 'perfilAcademia'])->name('perfilAcademia');
+// Route::put('/perfilAcademia/{id}', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
+
 
 // Ruta para estadísticas
 Route::get('/estadisticas', function () {
@@ -128,7 +131,7 @@ Route::view('/dashboard-academias', 'academia.dashboard-academia')->name('dashbo
 // Inscripción a eventos
 Route::view('/inscripcion-eventos', 'academia.inscripcionEvento')->name('academia.inscripcionEvento');
 // perfil de academia
-Route::view('/perfil-academia', 'academia.perfil-academia')->name('academia.perfil-academia');
+// Route::view('/perfil-academia', 'academia.perfilAcademia')->name('academia.perfil-academia');
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas
