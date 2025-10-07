@@ -14,7 +14,8 @@ use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\ProfileController;
+
+use App\Http\Controllers\RegistroAtletasController;
 use Illuminate\Types\Relations\Role;
 
 //####################################### SOLO ADMINISTRADOR ###########################################
@@ -174,3 +175,6 @@ Route::get('/preregistro', function () {
 // routes/api.php
 Route::get('/events', [EventosController::class, 'api']);    
 
+
+// Registro de atletas por parte de las academias
+Route::resource('atletas', RegistroAtletasController::class);

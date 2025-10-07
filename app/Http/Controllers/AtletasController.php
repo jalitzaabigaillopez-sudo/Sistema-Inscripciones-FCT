@@ -64,7 +64,7 @@ class AtletasController extends Controller
 
         // Verificar que exista la cedula si es nacional
         $padronNacimiento = PadronNacimiento::where('identificacion', $validateData['identificacion'])->first();
-        if (!$identificacion) {
+        if (!$padronNacimiento) {
             return response()->json(['error' => 'Este numero de cedula no esta registrado'], 401);
         }
 
