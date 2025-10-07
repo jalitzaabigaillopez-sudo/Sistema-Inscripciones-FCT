@@ -8,6 +8,8 @@
 
 @section('content')
 
+
+
     <div class="container py-4">
         <div class="d-flex align-items-center mb-4">
             <h4 class="fw-bold mb-0">Lista de Eventos</h4>
@@ -29,11 +31,13 @@
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Descripción</th>
                                 <th class="text-center">Tipo evento</th>
+                                <th class="text-center"></th>
                                 <th class="text-center">Inicio Ins.</th>
                                 <th class="text-center">Fin Ins.</th>
                                 <th class="text-center">Inicio</th>
                                 <th class="text-center">Fin</th>
                                 <th class="text-center">Estado</th>
+
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -425,12 +429,23 @@
                     },
                     {
                         data: "descripcion",
-                        title: "Descripción"
+                        title: "Descripción",
+                        render: function(data) {
+                            if (!data) return '<span class="text-muted fst-italic">Sin descripción</span>';
+                            let text = data.length > 40 ? data.substring(0, 40) + '...' : data;
+                            return `<span data-bs-toggle="tooltip" title="${data}">${text}</span>`;
+                        }
                     },
                     {
                         data: "tipo_evento",
                         title: "Tipo",
                         defaultContent: ""
+                    },
+                    {
+                        data: "modalidades",
+                        title: "Modalidades",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "fecha_inicio_inscripcion",
@@ -462,8 +477,16 @@
                     },
                     {
                         data: "estado",
-                        title: "Estado"
+                        title: "Estado",
+                        render: function(data) {
+                            let badgeClass =
+                                data === 'activo' ? 'success' :
+                                data === 'inactivo' ? 'danger' :
+                                'secondary';
+                            return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
+                        }
                     },
+
                     {
                         data: "acciones",
                         title: "Acciones",

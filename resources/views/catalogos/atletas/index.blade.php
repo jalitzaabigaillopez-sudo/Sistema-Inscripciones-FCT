@@ -107,7 +107,7 @@
                                     <h6 class="text-secondary mb-3">Información Deportiva</h6>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="mb-3">
+                                            {{-- <div class="mb-3">
                                                 <label for="rol" class="form-label">Rol <span
                                                         class="text-danger">*</span></label>
                                                 <select class="form-select form-select-sm" id="rol" name="rol"
@@ -117,7 +117,7 @@
                                                     <option value="entrenador">Entrenador</option>
                                                     <option value="asistente">Asistente</option>
                                                 </select>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -272,7 +272,7 @@
                                     <h6 class="text-secondary mb-3">Información Deportiva</h6>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        {{-- <div class="col-md-6 mb-3">
                                             <label for="e_rol" class="form-label">Rol <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select form-select-sm" id="e_rol" name="rol"
@@ -282,7 +282,7 @@
                                                 <option value="entrenador">Entrenador</option>
                                                 <option value="asistente">Asistente</option>
                                             </select>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-md-6 mb-3">
                                             <label for="e_sexo" class="form-label">Sexo <span
                                                     class="text-danger">*</span></label>
@@ -412,10 +412,6 @@
                         title: "Nombre"
                     },
                     {
-                        data: "rol",
-                        title: "Rol"
-                    },
-                    {
                         data: "sexo",
                         title: "Sexo"
                     },
@@ -435,7 +431,14 @@
                     },
                     {
                         data: "estado",
-                        title: "Estado"
+                        title: "Estado",
+                         render: function(data) {
+                            let badgeClass =
+                                data === 'activo' ? 'success' :
+                                data === 'inactivo' ? 'danger' :
+                                'secondary';
+                            return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
+                        }
                     },
                     {
                         data: "acciones",

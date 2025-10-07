@@ -367,7 +367,7 @@
                     </a>
                     <a href="{{ route('submodalidades.index') }}" onclick="handleSidebarClick(event)"
                         class="text-white">
-                        <i class="bi bi-columns-gap me-2"></i> SubModalidades
+                        <i class="bi bi-grid-3x2-gap me-2"></i> SubModalidades
                     </a>
                     <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-people me-2"></i> Usuarios

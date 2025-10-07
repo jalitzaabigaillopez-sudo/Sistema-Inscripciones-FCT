@@ -38,7 +38,6 @@ class AtletasController extends Controller
                         ->orWhere('sexo', 'like', "%{$search}%")
                         ->orWhere('fecha_nacimiento', 'like', "%{$search}%")
                         ->orWhere('estado', 'like', "%{$search}%")
-                        ->orWhere('rol', 'like', "%{$search}%")
                         ->orWhere('tipo_identificacion', 'like', "%{$search}%");
                 })
                     // Búsqueda en la relación Grado
@@ -73,7 +72,6 @@ class AtletasController extends Controller
                     'tipo_identificacion' => $item->tipo_identificacion,
                     'identificacion' => $item->identificacion,
                     'nombre' => $item->nombre . ' ' . $item->primer_apellido . ' ' . $item->segundo_apellido,
-                    'rol' => $item->rol,
                     'sexo' => $item->sexo,
                     'fecha_nacimiento' => \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y'),
                     'grado' => $item->grados->nombre ?? '',
@@ -130,7 +128,6 @@ class AtletasController extends Controller
             $validateData = $request->validate([
                 'tipo_identificacion' => 'required|string|in:Nacional,Otro',
                 'identificacion' => 'required|string|max:30',
-                'rol' => 'required|string|in:entrenador,asistente,atleta',
                 'sexo' => 'required|string|in:Femenino,Masculino',
                 'id_grado' => 'required|integer',
                 'id_academia' => 'required|integer',
@@ -193,7 +190,6 @@ class AtletasController extends Controller
             $atleta->nombre = $nombre;
             $atleta->primer_apellido = $primer_apellido;
             $atleta->segundo_apellido = $segundo_apellido;
-            $atleta->rol = $request->rol;
             $atleta->sexo = $request->sexo;
             $atleta->fecha_nacimiento = $fecha_nacimiento;
             $atleta->estado = 'activo';
@@ -257,7 +253,7 @@ class AtletasController extends Controller
             // 'primer_apellido' => 'required|string|max:255',
             // 'segundo_apellido' => 'required|string|max:255',
             // 'nombre' => 'required|string|max:255',
-            'rol' => 'required|string|in:entrenador,asistente. atleta',
+            // 'rol' => 'required|string|in:entrenador,asistente. atleta',
             'sexo' => 'required|string|in:Femenino,Masculino',
             // 'fecha_nacimiento' => 'required|date',
             'estado' => 'require|string|in:activo,inactivo',
@@ -290,7 +286,7 @@ class AtletasController extends Controller
             'primer_apellido' => $padronNacimiento->primer_apellido,
             'segundo_apellido' => $padronNacimiento->segundo_apellido,
             'nombre' => $padronNacimiento->nombre,
-            'rol' => $validateData['rol'],
+            // 'rol' => $validateData['rol'],
             'sexo' => $validateData['sexo'],
             'fecha_nacimiento' => $padronNacimiento->fecha_nacimiento,
             'estado' => $validateData['estado'],
@@ -354,8 +350,6 @@ class AtletasController extends Controller
                 'primer_apellido.max' => 'El primer apellido no puede tener más de :max caracteres.',
                 'segundo_apellido.string' => 'El segundo apellido debe ser una cadena de texto.',
                 'segundo_apellido.max' => 'El segundo apellido no puede tener más de :max caracteres.',
-                'rol.required' => 'El rol es obligatorio.',
-                'rol.string' => 'El rol debe ser una cadena de texto.',
                 'sexo.required' => 'El sexo es obligatorio.',
                 'sexo.string' => 'El sexo debe ser una cadena de texto.',
                 'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
@@ -379,7 +373,6 @@ class AtletasController extends Controller
                 'nombre' => 'required|string|max:255',
                 'primer_apellido' => 'required|string|max:255',
                 'segundo_apellido' => 'nullable|string|max:255',
-                'rol' => 'required|string',
                 'sexo' => 'required|string',
                 'fecha_nacimiento' => 'required|date',
                 'estado' => 'required|string',
@@ -421,7 +414,6 @@ class AtletasController extends Controller
             $atleta->nombre = $request->nombre;
             $atleta->primer_apellido = $request->primer_apellido;
             $atleta->segundo_apellido = $request->segundo_apellido;
-            $atleta->rol = $request->rol;
             $atleta->sexo = $request->sexo;
             $atleta->fecha_nacimiento = $request->fecha_nacimiento;
             $atleta->estado = $request->estado;
