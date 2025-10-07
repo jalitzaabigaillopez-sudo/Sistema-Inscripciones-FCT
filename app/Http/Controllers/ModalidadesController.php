@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Modalidad;
+use App\Models\SubModalidad;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 
@@ -70,8 +71,11 @@ class ModalidadesController extends Controller
             ]);
         }
 
+        $modalidades = Modalidad::all();
+        $submodalidades = SubModalidad::all();
+
         // Para la carga inicial de la página (retorna la vista)
-        return view('catalogos.modalidades.index');
+        return view('catalogos.modalidades.index', compact('modalidades', 'submodalidades'));
     }
 
     /**
@@ -103,6 +107,11 @@ class ModalidadesController extends Controller
 
         $item->save();
 
+        // Asignar submodalidades si existen
+        if ($request->has('submodalidades')) {
+            $item->subModalidades()->attach($request->submodalidades);
+        }
+
         return redirect()->back()->with('success', 'Modalidad creada correctamente.');
     }
 
@@ -119,7 +128,7 @@ class ModalidadesController extends Controller
      */
     public function edit(string $id)
     {
-        $item = Modalidad::find($id);
+        $item = Modalidad::with('subModalidades')->find($id);
         return response()->json($item);
     }
 
@@ -141,11 +150,20 @@ class ModalidadesController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255|unique:modalidades,nombre,' . $item->id_modalidad . ',id_modalidad',
             'descripcion' => 'nullable|string|max:255',
+            'submodalidades' => 'nullable|array',
+
         ], $mensajes);
 
         $item->nombre = $request->nombre;
         $item->descripcion = $request->descripcion;
         $item->save();
+
+        // 🔹 Actualizar relaciones (sync reemplaza lo anterior)
+        if ($request->has('submodalidades')) {
+            $item->subModalidades()->sync($request->submodalidades);
+        } else {
+            $item->subModalidades()->detach(); // si no selecciona ninguna
+        }
 
         return redirect()->back()->with('success', 'Modalidad actualizada correctamente.');
     }
