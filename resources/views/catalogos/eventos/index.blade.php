@@ -21,8 +21,9 @@
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
-                <div class="table-responsive"  style="width: 100%; overflow-x: auto;">
-                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border" style="width: 100% !important;">
+                <div class="table-responsive" style="width: 100%; overflow-x: auto;">
+                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border"
+                        style="width: 100% !important;">
                         <thead class="table-light small">
                             <tr>
                                 <th class="text-center">Nombre</th>
@@ -158,6 +159,34 @@
                                             <div class="text-danger small mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label for="modalidades" class="form-label fw-semibold text-success">
+                                            <i class="bi bi-columns-gap me-2"></i> Modalidades
+                                        </label>
+
+                                        <div class="p-3 border rounded-3 bg-white shadow-sm"
+                                            style="max-height: 200px; overflow-y: auto;">
+                                            @forelse ($modalidades as $mod)
+                                                <div class="form-check form-check-sm mb-2">
+                                                    <input class="form-check-input" type="checkbox" name="modalidades[]"
+                                                        value="{{ $mod->id_modalidad }}"
+                                                        id="mod_{{ $mod->id_modalidad }}">
+                                                    <label class="form-check-label" for="mod_{{ $mod->id_modalidad }}">
+                                                        {{ $mod->nombre }}
+                                                    </label>
+                                                </div>
+                                            @empty
+                                                <div class="text-muted fst-italic">No hay modalidades disponibles.</div>
+                                            @endforelse
+                                        </div>
+
+                                        <div class="form-text mt-1">
+                                            <i class="bi bi-info-circle text-primary me-1"></i>
+                                            Selecciona una o más modalidades que estarán disponibles en el evento.
+                                        </div>
+                                    </div>
+
                                     <div class="row g-3">
                                         <h6 class="text-secondary fw-bold">Fechas de inscripciones</h6>
                                         <div class="col-md-6">
@@ -266,6 +295,26 @@
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
                                             style="display: none;"> <i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label d-block">Estado <span
+                                                class="text-danger">*</span></label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="editEstadoActivo" value="activo" checked>
+                                            <label class="form-check-label" for="editEstadoActivo">Activo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="editEstadoInactivo" value="inactivo">
+                                            <label class="form-check-label" for="editEstadoInactivo">Inactivo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="editEstadoFinalizado" value="finalizado">
+                                            <label class="form-check-label" for="editEstadoInactivo">Finalizado</label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="col-sm-6">
@@ -282,6 +331,39 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                        </div>
+                                        {{-- <h6 class="text-secondary fw-bold mb-2">Detalles del Evento</h6> --}}
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="editModalidades" class="form-label fw-semibold text-success">
+                                                    <i class="bi bi-columns-gap me-2"></i> Modalidades del Evento
+                                                </label>
+
+                                                <div class="p-3 border rounded-3 bg-white shadow-sm"
+                                                    style="max-height: 200px; overflow-y: auto;">
+                                                    @forelse ($modalidades as $mod)
+                                                        <div class="form-check form-check-sm mb-2">
+                                                            <input class="form-check-input editModalidadCheckbox"
+                                                                type="checkbox" name="modalidades[]"
+                                                                value="{{ $mod->id_modalidad }}"
+                                                                id="edit_mod_{{ $mod->id_modalidad }}">
+                                                            <label class="form-check-label"
+                                                                for="edit_mod_{{ $mod->id_modalidad }}">
+                                                                {{ $mod->nombre }}
+                                                            </label>
+                                                        </div>
+                                                    @empty
+                                                        <div class="text-muted fst-italic">No hay modalidades disponibles.
+                                                        </div>
+                                                    @endforelse
+                                                </div>
+
+                                                <div class="form-text mt-1">
+                                                    <i class="bi bi-info-circle text-primary me-1"></i>
+                                                    Puedes seleccionar o deseleccionar modalidades para este evento.
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <h6 class="text-secondary fw-bold">Fechas de inscripciones</h6>
 
@@ -312,26 +394,7 @@
                                                 name="fecha_final">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label d-block">Estado <span
-                                                    class="text-danger">*</span></label>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="estado"
-                                                    id="editEstadoActivo" value="activo" checked>
-                                                <label class="form-check-label" for="editEstadoActivo">Activo</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="estado"
-                                                    id="editEstadoInactivo" value="inactivo">
-                                                <label class="form-check-label" for="editEstadoInactivo">Inactivo</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="estado"
-                                                    id="editEstadoFinalizado" value="finalizado">
-                                                <label class="form-check-label"
-                                                    for="editEstadoInactivo">Finalizado</label>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -352,65 +415,65 @@
     <script src="{{ asset('js/gestion_eventos.js') }}"></script>
     <script src="{{ asset('js/datatable.js') }}"></script>
 
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-            // Configuración de columnas para la tabla de Eventos
-            let columnsConfig = [{
-                    data: "nombre",
-                    title: "Nombre del Evento"
-                },
-                {
-                    data: "descripcion",
-                    title: "Descripción"
-                },
-                {
-                    data: "tipo_evento",
-                    title: "Tipo",
-                    defaultContent: ""
-                },
-                {
-                    data: "fecha_inicio_inscripcion",
-                    title: "Inicio Ins.",
-                    render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
-                    }
-                },
-                {
-                    data: "fecha_final_inscripcion",
-                    title: "Fin Ins.",
-                    render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
-                    }
-                },
-                {
-                    data: "fecha_inicio",
-                    title: "Inicio",
-                    render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
-                    }
-                },
-                {
-                    data: "fecha_final",
-                    title: "Fin",
-                    render: function(data, type, row) {
-                        return data ? new Date(data).toLocaleDateString('es-ES') : '';
-                    }
-                },
-                {
-                    data: "estado",
-                    title: "Estado"
-                },
-                {
-                    data: "acciones",
-                    title: "Acciones",
-                    orderable: false,
-                    searchable: false,
-                    // Función para renderizar los botones de acción
-                    render: function(data, type, row) {
-                        let id_evento = row.id_evento;
+    @section('scripts')
+        <script>
+            $(document).ready(function() {
+                // Configuración de columnas para la tabla de Eventos
+                let columnsConfig = [{
+                        data: "nombre",
+                        title: "Nombre del Evento"
+                    },
+                    {
+                        data: "descripcion",
+                        title: "Descripción"
+                    },
+                    {
+                        data: "tipo_evento",
+                        title: "Tipo",
+                        defaultContent: ""
+                    },
+                    {
+                        data: "fecha_inicio_inscripcion",
+                        title: "Inicio Ins.",
+                        render: function(data, type, row) {
+                            return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                        }
+                    },
+                    {
+                        data: "fecha_final_inscripcion",
+                        title: "Fin Ins.",
+                        render: function(data, type, row) {
+                            return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                        }
+                    },
+                    {
+                        data: "fecha_inicio",
+                        title: "Inicio",
+                        render: function(data, type, row) {
+                            return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                        }
+                    },
+                    {
+                        data: "fecha_final",
+                        title: "Fin",
+                        render: function(data, type, row) {
+                            return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                        }
+                    },
+                    {
+                        data: "estado",
+                        title: "Estado"
+                    },
+                    {
+                        data: "acciones",
+                        title: "Acciones",
+                        orderable: false,
+                        searchable: false,
+                        // Función para renderizar los botones de acción
+                        render: function(data, type, row) {
+                            let id_evento = row.id_evento;
 
-                        return `
+                            return `
                          <div class="d-flex justify-content-center">
                             
                             <a href="#" class="btn btn-sm btn-warning me-1 rounded-pill btn-edit"
@@ -431,52 +494,52 @@
                             </form>
                          </div>
                         `;
+                        }
                     }
-                }
-            ];
+                ];
 
-            // Pintar headers dinámicamente
-            let headersRow = $('#tabla-headers');
-            headersRow.empty();
-            columnsConfig.forEach(col => {
-                headersRow.append(`<th class="text-center">${col.title}</th>`);
+                // Pintar headers dinámicamente
+                let headersRow = $('#tabla-headers');
+                headersRow.empty();
+                columnsConfig.forEach(col => {
+                    headersRow.append(`<th class="text-center">${col.title}</th>`);
+                });
+
+                // Inicializar DataTable
+                initDataTable({
+                    ajaxUrl: "{{ route('eventos.index') }}",
+                    columns: columnsConfig,
+                    rowId: 'id_evento'
+                });
+
+
             });
+        </script>
+    @endsection
 
-            // Inicializar DataTable
-            initDataTable({
-                ajaxUrl: "{{ route('eventos.index') }}",
-                columns: columnsConfig,
-                rowId: 'id_evento'
+    <script>
+        // SweetAlert para mensajes de sesión
+        @if (session('success'))
+            Swal.fire({
+                title: '¡Éxito!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#3085d6'
+                confirmButtonText: 'Aceptar'
             });
+        @endif
 
+        @if (session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonColor: '#3085d6'
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
 
-        });
+        // Pasa la URL de la ruta a una variable global para que el JS la use
+        const storeEventUrl = "{{ route('eventos.store') }}";
     </script>
-@endsection
-
-<script>
-    // SweetAlert para mensajes de sesión
-    @if (session('success'))
-        Swal.fire({
-            title: '¡Éxito!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonColor: '#3085d6'
-            confirmButtonText: 'Aceptar'
-        });
-    @endif
-
-    @if (session('error'))
-        Swal.fire({
-            title: 'Error',
-            text: "{{ session('error') }}",
-            icon: 'error',
-            confirmButtonColor: '#3085d6'
-            confirmButtonText: 'Aceptar'
-        });
-    @endif
-
-    // Pasa la URL de la ruta a una variable global para que el JS la use
-    const storeEventUrl = "{{ route('eventos.store') }}";
-</script>
 @endsection
