@@ -57,7 +57,7 @@
         {{-- Sección: Registro de Participantes --}}
         <div id="panelRegistro" class="card mb-4 shadow-sm baseCard" style="display: none;">
             <div class="card-header fw-semibold">
-                <i class="bi bi-person-plus me-2"></i> Registro de Participante
+                <i class="bi bi-person-plus me-2" id="lEditParticipante"></i> Registro de Participante
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -122,7 +122,7 @@
         <!-- contenedor donde van las copias -->
         <div id="contenedor"></div>
 
-        <div id="containerButton" class="mb-4 col-md-4 align-text-end" style="display: none;">
+        <div id="containerButton" class="mb-4 col-md-4 d-flex justify-content-end gap-2" style="display: none;">
             <button id="bInscribir" class="btn btn-outline-success w-100">
                 <i class="bi bi-plus-circle"></i> Inscribir
             </button>

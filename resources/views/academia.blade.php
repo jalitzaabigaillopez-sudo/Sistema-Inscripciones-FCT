@@ -326,7 +326,7 @@
 </head>
 
 <body>
-    {{-- <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}"> --}}
+    <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}">
 
     <!-- Sidebar -->
     <nav class="sidebar sidebar-hidden" id="sidebar">

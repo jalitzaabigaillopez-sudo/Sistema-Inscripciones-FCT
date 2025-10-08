@@ -219,9 +219,10 @@ class InscripcionController extends Controller
             ->get();
 
         $atletasInscripcion = $inscripciones->map(function ($inscripcion) {
-            $atleta = $inscripcion->atleta;
+            $atleta = $inscripcion->atleta->replicate(); // crea una copia del atleta original
 
-            // todos los datos
+            $atleta->id_atleta = $inscripcion->id_atleta;
+            $atleta->id_inscripcion = $inscripcion->id_inscripcion;
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
@@ -229,7 +230,6 @@ class InscripcionController extends Controller
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;
             $atleta->evento = $inscripcion->evento;
-
             $atleta->id_division = $inscripcion->categoria->id_division ?? null;
 
             return $atleta;
@@ -308,9 +308,10 @@ class InscripcionController extends Controller
             ->get();
 
         $atletasInscripcion = $inscripciones->map(function ($inscripcion) {
-            $atleta = $inscripcion->atleta;
+            $atleta = $inscripcion->atleta->replicate(); // crea una copia del atleta original
 
-            // todos los datos
+            $atleta->id_atleta = $inscripcion->id_atleta;
+            $atleta->id_inscripcion = $inscripcion->id_inscripcion;
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
@@ -318,7 +319,6 @@ class InscripcionController extends Controller
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;
             $atleta->evento = $inscripcion->evento;
-
             $atleta->id_division = $inscripcion->categoria->id_division ?? null;
 
             return $atleta;
@@ -339,7 +339,7 @@ class InscripcionController extends Controller
 
         if ($inscripcion) {
             $inscripcion->delete();
-             return redirect()->back();
+            return redirect()->back();
         }
 
         return response()->json(['success' => true, 'msg' => 'No se pudo eliminar esta inscripcion']);
