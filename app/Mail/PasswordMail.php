@@ -56,4 +56,20 @@ class PasswordMail extends Mailable
     {
         return [];
     }
+
+    public function build()
+{
+    return $this->view('emails.password_mail')
+        ->subject('Restablecimiento de Contraseña - FCT')
+        ->with([
+            'usuario' => $this->usuario,
+            'contraseñaTemporal' => $this->contraseñaTemporal,
+            'url' => $this->url,
+        ])
+        ->attach(public_path('images/LogoFCT_transpa.png'), [
+            'as' => 'logo.png',
+            'mime' => 'image/png',
+        ]);
+}
+
 }

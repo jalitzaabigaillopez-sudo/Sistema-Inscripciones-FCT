@@ -19,18 +19,12 @@
 
     <style>
         .header-image {
-            background: linear-gradient(to bottom, rgba(0, 0, 128, 0.8), rgba(0, 0, 128, 0.5)),
-                url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
+            background-color: #000080;
+            height: 110px;
+            background-image: url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
             background-size: cover;
             background-position: center;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            opacity: 0.7;
         }
 
         .footer {
@@ -117,8 +111,6 @@
 
     <div class="container py-5">
         <div class="custom-card">
-
-
             <div class="p-4 text-center">
                 <img src="{{ asset('images/LogoFCT_transpa.png') }}" class="mx-auto mb-4" alt="Logo FCT"
                     style="max-height: 60px;">
@@ -161,39 +153,64 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         document.getElementById('resetForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Evita recargar la página
 
-            const email = document.getElementById('correo').value;
+            const form = e.target;
+            const formData = new FormData(form);
 
-            const isSuccess = true;
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Por favor espere unos segundos.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-            if (isSuccess) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    html: `Su contraseña temporal ha sido enviada a <b>${email}</b>.`,
-                    confirmButtonText: 'Aceptar',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    customClass: {
-                        confirmButton: 'btn btn-primary'
+            fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: data.message,
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#222A59'
+                        }).then(() => {
+                            form.reset();
+                        });
+                    } else if (data.status === 'error') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message,
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#6b7280'
+                        });
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error inesperado',
+                        text: 'Ha ocurrido un problema en el servidor. Por favor, intente nuevamente.',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#6b7280'
+                    });
                 });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un problema. Por favor, intenta de nuevo más tarde.',
-                    confirmButtonText: 'Aceptar',
-                    customClass: {
-                        confirmButton: 'btn btn-secondary'
-                    }
-                });
-            }
         });
     </script>
+
 
 </body>
 

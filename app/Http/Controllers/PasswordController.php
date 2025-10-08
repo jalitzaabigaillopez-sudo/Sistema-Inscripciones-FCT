@@ -23,7 +23,10 @@ class PasswordController extends Controller
         // Verificar que exista el usuario
         $usuario = Usuario::where('email', $request['correo'])->first();
         if (!$usuario) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+             return response()->json([
+            'status' => 'error',
+            'message' => 'El correo ingresado no está registrado en el sistema.'
+        ], 404);
         }
 
         // Generara contraseña temporal
@@ -32,32 +35,38 @@ class PasswordController extends Controller
 
         // Verificar que NO EXISTA una contraseña temporal vigente de este usuario
         $contraseñaTemporal = ContraseñaTemporal::where('id_usuario', $usuario->id_usuario)->where('vigente', 'si')->first();
-        if($contraseñaTemporal){
-            return response()->json(['error' => 'No es posible continuar ahora mismo, intentelo de nuevo más tarde.'], 401);   
+        if ($contraseñaTemporal) {
+             return response()->json([
+            'status' => 'error',
+            'message' => 'Ya existe una solicitud de contraseña temporal activa. Inténtelo de nuevo más tarde.'
+        ], 401);
         }
-        
+
         // Crear el registro de la nueva contraseña temporal
         $contraseñaTemporal = new ContraseñaTemporal();
-        $contraseñaTemporal->id_usuario = $usuario->id_usuario;  
-        $contraseñaTemporal->password_temporal = $temporalPass;//contraseña temporal
+        $contraseñaTemporal->id_usuario = $usuario->id_usuario;
+        $contraseñaTemporal->password_temporal = $temporalPass; //contraseña temporal
 
-        $fecha_creacion = Carbon::now('America/Costa_Rica'); 
-        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')); 
-        $contraseñaTemporal->fecha_creacion = $fecha_creacion;  
+        $fecha_creacion = Carbon::now('America/Costa_Rica');
+        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña'));
+        $contraseñaTemporal->fecha_creacion = $fecha_creacion;
 
-        $contraseñaTemporal->fecha_expiracion = $fecha_expiracion; 
-        $contraseñaTemporal->vigente = 'si'; 
+        $contraseñaTemporal->fecha_expiracion = $fecha_expiracion;
+        $contraseñaTemporal->vigente = 'si';
         $contraseñaTemporal->save();
 
         // url que llevara a la ventana de cambio de contraseña al usuario
-         $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
+        $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
 
         // Enviar correo usando una clase Mailable
         Mail::to($usuario->email)->send(new PasswordMail($usuario, $contraseñaTemporal, $url));
 
         // Redirigir al login :_ Falta alertas de avisos
-        return redirect()->back();
-    } 
+        return response()->json([
+        'status' => 'success',
+        'message' => 'Se ha enviado una contraseña temporal a su correo electrónico.'
+    ]); 
+    }
 
     /**
      * SHOW
@@ -75,9 +84,9 @@ class PasswordController extends Controller
     public function cambiarContraseña(Request $request)
     {
         $validateData = $request->validate([
-                'temporaryPassword' => 'required|string',
-                'password' => 'required|string|min:8|max:16',
-        ]); 
+            'temporaryPassword' => 'required|string',
+            'password' => 'required|string|min:8|max:16',
+        ]);
 
         // Verificar que el usuario exista
         $id = $request['id_usuario'];
@@ -101,15 +110,15 @@ class PasswordController extends Controller
                 $contraseñaTemporal->vigente = 'no';
                 $contraseñaTemporal->save();
                 return response()->json(['error' => 'Su contraseña temporal ha expirado.'], 401);
-            } 
-            $usuario->password = $validateData['password']; 
+            }
+            $usuario->password = $validateData['password'];
             $usuario->save();
 
             $contraseñaTemporal->vigente = 'no';
             $contraseñaTemporal->save();
 
             return redirect()->route('login');
-        }else {
+        } else {
             return response()->json(['error' => 'Contraseña temporal no coincide'], 401);
         }
 
@@ -132,9 +141,9 @@ class PasswordController extends Controller
     public function cambiarContraseñaVencida(Request $request)
     {
         $validateData = $request->validate([
-                'nuevaContraseña' => 'required|string|min:8|max:16',
-                'confirmarNuevaContraseña' => 'required|string|min:8|max:16',
-        ]); 
+            'nuevaContraseña' => 'required|string|min:8|max:16',
+            'confirmarNuevaContraseña' => 'required|string|min:8|max:16',
+        ]);
 
         // Verificar que el usuario exista
         $id = $request['id_usuario'];
@@ -143,7 +152,7 @@ class PasswordController extends Controller
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
 
-        if($validateData['nuevaContraseña'] !== $validateData['confirmarNuevaContraseña']){
+        if ($validateData['nuevaContraseña'] !== $validateData['confirmarNuevaContraseña']) {
             return response()->json(['error' => 'Verifique su contraseña.'], 401);
         }
 
@@ -153,8 +162,7 @@ class PasswordController extends Controller
 
         $usuario->password = $validateData['nuevaContraseña'];
         $usuario->password_vencimiento = config('ConfiguracionFCT._vencimiento_contraseña');
-        $usuario->save(); 
+        $usuario->save();
         return redirect()->route('login');
     }
-
 }
