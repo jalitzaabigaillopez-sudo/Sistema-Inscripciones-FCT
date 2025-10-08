@@ -92,9 +92,9 @@ Route::view('/perfil-academia', 'academia.perfil-academia')->name('academia.perf
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas
-
-
 Route::resource('/registro-atletas', RegistroAtletasController::class);
+
+
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
