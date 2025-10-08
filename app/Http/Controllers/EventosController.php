@@ -17,19 +17,18 @@ class EventosController extends Controller
      */
     public function index(Request $request)
     {
-        // Actualizar estado de eventos finalizados automáticamente
+        //  Actualizar estado de eventos finalizados automáticamente
         Evento::where('estado', 'activo')
             ->where('fecha_final', '<', now())
             ->update(['estado' => 'finalizado']);
 
-        // Si es petición AJAX para DataTables
+        //  Si es una petición AJAX (DataTables)
         if ($request->ajax()) {
-            $query = Evento::with('tipoEvento'); // Cargar relación
+            $query = Evento::with(['tipoEvento', 'modalidades']); // Cargar relaciones
 
-            $query->orderBy('id_evento', 'desc'); // más reciente primero
+            $query->orderBy('fecha_inicio', 'desc'); //Evento más próximo
 
-
-            // Columnas permitidas para búsqueda y ordenamiento
+            //  Columnas permitidas para búsqueda y ordenamiento
             $allowedColumns = [
                 'nombre',
                 'descripcion',
@@ -40,7 +39,7 @@ class EventosController extends Controller
                 'estado'
             ];
 
-            // Búsqueda global
+            //  Búsqueda global
             if ($request->has('search') && !empty($request->search['value'])) {
                 $search = $request->search['value'];
                 $query->where(function ($q) use ($search, $allowedColumns) {
@@ -48,18 +47,23 @@ class EventosController extends Controller
                         $q->orWhere($column, 'like', "%{$search}%");
                     }
 
-                    // Buscar también en el nombre del tipo de evento
+                    // Buscar también por tipo de evento
                     $q->orWhereHas('tipoEvento', function ($q2) use ($search) {
                         $q2->where('nombre', 'like', "%{$search}%");
+                    });
+
+                    // Buscar también por nombre de modalidad
+                    $q->orWhereHas('modalidades', function ($q3) use ($search) {
+                        $q3->where('nombre', 'like', "%{$search}%");
                     });
                 });
             }
 
-            // Total de registros filtrados
+            //  Totales
             $recordsFiltered = $query->count();
             $totalRecords = Evento::count();
 
-            // Ordenamiento
+            //  Ordenamiento dinámico
             if ($request->has('order') && count($request->order) > 0) {
                 $orderColumnIndex = $request->order[0]['column'];
                 $orderDirection = $request->order[0]['dir'];
@@ -68,30 +72,49 @@ class EventosController extends Controller
                 if (in_array($orderColumnName, $allowedColumns)) {
                     $query->orderBy($orderColumnName, $orderDirection);
                 } elseif ($orderColumnName === 'tipo_evento') {
-                    // Ordenar por relación tipoEvento
                     $query->join('tipo_eventos', 'eventos.id_tipo_evento', '=', 'tipo_eventos.id_tipo_evento')
                         ->orderBy('tipo_eventos.nombre', $orderDirection)
                         ->select('eventos.*');
                 }
             }
 
-            // Paginación
+            //  Paginación
             $start = $request->input('start', 0);
             $length = $request->input('length', 10);
             $data = $query->skip($start)->take($length)->get();
 
-            // Formatear datos
+            //  Formatear datos
             $formattedData = $data->map(function ($item) {
+                // Modalidades: mostrar máximo 2 y resto en tooltip
+                if ($item->modalidades->isEmpty()) {
+                    $modalidadesList = '<span class="text-muted fst-italic">Sin modalidades</span>';
+                } else {
+                    $names = $item->modalidades->pluck('nombre')->toArray();
+                    $visible = array_slice($names, 0, 2);
+                    $hidden = array_slice($names, 2);
+
+                    $modalidadesList = '<div class="d-inline-block">';
+                    $modalidadesList .= implode(', ', array_map('e', $visible));
+
+                    if (count($hidden) > 0) {
+                        $tooltip = e(implode(', ', $hidden));
+                        $modalidadesList .= ' <span class="text-primary fw-bold" data-bs-toggle="tooltip" title="' . $tooltip . '">+' . count($hidden) . '</span>';
+                    }
+
+                    $modalidadesList .= '</div>';
+                }
+
                 return [
                     'id_evento' => $item->id_evento,
                     'nombre' => $item->nombre,
                     'descripcion' => $item->descripcion,
-                    'fecha_inicio_inscripcion' => $item->fecha_inicio_inscripcion ? \Carbon\Carbon::parse($item->fecha_inicio_inscripcion)->format('m/d/Y') : '',
-                    'fecha_final_inscripcion' => $item->fecha_final_inscripcion ? \Carbon\Carbon::parse($item->fecha_final_inscripcion)->format('m/d/Y') : '',
-                    'fecha_inicio' => $item->fecha_inicio ? \Carbon\Carbon::parse($item->fecha_inicio)->format('m/d/Y') : '',
-                    'fecha_final' => $item->fecha_final ? \Carbon\Carbon::parse($item->fecha_final)->format('m/d/Y') : '',
+                    'fecha_inicio_inscripcion' => $item->fecha_inicio_inscripcion ? \Carbon\Carbon::parse($item->fecha_inicio_inscripcion)->format('Y/m/d') : '',
+                    'fecha_final_inscripcion' => $item->fecha_final_inscripcion ? \Carbon\Carbon::parse($item->fecha_final_inscripcion)->format('Y/m/d') : '',
+                    'fecha_inicio' => $item->fecha_inicio ? \Carbon\Carbon::parse($item->fecha_inicio)->format('Y/m/d') : '',
+                    'fecha_final' => $item->fecha_final ? \Carbon\Carbon::parse($item->fecha_final)->format('Y/m/d') : '',
                     'estado' => $item->estado,
                     'tipo_evento' => $item->tipoEvento->nombre ?? 'N/A',
+                    'modalidades' => $modalidadesList, // 👈 aquí se agrega
                     'acciones' => $item->id_evento,
                 ];
             });
@@ -104,12 +127,13 @@ class EventosController extends Controller
             ]);
         }
 
-        // Para la carga inicial de la vista
+        //  Para la carga inicial de la vista
         $tipoEvento = TipoEvento::all();
         $modalidades = Modalidad::with('submodalidades')->get();
 
         return view('catalogos.eventos.index', compact('tipoEvento', 'modalidades'));
     }
+
 
     /**
      * Show the form for creating a new resource.

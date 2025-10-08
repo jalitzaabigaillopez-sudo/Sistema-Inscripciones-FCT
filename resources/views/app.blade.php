@@ -309,6 +309,21 @@
         .breadcrumb-item+.breadcrumb-item::before {
             color: var(--text-light);
         }
+
+        .table-responsive {
+    overflow: visible !important;
+}
+
+/* Garantiza que el header se mantenga alineado */
+.dataTables_wrapper .dataTables_scrollHead {
+    overflow: visible !important;
+}
+
+/* Evita que el scroll rompa el ancho */
+.dataTables_wrapper .dataTables_scrollBody {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
     </style>
 </head>
 
@@ -367,7 +382,7 @@
                     </a>
                     <a href="{{ route('submodalidades.index') }}" onclick="handleSidebarClick(event)"
                         class="text-white">
-                        <i class="bi bi-columns-gap me-2"></i> SubModalidades
+                        <i class="bi bi-grid-3x2-gap me-2"></i> SubModalidades
                     </a>
                     <a href="{{ route('usuarios.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-people me-2"></i> Usuarios

@@ -1,4 +1,4 @@
-@if(request()->has('session_expired'))
+@if (request()->has('session_expired'))
     <div class="alert alert-warning">
         Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.
     </div>
@@ -84,11 +84,11 @@
     <div class="container p-5">
         <div class="row centered-row">
             <div class="col-md-6 login-container me-3">
-                <div class="card" style="height: 530px;">
+                <div class="card" style="height: 450px;">
                     <div class="card-body shadow-lg">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
-                        <form action="{{ route('login.process') }}" method="POST">
+                        <form id="loginForm" action="{{ route('login.process') }}" method="POST">
                             @csrf
                             <div class="mb-3 p-1">
                                 <label for="email" class="form-label">Correo</label>
@@ -112,13 +112,13 @@
 
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
-                            <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
+                            {{-- <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> --> --}}
 
 
 
                             <div class="mt-3 text-center">
                                 <span>¿No tienes una cuenta? </span>
-                                <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Solicitar</a>
+                                {{-- <a href="{{ route('academia.preregistro.form') }}" class="link-primary">Solicitar</a> --}}
                             </div>
                         </form>
                     </div>
@@ -135,12 +135,16 @@
     <!-- use bootstrap 5.3.7 -->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // VISUALIZAR CONTRA CON OJO
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+
+            /* ============================================================
+               👁️ VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
+            ============================================================ */
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -151,6 +155,98 @@
                         icon.classList.replace('bi-eye-slash', 'bi-eye');
                     }
                 });
+            });
+
+
+            /* ============================================================
+                ENVÍO DEL FORMULARIO DE LOGIN CON FETCH + SWEETALERT
+            ============================================================ */
+            const form = document.querySelector('#loginForm');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                // Mostrar loader
+                Swal.fire({
+                    title: 'Verificando...',
+                    text: 'Por favor, espere un momento.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        },
+                        body: formData
+                    })
+                    .then(async response => {
+                        Swal.close();
+
+                        const data = await response.json().catch(() => null);
+
+                        if (!data) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error inesperado',
+                                text: 'No se pudo procesar la respuesta del servidor.'
+                            });
+                            return;
+                        }
+
+                        switch (data.status) {
+                            case 'success':
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Bienvenido!',
+                                    text: data.message,
+                                    confirmButtonText: 'Entrar'
+                                }).then(() => {
+                                    window.location.href = data.redirect;
+                                });
+                                break;
+
+                            case 'redirect':
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Contraseña vencida',
+                                    text: data.message,
+                                    confirmButtonText: 'Actualizar ahora'
+                                }).then(() => {
+                                    window.location.href = data.redirect;
+                                });
+                                break;
+
+                            case 'error':
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.error,
+                                    confirmButtonText: 'Aceptar'
+                                });
+                                break;
+
+                            default:
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error desconocido',
+                                    text: 'Respuesta no reconocida del servidor.'
+                                });
+                                break;
+                        }
+                    })
+                    .catch(error => {
+                        Swal.close();
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de conexión',
+                            text: 'Ocurrió un problema al comunicarse con el servidor. Intente nuevamente.'
+                        });
+                    });
             });
         });
     </script>

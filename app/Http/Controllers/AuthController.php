@@ -11,7 +11,6 @@ class AuthController extends Controller
 {
     public function verificarUsuario(Request $request)
     {
-        // VERIFICAR DATOS  DE ENTRADA
         $validateData = $request->validate([
             'email' => 'required|string|max:255',
             'password' => 'required|string|min:8|max:16',
@@ -22,33 +21,53 @@ class AuthController extends Controller
 
         $usuario = Usuario::where('email', $correo)->first();
 
-        // Verificar que exista el usuario
+        // No existe el usuario
         if (!$usuario) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+            return response()->json([
+                'status' => 'error',
+                'error' => 'Usuario no encontrado.'
+            ], 404);
         }
 
-        // Verificar que la contraseña sea igual a la proporcionada
-        if ($password === $usuario->password) {
-
-            // Verificar que la contraseña no haya vencido
-            if ($usuario->password_vencimiento > 0) {
-
-                // Verificar que el usuario este activo
-                if (!$usuario->estado === 'activo') {
-                    return response()->json(['error' => 'Este usuario no se encuentra activo actualmente.'], 401);
-                }
-
-                $request->session()->put('usuario', $usuario->id_usuario); // colocar usuario en sesion
-                return redirect()->route('dashboard');
-            } else {
-                // Contraseña vencida
-                $urlFirmada = URL::temporarySignedRoute('vista.cambiarContraseñaVencida', now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')), ['id' => $usuario->id_usuario]);
-                return redirect($urlFirmada);
-            }
-        } else {
-            return response()->json(['error' => 'Contraseña incorrecta'], 401);
+        //  Contraseña incorrecta
+        if ($password !== $usuario->password) {
+            return response()->json([
+                'status' => 'error',
+                'error' => 'Contraseña incorrecta.'
+            ], 401);
         }
+
+        //  Usuario inactivo
+        if ($usuario->estado !== 'activo') {
+            return response()->json([
+                'status' => 'error',
+                'error' => 'Este usuario no se encuentra activo actualmente.'
+            ], 403);
+        }
+
+        //  Contraseña vencida
+        if ($usuario->password_vencimiento <= 0) {
+            $urlFirmada = URL::temporarySignedRoute(
+                'vista.cambiarContraseñaVencida',
+                now()->addMinutes(config('ConfiguracionFCT._expiracion_cambio_contraseña')),
+                ['id' => $usuario->id_usuario]
+            );
+            return response()->json([
+                'status' => 'redirect',
+                'message' => 'Tu contraseña ha expirado. Debes actualizarla antes de continuar.',
+                'redirect' => $urlFirmada
+            ]);
+        }
+
+        //  Login correcto
+        $request->session()->put('usuario', $usuario->id_usuario);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Inicio de sesión exitoso.',
+            'redirect' => route('dashboard')
+        ]);
     }
+
 
     /**
      * 

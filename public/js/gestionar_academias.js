@@ -62,6 +62,145 @@ $('#modalAcademia').on('hidden.bs.modal', function () {
     $('#distritoAcademia').html('<option value="" disabled selected>Seleccione un distrito...</option>');
 });
 
+// ============================================
+// 🖼️ LÓGICA DE VISTA PREVIA Y ELIMINACIÓN DE IMAGEN EN CREAR
+// ============================================
+document.addEventListener('DOMContentLoaded', function () {
+    const crearModal = document.getElementById("modalAcademia");
+    if (crearModal) {
+        setupImagePreview(crearModal);
+    }
+
+    // Reiniciar imagen al cerrar el modal de creación
+    $('#modalAcademia').on('hidden.bs.modal', function () {
+        const previewImage = $(this).find('.previewImage');
+        const previewText = $(this).find('.previewText');
+        const removeBtn = $(this).find('.removeImageBtn');
+        const inputFile = $(this).find('#fotoAcademiaCrear');
+
+        // Reinicia la vista previa y los valores
+        previewImage.attr('src', '').hide();
+        previewText.text('Sin foto').show();
+        removeBtn.hide();
+        inputFile.val('');
+    });
+});
+
+// ============================================
+// 🧾 Envío del formulario de creación por AJAX
+// ============================================
+$(document).ready(function () {
+    $('#formCrearAcademia').on('submit', function (e) {
+        e.preventDefault(); // ❌ Evita el submit tradicional (no recarga)
+
+        let form = $(this);
+        let actionUrl = form.attr('action');
+        let formData = new FormData(this);
+
+        // Mostrar cargando
+        Swal.fire({
+            title: 'Procesando...',
+            text: 'Por favor, espera unos segundos',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: actionUrl,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: response.message || 'La academia se ha registrado correctamente.',
+                    confirmButtonColor: '#198754',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    $('#modalAcademia').modal('hide');
+                    form[0].reset();
+                    window.location.reload();
+                });
+            },
+            error: function (xhr) {
+                Swal.close(); // Cierra el "Procesando..."
+
+                if (xhr.status === 422) {
+                    // ⚠️ Errores de validación
+                    let errors = xhr.responseJSON.errors;
+                    let errorList = '';
+                    Object.values(errors).forEach(msgArr => {
+                        msgArr.forEach(msg => errorList += '• ' + msg + '\n');
+                    });
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Errores en el formulario',
+                        text: errorList,
+                        confirmButtonColor: '#ffc107',
+                        confirmButtonText: 'Corregir'
+                    });
+
+                } else {
+                    // ❌ Error general
+                    let msg = xhr.responseJSON?.error || 'Ocurrió un error inesperado. Inténtalo nuevamente.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg,
+                        confirmButtonColor: '#dc3545',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            }
+        });
+    });
+});
+
+
+// ============================================
+// 🧩 FUNCIÓN COMPARTIDA setupImagePreview()
+// ============================================
+function setupImagePreview(modalElement) {
+    const inputFile = modalElement.querySelector(".fotoAcademiaInput");
+    const previewImage = modalElement.querySelector(".previewImage");
+    const previewText = modalElement.querySelector(".previewText");
+    const removeBtn = modalElement.querySelector(".removeImageBtn");
+
+    if (inputFile && previewImage && previewText && removeBtn) {
+        inputFile.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = "block";
+                    previewText.style.display = "none";
+                    removeBtn.style.display = "inline-block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeBtn.addEventListener("click", function () {
+            previewImage.src = "";
+            previewImage.style.display = "none";
+            previewText.style.display = "block";
+            removeBtn.style.display = "none";
+            inputFile.value = "";
+            console.log('Imagen removida antes de guardar.');
+        });
+    } else {
+        console.error('⚠️ Elementos de vista previa de imagen no encontrados en el modal:', modalElement.id);
+    }
+}
 
 
 
@@ -97,87 +236,81 @@ $(document).ready(function () {
     });
 
     // Handle edit button click to populate the modal
-    $('.btn-edit').click(function () {
-        var academiaId = $(this).data('id');
-        var form = $('#formEditarAcademia');
+  $(document).on('click', '.btn-edit', function (e) {
+    e.preventDefault();
 
-        // Limpiar el formulario y resetear los selects
-        form[0].reset();
-        $('#cantonAcademiaEditar').html('<option value="" disabled selected>Seleccione un cantón...</option>');
-        $('#distritoAcademiaEditar').html('<option value="" disabled selected>Seleccione un distrito...</option>');
+    const academiaId = $(this).data('id');
+    const form = $('#formEditarAcademia');
 
-        // Reiniciar elementos de la imagen antes de cargar nuevos datos
-        const previewImage = $('#modalEditarAcademia').find('.previewImage');
-        const previewText = $('#modalEditarAcademia').find('.previewText');
-        const removeBtn = $('#modalEditarAcademia').find('.removeImageBtn');
-        const inputFile = $('#modalEditarAcademia').find('#fotoAcademiaEditar');
-        const removeImagenInput = $('#modalEditarAcademia').find('#removeImagen');
+    console.log('🟢 Editar academia ID:', academiaId);
 
-        previewImage.attr('src', '').css('display', 'none');
-        previewText.text('Sin foto').css('display', 'block');
-        removeBtn.css('display', 'none');
-        inputFile.val('');
-        removeImagenInput.val('0');
+    // Resetear form e imagen antes de cargar datos
+    form[0].reset();
+    $('#cantonAcademiaEditar').html('<option value="" disabled selected>Seleccione un cantón...</option>');
+    $('#distritoAcademiaEditar').html('<option value="" disabled selected>Seleccione un distrito...</option>');
 
-        // AJAX request to fetch academy data
-        $.ajax({
-            url: '/academias/' + academiaId + '/edit',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                // Populate form fields
-                $('#nombreAcademiaEditar').val(data.nombre);
-                $('#profesorAcademiaEditar').val(data.profesor_encargado);
-                $('#telefonoAcademiaEditar').val(data.telefono);
-                $('#correoAcademiaEditar').val(data.correo);
-                $('#direccionAcademiaEditar').val(data.direccion);
+    const previewImage = $('#modalEditarAcademia').find('.previewImage');
+    const previewText = $('#modalEditarAcademia').find('.previewText');
+    const removeBtn = $('#modalEditarAcademia').find('.removeImageBtn');
+    const inputFile = $('#modalEditarAcademia').find('#fotoAcademiaEditar');
+    const removeImagenInput = $('#modalEditarAcademia').find('#removeImagen');
 
-                var estadoDB = data.estado.toLowerCase();
-                $('input[name="estado"][value="' + estadoDB + '"]').prop('checked', true);
+    previewImage.hide();
+    previewText.text('Sin foto').show();
+    removeBtn.hide();
+    inputFile.val('');
+    removeImagenInput.val('0');
 
-                // Populate image preview
-                previewText.text('Sin foto');
-                if (data.imagen && data.imagen !== '') {
-                    previewImage.attr('src', '/storage/' + data.imagen).css('display', 'block');
-                    previewText.css('display', 'none');
-                    removeBtn.css('display', 'inline-block');
-                } else {
-                    previewImage.attr('src', '').css('display', 'none');
-                    previewText.css('display', 'block');
-                    removeBtn.css('display', 'none');
-                }
-                inputFile.val('');
-                removeImagenInput.val('0');
+    // AJAX para obtener los datos
+    $.ajax({
+        url: '/academias/' + academiaId + '/edit',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            console.log('✅ Datos cargados:', data);
 
-                // Populate location fields
-                var provinciaId = data.distrito.canton.provincia.id_provincia;
-                var cantonId = data.distrito.canton.id_canton;
-                var distritoId = data.id_distrito;
+            $('#nombreAcademiaEditar').val(data.nombre);
+            $('#profesorAcademiaEditar').val(data.profesor_encargado);
+            $('#telefonoAcademiaEditar').val(data.telefono);
+            $('#correoAcademiaEditar').val(data.correo);
+            $('#direccionAcademiaEditar').val(data.direccion);
 
-                $('#provinciaAcademiaEditar').val(provinciaId);
+            $('input[name="estado"][value="' + data.estado.toLowerCase() + '"]').prop('checked', true);
 
-                loadCantones(provinciaId, function () {
-                    $('#cantonAcademiaEditar').val(cantonId);
-                    loadDistritos(cantonId, function () {
-                        $('#distritoAcademiaEditar').val(distritoId);
-                    });
-                });
-
-                // Set form action and show modal
-                form.attr('action', '/academias/' + academiaId);
-                $('#modalEditarAcademia').modal('show');
-            },
-            error: function (xhr) {
-                console.error('Error al cargar los datos:', xhr.responseText);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'No se pudieron cargar los datos de la academia.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
+            if (data.imagen && data.imagen !== '') {
+                previewImage.attr('src', '/storage/' + data.imagen).show();
+                previewText.hide();
+                removeBtn.show();
             }
-        });
+
+            const provinciaId = data.distrito.canton.provincia.id_provincia;
+            const cantonId = data.distrito.canton.id_canton;
+            const distritoId = data.id_distrito;
+
+            $('#provinciaAcademiaEditar').val(provinciaId);
+            loadCantones(provinciaId, function () {
+                $('#cantonAcademiaEditar').val(cantonId);
+                loadDistritos(cantonId, function () {
+                    $('#distritoAcademiaEditar').val(distritoId);
+                });
+            });
+
+            // ✅ Actualizar action y mostrar modal
+            form.attr('action', '/academias/' + academiaId);
+            $('#modalEditarAcademia').modal('show');
+        },
+        error: function (xhr) {
+            console.error('❌ Error al cargar datos:', xhr.responseText);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudieron cargar los datos de la academia.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
     });
+});
+
 
     // Handle form submission with FormData
     $('#formEditarAcademia').on('submit', function (e) {
@@ -205,6 +338,7 @@ $(document).ready(function () {
                     title: '¡Éxito!',
                     text: response.message,
                     icon: 'success',
+                    confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
                     $('#modalEditarAcademia').modal('hide');
@@ -229,6 +363,7 @@ $(document).ready(function () {
                     title: 'Error',
                     html: errorMessage,
                     icon: 'error',
+                    confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Aceptar'
                 });
             }

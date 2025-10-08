@@ -23,80 +23,204 @@ use Illuminate\Support\Facades\Validator;
 class AcademiaController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Academia::with('distrito.canton.provincia')->get();
+        // Si la petición viene desde DataTables (AJAX)
+        if ($request->ajax()) {
+            $query = Academia::with(['usuario', 'distrito.canton.provincia']);
+
+            // Búsqueda global (por nombre, encargado, correo, teléfono, dirección, provincia, cantón, distrito)
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('profesor_encargado', 'like', "%{$search}%")
+                        ->orWhere('correo', 'like', "%{$search}%")
+                        ->orWhere('telefono', 'like', "%{$search}%")
+                        ->orWhere('direccion', 'like', "%{$search}%")
+                        ->orWhereHas('distrito.canton.provincia', function ($p) use ($search) {
+                            $p->where('nombre', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('distrito.canton', function ($c) use ($search) {
+                            $c->where('nombre', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('distrito', function ($d) use ($search) {
+                            $d->where('nombre', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+            // Conteo total
+            $recordsFiltered = $query->count();
+            $totalRecords = Academia::count();
+
+            // Ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                if (in_array($orderColumnName, ['nombre', 'correo', 'telefono', 'estado'])) {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                }
+            }
+
+            // Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $academias = $query->skip($start)->take($length)->get();
+
+            // Formateo de datos
+            $formattedData = [];
+            foreach ($academias as $a) {
+                $ubicacion = $a->distrito
+                    ? "{$a->distrito->canton->provincia->nombre}, {$a->distrito->canton->nombre}, {$a->distrito->nombre}"
+                    : '<span class="text-muted">Sin ubicación</span>';
+
+                $estado = match ($a->estado) {
+                    'activo' => '<span class="badge bg-success rounded-pill">Activo</span>',
+                    'inactivo' => '<span class="badge bg-danger rounded-pill">Inactivo</span>',
+                    default => '<span class="badge bg-secondary rounded-pill">Pendiente</span>',
+                };
+
+                $acciones = '
+                        <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-warning rounded-pill btn-edit" data-id="' . $a->id_academia . '" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger rounded-pill" onclick="confirmarEliminacion(' . $a->id_academia . ')" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                </button>
+                 </div>';
+
+                $formattedData[] = [
+                    'nombre' => e($a->nombre),
+                    'profesor_encargado' => e($a->profesor_encargado),
+                    'correo' => e($a->correo),
+                    'telefono' => e($a->telefono),
+                    'usuario' => e($a->usuario->nombre_completo ?? '—'),
+                    'ubicacion' => $ubicacion,
+                    'direccion' => e($a->direccion),
+                    'estado' => $estado,
+                    'acciones' => $acciones,
+                ];
+            }
+
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
+        // Carga normal (no AJAX)
         $provincias = Provincia::all();
-        return view('catalogos.academias.index', compact('data', 'provincias'));
+        return view('catalogos.academias.index', compact('provincias'));
     }
+
 
     //####################################### SOLO ADMINISTRADOR ############################################
     public function pre_registroAcademia(Request $request)
     {
-        
-        // VERIFICAR DATOS  DE ENTRADA
-        $validateData = $request->validate([
-            // usuario
-            'profesor_encargado' => 'required|string', //encargado de academia
-            'email' => 'required|string|email',
-            // 'password' => 'required|string',
-            // 'rol' => 'required|string|in:administrador,academia,arbitro',
-            // 'estado' => 'required|string|in:activo,inactivo,pendiente',
 
-            // academia
-            'nombre' => 'required|string', //nombre de academia
-            'direccion' => 'required|string',
-            'telefono' => 'required|string',
-            'distrito_id' => 'required',
-        ]);
+        try {
+            // VERIFICAR DATOS  DE ENTRADA
+            $validateData = $request->validate([
+                // usuario
+                'profesor_encargado' => 'required|string', //encargado de academia
+                'email' => 'required|string|email',
+                // 'password' => 'required|string',
+                // 'rol' => 'required|string|in:administrador,academia,arbitro',
+                // 'estado' => 'required|string|in:activo,inactivo,pendiente',
 
-        // Generar contraseña temporal
-        $generator = new PasswordGenerator();
-        $temporalPass = $generator->generate(12);
+                // academia
+                'nombre' => 'required|string', //nombre de academia
+                'direccion' => 'required|string',
+                'telefono' => 'required|string',
+                'distrito_id' => 'required',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', // 10MB máx
+            ]);
 
-        // Guardar el usuario academia como inactivo
-        $usuario = Usuario::create([
-            // 'identificacion' => $validateData['identificacion'], //se puede completar despues si no se sabe
-            'nombre_completo' => $validateData['profesor_encargado'], //encargado de academia
-            'email' => $validateData['email'], //c
-            'password' => $temporalPass, //contraseña temporal
-            'rol' => 'academia',
-            'estado' => 'inactivo', //inactivo por defecto
-        ]);
-        $usuario->save();
+            // Generar contraseña temporal
+            $generator = new PasswordGenerator();
+            $temporalPass = $generator->generate(12);
 
-        // Se guarda la academia ligada al usuario creado
-        $academia = Academia::create([
-            'nombre' => $validateData['nombre'], //nombre de academia
-            'profesor_encargado' => $usuario->nombre_completo,
-            'direccion' => $validateData['direccion'],
-            'correo' => $usuario->email,
-            'telefono' => $validateData['telefono'],
-            'estado' => 'inactivo', //activo por defecto
-            'id_usuario' => $usuario->id_usuario,
-            'id_distrito' => $validateData['distrito_id'], //c  
-        ]);
-        $academia->save();
+            // Guardar el usuario academia como inactivo
+            $usuario = Usuario::create([
+                // 'identificacion' => $validateData['identificacion'], //se puede completar despues si no se sabe
+                'nombre_completo' => $validateData['profesor_encargado'], //encargado de academia
+                'email' => $validateData['email'], //c
+                'password' => $temporalPass, //contraseña temporal
+                'rol' => 'academia',
+                'estado' => 'inactivo', //inactivo por defecto
+            ]);
+            $usuario->save();
 
-        // Se envia correo a la academia
-        // $urlFirmada = URL::temporarySignedRoute('activar.cuenta', now()->addHours(48), // Tiempo de expiración
-        // ['id' => $usuario->id_usuario]
-        // );
+            // ===============================
+            // 🖼️ PROCESAR IMAGEN (si se sube)
+            // ===============================
+            $rutaImagen = null;
+            if ($request->hasFile('imagen')) {
+                try {
+                    $rutaImagen = $request->file('imagen')->store('perfiles', 'public');
+                } catch (\Exception $e) {
+                    Log::error('❌ Error al guardar imagen de academia: ' . $e->getMessage());
+                }
+            }
 
-        $contraseñaTemporal = new ContraseñaTemporal();
-        $contraseñaTemporal->id_usuario = $usuario->id_usuario;
-        $contraseñaTemporal->password_temporal = $temporalPass; //contraseña temporal
-        $fecha_creacion = Carbon::now('America/Costa_Rica');
-        $fecha_expiracion = Carbon::now('America/Costa_Rica')->addHours(48); // DEFINIR EL TIEMPO MAXIMO c
-        $contraseñaTemporal->fecha_creacion = $fecha_creacion;
-        $contraseñaTemporal->fecha_expiracion = $fecha_expiracion;
-        $contraseñaTemporal->vigente = 'si';
-        $contraseñaTemporal->save();
+            // Se guarda la academia ligada al usuario creado
+            $academia = Academia::create([
+                'nombre' => $validateData['nombre'], //nombre de academia
+                'profesor_encargado' => $usuario->nombre_completo,
+                'direccion' => $validateData['direccion'],
+                'correo' => $usuario->email,
+                'telefono' => $validateData['telefono'],
+                'estado' => 'inactivo', //activo por defecto
+                'id_usuario' => $usuario->id_usuario,
+                'id_distrito' => $validateData['distrito_id'], //c  
+                'imagen' => $rutaImagen, // se guarda la ruta si existe
 
-        $url = route('activar.cuenta', ['id' => $usuario->id_usuario]);
-        Mail::to($usuario->email)->send(new FCTMail($usuario, $contraseñaTemporal, $url));
+            ]);
+            $academia->save();
 
-        return redirect()->back()->with('alerta', 'Se ha enviando un correo a esta academia. Ahora se encuentra en proceso de registro.');
+            // Se envia correo a la academia
+            // $urlFirmada = URL::temporarySignedRoute('activar.cuenta', now()->addHours(48), // Tiempo de expiración
+            // ['id' => $usuario->id_usuario]
+            // );
+
+            $contraseñaTemporal = new ContraseñaTemporal();
+            $contraseñaTemporal->id_usuario = $usuario->id_usuario;
+            $contraseñaTemporal->password_temporal = $temporalPass; //contraseña temporal
+            $fecha_creacion = Carbon::now('America/Costa_Rica');
+            $fecha_expiracion = Carbon::now('America/Costa_Rica')->addHours(48); // DEFINIR EL TIEMPO MAXIMO c
+            $contraseñaTemporal->fecha_creacion = $fecha_creacion;
+            $contraseñaTemporal->fecha_expiracion = $fecha_expiracion;
+            $contraseñaTemporal->vigente = 'si';
+            $contraseñaTemporal->save();
+
+            $url = route('activar.cuenta', ['id' => $usuario->id_usuario]);
+            Mail::to($usuario->email)->send(new FCTMail($usuario, $contraseñaTemporal, $url));
+
+            return redirect()->back()->with('alerta', 'Se ha enviando un correo a esta academia. Ahora se encuentra en proceso de registro.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+            }
+            throw $e;
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('❌ Error SQL al crear academia: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'El correo ya está registrado o hubo un error al guardar los datos.'], 500);
+            }
+            return redirect()->back()->with('error', 'El correo ya está registrado o hubo un error al guardar los datos.');
+        } catch (\Exception $e) {
+            Log::error('❌ Error general al registrar academia: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Error interno del servidor.'], 500);
+            }
+            return redirect()->back()->with('error', 'Error interno del servidor.');
+        }
     }
 
     //####################################### SOLO ACADEMIA #################################################
@@ -116,7 +240,7 @@ class AcademiaController extends Controller
         ]);
         -
 
-            // Verificar que exista el usuario
+        // Verificar que exista el usuario
         $id = $request['id_usuario'];
         $usuario = Usuario::find($id);
         if (!$usuario) {
@@ -339,5 +463,4 @@ class AcademiaController extends Controller
     {
         return view('academia/perfil-academia');
     }
-
 }

@@ -73,8 +73,8 @@ class SubModalidadController extends Controller
                     'descripcion' => $item->descripcion ?? '<span class="text-muted">—</span>',
                     'cantidad_atletas' => $item->cantidad_atletas,
                     'sexo_mixto' => $item->sexo_mixto ?
-                        '<span class="badge bg-success">Sí</span>' :
-                        '<span class="badge bg-danger">No</span>',
+                        '<span class="badge bg-success rounded-pill">Sí</span>' :
+                        '<span class="badge bg-danger rounded-pill">No</span>',
                     'acciones' => $item->id_subModalidad,
                 ];
             }

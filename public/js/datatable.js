@@ -1,15 +1,16 @@
 function initDataTable(config) {
-    // Destruir tabla existente si hay una
+    // Destruir tabla existente si ya hay una
     if ($.fn.DataTable.isDataTable('#tabla')) {
-        $('#tabla').DataTable().destroy();
+        $('#tabla').DataTable().clear().destroy();
     }
 
     const table = $('#tabla').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
-        autoWidth: false, // IMPORTANTE: Cambiar a false
-        scrollX: true,    // Añadir scroll horizontal
+        autoWidth: false, // No dejar que DataTables calcule anchos automáticos
+        scrollX: true,    // Scroll horizontal estable
+        scrollCollapse: true, // Evita que se "rompa" el ancho al reducir pantalla
         ajax: {
             url: config.ajaxUrl,
             type: config.ajaxType || "GET"
@@ -39,61 +40,61 @@ function initDataTable(config) {
             [10, 25, 50, 100]
         ],
         initComplete: function () {
-            // Redimensionar después de inicializar
+            // Ajustar después de inicializar
             setTimeout(() => {
-                table.columns.adjust();
-                if (table.responsive) {
-                    table.responsive.recalc();
-                }
-            }, 100);
+                table.columns.adjust().draw(false);
+                if (table.responsive) table.responsive.recalc();
+            }, 200);
         },
         drawCallback: function () {
             // Inicializar tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         }
     });
 
-    // Redimensionamiento agresivo para todos los escenarios
+    // Recalcular columnas al redimensionar ventana (DevTools, resize, etc.)
+    let resizeTimer;
     $(window).on('resize', function () {
-        setTimeout(() => {
-            table.columns.adjust();
-            if (table.responsive) {
-                table.responsive.recalc();
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if ($.fn.DataTable.isDataTable('#tabla')) {
+                table.columns.adjust().draw(false);
+                if (table.responsive) table.responsive.recalc();
             }
-        }, 150);
+        }, 250);
     });
 
-    // Redimensionar cuando se interactúa con el sidebar
+    // Recalcular al mostrar o cerrar modales (Bootstrap)
+    $('.modal').on('shown.bs.modal hidden.bs.modal', function () {
+        setTimeout(() => {
+            if ($.fn.DataTable.isDataTable('#tabla')) {
+                table.columns.adjust().draw(false);
+                if (table.responsive) table.responsive.recalc();
+            }
+        }, 250);
+    });
+
+    // Recalcular cuando se abre/cierra el sidebar
     $('#toggleSidebar').on('click', function () {
         setTimeout(() => {
-            table.columns.adjust();
-            if (table.responsive) {
-                table.responsive.recalc();
+            if ($.fn.DataTable.isDataTable('#tabla')) {
+                table.columns.adjust().draw(false);
+                if (table.responsive) table.responsive.recalc();
             }
-        }, 350); // Tiempo mayor para esperar la animación completa
+        }, 400);
     });
 
-    // Redimensionar cuando se cierra cualquier modal
-    $('.modal').on('hidden.bs.modal', function () {
-        setTimeout(() => {
-            table.columns.adjust();
-            if (table.responsive) {
-                table.responsive.recalc();
-            }
-        }, 150);
-    });
-
-    // Forzar redimensionamiento cada vez que la ventana gana foco
+    // Ajustar al volver a la ventana
     $(window).on('focus', function () {
         setTimeout(() => {
-            table.columns.adjust();
-            if (table.responsive) {
-                table.responsive.recalc();
+            if ($.fn.DataTable.isDataTable('#tabla')) {
+                table.columns.adjust().draw(false);
+                if (table.responsive) table.responsive.recalc();
             }
-        }, 200);
+        }, 250);
     });
 
     return table;
