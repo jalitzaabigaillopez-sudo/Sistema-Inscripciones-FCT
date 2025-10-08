@@ -17,8 +17,10 @@ use App\Http\Controllers\GradosController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\TipoEventosController;
 
-use App\Http\Controllers\RegistroAtletasController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Types\Relations\Role;
 
 
@@ -133,9 +135,18 @@ Route::view('/inscripcion-eventos', 'academia.inscripcionEvento')->name('academi
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas
+Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
+//Registro Nuevo
+Route::get('/registro-nuevo', function () {
+    return view('academia.registro-nuevo');
+})->name('registro.nuevo');
 
 
-Route::resource('/registro-atletas', RegistroAtletasController::class);
+//Preregistro de academias
+
+Route::get('/preregistro-academia', function () {
+    return view('academia.preregistro');
+})->name('academia.preregistro.form');
 
 Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAcademia'])->name('academia.preregistro.process');
 //####################################### SOLO ADMINISTRADOR ###########################################
@@ -188,13 +199,14 @@ Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
 Route::resource('/inscripciones', InscripcionController::class);
 
 
+Route::resource('/divisiones', DivisionController::class);
 
-Route::post('/admin/profile/update', function () {
-    // Lógica para actualizar el perfil del admin                               
-    $data = request()->all();
-    // Actualiza el perfil según tu lógica
-    return redirect()->route('perfil')->with('success', 'Perfil actualizado correctamente.');
-})->name('admin.profile.update');
+Route::get('/divisiones/{id_division}/datos', [DivisionController::class, 'datos']);
+
+Route::resource('tipos_eventos', TipoEventosController::class);
+Route::get('/tipos_eventos/{id}/datos', [TipoEventosController::class, 'edit']);
+
+
 
 
 // Vista de prueba restablecer contra
@@ -234,3 +246,7 @@ Route::get('/preregistro', function () {
 Route::get('/events', [EventosController::class, 'api']);    
 
 
+Route::get('/cambiar-contraseña/{id_usuario}', function ($id_usuario) {
+    $usuario = \App\Models\Usuario::findOrFail($id_usuario);
+    return view('sections.completarCambioContraseña', compact('usuario'));
+})->name('completar.cambio.contraseña');
