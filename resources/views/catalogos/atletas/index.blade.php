@@ -8,16 +8,12 @@
 
 @section('content')
 
-<style>
-    .dropdown-menu {
-    position: fixed !important;
-}
-</style>
+
     <div class="container py-4">
 
         <div class="d-flex align-items-center mb-4">
             <h4 class="fw-bold mb-0">Lista de Atletas</h4>
-            <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal"
+            <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal" name="nuevoAtleta"
                 data-bs-target="#modalAtleta">
                 <i class="bi bi-plus-circle me-1"></i> Nuevo Atleta
             </button>
@@ -48,8 +44,8 @@
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
                         <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalAtletaLabel">Registrar
-                            Nuevo Atleta</h5>
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                            Nuevo Atleta</h5> 
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="CerrarM"
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
@@ -119,7 +115,7 @@
                                                 </select>
                                             </div> --}}
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <div class="mb-3">
                                                 <label for="sexo" class="form-label">Sexo <span
                                                         class="text-danger">*</span></label>
@@ -176,7 +172,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="fotoAtleta" class="form-label">Foto de Perfil</label>
+                                        <label for="fotoAtletaCrear" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoAtletaInput" type="file"
                                             id="fotoAtletaCrear" name="imagen" accept="image/*">
                                     </div>
@@ -188,7 +184,7 @@
                                                 alt="Vista previa"
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
                                             style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
                                 </div>
@@ -196,9 +192,9 @@
                         </form>
                     </div>
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2" name="cancelar"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta">Guardar
+                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta" id="btnGuardarAtleta">Guardar
                             Atleta</button>
                     </div>
                 </div>
@@ -214,7 +210,7 @@
                         <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAtletaLabel">
                             Actualizar Datos del Atleta</h5>
 
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="cerrar"
                             aria-label="Cerrar"></button>
                     </div>
                     <form method="POST" action="" id="formEditarAtleta" data-id="">
@@ -368,7 +364,7 @@
                                                         alt="Vista previa"
                                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                                 </div>
-                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
                                                     style="display: none;"><i class="bi bi-trash"></i> Eliminar
                                                     Foto</button>
                                                 <input type="hidden" name="remove_imagen" id="removeImagen"
@@ -380,7 +376,7 @@
                             </div>
                         </div>
                         <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2" name="cancelar"
                                 data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
                         </div>
@@ -445,29 +441,18 @@
                         title: "Acciones",
                         orderable: false,
                         render: function(data, type, row) {
-                            return `
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown" data-bs-display="dynamic">
-                    <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item btn-edit" href="#" data-id="${data}">
-                            <i class="bi bi-pencil-square"></i> Editar
-                        </a>
-                    </li>
-                    <li>
-                        <form action="/atletas/${data}" method="POST" id="form-eliminar-${data}" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="dropdown-item text-danger" onclick="confirmarEliminacion(${data})">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        `;
+                             return `
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn btn-sm btn-warning rounded-circle btn-edit"  name="editar"
+                                        data-id="${data}" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger rounded-circle" name="eliminar"
+                                        onclick="confirmarEliminacion(${data})" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            `;
                         }
                     }
                 ];
@@ -482,7 +467,7 @@
                 // Inicializar DataTable con tu script genérico
                 initDataTable({
                     ajaxUrl: "{{ route('atletas.index') }}",
-                    columns: columnsConfig
+                    columns: columnsConfig,
                 });
             });
         </script>

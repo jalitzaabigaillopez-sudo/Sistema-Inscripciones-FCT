@@ -6,10 +6,10 @@
 
 @section('breadcrumb-title', 'Lista de Academias')
 
-@if(session('alerta'))
-<script>
-     mostrarAlerta("{{ session('alerta') }}", "Aviso", "⚠️");
-</script>
+@if (session('alerta'))
+    <script>
+        mostrarAlerta("{{ session('alerta') }}", "Aviso", "⚠️");
+    </script>
 @endif
 
 @section('content')
@@ -41,7 +41,7 @@
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        {{-- <tbody>
 
                             @foreach ($data as $item)
                                 <tr class="text-center">
@@ -102,7 +102,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                        </tbody>
+                        </tbody> --}}
                     </table>
                 </div>
             </div>
@@ -120,7 +120,8 @@
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <form method="POST" action="{{ route('pre.registro.academia') }}">
+                        <form method="POST" action="{{ route('pre.registro.academia') }}" enctype="multipart/form-data"
+                            id="formCrearAcademia">
                             @csrf
                             <div class="row g-4">
                                 <div class="col-md-7 border-end pe-md-4">
@@ -143,26 +144,24 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="profesorAcademia" class="form-label">Profesor Encargado <span
                                                     class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
-                                                id="profesorAcademia" name="profesor_encargado"
-                                                placeholder="Ej. Guillermo Pérez" required>
+                                            <input type="text" class="form-control form-control-sm" id="profesorAcademia"
+                                                name="profesor_encargado" placeholder="Ej. Guillermo Pérez" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="correoAcademia" class="form-label">Correo Electrónico <span
                                                     class="text-danger">*</span></label>
-                                            <input type="email" class="form-control form-control-sm"
-                                                id="correoAcademia" name="email" placeholder="Ej. academia@email.com"
-                                                required>
+                                            <input type="email" class="form-control form-control-sm" id="correoAcademia"
+                                                name="email" placeholder="Ej. academia@email.com" required>
                                         </div>
                                     </div>
 
-                                    <!--  
+
                                     <div class="mb-3 mt-3">
                                         <label for="fotoAcademiaCrear" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoAcademiaInput" type="file"
                                             id="fotoAcademiaCrear" name="imagen" accept="image/*">
                                     </div>
-                                       <div class="mb-3 d-flex flex-column align-items-center">
+                                    <div class="mb-3 d-flex flex-column align-items-center">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
                                             style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
                                             <span class="previewText text-muted">Sin foto</span>
@@ -171,12 +170,10 @@
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
                                         <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"><i class="bi bi-trash"></i></button>
+                                            style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
-                                    -->
-                                </div>
 
-                               
+                                </div>
 
                                 <div class="col-md-5 ps-md-4">
                                     <h6 class="text-secondary mb-3">Ubicación</h6>
@@ -222,174 +219,222 @@
                                         </div>
                                     </div>
                                 </div>
-                                 </div>
                             </div>
-
-                            <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
-                                <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
-                                    data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-success rounded-pill">Guardar Academia</button>
-                            </div>
-                        </form>
                     </div>
 
-                </div>
-            </div>
-        </div>
-
-        {{-- Modal EDITAR ACADEMIA --}}
-        <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
-                    <div class="modal-header border-bottom-0 pb-2">
-                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
-                            Actualizar Datos de la Academia
-                        </h5>
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
-                            aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body p-0">
-                        <form method="POST" action="{{ route('academias.update', $item->id_academia) }}"
-                            id="formEditarAcademia" data-id="{{ $item->id_academia }}"
-                            data-canton-id="{{ $item->distrito->canton->id_canton }}"
-                            data-distrito-id="{{ $item->id_distrito }}">
-                            @csrf
-                            @method('PUT')
-                            <div class="row g-4">
-                                <div class="col-md-7 border-end pe-md-4">
-                                    <h6 class="text-secondary mb-3">Información General</h6>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="nombreAcademiaEditar" class="form-label">Nombre <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
-                                                id="nombreAcademiaEditar" name="nombre" value="{{ $item->nombre }}"
-                                                required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
-                                                id="telefonoAcademiaEditar" name="telefono"
-                                                value="{{ $item->telefono }}" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-
-                                        <div class="col-md-6 mb-3">
-                                            <label for="profesorAcademiaEditar" class="form-label">Profesor Encargado
-                                                <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
-                                                id="profesorAcademiaEditar" name="profesor_encargado"
-                                                value="{{ $item->profesor_encargado }}" required>
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label for="correoAcademiaEditar" class="form-label">Correo Electrónico <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="email" class="form-control form-control-sm"
-                                                id="correoAcademiaEditar" name="correo" value="{{ $item->correo }}"
-                                                required>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 mt-3">
-                                        <label for="fotoAcademiaEditar" class="form-label">Foto de Perfil</label>
-                                        <input class="form-control form-control-sm fotoAcademiaInput" type="file"
-                                            id="fotoAcademiaEditar" name="imagen" accept="image/*">
-                                    </div>
-                                    <div class="mb-3 d-flex flex-column align-items-center">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
-                                            style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
-                                            <span class="previewText text-muted">Sin foto</span>
-                                            <img class="previewImage img-thumbnail rounded-circle" src=""
-                                                alt="Vista previa"
-                                                style="width: 150px; height: 150px; object-fit: cover; display: none;">
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
-                                        <input type="hidden" name="remove_imagen" id="removeImagen" value="0">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-5 ps-md-4">
-                                    <h6 class="text-secondary mb-3">Ubicación</h6>
-                                    <div class="row">
-                                        <div class="col-md-12 mb-3">
-                                            <label for="provinciaAcademiaEditar" class="form-label">Provincia <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="provinciaAcademiaEditar"
-                                                name="provincia" required>
-                                                <option value="" disabled>Seleccione una provincia...</option>
-                                                @foreach ($provincias as $provincia)
-                                                    <option value="{{ $provincia->id_provincia }}"
-                                                        {{ $item->distrito->canton->provincia->id_provincia == $provincia->id_provincia ? 'selected' : '' }}>
-                                                        {{ $provincia->nombre }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <label for="cantonAcademiaEditar" class="form-label">Cantón <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="cantonAcademiaEditar"
-                                                name="canton" required>
-                                                <option value="" disabled selected>Seleccione un cantón...</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12 mb-3">
-                                            <label for="distritoAcademiaEditar" class="form-label">Distrito <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select form-select-sm" id="distritoAcademiaEditar"
-                                                name="distrito" required>
-                                                <option value="" disabled selected>Seleccione un distrito...</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <label for="direccionAcademiaEditar" class="form-label">Dirección <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
-                                                id="direccionAcademiaEditar" name="direccion"
-                                                value="{{ $item->direccion }}" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label d-block">Estado <span
-                                                class="text-danger">*</span></label>
-                                        <div class="d-flex gap-4">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="estado"
-                                                    id="e_estado_activo" value="activo" required
-                                                    {{ $item->estado == 'activo' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="e_estado_activo">Activo</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="estado"
-                                                    id="e_estado_inactivo" value="inactivo" required
-                                                    {{ $item->estado == 'inactivo' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="e_estado_inactivo">Inactivo</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill" form="formEditarAcademia">Guardar
-                            cambios</button>
+                        <button type="submit" class="btn btn-success rounded-pill">Guardar Academia</button>
                     </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal EDITAR ACADEMIA --}}
+    <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+                <div class="modal-header border-bottom-0 pb-2">
+                    <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAcademiaLabel">
+                        Editar Academia
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <form id="formEditarAcademia" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="row g-4">
+                            <div class="col-md-7 border-end pe-md-4">
+                                <h6 class="text-secondary mb-3">Información General</h6>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="nombreAcademiaEditar" class="form-label">Nombre <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="nombreAcademiaEditar" name="nombre" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="telefonoAcademiaEditar" class="form-label">Teléfono <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="telefonoAcademiaEditar" name="telefono" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="profesorAcademiaEditar" class="form-label">Profesor Encargado <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="profesorAcademiaEditar" name="profesor_encargado" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="correoAcademiaEditar" class="form-label">Correo Electrónico <span
+                                                class="text-danger">*</span></label>
+                                        <input type="email" class="form-control form-control-sm"
+                                            id="correoAcademiaEditar" name="correo" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 mt-3">
+                                    <label for="fotoAcademiaEditar" class="form-label">Foto de Perfil</label>
+                                    <input class="form-control form-control-sm fotoAcademiaInput" type="file"
+                                        id="fotoAcademiaEditar" name="imagen" accept="image/*">
+                                </div>
+
+                                <div class="mb-3 d-flex flex-column align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
+                                        style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; overflow: hidden;">
+                                        <span class="previewText text-muted">Sin foto</span>
+                                        <img class="previewImage img-thumbnail rounded-circle" src=""
+                                            alt="Vista previa"
+                                            style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                        style="display: none;">
+                                        <i class="bi bi-trash"></i> Eliminar Foto
+                                    </button>
+                                    <input type="hidden" name="remove_imagen" id="removeImagen" value="0">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 ps-md-4">
+                                <h6 class="text-secondary mb-3">Ubicación</h6>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="provinciaAcademiaEditar" class="form-label">Provincia <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="provinciaAcademiaEditar"
+                                            name="provincia" required>
+                                            <option value="" disabled selected>Seleccione una provincia...</option>
+                                            @foreach ($provincias as $provincia)
+                                                <option value="{{ $provincia->id_provincia }}">{{ $provincia->nombre }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cantonAcademiaEditar" class="form-label">Cantón <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="cantonAcademiaEditar"
+                                            name="canton" required>
+                                            <option value="" disabled selected>Seleccione un cantón...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="distritoAcademiaEditar" class="form-label">Distrito <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="distritoAcademiaEditar"
+                                            name="distrito" required>
+                                            <option value="" disabled selected>Seleccione un distrito...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="direccionAcademiaEditar" class="form-label">Dirección <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="direccionAcademiaEditar" name="direccion" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label d-block">Estado <span class="text-danger">*</span></label>
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="estado_activo" value="activo" required>
+                                            <label class="form-check-label" for="estado_activo">Activo</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="estado"
+                                                id="estado_inactivo" value="inactivo" required>
+                                            <label class="form-check-label" for="estado_inactivo">Inactivo</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formEditarAcademia" class="btn btn-primary rounded-pill">Guardar
+                        cambios</button>
                 </div>
             </div>
         </div>
     </div>
 
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/gestionar_academias.js') }}"></script>
+    <script src="{{ asset('js/datatable.js') }}"></script>
+
+@section('scripts')
+
+    <script>
+        $(document).ready(function() {
+            let columnsConfig = [{
+                    data: "nombre",
+                    title: "Nombre"
+                },
+                {
+                    data: "profesor_encargado",
+                    title: "Profesor a cargo"
+                },
+                {
+                    data: "correo",
+                    title: "Correo"
+                },
+                {
+                    data: "telefono",
+                    title: "Teléfono"
+                },
+                {
+                    data: "usuario",
+                    title: "Usuario"
+                },
+                {
+                    data: "ubicacion",
+                    title: "Ubicación",
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "direccion",
+                    title: "Dirección"
+                },
+                {
+                    data: "estado",
+                    title: "Estado",
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "acciones",
+                    title: "Acciones",
+                    orderable: false,
+                    searchable: false
+                }
+            ];
+
+            initDataTable({
+                ajaxUrl: "{{ route('academias.index') }}",
+                columns: columnsConfig
+            });
+        });
+    </script>
+@endsection
+
 @endsection

@@ -309,6 +309,21 @@
         .breadcrumb-item+.breadcrumb-item::before {
             color: var(--text-light);
         }
+
+        .table-responsive {
+    overflow: visible !important;
+}
+
+/* Garantiza que el header se mantenga alineado */
+.dataTables_wrapper .dataTables_scrollHead {
+    overflow: visible !important;
+}
+
+/* Evita que el scroll rompa el ancho */
+.dataTables_wrapper .dataTables_scrollBody {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
     </style>
 </head>
 
