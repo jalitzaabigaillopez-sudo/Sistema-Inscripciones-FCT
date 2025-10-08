@@ -328,55 +328,32 @@
 <body>
     {{-- <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}"> --}}
 
-    <!-- Sidebar -->
-    <nav class="sidebar sidebar-hidden" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo">
-            </div>
-            <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        </div>
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+    <div class="logo-container">
+       <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager" style="max-width:100%;">
+    </div>
+    <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
+    <a href="{{ route('dashboard.academias') }}" onclick="handleSidebarClick(event)"><i class="bi bi-speedometer2"></i> Dashboard</a>
 
-        <div class="sidebar-content">
-            <a href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="{{ route('perfil') }}"><i class="bi bi-person-badge me-2"></i> Administración de Perfil</a>
-            <a href="{{ route('gestion.atletas') }}"><i class="bi bi-people me-2"></i> Gestión de atletas</a>
-
-
-            <!-- Submenú de Inscripciones a eventos - ESTILO MEJORADO -->
-            <div class="submenu">
-                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                    id="inscripcionesToggle">
-                    <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
-                    <i class="bi bi-chevron-down ms-2"></i>
-                </a>
-
-                <div class="submenu-items d-none" id="inscripcionesItems">
-                    <a href="{{ route('inscripcion.academia') }}"><i class="bi bi-calendar-plus me-2"></i> Nueva
-                        inscripción</a>
-                    <a href="{{ route('misInscripciones') }}"><i class="bi bi-list-check me-2"></i> Mis
-                        Inscripciones</a>
-                </div>
-            </div>
-
-            <!-- Submenú de Análisis y Reportes -->
-            <div class="submenu">
-                <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
-                    id="analisisToggle">
-                    <span><i class="bi bi-graph-up me-2"></i>Análisis y Reportes</span>
-                    <i class="bi bi-chevron-down ms-2"></i>
-                </a>
-
-                <div class="submenu-items d-none" id="analisisItems">
-                    <a href="#"><i class="bi bi-bar-chart-line me-2"></i> Avance de eventos</a>
-                    <a href="#"><i class="bi bi-people me-2"></i> Estadística atletas</a>
-                    <a href="#"><i class="bi bi-calendar-check me-2"></i> Estadística eventos</a>
-                    <a href="#"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes generales</a>
-                    >
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Submenú de Inscripciones a eventos -->
+    <div class="submenu">
+    <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#" id="inscripcionesToggle">
+        <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <div class="submenu-items d-none" id="inscripcionesItems">
+        <a href="{{ route('academia.inscripcionEvento') }}"  onclick="handleSidebarClick(event)"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
+        <a href="{{ route('academia.misInscripciones') }}" onclick="handleSidebarClick(event)"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
+    </div>
+</div>
+    <!-- Fin del Submenú -->
+    <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i class="bi bi-people"></i> Gestión de atletas</a>
+    <a href="{{ route('academia.perfil-academia') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-badge"></i> Administración de Perfil</a>
+    <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
+    <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
+    <a href="#" ><i class="bi bi-bar-chart-line me-2"></i><span>Reportes</span></a>
+</nav>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid d-flex align-items-center">
