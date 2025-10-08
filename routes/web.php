@@ -92,9 +92,9 @@ Route::view('/perfil-academia', 'academia.perfil-academia')->name('academia.perf
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas
-Route::view('/registro-atletas', 'academia.registrosAtletas')->name('academia.registrosAtletas');
 
 
+Route::resource('/registro-atletas', RegistroAtletasController::class);
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
@@ -133,7 +133,8 @@ Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
 
 Route::resource('/inscripciones', InscripcionController::class);
 
-   
+
+
 Route::post('/admin/profile/update', function () {
     // Lógica para actualizar el perfil del admin                               
     $data = request()->all();
@@ -176,5 +177,3 @@ Route::get('/preregistro', function () {
 Route::get('/events', [EventosController::class, 'api']);    
 
 
-// Registro de atletas por parte de las academias
-Route::resource('atletas', RegistroAtletasController::class);

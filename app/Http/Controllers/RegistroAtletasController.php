@@ -39,11 +39,11 @@ class RegistroAtletasController extends Controller
             'segundo_apellido' => 'nullable|string|max:255',
             'sexo'             => 'required|in:Masculino,Femenino',
             'edad'             => 'required|integer|min:0|max:120',
-            'peso'             => 'nullable|numeric|min:0|max:999.99',
-            'modalidad'        => 'nullable|string|max:50',
-            'participacion'    => 'nullable|string|max:50',
-            'tipo'             => 'nullable|string|max:50',
-            'grupo'            => 'nullable|string|max:50',
+            'peso'             => 'required|numeric|min:0|max:999.99',
+            'modalidad'        => 'required|string|max:50',
+            'participacion'    => 'required|string|max:50',
+            'tipo'             => 'required|string|max:50',
+            'grupo'            => 'required|string|max:50',
         ]);
 
     Atleta::create($validated);
@@ -74,11 +74,11 @@ class RegistroAtletasController extends Controller
             'segundo_apellido' => 'nullable|string|max:255',
             'sexo'             => 'required|in:Masculino,Femenino',
             'edad'             => 'required|integer|min:0|max:120',
-            'peso'             => 'nullable|numeric|min:0|max:999.99',
-            'modalidad'        => 'nullable|string|max:50',
-            'participacion'    => 'nullable|string|max:50',
-            'tipo'             => 'nullable|string|max:50',
-            'grupo'            => 'nullable|string|max:50',
+            'peso'             => 'required|numeric|min:0|max:999.99',
+            'modalidad'        => 'required|string|max:50',
+            'participacion'    => 'required|string|max:50',
+            'tipo'             => 'required|string|max:50',
+            'grupo'            => 'required|string|max:50',
         ]);
 
         $atleta->update($validated);
