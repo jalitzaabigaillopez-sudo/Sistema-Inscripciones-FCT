@@ -1,3 +1,9 @@
+@if (!session()->has('usuario'))
+    <script>
+        window.location.href = "{{ route('login') }}";
+    </script>
+@endif
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,9 +20,11 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="{{ asset('css/alertasInscripciones.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
 
     <!-- Bootstrap JS + Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -328,32 +336,39 @@
 <body>
     <input type="hidden" id="idAcademia" value="{{ $academia['id_academia'] }}">
 
-<!-- Sidebar -->
-<nav class="sidebar" id="sidebar">
-    <div class="logo-container">
-       <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager" style="max-width:100%;">
-    </div>
-    <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-    <a href="{{ route('dashboard.academias') }}" onclick="handleSidebarClick(event)"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <img src="{{ asset('images/vectlogo.png') }}" alt="FCT Logo" width="120" height="auto" loading="eager"
+                style="max-width:100%;">
+        </div>
+        <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
+        <a href="{{ route('dashboard.academias') }}" onclick="handleSidebarClick(event)"><i
+                class="bi bi-speedometer2"></i> Dashboard</a>
 
-    <!-- Submenú de Inscripciones a eventos -->
-    <div class="submenu">
-    <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#" id="inscripcionesToggle">
-        <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
-        <i class="bi bi-chevron-down ms-auto"></i>
-    </a>
-    <div class="submenu-items d-none" id="inscripcionesItems">
-        <a href="{{ route('inscripcion.academia') }}"  onclick="handleSidebarClick(event)"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
-        <a href="{{ route('misInscripciones') }}" onclick="handleSidebarClick(event)"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
-    </div>
-</div>
-    <!-- Fin del Submenú -->
-    <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i class="bi bi-people"></i> Gestión de atletas</a>
-    <a href="{{ route('academia.perfil-academia') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-badge"></i> Administración de Perfil</a>
-    <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
-    <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
-    <a href="#" ><i class="bi bi-bar-chart-line me-2"></i><span>Reportes</span></a>
-</nav>
+        <!-- Submenú de Inscripciones a eventos -->
+        <div class="submenu">
+            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                id="inscripcionesToggle">
+                <span><i class="bi bi-folder2-open me-2"></i>Inscripciones a eventos</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <div class="submenu-items d-none" id="inscripcionesItems">
+                <a href="{{ route('inscripcion.academia') }}" onclick="handleSidebarClick(event)"><i
+                        class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
+                <a href="{{ route('misInscripciones') }}" onclick="handleSidebarClick(event)"><i
+                        class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
+            </div>
+        </div>
+        <!-- Fin del Submenú -->
+        <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i class="bi bi-people"></i>
+            Gestión de atletas</a>
+        <a href="{{ route('academia.perfil-academia') }}" onclick="handleSidebarClick(event)"><i
+                class="bi bi-person-badge"></i> Administración de Perfil</a>
+        <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
+        <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
+        <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span>Reportes</span></a>
+    </nav>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid d-flex align-items-center">
@@ -572,7 +587,7 @@
         });
     </script>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
 

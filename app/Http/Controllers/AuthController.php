@@ -74,7 +74,13 @@ class AuthController extends Controller
      */
     public function cerrarSesion(Request $request)
     {
-        $request->session()->forget('usuario');
+        // Elimina todas las variables de sesión
+        $request->session()->invalidate();
+
+        // Regenera el token CSRF para evitar reutilización
+        $request->session()->regenerateToken();
+
+        // Redirige al login
         return redirect()->route('login');
     }
 
@@ -99,7 +105,8 @@ class AuthController extends Controller
     public function perfil(Request $request)
     {
         $usuario = $this->obtenerUsuarioSesion($request);
-        if ($usuario instanceof \Illuminate\Http\RedirectResponse) return $usuario;
+        if ($usuario instanceof \Illuminate\Http\RedirectResponse)
+            return $usuario;
 
         $vista = $usuario->rol === 'administrador'
             ? 'admin.perfil-admin'
