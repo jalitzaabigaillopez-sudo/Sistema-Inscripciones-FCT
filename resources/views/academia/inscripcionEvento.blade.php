@@ -4,11 +4,11 @@
 
 @section('content')
 
-    <input type="hidden" id="modeView"  value="{{ $bloquearSelectEventos }}">
-
     <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
     </a>
+
+    <input type="hidden" id="modeView" value="{{ $bloquearSelectEventos }}">
 
     <div class="container py-4">
         <h3 class="mb-4 text-black fw-bold">Inscripción de Academia a Evento</h3>

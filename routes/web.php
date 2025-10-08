@@ -129,7 +129,7 @@ Route::view('/dashboard-academias', 'academia.dashboard-academia')->name('dashbo
 // Inscripción a eventos
 Route::view('/inscripcion-eventos', 'academia.inscripcionEvento')->name('academia.inscripcionEvento');
 // perfil de academia
-// Route::view('/perfil-academia', 'academia.perfilAcademia')->name('academia.perfil-academia');
+Route::view('/perfil-academia', 'academia.perfilAcademia')->name('academia.perfil-academia');
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 //registro de atletas

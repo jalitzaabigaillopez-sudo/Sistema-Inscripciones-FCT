@@ -343,8 +343,8 @@
         <i class="bi bi-chevron-down ms-auto"></i>
     </a>
     <div class="submenu-items d-none" id="inscripcionesItems">
-        <a href="{{ route('academia.inscripcionEvento') }}"  onclick="handleSidebarClick(event)"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
-        <a href="{{ route('academia.misInscripciones') }}" onclick="handleSidebarClick(event)"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
+        <a href="{{ route('inscripcion.academia') }}"  onclick="handleSidebarClick(event)"><i class="bi bi-calendar-plus me-2"></i>Nueva inscripción</a>
+        <a href="{{ route('misInscripciones') }}" onclick="handleSidebarClick(event)"><i class="bi bi-list-check me-2"></i> Mis Inscripciones</a>
     </div>
 </div>
     <!-- Fin del Submenú -->
