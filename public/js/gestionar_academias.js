@@ -236,80 +236,80 @@ $(document).ready(function () {
     });
 
     // Handle edit button click to populate the modal
-  $(document).on('click', '.btn-edit', function (e) {
-    e.preventDefault();
+    $(document).on('click', '.btn-edit', function (e) {
+        e.preventDefault();
 
-    const academiaId = $(this).data('id');
-    const form = $('#formEditarAcademia');
+        const academiaId = $(this).data('id');
+        const form = $('#formEditarAcademia');
 
-    console.log('🟢 Editar academia ID:', academiaId);
+        console.log('🟢 Editar academia ID:', academiaId);
 
-    // Resetear form e imagen antes de cargar datos
-    form[0].reset();
-    $('#cantonAcademiaEditar').html('<option value="" disabled selected>Seleccione un cantón...</option>');
-    $('#distritoAcademiaEditar').html('<option value="" disabled selected>Seleccione un distrito...</option>');
+        // Resetear form e imagen antes de cargar datos
+        form[0].reset();
+        $('#cantonAcademiaEditar').html('<option value="" disabled selected>Seleccione un cantón...</option>');
+        $('#distritoAcademiaEditar').html('<option value="" disabled selected>Seleccione un distrito...</option>');
 
-    const previewImage = $('#modalEditarAcademia').find('.previewImage');
-    const previewText = $('#modalEditarAcademia').find('.previewText');
-    const removeBtn = $('#modalEditarAcademia').find('.removeImageBtn');
-    const inputFile = $('#modalEditarAcademia').find('#fotoAcademiaEditar');
-    const removeImagenInput = $('#modalEditarAcademia').find('#removeImagen');
+        const previewImage = $('#modalEditarAcademia').find('.previewImage');
+        const previewText = $('#modalEditarAcademia').find('.previewText');
+        const removeBtn = $('#modalEditarAcademia').find('.removeImageBtn');
+        const inputFile = $('#modalEditarAcademia').find('#fotoAcademiaEditar');
+        const removeImagenInput = $('#modalEditarAcademia').find('#removeImagen');
 
-    previewImage.hide();
-    previewText.text('Sin foto').show();
-    removeBtn.hide();
-    inputFile.val('');
-    removeImagenInput.val('0');
+        previewImage.hide();
+        previewText.text('Sin foto').show();
+        removeBtn.hide();
+        inputFile.val('');
+        removeImagenInput.val('0');
 
-    // AJAX para obtener los datos
-    $.ajax({
-        url: '/academias/' + academiaId + '/edit',
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            console.log('✅ Datos cargados:', data);
+        // AJAX para obtener los datos
+        $.ajax({
+            url: '/academias/' + academiaId + '/edit',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log('✅ Datos cargados:', data);
 
-            $('#nombreAcademiaEditar').val(data.nombre);
-            $('#profesorAcademiaEditar').val(data.profesor_encargado);
-            $('#telefonoAcademiaEditar').val(data.telefono);
-            $('#correoAcademiaEditar').val(data.correo);
-            $('#direccionAcademiaEditar').val(data.direccion);
+                $('#nombreAcademiaEditar').val(data.nombre);
+                $('#profesorAcademiaEditar').val(data.profesor_encargado);
+                $('#telefonoAcademiaEditar').val(data.telefono);
+                $('#correoAcademiaEditar').val(data.correo);
+                $('#direccionAcademiaEditar').val(data.direccion);
 
-            $('input[name="estado"][value="' + data.estado.toLowerCase() + '"]').prop('checked', true);
+                $('input[name="estado"][value="' + data.estado.toLowerCase() + '"]').prop('checked', true);
 
-            if (data.imagen && data.imagen !== '') {
-                previewImage.attr('src', '/storage/' + data.imagen).show();
-                previewText.hide();
-                removeBtn.show();
-            }
+                if (data.imagen && data.imagen !== '') {
+                    previewImage.attr('src', '/storage/' + data.imagen).show();
+                    previewText.hide();
+                    removeBtn.show();
+                }
 
-            const provinciaId = data.distrito.canton.provincia.id_provincia;
-            const cantonId = data.distrito.canton.id_canton;
-            const distritoId = data.id_distrito;
+                const provinciaId = data.distrito.canton.provincia.id_provincia;
+                const cantonId = data.distrito.canton.id_canton;
+                const distritoId = data.id_distrito;
 
-            $('#provinciaAcademiaEditar').val(provinciaId);
-            loadCantones(provinciaId, function () {
-                $('#cantonAcademiaEditar').val(cantonId);
-                loadDistritos(cantonId, function () {
-                    $('#distritoAcademiaEditar').val(distritoId);
+                $('#provinciaAcademiaEditar').val(provinciaId);
+                loadCantones(provinciaId, function () {
+                    $('#cantonAcademiaEditar').val(cantonId);
+                    loadDistritos(cantonId, function () {
+                        $('#distritoAcademiaEditar').val(distritoId);
+                    });
                 });
-            });
 
-            // ✅ Actualizar action y mostrar modal
-            form.attr('action', '/academias/' + academiaId);
-            $('#modalEditarAcademia').modal('show');
-        },
-        error: function (xhr) {
-            console.error('❌ Error al cargar datos:', xhr.responseText);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudieron cargar los datos de la academia.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
+                // ✅ Actualizar action y mostrar modal
+                form.attr('action', '/academias/' + academiaId);
+                $('#modalEditarAcademia').modal('show');
+            },
+            error: function (xhr) {
+                console.error('❌ Error al cargar datos:', xhr.responseText);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudieron cargar los datos de la academia.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
     });
-});
 
 
     // Handle form submission with FormData
@@ -476,24 +476,26 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: $('#form-eliminar-' + id).attr('action'),
-                    method: $('#form-eliminar-' + id).attr('method'),
-                    data: $('#form-eliminar-' + id).serialize(),
+                    url: `/academias/${id}`, 
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function (response) {
                         Swal.fire({
                             title: '¡Eliminado!',
-                            text: 'El registro ha sido eliminado correctamente.',
+                            text: response.message || 'El registro ha sido eliminado correctamente.',
                             icon: 'success',
                             confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Aceptar'
                         }).then(() => {
-                            location.reload();
+                            $('#tabla').DataTable().ajax.reload(null, false); // recargar sin perder paginación
                         });
                     },
                     error: function (xhr) {
                         Swal.fire({
                             title: 'Error',
-                            text: 'Ocurrió un error al intentar eliminar el registro.',
+                            text: xhr.responseJSON?.error || 'Ocurrió un error al intentar eliminar el registro.',
                             icon: 'error',
                             confirmButtonText: 'Aceptar'
                         });
@@ -502,4 +504,5 @@ $(document).ready(function () {
             }
         });
     };
+
 });

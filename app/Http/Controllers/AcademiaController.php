@@ -84,14 +84,14 @@ class AcademiaController extends Controller
                 };
 
                 $acciones = '
-                        <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-sm btn-warning rounded-pill btn-edit" data-id="' . $a->id_academia . '" title="Editar">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-danger rounded-pill" onclick="confirmarEliminacion(' . $a->id_academia . ')" title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                </button>
-                 </div>';
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-warning rounded-pill btn-edit" data-id="' . $a->id_academia . '" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger rounded-pill" onclick="confirmarEliminacion(' . $a->id_academia . ')" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>';
 
                 $formattedData[] = [
                     'nombre' => e($a->nombre),
@@ -454,9 +454,13 @@ class AcademiaController extends Controller
     {
         $item = Academia::find($id);
 
+        if (!$item) {
+            return response()->json(['error' => 'Academia no encontrada.'], 404);
+        }
+
         $item->delete();
 
-        return back();
+        return response()->json(['message' => 'Academia eliminada correctamente.']);
     }
 
     public function getProfile()

@@ -425,7 +425,7 @@
                     data: "acciones",
                     title: "Acciones",
                     orderable: false,
-                    searchable: false
+                    searchable: false,
                 }
             ];
 
