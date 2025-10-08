@@ -23,8 +23,8 @@
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
-                <div class="table-responsive" style="overflow-x: auto;">
-                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                <div class="table-responsive" style="width:100%; overflow-x:auto; min-height:300px;">
+                    <table id="tabla" class="table table-striped table-hover table-bordered text-center align-middle">
                         <thead class="table-light">
                             <tr id="tabla-headers"></tr>
 
@@ -392,6 +392,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="{{ asset('js/gestion_atleta.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
         <script src="{{ asset('js/datatable.js') }}"></script>
 
         {{-- Aquí va el JS específico de esta tabla --}}

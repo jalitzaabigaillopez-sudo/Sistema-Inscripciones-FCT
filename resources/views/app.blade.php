@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/x-icon" href="https://via.placeholder.com/32?text=FCT">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/LogoFCT_transpa.png') }}">
     <link rel="stylesheet" href="{{ asset('css/alertasInscripciones.css') }}">
 
     <!-- Bootstrap 5.3.3 CSS -->
@@ -316,20 +316,14 @@
             color: var(--text-light);
         }
 
-        .table-responsive {
-            overflow: visible !important;
-        }
+        .dataTables_scrollHeadInner, 
+.dataTables_scrollHeadInner table {
+    width: 100% !important;
+}
 
-        /* Garantiza que el header se mantenga alineado */
-        .dataTables_wrapper .dataTables_scrollHead {
-            overflow: visible !important;
-        }
-
-        /* Evita que el scroll rompa el ancho */
-        .dataTables_wrapper .dataTables_scrollBody {
-            overflow-x: auto !important;
-            overflow-y: hidden !important;
-        }
+.table-responsive {
+    overflow-y: hidden;
+}
     </style>
 </head>
 
@@ -650,6 +644,8 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
 
     {{-- Aquí se van a inyectar los scripts personalizados de cada vista --}}
     @yield('scripts')
