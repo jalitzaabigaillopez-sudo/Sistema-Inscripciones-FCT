@@ -440,10 +440,18 @@ class AtletasController extends Controller
      */
     public function destroy(string $id)
     {
-        $item = Atleta::find($id);
+        $atleta = Atleta::find($id);
 
-        $item->delete();
+        if (!$atleta) {
+            return response()->json(['error' => 'El atleta no fue encontrado.'], 404);
+        }
 
-        return back();
+        try {
+            $atleta->delete();
+            return response()->json(['message' => 'Atleta eliminado correctamente.']);
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar atleta: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error al intentar eliminar el atleta.'], 500);
+        }
     }
 }

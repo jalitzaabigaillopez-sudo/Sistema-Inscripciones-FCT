@@ -446,9 +446,11 @@ function confirmarEliminacion(id) {
         if (result.isConfirmed) {
             // Envía el formulario usando AJAX para manejar la respuesta
             $.ajax({
-                url: $('#form-eliminar-' + id).attr('action'),
-                method: $('#form-eliminar-' + id).attr('method'),
-                data: $('#form-eliminar-' + id).serialize(),
+                url: `/atletas/${id}`, // ruta RESTful 
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function (response) {
                     Swal.fire({
                         title: '¡Eliminado!',
