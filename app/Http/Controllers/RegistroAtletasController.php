@@ -19,7 +19,6 @@ class RegistroAtletasController extends Controller
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;
         return view('academia.registrosAtletas', compact('atletas', 'academia'));
-
     }
 
     /**

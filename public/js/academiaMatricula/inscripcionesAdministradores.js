@@ -19,6 +19,7 @@ $(document).ready(function () {
     let listaAtletas = [];
     let gruposAtletas = [];
     let atletasModificar = []
+    let tempx = [];
 
 
     let btn_edit_code = "";
@@ -306,11 +307,16 @@ $(document).ready(function () {
         var peso_min = opcionSeleccionada.data('min');
         var peso_max = opcionSeleccionada.data('max');
 
-        if (!(peso >= peso_min && peso <= peso_max)) {
-            mostrarAlerta("Verifique que los pesos esten en el rango seleccionado", "Aviso", "⚠️");
+        let modalidad = $(this).find(".modalidades-select option:selected").text();
 
-            // Resetear solo el select actual
-            $(this).prop("selectedIndex", 0);
+        if (modalidad === "Combate") {
+
+            if (!(peso >= peso_min && peso <= peso_max)) {
+                mostrarAlerta("Verifique que los pesos esten en el rango seleccionado", "Aviso", "⚠️");
+
+                // Resetear solo el select actual
+                $(this).prop("selectedIndex", 0);
+            }
         }
     });
 
@@ -385,9 +391,11 @@ $(document).ready(function () {
 
                     }
 
-                    else if (!(peso >= pesoMin && peso <= pesoMax) && rol === 'atleta') {
-                        mostrarAlerta("Verifique que los pesos esten en el rango seleccionado", "Aviso", "⚠️");
-                        return;
+                    else if (modalidad === "Combate") {
+                        if (!(peso >= pesoMin && peso <= pesoMax) && rol === 'atleta') {
+                            mostrarAlerta("Verifique que los pesos esten en el rango seleccionado", "Aviso", "⚠️");
+                            return;
+                        }
                     }
                     obj = {
                         atleta: recortarNombre(atleta),
@@ -562,6 +570,35 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 atletasModificar = [];
+                mostrarAlerta("Lo sentimos, ha ocurrido un promebla al procesar la inscripcion.", "Aviso", "⚠️");
+            }
+        });
+    }
+
+    function modificarAtletaInscrito_p(obj, temp) {
+        console.log("se reemplaza esto: ", temp, " POR ESTO: ", obj);
+
+        $.ajax({
+            url: '/modificarInscripcionAtleta',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                atletasModificar: temp,
+                datosNuevos: obj,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+                mostrarAlerta("Se han actualizado los datos correctamente.", "Éxito", "✅");
+                tempx = [];
+                $("#contenedor .baseCard").remove();
+                $("#contenedor .clonEdit").remove();
+                $("#panelRegistro").show();
+
+                console.log("2");
+
+            },
+            error: function (xhr, status, error) {
+                tempx = [];
                 mostrarAlerta("Lo sentimos, ha ocurrido un promebla al procesar la inscripcion.", "Aviso", "⚠️");
             }
         });
@@ -848,43 +885,6 @@ $(document).ready(function () {
         let recortado = palabras.join(" ");
         return recortado;
     }
-
-    /**
-     * Verifica en Card con clase "baseCard o clonEdit" si hay selects o inputs vacios
-     * @param {*} rol Rol del atleta "asistente, atleta o entrenador".
-     * @returns false cuando no se cumple la condicion.
-     */
-    /*function validarCampos(rol) {
-        let valido = true;
-
-        if (editMode === false) {
-            if (rol === 'atleta') {
-                $(".baseCard").each(function (index, card) {
-                    $(card).find("input, select").each(function () {
-                        if ($(this).val() === "" || $(this).val() === null) {
-                            valido = false;
-                            // console.warn("Campo vacío en la card #" + (index + 1), this);
-                        }
-                    });
-                });
-            } else if (!rol) {
-                valido = false;
-            }
-        } else {
-            if (rol === 'atleta') {
-                $(".clonEdit").each(function (index, card) {
-                    $(card).find("input, select").each(function () {
-                        if ($(this).val() === "" || $(this).val() === null) {
-                            valido = false;
-                        }
-                    });
-                });
-            } else if (!rol) {
-                valido = false;
-            }
-        }
-        return valido;
-    }*/
 
     function validarCampos(rol) {
         let valido = true;
@@ -1288,11 +1288,15 @@ $(document).ready(function () {
     });
 
     // ☑️ Delegación
-    $(document).on("click", "#bGuardar", function () {
+    $(document).on("click", "#bGuardar", function () {//@audit bGuardar
         let contAlertas = 0;
         let totalCards = $(".clonEdit").length;
         var id_academia = $('#idAcademia').val();
         let obj;
+
+        let atletasCambios = [];
+        let cambioImportante = false;
+        let listaCompleta = listaAtletas.concat(gruposAtletas);
 
         // GUARDAR EDICION INDIVIDUAL
         $(".clonEdit").not(".baseCard").each(function () {
@@ -1309,6 +1313,7 @@ $(document).ready(function () {
             //ids
             var id_evento = $("#evento-select option:selected").val();
             var id_atleta = $(this).find(".atletas-select option:selected").data("id");
+            var id_division = $(this).find(".atletas-select option:selected").data("id_division");
             var id_modalidad = $(this).find(".modalidades-select option:selected").val();
             var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
             var id_categoria = $(this).find(".categorias-select option:selected").val();
@@ -1330,13 +1335,13 @@ $(document).ready(function () {
                     }
                 }
                 return;
-            } else if (!(peso >= pesoMin && peso <= pesoMax) && rol === 'atleta') {
-                mostrarAlerta("Verifique que los pesos esten en el rango seleccionado.", "Aviso", "⚠️");
-                return;
+            } else if (modalidad === "Combate") {
+                if (!(peso >= pesoMin && peso <= pesoMax) && rol === 'atleta') {
+                    mostrarAlerta("Verifique que los pesos esten en el rango seleccionado", "Aviso", "⚠️");
+                    return;
+                }
             }
-
             else {
-                let listaCompleta = listaAtletas.concat(gruposAtletas);
 
                 for (let i = 0; i < listaCompleta.length; i++) {
 
@@ -1344,6 +1349,12 @@ $(document).ready(function () {
                         let nuevo_tr_code = crypto.randomUUID();
 
                         if (rol === 'atleta') {
+                            // 1
+                            if (grupo.includes("#") && cantidad_atletas_subModalidad === 1) {
+                                grupo = '—';
+                                cambioImportante = true;
+                            }
+
                             obj = {
                                 atleta: recortarNombre(nombre),
                                 sexo: sexo,
@@ -1358,6 +1369,7 @@ $(document).ready(function () {
                                 //ids
                                 id_evento: id_evento,
                                 id_atleta: id_atleta,
+                                id_division: id_division,
                                 id_modalidad: id_modalidad,
                                 id_subModalidad: id_subModalidad,
                                 id_categoria: id_categoria,
@@ -1378,6 +1390,7 @@ $(document).ready(function () {
                                 //ids
                                 id_evento: id_evento,
                                 id_atleta: id_atleta,
+                                id_division: null,
                                 id_modalidad: null,
                                 id_subModalidad: null,
                                 id_categoria: null,
@@ -1385,14 +1398,16 @@ $(document).ready(function () {
                             }
                         }
 
-                        actualizarTrTablaInscripciones(obj, tr_code);
+                        // actualizarTrTablaInscripciones(obj, tr_code);
+                        atletasCambios.push({
+                            obj,
+                            tr_code
+                        });
+
                         listaCompleta[i] = obj;
                         actualizarListas(listaCompleta);
                     }
                 }
-
-                // Actualizar inscripcion
-                modificarAtletaInscrito(obj);
 
                 if (totalCards > 1) {
                     if (contAlertas === totalCards) {
@@ -1414,9 +1429,38 @@ $(document).ready(function () {
                     </button>
                 `);
             }
-
-
         });
+
+        for (let i = 0; i < atletasCambios.length; i++) {
+            if (cambioImportante === true) {
+                if (atletasCambios[i].obj.grupo.includes('—')) {
+
+                    id = atletasCambios[i].obj.id_atleta;
+                    let atleta = atletasModificar.find(a => a.id_atleta === id);
+
+                    // Eliminarlo del array atletasModificar
+                    atletasModificar = atletasModificar.filter(a => a.id_atleta !== id);
+
+                    // Guardarlo en tempx
+                    tempx.push(atleta);
+
+                    modificarAtletaInscrito_p(atletasCambios[i].obj, tempx);
+                    actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
+
+                    console.log("tempx:", tempx);
+                    console.log("atletasModificar:", atletasModificar);
+                }
+            }
+        }
+
+        for (let i = 0; i < atletasCambios.length; i++) {
+            if (atletasCambios[i].obj.grupo.includes('#')) {
+                atletasCambios[i].obj.grupo = atletasCambios[i].obj.grupo + "-p";
+
+                modificarAtletaInscrito(atletasCambios[i].obj);
+                actualizarTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
+            }
+        }
     });
 
 

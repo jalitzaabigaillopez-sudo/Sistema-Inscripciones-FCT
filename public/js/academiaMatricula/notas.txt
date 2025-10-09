@@ -3,6 +3,9 @@ INSCRIPCIONES - EDITAR
 2.Igual que la anterior pero alrevez, si un atleta esta en una actividad individual y edita para hacer un grupo.
 4.Corregir la validacion de sexos en submodalidades
 
+ - VERIFICAR
+AL LANZAR ERROR DE CAMPOS VACIOS SE ELIMINAR LOS CARDS Y LOS CAMPOS
+
 
 
 
