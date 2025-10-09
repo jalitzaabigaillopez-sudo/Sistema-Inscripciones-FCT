@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/x-icon" href="https://via.placeholder.com/32?text=FCT">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/LogoFCT_transpa.png') }}">
 
 
     <!-- Bootstrap 5.3.3 CSS -->
@@ -343,8 +343,15 @@
                 style="max-width:100%;">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)"><i
-                class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)"><i class="bi bi-speedometer2"></i>
+            Dashboard</a>
+
+        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-circle me-2"></i>
+            Administración de Perfil</a>
+        <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i
+                class="bi bi-people me-2"></i>
+            Gestión de atletas</a>
+
 
         <!-- Submenú de Inscripciones a eventos -->
         <div class="submenu">
@@ -361,13 +368,26 @@
             </div>
         </div>
         <!-- Fin del Submenú -->
-        <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i class="bi bi-people"></i>
-            Gestión de atletas</a>
-        <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"><i
-                class="bi bi-person-badge"></i> Administración de Perfil</a>
-        <a href="#"><i class="bi bi-bar-chart-line"></i> Avance de eventos</a>
-        <a href="#"><i class="bi bi-graph-up"></i> Estadística atletas/eventos</a>
-        <a href="#"><i class="bi bi-bar-chart-line me-2"></i><span>Reportes</span></a>
+
+        {{-- SUBMENU ANÁLISIS --}}
+
+        <!-- Submenú de Análisis y Reportes -->
+        <div class="submenu">
+            <a class="submenu-toggle text-white d-flex align-items-center justify-content-between" href="#"
+                id="analisisToggle">
+                <span><i class="bi bi-graph-up me-2"></i>Análisis y Reportes</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+            </a>
+
+            <div class="submenu-items d-none" id="analisisItems">
+                <a href="#"><i class="bi bi-bar-chart-line me-2"></i> Avance de eventos</a>
+                <a href="#"><i class="bi bi-people me-2"></i> Estadística atletas</a>
+                <a href="#"><i class="bi bi-calendar-check me-2"></i> Estadística eventos</a>
+                <a href="#"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes generales</a>
+
+            </div>
+        </div>
+
     </nav>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
@@ -434,13 +454,12 @@
     <script src="{{ asset('assets/js/ripple.js') }}"></script>
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-        </script>
+    </script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -472,7 +491,7 @@
             return estado === 'true';
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             // GUARDAR ESTADO DE SUBMENÚ SIN IMPORTAR SI SE REFRESCA
 
@@ -487,7 +506,7 @@
                 inscripcionesToggle.classList.add('active');
             }
 
-            inscripcionesToggle.addEventListener('click', function (e) {
+            inscripcionesToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const estaAbierto = !inscripcionesItems.classList.contains('d-none');
 
@@ -513,7 +532,7 @@
                 analisisToggle.classList.add('active');
             }
 
-            /*analisisToggle.addEventListener('click', function (e) {
+            analisisToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const estaAbierto = !analisisItems.classList.contains('d-none');
 
@@ -526,7 +545,7 @@
                     analisisToggle.classList.add('active');
                     guardarEstadoAnalisis(true);
                 }
-            });*/
+            });
 
 
             const sidebar = document.getElementById('sidebar');
@@ -553,7 +572,7 @@
                 }
             }
 
-            toggleSidebar.addEventListener('click', function () {
+            toggleSidebar.addEventListener('click', function() {
                 // En móvil, abre sidebar con clase sidebar-open
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('sidebar-open');
@@ -564,7 +583,7 @@
                 }
             });
 
-            sidebarClose.addEventListener('click', function () {
+            sidebarClose.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
                 setContentMargin();
@@ -574,7 +593,7 @@
             adjustSidebarOnLoad();
 
             // Cerrar sidebar si se hace clic fuera (solo en móviles)
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 if (
                     window.innerWidth <= 768 &&
                     !sidebar.contains(e.target) &&
@@ -589,7 +608,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-        </script>
+    </script>
 
     <!-- Bootstrap-Select -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
