@@ -1602,14 +1602,13 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("click", ".bEditar2", function () {
+    $(document).on("click", ".bEditar2", function () {//@audit bEditar2
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code"); // más seguro que .data()
         let grupo = $fila.find("td:eq(7)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
 
         let submodalidad = $fila.find("td:eq(5)").text().trim();
-        let id_subModalidad = $fila.find("td:eq(6)").data("id-submodalidad");
 
         if (btn_edit_code != tr_code) {
 
@@ -1666,35 +1665,6 @@ $(document).ready(function () {
                         nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
                         nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
-
-
-                        // 🔹 Limpiar inputs de texto
-                        // nuevaCard.find("input").val("");
-
-                        var newSelect = nuevaCard.find('.atletas-select');
-
-                        // Inicializar Select2
-                        newSelect.select2({
-                            placeholder: "Selecciona un atleta",
-                            width: '100%'
-                        });
-
-                        // Buscar la opción con el data-id correcto
-                        var option = nuevaCard.find(".atletas-select option").filter(function () {
-                            return $(this).data("id") == atleta.id_atleta;
-                        });
-
-                        // Si existe, seleccionarla por su value
-                        if (option.length) {
-                            var value = option.val(); // obtener el value real del <option>
-                            nuevaCard.find(".atletas-select").val(value).trigger("change");
-                        }
-                        nuevaCard.find(".rol-select option").filter(function () {
-                            return $(this).val() == atleta.rol;
-                        }).prop("selected", true);
-                        nuevaCard.find(".modalidades-select option").filter(function () {
-                            return $(this).data("nombre") == atleta.modalidad;
-                        }).prop("selected", true);
 
                         if (atleta.rol === "atleta") {
 
@@ -1773,6 +1743,31 @@ $(document).ready(function () {
                             }
                         });
 
+                        var newSelect = nuevaCard.find('.atletas-select');
+
+                        // Inicializar Select2
+                        newSelect.select2({
+                            placeholder: "Selecciona un atleta",
+                            width: '100%'
+                        });
+
+                        // Buscar la opción con el data-id correcto
+                        var option = nuevaCard.find(".atletas-select option").filter(function () {
+                            return $(this).data("id") == atleta.id_atleta;
+                        });
+
+                        // Si existe, seleccionarla por su value
+                        if (option.length) {
+                            var value = option.val(); // obtener el value real del <option>
+                            nuevaCard.find(".atletas-select").val(value).trigger("change");
+                        }
+                        nuevaCard.find(".rol-select option").filter(function () {
+                            return $(this).val() == atleta.rol;
+                        }).prop("selected", true);
+                        nuevaCard.find(".modalidades-select option").filter(function () {
+                            return $(this).data("nombre") == atleta.modalidad;
+                        }).prop("selected", true);
+
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
@@ -1822,6 +1817,12 @@ $(document).ready(function () {
                         // Buscar atleta por id
                         let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
 
+                        // Verificar si Select2 ya está inicializado antes de destruirlo                     
+                        const select = panelOriginal.find('.atletas-select');
+                        if (select.data('select2')) {
+                            select.select2('destroy');
+                        }
+
                         // Crear clon
                         let nuevaCard = panelOriginal.clone();
 
@@ -1831,12 +1832,9 @@ $(document).ready(function () {
                             "data-grupo": atleta.grupo
                         });
 
-                        // Mostrar clon aunque el original esté oculto
-                        nuevaCard.show();
-
                         // 🔹 Copiar selects del padre
                         // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
-                        nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html());
+                        nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
                         nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
                         nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
@@ -1922,9 +1920,6 @@ $(document).ready(function () {
                             }
                         });
 
-                        // 🔹 Limpiar inputs de texto
-                        // nuevaCard.find("input").val("");
-
                         var newSelect = nuevaCard.find('.atletas-select');
 
                         // Inicializar Select2
@@ -1949,15 +1944,15 @@ $(document).ready(function () {
                         nuevaCard.find(".modalidades-select option").filter(function () {
                             return $(this).data("nombre") == atleta.modalidad;
                         }).prop("selected", true);
-                        // nuevaCard.find(".submodalidades-select option").filter(function () {
-                        //     return $(this).data("nombre") == atleta.submodalidad;
-                        // }).prop("selected", true);
+                        nuevaCard.find(".submodalidades-select option").filter(function () {
+                            return $(this).data("nombre") == atleta.submodalidad;
+                        }).prop("selected", true);
 
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
-                        // nuevaCard.find(".inputRol").val(atleta.rol); 
                         nuevaCard.find(".inputPeso").val(atleta.peso);
 
+                        nuevaCard.show();
                         contenedor.append(nuevaCard);
                     }
                 }
