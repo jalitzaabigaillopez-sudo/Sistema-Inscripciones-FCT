@@ -343,7 +343,7 @@
                 style="max-width:100%;">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard.academias') }}" onclick="handleSidebarClick(event)"><i
+        <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)"><i
                 class="bi bi-speedometer2"></i> Dashboard</a>
 
         <!-- Submenú de Inscripciones a eventos -->

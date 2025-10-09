@@ -5,16 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Atleta;
+use App\Models\Usuario;
 
 class RegistroAtletasController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $atletas = Atleta::paginate(10);
-        return view('academia.registrosAtletas', compact('atletas'));
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+        return view('academia.registrosAtletas', compact('atletas', 'academia'));
 
     }
 

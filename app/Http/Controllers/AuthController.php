@@ -112,6 +112,8 @@ class AuthController extends Controller
             ? 'admin.perfil-admin'
             : 'academia.perfilAcademia';
 
-        return view($vista, compact('usuario'));
+        $academia = $usuario->academia;
+
+        return view($vista, compact('usuario', 'academia'));
     }
 }
