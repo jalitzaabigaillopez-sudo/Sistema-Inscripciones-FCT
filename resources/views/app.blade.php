@@ -343,8 +343,7 @@
                 <i class="bi bi-speedometer2 me-2"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i
-                    class="bi bi-person-badge me-2"></i>Perfil Administrador</a>
+            <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"> <i class="bi bi-person-circle me-2"></i> Administración de Perfil</a>
             <a href="{{ route('atletas.index') }}" onclick="handleSidebarClick(event)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-person-walking me-2" viewBox="0 0 16 16">

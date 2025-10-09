@@ -11,87 +11,88 @@
         <h3 class="mb-4 text-black fw-bold">Administración de Perfil</h3>
 
         <div class="row justify-content-center">
-           <div class="col-12 col-lg-8">
-    <div class="card shadow border-0 rounded-3">
-        <!-- Encabezado -->
-        <div class="card-header bg-white fw-semibold fs-5 d-flex justify-content-between align-items-center border-0">
-            <span class="text-primary">
-                <i class="bi bi-person-badge me-2"></i> Perfil del Usuario
-            </span>
-            <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal"
-                data-bs-target="#modalEditarPerfilAdmin" data-usuario='@json($usuario)'>
-                <i class="bi bi-pencil-square"></i> Editar Perfil
-            </button>
-        </div>
-
-        <!-- Cuerpo -->
-        <div class="card-body p-4">
-            <!-- Identificación -->
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label class="form-label fw-bold text-muted small">Número de Identificación</label>
-                    <div class="p-2 border rounded bg-light">
-                        {{ $usuario->identificacion }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Nombre, Rol y Estado -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold text-muted small">Nombre completo</label>
-                    <div class="p-2 border rounded bg-light">
-                        {{ $usuario->nombre_completo }}
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold text-muted small">Rol</label>
-                    <div class="badge bg-info-subtle text-dark w-100 p-2">
-                        {{ ucfirst($usuario->rol) }}
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold text-muted small">Estado</label>
-                    <div class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} w-100 p-2">
-                        {{ ucfirst($usuario->estado) }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Correo y Contraseña -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold text-muted small">Correo electrónico</label>
-                    <div class="p-2 border rounded bg-light">
-                        {{ $usuario->email }}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold text-muted small">Contraseña</label>
-                    <div class="p-2 border rounded bg-light">
-                        ••••••••
-                    </div>
-                </div>
-            </div>
-
-            <!-- Imagen de perfil -->
-            <div class="row mt-4">
-                <div class="col-12 text-center">
-                    <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
-                    <div class="d-flex flex-column align-items-center">
-                        <img src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : asset('images/default.png') }}"
-                            alt="Foto de perfil"
-                            class="rounded-circle shadow-sm border"
-                            style="width: 130px; height: 130px; object-fit: cover;">
-                        <span class="text-muted small mt-2">
-                            {{ $usuario->nombre_completo }}
+            <div class="col-12 col-lg-8">
+                <div class="card shadow border-0 rounded-3">
+                    <!-- Encabezado -->
+                    <div
+                        class="card-header bg-white fw-semibold fs-5 d-flex justify-content-between align-items-center border-0">
+                        <span class="text-primary">
+                            <i class="bi bi-person-badge me-2"></i> Perfil del Usuario
                         </span>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#modalEditarPerfilAdmin" data-usuario='@json($usuario)'>
+                            <i class="bi bi-pencil-square"></i> Editar Perfil
+                        </button>
+                    </div>
+
+                    <!-- Cuerpo -->
+                    <div class="card-body p-4">
+                        <!-- Identificación -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-muted small">Número de Identificación</label>
+                                <div class="p-2 border rounded bg-light">
+                                    {{ $usuario->identificacion }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nombre, Rol y Estado -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Nombre completo</label>
+                                <div class="p-2 border rounded bg-light">
+                                    {{ $usuario->nombre_completo }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold text-muted small">Rol</label>
+                                <div class="badge bg-info-subtle text-dark w-100 p-2">
+                                    {{ ucfirst($usuario->rol) }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold text-muted small">Estado</label>
+                                <div
+                                    class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} w-100 p-2">
+                                    {{ ucfirst($usuario->estado) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Correo y Contraseña -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Correo electrónico</label>
+                                <div class="p-2 border rounded bg-light">
+                                    {{ $usuario->email }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Contraseña</label>
+                                <div class="p-2 border rounded bg-light">
+                                    ••••••••
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Imagen de perfil -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
+                                <div class="d-flex flex-column align-items-center">
+                                    <img src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : asset('images/default.png') }}"
+                                        alt="Foto de perfil" class="rounded-circle shadow-sm border"
+                                        style="width: 130px; height: 130px; object-fit: cover;">
+                                    <span class="text-muted small mt-2">
+                                        {{ $usuario->nombre_completo }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
 
             <!-- Modal de edición -->
@@ -223,7 +224,8 @@
                                                 <input class="form-check-input" type="radio" name="estado_dummy"
                                                     id="perfil_estado_activo_dummy" value="activo"
                                                     {{ $usuario->estado == 'activo' ? 'checked' : '' }} disabled>
-                                                <label class="form-check-label" for="perfil_estado_activo_dummy">Activo</label>
+                                                <label class="form-check-label"
+                                                    for="perfil_estado_activo_dummy">Activo</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="estado_dummy"
@@ -302,6 +304,27 @@
                                     });
                                 }
                             },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: '¡Éxito!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#3085d6',
+                                        confirmButtonText: 'Aceptar'
+                                    }).then(() => {
+                                        if (response.logout) {
+                                            // 🔴 Redirigir al login si se cerró la sesión
+                                            window.location.href = "{{ route('login') }}";
+                                        } else {
+                                            $('#modalEditarPerfilAdmin').modal('hide');
+                                            formEditarPerfil.reset();
+                                            location.reload();
+                                        }
+                                    });
+                                }
+                            },
+
                             error: function(xhr) {
                                 let errorMessage = 'Error al actualizar el perfil.';
                                 if (xhr.status === 422) {

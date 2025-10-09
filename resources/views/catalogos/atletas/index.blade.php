@@ -23,8 +23,8 @@
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
-                <div class="table-responsive" style="width:100%; overflow-x:auto; min-height:300px;">
-                    <table id="tabla" class="table table-striped table-hover table-bordered text-center align-middle">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
                         <thead class="table-light">
                             <tr id="tabla-headers"></tr>
 
@@ -44,7 +44,7 @@
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
                         <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalAtletaLabel">Registrar
-                            Nuevo Atleta</h5>
+                            Nuevo Atleta</h5> 
                         <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="CerrarM"
                             aria-label="Cerrar"></button>
                     </div>
@@ -184,9 +184,8 @@
                                                 alt="Vista previa"
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                            name="eliminarFoto" style="display: none;"><i class="bi bi-trash"></i>
-                                            Eliminar Foto</button>
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
+                                            style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
                                     </div>
                                 </div>
                             </div>
@@ -195,8 +194,7 @@
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill me-2" name="cancelar"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta"
-                            id="btnGuardarAtleta">Guardar
+                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta" id="btnGuardarAtleta">Guardar
                             Atleta</button>
                     </div>
                 </div>
@@ -212,8 +210,8 @@
                         <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAtletaLabel">
                             Actualizar Datos del Atleta</h5>
 
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
-                            name="cerrar" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="cerrar"
+                            aria-label="Cerrar"></button>
                     </div>
                     <form method="POST" action="" id="formEditarAtleta" data-id="">
                         @csrf
@@ -366,9 +364,8 @@
                                                         alt="Vista previa"
                                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                                 </div>
-                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn"
-                                                    name="eliminarFoto" style="display: none;"><i
-                                                        class="bi bi-trash"></i> Eliminar
+                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
+                                                    style="display: none;"><i class="bi bi-trash"></i> Eliminar
                                                     Foto</button>
                                                 <input type="hidden" name="remove_imagen" id="removeImagen"
                                                     value="0">
@@ -392,8 +389,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="{{ asset('js/gestion_atleta.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-
         <script src="{{ asset('js/datatable.js') }}"></script>
 
         {{-- Aquí va el JS específico de esta tabla --}}
@@ -433,7 +428,7 @@
                     {
                         data: "estado",
                         title: "Estado",
-                        render: function(data) {
+                         render: function(data) {
                             let badgeClass =
                                 data === 'activo' ? 'success' :
                                 data === 'inactivo' ? 'danger' :
@@ -446,12 +441,14 @@
                         title: "Acciones",
                         orderable: false,
                         render: function(data, type, row) {
-                            return `
+                             return `
                             <div class="d-flex justify-content-center gap-2">
-                                <button class="btn btn-sm btn-warning rounded-circle btn-edit" data-id="${data}" title="Editar">
+                                <button class="btn btn-sm btn-warning rounded-circle btn-edit"  name="editar"
+                                        data-id="${data}" title="Editar">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger rounded-circle" onclick="confirmarEliminacion(${data})" title="Eliminar">
+                                <button class="btn btn-sm btn-danger rounded-circle" name="eliminar"
+                                        onclick="confirmarEliminacion(${data})" title="Eliminar">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>

@@ -297,39 +297,54 @@
                 },
                 {
                     data: "estado",
-                    title: "Estado"
+                    title: "Estado",
+                    render: function(data) {
+                        let badgeClass =
+                            data === 'activo' ? 'success' :
+                            data === 'inactivo' ? 'danger' :
+                            'secondary';
+                        return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
+                    }
                 },
                 {
                     data: "acciones",
                     title: "Acciones",
-                    orderable: false, // Las acciones no se ordenan
+                    orderable: false,
                     render: function(data, type, row) {
-                        // 'data' es el ID del usuario
-                        return `
-                            <a href="#" 
-                                   class="btn btn-sm btn-warning rounded-pill btn-edit" 
-                                   title="Editar"
-                                   data-id="${row.id_usuario}" 
-                                    data-usuario='${JSON.stringify(row)}'
-                                   data-bs-toggle="modal" 
-                                   data-bs-target="#modalEditarUsuario">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
+                        // Si es el usuario actual, mostrar el botón gris
+                        if (row.usuario_actual) {
+                            return `
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <button class="btn btn-sm btn-secondary rounded-pill d-flex align-items-center justify-content-center px-3" 
+                            title="Usuario actual" disabled >
+                        <i class="bi bi-person-lock"></i>
+                    </button>
+                </div>`;
+                        }
 
-                                <form action="/usuarios/${data}" method="POST" id="form-eliminar-${data}" class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-danger rounded-pill"
-                                            data-bs-toggle="tooltip" 
-                                            title="Eliminar Usuario"
-                                            onclick="confirmarEliminacion(${data})">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                        `;
+                        // Si es otro usuario
+                        return `
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <a href="#" 
+                            class="btn btn-sm btn-warning rounded-pill d-flex align-items-center justify-content-center btn-edit"
+                            data-id="${row.id_usuario}" 
+                            data-usuario='${JSON.stringify(row)}'
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalEditarUsuario"
+                            title="Editar Usuario"
+                            >
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button class="btn btn-sm btn-danger rounded-pill d-flex align-items-center justify-content-center"
+                                title="Eliminar Usuario" 
+                                onclick="confirmarEliminacion(${row.id_usuario})"
+                            >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>`;
                     }
                 }
+
             ];
 
             // Pintar headers dinámicamente
@@ -578,47 +593,41 @@
         }
     });
 
-    function confirmarEliminacion(id) {
+    // ELIMINAR
+    window.confirmarEliminacion = function(id) {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: "¡No podrás revertir esta acción!",
+            text: 'Esta acción no se puede deshacer',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            allowOutsideClick: false,
-            allowEscapeKey: false
+            cancelButtonText: 'Cancelar'
         }).then((result) => {
-            if (result.isConfirmed) {
-                // Envía el formulario usando AJAX para manejar la respuesta
-                $.ajax({
-                    url: $('#form-eliminar-' + id).attr('action'),
-                    method: $('#form-eliminar-' + id).attr('method'),
-                    data: $('#form-eliminar-' + id).serialize(),
-                    success: function(response) {
-                        Swal.fire({
-                            title: '¡Eliminado!',
-                            text: 'El registro ha sido eliminado correctamente.',
-                            icon: 'success',
-                            confirmButtonColor: '#3085d6',
-                            confirmButtonText: 'Aceptar'
-                        }).then(() => {
-                            // Recarga la página o actualiza la tabla
-                            location.reload();
+            if (!result.isConfirmed) return;
+
+            $.ajax({
+                url: `/usuarios/${id}`,
+                type: 'POST', // si tu ruta es DELETE puro, usa type: 'DELETE'
+                data: {
+                    _method: 'DELETE'
+                }, // method spoofing si tu server espera DELETE
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(resp) {
+                    Swal.fire('Eliminado', resp.message || 'Usuario eliminado.', 'success')
+                        .then(() => {
+                            // refresca sin perder página actual
+                            $('#tabla').DataTable().ajax.reload(null, false);
                         });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Ocurrió un error al intentar eliminar el registro.',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
-                    }
-                });
-            }
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.message || 'No se pudo eliminar el usuario.';
+                    Swal.fire('Error', msg, 'error');
+                }
+            });
         });
     }
 </script>

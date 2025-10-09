@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class UsuariosController extends Controller
 {
@@ -17,6 +19,9 @@ class UsuariosController extends Controller
         // Si es una solicitud AJAX, procesamos los datos para DataTables
         if ($request->ajax()) {
             $query = Usuario::query(); // Inicia la consulta del modelo
+
+            //  Usuario actual (de la sesión)
+            $usuarioActualId = session('usuario'); // o Auth::id() si usas Auth
 
             // 1. Aplicar Búsqueda Global (si existe)
             if ($request->has('search') && !empty($request->search['value'])) {
@@ -57,6 +62,7 @@ class UsuariosController extends Controller
             // 4. Formatear Datos para DataTables
             $formattedData = [];
             foreach ($data as $item) {
+
                 $formattedData[] = [
                     // Asegúrarse de que estas claves coincidan con el 'data' del JS
                     'id_usuario'      => $item->id_usuario,
@@ -65,8 +71,8 @@ class UsuariosController extends Controller
                     'email' => $item->email,
                     'rol' => $item->rol,
                     'estado' => $item->estado,
-                    'imagen' => $item->imagen,   
-                    'acciones' => $item->id_usuario, // Se usa el ID para generar los botones
+                    'imagen' => $item->imagen,
+                   'usuario_actual'   => ($item->id_usuario == $usuarioActualId), // Se usa el ID para generar los botones
                 ];
             }
 
@@ -227,13 +233,12 @@ class UsuariosController extends Controller
                 'remove_imagen' => 'nullable|in:0,1',
             ], $messages);
 
-            if ($validator->fails()) {
-                Log::warning('Validación fallida en update: ' . json_encode($validator->errors()));
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
             // Actualizar los datos del usuario
             $usuario->identificacion = $request->identificacion;
@@ -242,11 +247,14 @@ class UsuariosController extends Controller
             $usuario->rol = $request->rol;
             $usuario->estado = $request->estado;
 
-            // Actualizar la contraseña solo si se proporciona
-            if ($request->filled('password')) {
-                $usuario->password = $request->password; // Dejar que Encryptable lo maneje
-                $usuario->password_vencimiento = 180; // Reiniciar el vencimiento
-            }
+            $passwordCambiada = false; // bandera
+
+        // ✅ Si el usuario cambia su contraseña
+        if ($request->filled('password')) {
+            $usuario->password = $request->password;
+            $usuario->password_vencimiento = 180;
+            $passwordCambiada = true;
+        }
 
             // Manejar la imagen
             if ($request->input('remove_imagen') === '1') {
@@ -267,6 +275,17 @@ class UsuariosController extends Controller
 
             $usuario->save();
 
+            // 🔐 Si el usuario editado es el mismo que está logueado y cambió su contraseña → cerrar sesión
+        if ($passwordCambiada && session('usuario') == $usuario->id_usuario) {
+            Session::flush(); // elimina sesión
+            Auth::logout();   // si usas Auth
+            return response()->json([
+                'success' => true,
+                'logout' => true, // indicamos al frontend que debe redirigir al login
+                'message' => 'Tu contraseña ha sido actualizada. Por seguridad, debes volver a iniciar sesión.'
+            ], 200);
+        }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario actualizado correctamente.'
@@ -285,10 +304,22 @@ class UsuariosController extends Controller
      */
     public function destroy(string $id)
     {
-        $item = Usuario::find($id);
+        $usuarioActualId = session('usuario');
 
-        $item->delete();
+        if ($id == $usuarioActualId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No puedes eliminar tu propio usuario.'
+            ], 403);
+        }
 
-        return back();
+        $usuario = Usuario::find($id);
+        if (!$usuario) {
+            return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+
+        $usuario->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Usuario eliminado correctamente.']);
     }
 }
