@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Atleta;
 use App\Models\Usuario;
@@ -10,9 +9,10 @@ use App\Models\Usuario;
 class RegistroAtletasController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar lista de atletas
      */
-    public function index(Request $request)
+
+/*    public function index(Request $request)
     {
         $atletas = Atleta::paginate(10);
         $usuarioId = $request->session()->get('usuario');
@@ -20,85 +20,81 @@ class RegistroAtletasController extends Controller
         $academia = $usuario->academia;
         return view('academia.registrosAtletas', compact('atletas', 'academia'));
     }
+    */
 
+
+    public function index(Request $request)
+{
+    $busqueda = $request->input('buscar');
+
+    $atletas = Atleta::when($busqueda, function ($query, $busqueda) {
+        $query->where('nombre', 'like', "%{$busqueda}%")
+              ->orWhere('primer_apellido', 'like', "%{$busqueda}%")
+              ->orWhere('segundo_apellido', 'like', "%{$busqueda}%")
+              ->orWhere('identificacion', 'like', "%{$busqueda}%")
+              ->orWhere('sexo', 'like', "%{$busqueda}%")
+              ->orWhere('tipo_identificacion', 'like', "%{$busqueda}%");
+    })
+    ->orderBy('id_atleta', 'asc')->paginate(10);
+
+    return view('academia.registrosAtletas', compact('atletas', 'busqueda'));
+}
     /**
-     * Show the form for creating a new resource.
+     * Guardar un nuevo atleta
      */
-    public function create()
-    {
-     return view('academia.atletas.create');
- 
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre'           => 'required|string|max:255',
-            'primer_apellido'  => 'required|string|max:255',
-            'segundo_apellido' => 'nullable|string|max:255',
-            'sexo'             => 'required|in:Masculino,Femenino',
-            'edad'             => 'required|integer|min:0|max:120',
-            'peso'             => 'required|numeric|min:0|max:999.99',
-            'modalidad'        => 'required|string|max:50',
-            'participacion'    => 'required|string|max:50',
-            'tipo'             => 'required|string|max:50',
-            'grupo'            => 'required|string|max:50',
+            'tipo_identificacion' => 'required|string|max:50',
+            'identificacion'      => 'required|string|max:50|unique:atletas,identificacion',
+            'primer_apellido'     => 'required|string|max:255',
+            'segundo_apellido'    => 'nullable|string|max:255',
+            'nombre'              => 'required|string|max:255',
+            'sexo'                => 'required|in:Masculino,Femenino',
+            'fecha_nacimiento'    => 'required|date',
         ]);
 
-    Atleta::create($validated);
-    return redirect()->route('atletas.index')
-                     ->with('success', 'Atleta creado exitosamente.');
+        // si tienes sesión con academia puedes asignarla automáticamente:
+        // $validated['id_academia'] = auth()->user()->academia_id;
+          $validated['id_division'] = $request->input('id_division', 1); // Asignar una división por defecto si no se proporciona
 
-}
+        Atleta::create($validated);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-     public function edit($id)
-    {
-        $atleta = Atleta::findOrFail($id);
-        return view('academia.editAtleta', compact('atleta'));
+        return redirect()->route('registro-atletas.index')->with('success', 'Atleta creado exitosamente.');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un atleta existente
      */
-     public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $atleta = Atleta::findOrFail($id);
 
         $validated = $request->validate([
-            'nombre'           => 'required|string|max:255',
-            'primer_apellido'  => 'required|string|max:255',
-            'segundo_apellido' => 'nullable|string|max:255',
-            'sexo'             => 'required|in:Masculino,Femenino',
-            'edad'             => 'required|integer|min:0|max:120',
-            'peso'             => 'required|numeric|min:0|max:999.99',
-            'modalidad'        => 'required|string|max:50',
-            'participacion'    => 'required|string|max:50',
-            'tipo'             => 'required|string|max:50',
-            'grupo'            => 'required|string|max:50',
+            'tipo_identificacion' => 'required|string|max:50',
+            'identificacion'      => 'required|string|max:50|unique:atletas,identificacion,'.$id.',id_atleta',
+            'primer_apellido'     => 'required|string|max:255',
+            'segundo_apellido'    => 'nullable|string|max:255',
+            'nombre'              => 'required|string|max:255',
+            'sexo'                => 'required|in:Masculino,Femenino',
+            'fecha_nacimiento'    => 'required|date',
         ]);
 
         $atleta->update($validated);
 
-        return redirect()->route('atletas.edit', $atleta->id)
-                         ->with('success', 'Atleta actualizado exitosamente.');
+        return redirect()->route('registro-atletas.index')->with('success', 'Atleta actualizado correctamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un atleta
      */
-      public function destroy($id)
+    public function destroy($id)
     {
         $atleta = Atleta::findOrFail($id);
         $atleta->delete();
 
-        return redirect()->route('atletas.destroy')
-                         ->with('success', 'Atleta eliminado exitosamente.');
+        return redirect()->route('registro-atletas.index')->with('success', 'Atleta eliminado correctamente.');
     }
+
 }
+
