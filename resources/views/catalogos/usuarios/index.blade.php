@@ -29,7 +29,7 @@
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Correo</th>
                                 {{-- <th>Contraseña</th> --}}
-                                {{-- <th class="text-center">Imagen</th> --}}
+                                <th class="text-center">Academia</th>
                                 <th class="text-center">Rol</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-center">Acciones</th>
@@ -290,6 +290,10 @@
                 {
                     data: "email",
                     title: "Correo"
+                },
+                {
+                    data: "academia",
+                    title: "Academia asignada"
                 },
                 {
                     data: "rol",
