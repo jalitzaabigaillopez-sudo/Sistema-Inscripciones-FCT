@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Division;
+use App\Services\SessionService;
 
 class DivisionController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     public function index()
     {
         $data = Division::all();

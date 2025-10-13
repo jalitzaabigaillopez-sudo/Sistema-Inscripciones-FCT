@@ -6,9 +6,16 @@ use App\Models\Categoria;
 use App\Models\Division;
 use Illuminate\Http\Request;
 use App\Models\Atleta;
+use App\Services\SessionService;
 
 class CategoriaController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
 
     public function index(Request $request)
     {

@@ -7,9 +7,16 @@ use App\Models\Modalidad;
 use App\Models\SubModalidad;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
+use App\Services\SessionService;
 
 class ModalidadesController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     /**
      * Display a listing of the resource.
      */

@@ -10,10 +10,17 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
+use App\Services\SessionService;
 
 
 class PasswordController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     /**
      * METODO para asignar una contraseña temporal al usuario
      */

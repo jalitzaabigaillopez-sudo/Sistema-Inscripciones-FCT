@@ -137,7 +137,6 @@ Route::resource('/registro-atletas', RegistroAtletasController::class);
 
 Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAcademia'])->name('academia.preregistro.process');
 
-
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
 Route::view('/adminDash', 'admin.dashboard')->name('adminDash');

@@ -13,9 +13,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
+use App\Services\SessionService;
 
 class AtletasController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
 
     /**
      * Administrador 🚩

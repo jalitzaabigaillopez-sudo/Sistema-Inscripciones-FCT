@@ -6,9 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Atleta;
 use App\Models\Usuario;
 use App\Models\Academia;
+use App\Services\SessionService;
 
 class RegistroAtletasController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     /**
      * Mostrar lista de atletas
      */

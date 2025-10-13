@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PadronNacimiento;
 use App\Models\Categoria;
+use App\Services\SessionService;
 
 class PadronNacimientoController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     public function buscarPersona(Request $request)
     {
 

@@ -17,11 +17,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Services\SessionService;
 
 
 
 class AcademiaController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
 
     public function index(Request $request)
     {
@@ -240,8 +247,8 @@ class AcademiaController extends Controller
         ]);
         -
 
-        // Verificar que exista el usuario
-        $id = $request['id_usuario'];
+            // Verificar que exista el usuario
+            $id = $request['id_usuario'];
         $usuario = Usuario::find($id);
         if (!$usuario) {
             return response()->json(['error' => 'Ha ocurrido un error con el proceso de registro'], 404);

@@ -1,6 +1,6 @@
-@if (request()->has('session_expired'))
-    <div class="alert alert-warning">
-        Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.
+@if(session('alerta'))
+    <div class="alert alert-warning text-center">
+        {{ session('alerta') }}
     </div>
 @endif
 
@@ -88,6 +88,15 @@
                     <div class="card-body shadow-lg">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
+
+                        @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Cerrar"></button>
+                            </div>
+                        @endif
+
                         <form id="loginForm" action="{{ route('login.process') }}" method="POST">
                             @csrf
                             <div class="mb-3 p-1">
@@ -112,7 +121,9 @@
 
                             <button type="submit" class="btn btn-primary w-100 button"><i
                                     class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</button>
-                            {{-- <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> --> --}}
+                            {{--
+                            <!-- <a href="{{ route('academia.preregistro.form') }}" class="btn btn-outline-primary  w-100 mt-3">¿Eres una nueva academia? Solicita acceso</a> -->
+                            --}}
 
 
                             {{-- <div class="mt-3 text-center">
@@ -137,13 +148,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             /* ============================================================
                👁️ VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
             ============================================================ */
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -162,7 +173,7 @@
             ============================================================ */
             const form = document.querySelector('#loginForm');
 
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
 
                 const formData = new FormData(form);
@@ -176,12 +187,12 @@
                 });
 
                 fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                        },
-                        body: formData
-                    })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    },
+                    body: formData
+                })
                     .then(async response => {
                         Swal.close();
 

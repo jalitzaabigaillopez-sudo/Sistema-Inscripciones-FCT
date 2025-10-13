@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Grado;
 use Illuminate\Http\Request;
+use App\Services\SessionService;
 
 class GradosController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     /**
      * Display a listing of the resource.
      */

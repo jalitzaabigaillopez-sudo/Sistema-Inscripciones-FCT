@@ -9,9 +9,16 @@ use App\Models\TipoEvento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Services\SessionService;
 
 class EventosController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     /**
      * Display a listing of the resource.
      */

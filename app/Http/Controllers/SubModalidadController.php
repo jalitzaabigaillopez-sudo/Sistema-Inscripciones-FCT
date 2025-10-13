@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Modalidad;
 use App\Models\SubModalidad;
+use App\Services\SessionService;
 
 class SubModalidadController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
     public function obtenerSubModalidades(Request $request)
     {
         $id_modalidad = $request->input('id_modalidad');

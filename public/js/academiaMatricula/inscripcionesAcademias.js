@@ -1642,24 +1642,23 @@ $(document).ready(function () {
                     actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
                 }
             }
-        }
 
-        $("#contenedor .clonEdit").remove();
-        $("#panelRegistro").show();
+            $("#contenedor .clonEdit").remove();
+            $("#panelRegistro").show();
 
-        $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+            $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
 
-        $("#panelRegistro").find('.modalidades-select').show();
-        $("#panelRegistro").find('.submodalidades-select').show();
-        $("#panelRegistro").find('.categorias-select').show();
-        $("#panelRegistro").find('#pesoInput').show();
+            $("#panelRegistro").find('.modalidades-select').show();
+            $("#panelRegistro").find('.submodalidades-select').show();
+            $("#panelRegistro").find('.categorias-select').show();
+            $("#panelRegistro").find('#pesoInput').show();
 
-        $("#containerButton").html(`
+            $("#containerButton").html(`
             <button id="bInscribir" class="btn btn-outline-success w-100">
                 <i class="bi bi-plus-circle"></i> Inscribir
             </button>
             `);
-
+        }
     });
 
     // ☑️ Delegación

@@ -61,6 +61,7 @@ class AuthController extends Controller
 
         //  Login correcto
         $request->session()->put('usuario', $usuario->id_usuario);
+        $request->session()->put('usuario_expira', now()->addMinutes(10));
         return response()->json([
             'status' => 'success',
             'message' => 'Inicio de sesión exitoso.',
