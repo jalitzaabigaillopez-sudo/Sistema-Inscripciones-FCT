@@ -343,7 +343,7 @@
                 style="max-width:100%;">
         </div>
         <i class="bi bi-x sidebar-close" id="sidebarClose"></i>
-        <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)"><i class="bi bi-speedometer2"></i>
+        <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)"><i class="bi bi-speedometer2 me-2"></i>
             Dashboard</a>
 
         <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-circle me-2"></i>
@@ -602,6 +602,21 @@
                     sidebar.classList.remove('sidebar-open');
                     sidebar.classList.add('sidebar-hidden');
                 }
+            });
+
+            // VISUALIZAR CONTRA
+             document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const input = document.querySelector(this.dataset.target);
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye', 'bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash', 'bi-eye');
+                    }
+                });
             });
         });
     </script>
