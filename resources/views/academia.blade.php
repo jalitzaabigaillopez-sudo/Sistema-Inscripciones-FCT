@@ -404,22 +404,65 @@
                     </li>
                 </ol>
             </nav>
-            <div class="ms-auto"></div>
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.5rem;"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
-                    <li>
-                        <form action="{{ route('logout.process') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item">Cerrar sesión</button>
-                        </form>
-                    </li>
-                </ul>
+            @php
+                use App\Models\Usuario;
+
+                $usuario = session('usuario') ? Usuario::with('academia')->find(session('usuario')) : null;
+            @endphp
+
+            <div class="ms-auto d-flex align-items-center gap-2">
+                {{-- Mostrar nombre según el rol --}}
+                @if ($usuario)
+                    @if ($usuario->rol === 'administrador')
+                        <span class="text-white fw-semibold">Federación Costarricense de Taekwondo</span>
+                    @elseif ($usuario->rol === 'academia' && $usuario->academia)
+                        <span class="text-white fw-semibold">{{ $usuario->academia->nombre }}</span>
+                    @else
+                        <span class="text-white fw-semibold">{{ $usuario->nombre_completo }}</span>
+                    @endif
+                @endif
+
+                {{-- Dropdown --}}
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent;">
+
+                        {{--  Si es administrador, logo de la federación --}}
+                        @if ($usuario && $usuario->rol === 'administrador')
+                            <img src="{{ asset('images/logo_federacion.png') }}" alt="Logo Federación"
+                                class="rounded-circle shadow-sm border"
+                                style="width: 38px; height: 38px; object-fit: cover;">
+
+                            {{-- Si es academia, foto de la academia o default --}}
+                        @elseif ($usuario && $usuario->rol === 'academia')
+                            @php
+                                $imagenAcademia =
+                                    $usuario->academia && $usuario->academia->imagen
+                                        ? asset('storage/' . $usuario->academia->imagen)
+                                        : asset('images/default_academia.png');
+                            @endphp
+                            <img src="{{ $imagenAcademia }}" alt="Logo Academia"
+                                class="rounded-circle shadow-sm border"
+                                style="width: 38px; height: 38px; object-fit: cover;">
+
+                            {{-- 👤 Cualquier otro rol: icono genérico --}}
+                        @else
+                            <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.7rem;"></i>
+                        @endif
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
+                        <li>
+                            <form action="{{ route('logout.process') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
         </div>
         </div>
     </nav>
@@ -605,8 +648,8 @@
             });
 
             // VISUALIZAR CONTRA
-             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function () {
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function() {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {

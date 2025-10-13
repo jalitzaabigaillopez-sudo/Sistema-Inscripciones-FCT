@@ -32,9 +32,9 @@
                             <tr>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Profesor a cargo</th>
+                                <th class="text-center">Usuario</th>
                                 <th class="text-center">Correo</th>
                                 <th class="text-center">Teléfono</th>
-                                <th class="text-center">Usuario</th>
                                 <th class="text-center">Ubicación</th>
                                 <th class="text-center">Dirección</th>
                                 <th class="text-center">Estado</th>
@@ -394,16 +394,16 @@
                     title: "Profesor a cargo"
                 },
                 {
+                    data: "usuario",
+                    title: "Usuario"
+                },
+                {
                     data: "correo",
                     title: "Correo"
                 },
                 {
                     data: "telefono",
                     title: "Teléfono"
-                },
-                {
-                    data: "usuario",
-                    title: "Usuario"
                 },
                 {
                     data: "ubicacion",

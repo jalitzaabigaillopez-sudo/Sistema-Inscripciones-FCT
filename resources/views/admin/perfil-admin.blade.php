@@ -81,15 +81,27 @@
                             <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
                                 <div class="d-flex flex-column align-items-center">
-                                    <img src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : asset('images/default.png') }}"
-                                        alt="Foto de perfil" class="rounded-circle shadow-sm border"
+                                    @php
+                                        // Si es administrador → usar logo de federación
+                                        $imagenPerfil =
+                                            $usuario->rol === 'administrador'
+                                                ? asset('images/Logotipo.png')
+                                                : ($usuario->imagen
+                                                    ? asset('storage/' . $usuario->imagen)
+                                                    : asset('images/Logotipo.png'));
+                                    @endphp
+
+                                    <img src="{{ $imagenPerfil }}" alt="Foto de perfil"
+                                        class="rounded-circle shadow-sm border"
                                         style="width: 130px; height: 130px; object-fit: cover;">
+
                                     <span class="text-muted small mt-2">
                                         {{ $usuario->nombre_completo }}
                                     </span>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -206,10 +218,18 @@
                                             <div class="rounded-circle d-flex align-items-center justify-content-center mb-2"
                                                 style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
                                                 <span class="previewText text-muted">Sin foto</span>
+                                                @php
+                                                    $imagenModal =
+                                                        $usuario->rol === 'administrador'
+                                                            ? asset('images/Logotipo.png')
+                                                            : ($usuario->imagen
+                                                                ? asset('storage/' . $usuario->imagen)
+                                                                : '');
+                                                @endphp
+
                                                 <img class="previewImage img-thumbnail rounded-circle"
-                                                    src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : '' }}"
-                                                    alt="Vista previa"
-                                                    style="width: 150px; height: 150px; object-fit: cover; {{ $usuario->imagen ? 'display:block;' : 'display:none;' }}">
+                                                    src="{{ $imagenModal }}" alt="Vista previa"
+                                                    style="width: 150px; height: 150px; object-fit: cover; {{ $imagenModal ? 'display:block;' : 'display:none;' }}">
                                             </div>
                                             <button type="button" class="btn btn-sm btn-danger removeImageBtn"
                                                 style="{{ $usuario->imagen ? 'display:inline-block;' : 'display:none;' }}">
@@ -367,7 +387,12 @@
                     const inputFile = modal.find('#fotoPerfilEditar');
 
                     previewText.text('Sin foto');
-                    if (usuario.imagen && usuario.imagen !== '') {
+                    if (usuario.rol === 'administrador') {
+                        // Mostrar logo si es admin
+                        previewImage.attr('src', '/images/Logotipo.png').css('display', 'block');
+                        previewText.css('display', 'none');
+                        removeBtn.css('display', 'none');
+                    } else if (usuario.imagen && usuario.imagen !== '') {
                         previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
                         previewText.css('display', 'none');
                         removeBtn.css('display', 'inline-block');
@@ -376,6 +401,7 @@
                         previewText.css('display', 'block');
                         removeBtn.css('display', 'none');
                     }
+
                     inputFile.val('');
                 });
 
