@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Atleta;
 use App\Models\Usuario;
+use App\Models\Academia;
 
 class RegistroAtletasController extends Controller
 {
@@ -25,6 +26,8 @@ class RegistroAtletasController extends Controller
 
     public function index(Request $request)
 {
+    $academia = Academia::first(); // o el que corresponda
+
     $busqueda = $request->input('buscar');
 
     $atletas = Atleta::when($busqueda, function ($query, $busqueda) {
@@ -37,7 +40,8 @@ class RegistroAtletasController extends Controller
     })
     ->orderBy('id_atleta', 'asc')->paginate(10);
 
-    return view('academia.registrosAtletas', compact('atletas', 'busqueda'));
+    return view('academia.registrosAtletas', compact('atletas', 'academia', 'busqueda'));
+    
 }
     /**
      * Guardar un nuevo atleta

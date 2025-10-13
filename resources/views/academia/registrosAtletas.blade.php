@@ -5,7 +5,7 @@
 
     {{-- 🔹 Encabezado --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h4 class="fw-bold mb-0">Gestión de Atletas </h4>
+        <h4 class="fw-bold mb-0">Gestión de Atletas</h4>
 
         {{-- 🔍 Buscador --}}
         <form action="{{ route('registro-atletas.index') }}" method="GET" class="d-flex flex-wrap" style="max-width: 420px;">
@@ -26,27 +26,19 @@
         </form>
     </div>
 
-    {{-- 🔹 Mensaje de éxito --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    {{-- 🔹 Botón nuevo --}}
+    {{-- 🔹 Botón Crear --}}
     <div class="text-end mb-3">
-        <button class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#crearModal">
+        <button hidden class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#crearModal">
             <i class="bi bi-person-plus"></i> Nuevo Atleta
         </button>
     </div>
 
     {{-- 🔹 Tabla --}}
-       <div class="card table-card shadow">
-            <div class="card-body p-3">
-                <div class="table-responsive" style="overflow-x: auto;">
-                    <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
-                        <thead class="table-light">
+    <div class="card table-card shadow">
+        <div class="card-body p-3">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                    <thead class="table-light">
                         <tr>
                             <th>ID</th>
                             <th>Identificación</th>
@@ -73,12 +65,9 @@
                                     <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editarModal{{ $atleta->id_atleta }}">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <form action="{{ route('registro-atletas.destroy', $atleta->id_atleta) }}" method="POST" class="d-inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro que deseas eliminar este atleta?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar" data-id="{{ $atleta->id_atleta }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -158,30 +147,26 @@
         </div>
     </div>
 
-   
     {{-- 🔹 Paginación simple --}}
-@if ($atletas->hasPages())
-<nav class="d-flex justify-content-center mt-3">
-    <ul class="pagination pagination-sm mb-0">
-        {{-- Botón Anterior --}}
-        @if ($atletas->onFirstPage())
-            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-        @else
-            <li class="page-item"><a class="page-link" href="{{ $atletas->previousPageUrl() }}">Anterior</a></li>
-        @endif
+    @if ($atletas->hasPages())
+    <nav class="d-flex justify-content-center mt-3">
+        <ul class="pagination pagination-sm mb-0">
+            @if ($atletas->onFirstPage())
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            @else
+                <li class="page-item"><a class="page-link" href="{{ $atletas->previousPageUrl() }}">Anterior</a></li>
+            @endif
 
-        {{-- Número de página actual --}}
-        <li class="page-item active"><span class="page-link">{{ $atletas->currentPage() }}</span></li>
+            <li class="page-item active"><span class="page-link">{{ $atletas->currentPage() }}</span></li>
 
-        {{-- Botón Siguiente --}}
-        @if ($atletas->hasMorePages())
-            <li class="page-item"><a class="page-link" href="{{ $atletas->nextPageUrl() }}">Siguiente</a></li>
-        @else
-            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-        @endif
-    </ul>
-</nav>
-@endif
+            @if ($atletas->hasMorePages())
+                <li class="page-item"><a class="page-link" href="{{ $atletas->nextPageUrl() }}">Siguiente</a></li>
+            @else
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            @endif
+        </ul>
+    </nav>
+    @endif
 
 </div>
 
@@ -250,4 +235,65 @@
         </div>
     </div>
 </div>
+
+{{-- 🔸 Scripts SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{-- 🔹 Éxito --}}
+@if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: '¡Éxito!',
+    text: '{{ session('success') }}',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true
+});
+</script>
+@endif
+
+{{-- 🔹 Error --}}
+@if(session('error'))
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '{{ session('error') }}'
+});
+</script>
+@endif
+
+{{-- 🔹 Confirmar eliminación --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-eliminar').forEach(button => {
+        button.addEventListener('click', function() {
+            const atletaId = this.dataset.id;
+            Swal.fire({
+                title: '¿Eliminar atleta?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/registro-atletas/${atletaId}`;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 @endsection
