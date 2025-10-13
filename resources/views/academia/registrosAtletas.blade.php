@@ -6,120 +6,99 @@
 @section('content')
 <div class="container py-4">
 
-  {{-- Encabezado + Botón “Nuevo” abre modal --}}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Registros de Atletas</h1>
-    <button
-      class="btn btn-success"
-      data-bs-toggle="modal"
-      data-bs-target="#createAtletaModal"
-    >
-      <i class="bi bi-plus-circle me-1"></i> Nuevo Atleta
-    </button>
-  </div>
+    {{-- 🔹 Encabezado --}}
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="fw-bold mb-0">Gestión de Atletas</h4>
 
-  {{-- Mensaje flash --}}
-  @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
+        {{-- 🔍 Buscador --}}
+        <form action="{{ route('registro-atletas.index') }}" method="GET" class="d-flex flex-wrap" style="max-width: 420px;">
+            <input 
+                type="text" 
+                name="buscar" 
+                class="form-control form-control-sm me-2 mb-2" 
+                placeholder="Buscar atleta..." 
+                value="{{ $busqueda ?? '' }}">
+            <button class="btn btn-sm btn-outline-primary mb-2">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            @if (!empty($busqueda))
+                <a href="{{ route('registro-atletas.index') }}" class="btn btn-sm btn-outline-secondary ms-2 mb-2">
+                    <i class="bi bi-x-circle"></i> Limpiar
+                </a>
+            @endif
+        </form>
+    </div>
 
-  {{-- Tabla de atletas --}}
-  <div class="card shadow-sm mb-5">
-    <div class="table-responsive">
-      <table class="table table-striped table-hover mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Sexo</th>
-            <th>Edad</th>
-            <th>Peso</th>
-            <th>Modalidad</th>
-            <th>Participación</th>
-            <th>Tipo</th>
-            <th>Grupo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($atletas as $atleta)
-            <tr>
-              <td>{{ $atletas->firstItem() + $loop->index }}</td>
-              <td>
-                {{ $atleta->nombre }}
-                {{ $atleta->primer_apellido }}
-                {{ $atleta->segundo_apellido ?? '' }}
-              </td>
-             <td>
-            {{ $atleta->sexo
-                ?? ($loop->index % 2 == 0 ? 'Masculino' : 'Femenino') }}
-        </td>
-        <td>
-            {{ ($atleta->edad !== null && $atleta->edad !== '') 
-                ? $atleta->edad 
-                : (18 + $loop->index) }}
-        </td>
-        <td>
-            {{ ($atleta->peso !== null && $atleta->peso !== '') 
-                ? $atleta->peso.' kg' 
-                : (60 + $loop->index).' kg' }}
-        </td>
-        <td>
-            {{ $atleta->modalidad 
-                ? ucfirst($atleta->modalidad) 
-                : ($loop->index % 2 == 0 ? 'Combate' : 'Poomsae') }}
-        </td>
-         <td>
-            {{ $atleta->participacion 
-                ? ucfirst($atleta->participacion) 
-                : ($loop->index % 2 == 0 ? 'Individual' : 'Equipo') }}
-        </td>
-        <td>
-            {{ $atleta->tipo 
-                ? ucfirst($atleta->tipo) 
-                : ($loop->index % 3 == 0 ? 'Atleta' : 'Entrenador') }}
-        </td>
-        <td>
-            {{ $atleta->grupo ?? chr(65 + ($loop->index % 5)) }}
-        </td>
-              <td class="text-center">
-    <div class="dropdown">
-        <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill"
-            type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-three-dots"></i>
+    {{-- 🔹 Botón nuevo --}}
+    <div class="text-end mb-3">
+        <button class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#crearModal">
+            <i class="bi bi-person-plus"></i> Nuevo Atleta
         </button>
-        <ul class="dropdown-menu">
-            <li>
-                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#viewAtletaModal{{ $atleta->id }}">
-                    <i class="bi bi-pencil-square"></i> Editar
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $atleta->id }}">
-                    <i class="bi bi-trash"></i> Eliminar
-                </a>
-            </li>
-        </ul>
     </div>
-</td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="10" class="text-center py-4">
-                No se encontraron atletas.
-              </td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
-    </div>
-    {{-- Paginación --}}
-    <div class="card-footer">
-      <div class="d-flex justify-content-center">
-        {{ $atletas->onEachSide(1)->links('pagination::bootstrap-5') }}
-      </div>
-    </div>
-  </div>
+
+    {{-- 🔹 Tabla --}}
+    <div class="card table-card shadow">
+        <div class="card-body p-3">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Identificación</th>
+                            <th>Nombre Completo</th>
+                            <th>Sexo</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($atletas as $atleta)
+                        <tr>
+                            <td class="fw-semibold">{{ $atleta->id_atleta }}</td>
+                            <td>{{ $atleta->identificacion }}</td>
+                            <td>{{ $atleta->nombre }} {{ $atleta->primer_apellido }} {{ $atleta->segundo_apellido }}</td>
+                            <td>
+                                <span class="badge" style="background-color: {{ $atleta->sexo === 'Masculino' ? '#0d6efd' : '#e83e8c' }};">
+                                  {{ $atleta->sexo }}
+                                </span>
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($atleta->fecha_nacimiento)->format('d/m/Y') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editarModal{{ $atleta->id_atleta }}">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar" data-id="{{ $atleta->id_atleta }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {{-- 🔸 Modal Editar --}}
+                        <div class="modal fade" id="editarModal{{ $atleta->id_atleta }}" tabindex="-1" aria-labelledby="editarLabel{{ $atleta->id_atleta }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg">
+                                    <div class="modal-header bg-warning text-dark">
+                                        <h5 class="modal-title fw-bold" id="editarLabel{{ $atleta->id_atleta }}">
+                                            <i class="bi bi-pencil"></i> Editar Atleta
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ route('registro-atletas.update', $atleta->id_atleta) }}" method="POST">
+                                        @csrf @method('PUT')
+                                        <div class="modal-body">
+                                            {{-- Formulario --}}
+                                            <div class="row mb-3">
+                                                <div class="col">
+                                                    <label class="form-label fw-semibold">Tipo Identificación</label>
+                                                    <input type="text" name="tipo_identificacion" class="form-control" value="{{ $atleta->tipo_identificacion }}">
+                                                </div>
+                                                <div class="col">
+                                                    <label class="form-label fw-semibold">Identificación</label>
+                                                    <input type="text" name="identificacion" class="form-control" value="{{ $atleta->identificacion }}">
+                                                </div>
+                                            </div>
 
   {{-- Crear atleta Modal --}}
   <div
@@ -320,8 +299,30 @@
             >Cerrar</button>
           </div>
         </div>
-      </div>
     </div>
+
+    {{-- 🔹 Paginación simple --}}
+    @if ($atletas->hasPages())
+    <nav class="d-flex justify-content-center mt-3">
+        <ul class="pagination pagination-sm mb-0">
+            @if ($atletas->onFirstPage())
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            @else
+                <li class="page-item"><a class="page-link" href="{{ $atletas->previousPageUrl() }}">Anterior</a></li>
+            @endif
+
+            <li class="page-item active"><span class="page-link">{{ $atletas->currentPage() }}</span></li>
+
+            @if ($atletas->hasMorePages())
+                <li class="page-item"><a class="page-link" href="{{ $atletas->nextPageUrl() }}">Siguiente</a></li>
+            @else
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            @endif
+        </ul>
+    </nav>
+    @endif
+
+</div>
 
     {{-- Editar atleta --}}
     <div
@@ -462,22 +463,68 @@
             </div>
           </form>
         </div>
-      </div>
     </div>
-  @endforeach
-
 </div>
 
-</div>
-@endsection
+{{-- 🔸 Scripts SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-@section('scripts')
+{{-- 🔹 Éxito --}}
+@if(session('success'))
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    @if ($errors->any())
-      new bootstrap.Modal(document.getElementById('createAtletaModal')).show();
-    @endif
-  });
+Swal.fire({
+    icon: 'success',
+    title: '¡Éxito!',
+    text: '{{ session('success') }}',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true
+});
+</script>
+@endif
+
+{{-- 🔹 Error --}}
+@if(session('error'))
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '{{ session('error') }}'
+});
+</script>
+@endif
+
+{{-- 🔹 Confirmar eliminación --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-eliminar').forEach(button => {
+        button.addEventListener('click', function() {
+            const atletaId = this.dataset.id;
+            Swal.fire({
+                title: '¿Eliminar atleta?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/registro-atletas/${atletaId}`;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
+});
 </script>
 @endsection
 
