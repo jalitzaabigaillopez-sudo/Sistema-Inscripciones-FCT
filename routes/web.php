@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DBController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\AcademiaController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PadronNacimientoController;
@@ -17,10 +16,7 @@ use App\Http\Controllers\GradosController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
-
-use App\Exports\AtletasExport;
-use Maatwebsite\Excel\Facades\Excel;
-
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\RegistroAtletasController;
 use Illuminate\Types\Relations\Role;
 
@@ -51,9 +47,12 @@ Route::post('/pre_registroAcademia', [AcademiaController::class, 'pre_registroAc
 /**
  * Reportes PDF y Excel
  */
-Route::get('/atletas/exportar-excel', function () {
-    return Excel::download(new AtletasExport, 'atletas.xlsx');
-});
+Route::get('/atletas/exportar-excel', [ReporteController::class, 'exportarAtletasExcel']);
+Route::get('/exportar-atletas-pdf', [ReporteController::class, 'exportarAtletasPdf'])->name('atletas.pdf');
+
+Route::get('/inscripciones/exportar-excel', [ReporteController::class, 'exportarInscripcionesExcel']);
+Route::get('/exportar-inscripciones-pdf', [ReporteController::class, 'exportarInscripcionesPdf'])->name('inscripciones.pdf');
+
 
 //####################################### SOLO ACADEMIA #######################################################################################
 /**
@@ -96,6 +95,12 @@ Route::post('/obtenerCategorias', [CategoriaController::class, 'obtenerCategoria
 Route::get('/atletas-academia', [AtletasController::class, 'indexAtltetasAcademia'])->name('gestion.atletas');
 
 //==============================================================================================================================================
+
+/**
+ * Reportes PDF y Excel
+ */
+Route::get('/exportar-atletas-academia-pdf/{id_academia}', [ReporteController::class, 'exportarAtletasAcadamiaPdf'])->name('atletas.academia.pdf');
+Route::get('/exportar-inscripciones-academia-pdf/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiasPdf'])->name('inscripciones.academia.pdf');
 
 
 //prueba frontend

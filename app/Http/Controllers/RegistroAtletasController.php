@@ -33,7 +33,9 @@ class RegistroAtletasController extends Controller
 
     public function index(Request $request)
 {
-    $academia = Academia::first(); // o el que corresponda
+    $usuarioId = $request->session()->get('usuario');
+    $usuario = Usuario::find($usuarioId);
+    $academia = $usuario->academia;
 
     $busqueda = $request->input('buscar');
 

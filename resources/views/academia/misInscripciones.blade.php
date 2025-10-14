@@ -33,7 +33,7 @@
                         @foreach($inscripcionesAgrupadas as $index => $ins)
                             <tr>
                                 <td data-id-evento="{{ $ins->evento->id_evento }}">{{ $index + 1 }}</td>
-                                <td >{{ $ins->evento->nombre }}</td>
+                                <td>{{ $ins->evento->nombre }}</td>
                                 <td>{{ $academia->nombre }}</td>
                                 <td>{{ $academia->profesor_encargado }}</td>
                                 <td>{{ $ins->cantidad_inscritos }}</td>
@@ -86,10 +86,12 @@
                         @endforeach
                     </tbody>
                 </table>
+                <span>Descargar <a href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}">PDF</a></span>
             </div>
             <!-- ...tu tabla aquí... -->
         </div>
-        <nav class="mt-3">
+        
+        <!-- <nav class="mt-3">
             <ul class="pagination justify-content-aligh-right">
                 <li class="page-item disabled">
                     <a class="page-link bg-light text-secondary border-0">Anterior</a>
@@ -107,8 +109,9 @@
                     <a class="page-link bg-light text-primary border-0">Siguiente</a>
                 </li>
             </ul>
-        </nav>
+        </nav> -->
     </div>
+    
     </div>
     </div>
     </div>

@@ -15,31 +15,31 @@ class Inscripcion extends Model
     {
         return $this->hasMany(Atleta::class, 'id_atleta', 'id_atleta');
     }
-    public function academia()
+    public function academia()//bt_export
     {
         return $this->belongsTo(Academia::class, 'id_academia', 'id_academia');
     }
-    public function atleta()
+    public function atleta()//bt_export
     {
         return $this->belongsTo(Atleta::class, 'id_atleta', 'id_atleta');
     }
 
-    public function evento()
+    public function evento()//bt_export
     {
         return $this->belongsTo(Evento::class, 'id_evento', 'id_evento');
     }
 
-    public function modalidad()
+    public function modalidad()//bt_export
     {
         return $this->belongsTo(Modalidad::class, 'id_modalidad', 'id_modalidad');
     }
 
-    public function subModalidad()
+    public function subModalidad()//bt_export
     {
         return $this->belongsTo(SubModalidad::class, 'id_subModalidad', 'id_subModalidad');
     }
 
-    public function categoria()
+    public function categoria()//bt_export
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
     }

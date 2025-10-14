@@ -125,6 +125,8 @@
                 </tbody>
             </table>
         </div>
+
+        <span>Descargar <a href="{{ route('inscripciones.pdf') }}">PDF</a> - <a href="{{ url('/inscripciones/exportar-excel') }}">Excel</a></span>
     </div>
   
 
