@@ -3,101 +3,171 @@
 @section('title', 'Dashboard Administrativo')
 
 @section('content')
-<div class="container">
-  <h3 class="mb-4 fw-bold text-#222A59" >Dashboard Administrativo</h3>
-  <div class="row mb-4 g-3">
-    <!-- Total de usuarios del sistema -->
-<div class="col-12 col-sm-6 col-lg-3">
-  <div class="card text-bg-primary border-0 shadow-sm rounded-3 h-100">
-    <div class="card-body text-center">
-      <h6 class="card-title fw-bold mb-2 text-white">Usuarios en el Sistema</h6>
-      <div class="d-flex justify-content-center align-items-center mb-2">
-        <i class="bi bi-person-badge fs-2 text-white me-2"></i>
-        <span class="fs-1 fw-bold text-white">{{ $usersCount ?? '7' }}</span>
+<div class="container py-4" style="background-color: #f5f7fa; min-height: 100vh;">
+  <h3 class="mb-2 fw-bold text-primary text-center">Bienvenido al Dashboard Administrativo</h3>
+  <p class="text-secondary text-center mb-5">Monitorea usuarios, academias, eventos e inscripciones del sistema centralizado.</p>
+   {{-- ==================== TARJETAS ==================== --}}
+  <div class="row mb-4 g-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#1E3A8A,#3B82F6);">
+        <div class="card-body text-center">
+          <i class="bi bi-person-badge fs-1 mb-2"></i>
+          <h6 class="fw-semibold">Usuarios</h6>
+          <h3 class="fw-bold">{{ $usersCount ?? 0 }}</h3>
+          <small>Actualizado hoy</small>
+        </div>
       </div>
-      <small class="text-light">Actualizado hoy</small>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#047857,#10B981);">
+        <div class="card-body text-center">
+          <i class="bi bi-building fs-1 mb-2"></i>
+          <h6 class="fw-semibold">Academias</h6>
+          <h3 class="fw-bold">{{ $academiesCount ?? 0 }}</h3>
+          <small>Actualizado hoy</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#FACC15,#CA8A04);">
+        <div class="card-body text-center">
+          <i class="bi bi-calendar-event fs-1 mb-2"></i>
+          <h6 class="fw-semibold">Eventos Activos</h6>
+          <h3 class="fw-bold">{{ $eventosCount ?? 0 }}</h3>
+          <small>Monitoreo</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#0284C7,#38BDF8);">
+        <div class="card-body text-center">
+          <i class="bi bi-journal-text fs-1 mb-2"></i>
+          <h6 class="fw-semibold">Inscripciones</h6>
+          <h3 class="fw-bold">{{ $inscripcionesCount ?? 0 }}</h3>
+          <small>Datos acumulados</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- ==================== GRÁFICOS ==================== --}}
+  <div class="row g-4 mb-4">
+    <!-- Eventos por Mes -->
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="card-header bg-primary text-white fw-semibold">
+          <i class="bi bi-bar-chart-fill me-2"></i> Eventos por Mes
+        </div>
+        <div class="card-body">
+          <canvas id="graficoEventosMes" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribución de Género -->
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="card-header bg-info text-white fw-semibold">
+          <i class="bi bi-pie-chart-fill me-2"></i> Distribución de Género
+        </div>
+        <div class="card-body">
+          <canvas id="graficoGenero" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- ==================== EVENTOS Y SISTEMA ==================== --}}
+  <div class="row g-4 mb-4">
+    <!-- Próximos eventos -->
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="card-header bg-primary text-white fw-semibold">
+          <i class="bi bi-calendar-event-fill me-2"></i> Próximos Eventos
+        </div>
+        <div class="card-body">
+          @if(isset($proximosEventos) && count($proximosEventos))
+            <table class="table table-sm align-middle">
+              <thead class="table-light"><tr><th>Nombre</th><th>Fecha</th><th>Estado</th></tr></thead>
+              <tbody>
+                @foreach($proximosEventos as $evento)
+                  <tr>
+                    <td>{{ $evento->nombre }}</td>
+                    <td>{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</td>
+                    <td>
+                      <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">{{ $evento->estado }}</span>
+                    </td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          @else
+            <p class="text-muted">No hay próximos eventos.</p>
+          @endif
+        </div>
+      </div>
+    </div>
+
+    <!-- Info del sistema -->
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="card-header text-white fw-semibold" style="background:linear-gradient(135deg,#047857,#10B981);">
+          <i class="bi bi-info-circle-fill me-2"></i> Información del Sistema
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>Usuarios</span><span>{{ $usersCount ?? 0 }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Academias</span><span>{{ $academiesCount ?? 0 }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Atletas</span><span>{{ $atletasCount ?? 0 }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Inscripciones</span><span>{{ $inscripcionesCount ?? 0 }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- ==================== ACTIVIDAD ==================== --}}
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-dark text-white fw-semibold">
+      <i class="bi bi-clock-history me-2"></i> Actividad Reciente
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><i class="bi bi-person-plus text-success me-2"></i> Se registró un nuevo usuario administrador.</li>
+        <li class="list-group-item"><i class="bi bi-calendar-event text-primary me-2"></i> Se creó el evento “Campeonato Nacional 2025”.</li>
+        <li class="list-group-item"><i class="bi bi-person-fill text-warning me-2"></i> 3 atletas nuevos registrados hoy.</li>
+        <li class="list-group-item"><i class="bi bi-exclamation-circle text-danger me-2"></i> Un evento cambió a “Suspendido”.</li>
+      </ul>
     </div>
   </div>
 </div>
-<!-- Academias registradas -->
-<div class="col-12 col-sm-6 col-lg-3">
-  <div class="card text-bg-success border-0 shadow-sm rounded-3 h-100">
-    <div class="card-body text-center">
-      <h6 class="card-title fw-bold mb-2 text-white">Academias Registradas</h6>
-      <div class="d-flex justify-content-center align-items-center mb-2">
-        <i class="bi bi-building fs-2 text-white me-2"></i>
-        <span class="fs-1 fw-bold text-white">{{ $academiesCount ?? '7' }}</span>
-      </div>
-      <small class="text-light">Actualizado hoy</small>
-    </div>
-  </div>
-</div>
-    <!-- Eventos activos -->
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card text-bg-warning border-0 shadow-sm rounded-3 h-100">
-        <div class="card-body text-center">
-          <h6 class="card-title fw-semibold mb-2">Eventos Activos</h6>
-          <p class="card-text fs-2 fw-bold mb-1">7</p>
-          <i class="bi bi-calendar-event-fill fs-3"></i>
-        </div>
-      </div>
-    </div>
-    <!-- Inscripciones totales -->
-    <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card text-bg-info border-0 shadow-sm rounded-3 h-100">
-        <div class="card-body text-center">
-          <h6 class="card-title fw-semibold mb-2">Inscripciones Totales</h6>
-          <p class="card-text fs-2 fw-bold mb-1">245</p>
-          <i class="bi bi-journal-text fs-3"></i>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="row g-3">
-    <!-- Gráfico de Eventos por Mes (Estático con solo CSS) -->
-    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-      <div class="card-header bg-primary text-white fw-semibold">
-        <i class="bi bi-bar-chart-fill me-2"></i> Eventos por Mes
-      </div>
-      <div class="card-body">
-        <div class="ratio ratio-16x9 d-flex align-items-end" style="height:220px;">
-        <div style="display:flex; align-items:flex-end; width:100%; gap:10px;">
-          <div style="flex:1; background:#0d6efd; height:40%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#198754; height:80%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#ffc107; height:53%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#0dcaf0; height:93%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#6f42c1; height:66%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#dc3545; height:26%; border-radius:4px 4px 0 0;"></div>
-          <div style="flex:1; background:#3543dc; height:33%; border-radius:4px 4px 0 0;"></div>
-        </div>
-        </div>
-        <div class="d-flex justify-content-between mt-2 px-1" style="font-size:0.9rem;">
-        <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span>
-        </div>
-      </div>
-      </div>
-    </div>
-    <!-- Gráfico de Distribución de Género (Estático con solo CSS) -->
-    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-      <div class="card-header bg-info text-white fw-semibold">
-        <i class="bi bi-pie-chart-fill me-2"></i> Distribución de Género
-      </div>
-      <div class="card-body">
-        <div class="d-flex justify-content-center align-items-center" style="height:220px;">
-        <div style="width:140px; height:140px; border-radius:50%; background:conic-gradient(#0d6efd 0% 55%, #02ea25 55% 95%);"></div>
-        </div>
-        <div class="d-flex justify-content-center gap-3 mt-2" style="font-size:0.9rem;">
-        <span><span style="display:inline-block;width:12px;height:12px;background:#0d6efd;border-radius:2px;margin-right:4px;"></span>Masculino</span>
-        <span><span style="display:inline-block;width:12px;height:12px;background:#02ea25;border-radius:2px;margin-right:4px;"></span>Femenino</span>
-        </div>
-      </div>
-      </div>
-    </div>
-  
+{{-- ==================== Chart.js ==================== --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctxEventos = document.getElementById('graficoEventosMes');
+new Chart(ctxEventos, {
+  type: 'bar',
+  data: {
+    labels: {!! json_encode($meses ?? ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']) !!},
+    datasets: [{
+      label: 'Eventos',
+      data: {!! json_encode($eventosPorMes ?? [3,5,2,8,4,6,7,1,2,3,4,5]) !!},
+      backgroundColor: '#0d6efd'
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
+});
 
-
+const ctxGenero = document.getElementById('graficoGenero');
+new Chart(ctxGenero, {
+  type: 'doughnut',
+  data: {
+    labels: ['Masculino','Femenino'],
+    datasets: [{ data: {!! json_encode($generoDistribucion ?? [60,40]) !!}, backgroundColor: ['#0d6efd','#10B981'] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+</script>
 @endsection
 
