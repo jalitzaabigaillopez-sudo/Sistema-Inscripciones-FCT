@@ -18,6 +18,9 @@ use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
 
+use App\Exports\AtletasExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Http\Controllers\RegistroAtletasController;
 use Illuminate\Types\Relations\Role;
 
@@ -45,6 +48,12 @@ Route::get('/insertUser', [DBController::class, 'insertUser']);
 Route::get('/selectUser', [DBController::class, 'selectUser']);
 Route::post('/pre_registroAcademia', [AcademiaController::class, 'pre_registroAcademia'])->name('pre.registro.academia');
 
+/**
+ * Reportes PDF y Excel
+ */
+Route::get('/atletas/exportar-excel', function () {
+    return Excel::download(new AtletasExport, 'atletas.xlsx');
+});
 
 //####################################### SOLO ACADEMIA #######################################################################################
 /**

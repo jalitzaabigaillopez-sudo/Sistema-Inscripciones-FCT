@@ -10,4 +10,5 @@ class Division extends Model
     protected $primaryKey = 'id_division';
     public $timestamps = false;
     protected $fillable = ['division', 'year_inicio', 'year_final'];
+    
 }

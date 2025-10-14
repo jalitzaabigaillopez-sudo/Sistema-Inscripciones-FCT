@@ -20,11 +20,13 @@
         </div>
         <hr>
 
+
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
                 <div class="table-responsive" style="overflow-x: auto;">
                     <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                        
                         <thead class="table-light">
                             <tr id="tabla-headers"></tr>
 
@@ -37,6 +39,8 @@
                 </div>
             </div>
         </div>
+
+        <span>Descargar <a href="#">PDF</a> - <a href="{{ url('/atletas/exportar-excel') }}">Excel</a></span>
 
         {{-- Modal NUEVO ATLETA --}}
         <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">

@@ -31,4 +31,13 @@ class Atleta extends Model
         return $this->belongsTo(Grado::class, 'id_grado');
     }
 
+     public function division()
+    {
+        return $this->belongsTo(Division::class, 'id_division', 'id_division');
+    }
+
+     public function grado()
+    {
+        return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
+    }
 }
