@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <span>Descargar <a href="#">PDF</a> - <a href="{{ url('/atletas/exportar-excel') }}">Excel</a></span>
+        <span>Descargar <a href="{{ route('atletas.pdf') }}">PDF</a> - <a href="{{ url('/atletas/exportar-excel') }}">Excel</a></span>
 
         {{-- Modal NUEVO ATLETA --}}
         <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">

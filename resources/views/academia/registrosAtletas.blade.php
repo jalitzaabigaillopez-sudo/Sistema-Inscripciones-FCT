@@ -144,6 +144,8 @@
                     </tbody>
                 </table>
             </div>
+
+            <span>Descargar <a href="{{ route('atletas.academia.pdf', $academia->id_academia) }}">PDF</a></span>
         </div>
     </div>
 
