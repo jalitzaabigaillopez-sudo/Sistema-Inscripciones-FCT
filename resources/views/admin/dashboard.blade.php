@@ -68,7 +68,7 @@
     <div class="col-12 col-lg-6">
       <div class="card border-0 shadow-sm rounded-3 h-100">
         <div class="card-header bg-info text-white fw-semibold">
-          <i class="bi bi-pie-chart-fill me-2"></i> Distribución de Género
+          <i class="bi bi-pie-chart-fill me-2"></i> Distribución de Sexo de Atletas
         </div>
         <div class="card-body">
           <canvas id="graficoGenero" height="220"></canvas>
@@ -126,21 +126,6 @@
     </div>
   </div>
 
-  {{-- ==================== ACTIVIDAD ==================== --}}
-  <div class="card border-0 shadow-sm rounded-3">
-    <div class="card-header bg-dark text-white fw-semibold">
-      <i class="bi bi-clock-history me-2"></i> Actividad Reciente
-    </div>
-    <div class="card-body">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item"><i class="bi bi-person-plus text-success me-2"></i> Se registró un nuevo usuario administrador.</li>
-        <li class="list-group-item"><i class="bi bi-calendar-event text-primary me-2"></i> Se creó el evento “Campeonato Nacional 2025”.</li>
-        <li class="list-group-item"><i class="bi bi-person-fill text-warning me-2"></i> 3 atletas nuevos registrados hoy.</li>
-        <li class="list-group-item"><i class="bi bi-exclamation-circle text-danger me-2"></i> Un evento cambió a “Suspendido”.</li>
-      </ul>
-    </div>
-  </div>
-</div>
 
 {{-- ==================== Chart.js ==================== --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -169,5 +154,42 @@ new Chart(ctxGenero, {
   options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
 });
 </script>
+
+{{-- ==================== SWEETALERT ==================== --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 🔹 Al entrar al Dashboard
+  Swal.fire({
+    title: '¡Bienvenido Administrador!',
+    text: 'Has ingresado al panel de control general del sistema.',
+    icon: 'success',
+    confirmButtonColor: '#0d6efd',
+    confirmButtonText: 'Continuar'
+  });
+
+  // 🔹 Ejemplo: Notificación dinámica si hay sesión flash de éxito
+  @if(session('success'))
+    Swal.fire({
+      title: 'Éxito',
+      text: '{{ session('success') }}',
+      icon: 'success',
+      confirmButtonColor: '#0d6efd'
+    });
+  @endif
+
+  // 🔹 Ejemplo: Notificación si hay error
+  @if(session('error'))
+    Swal.fire({
+      title: 'Error',
+      text: '{{ session('error') }}',
+      icon: 'error',
+      confirmButtonColor: '#dc3545'
+    });
+  @endif
+});
+</script>
+
 @endsection
 

@@ -40,4 +40,9 @@ class Academia extends Model
     {
         return $this->hasMany(Inscripcion::class, 'id_academia');
     }
+    
+    public function eventos() {
+    return $this->hasMany(Evento::class, 'id_academia');
+}
+
 }

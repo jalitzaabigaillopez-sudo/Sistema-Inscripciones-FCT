@@ -29,5 +29,8 @@ class Evento extends Model
         return $this->belongsTo(TipoEvento::class, 'id_tipo_evento');
     }
 
-    
+    public function academia() {
+    return $this->belongsTo(Academia::class, 'id_academia');
+}
+
 }
