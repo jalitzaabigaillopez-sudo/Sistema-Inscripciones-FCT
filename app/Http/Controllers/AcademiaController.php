@@ -300,7 +300,7 @@ class AcademiaController extends Controller
 
     public function edit(string $id)
     {
-        $academia = Academia::with('distrito.canton.provincia')->findOrFail($id);
+        $academia = Academia::with('usuario','distrito.canton.provincia')->findOrFail($id);
         return response()->json($academia);
     }
 

@@ -47,14 +47,14 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-muted small">Rol</label>
-                                <div class="badge bg-info-subtle text-dark w-100 p-2">
+                                <div class="badge bg-info-subtle text-dark w-100 p-2 rounded-pill">
                                     {{ ucfirst($usuario->rol) }}
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-muted small">Estado</label>
                                 <div
-                                    class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} w-100 p-2">
+                                    class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} w-100 p-2 rounded-pill">
                                     {{ ucfirst($usuario->estado) }}
                                 </div>
                             </div>
