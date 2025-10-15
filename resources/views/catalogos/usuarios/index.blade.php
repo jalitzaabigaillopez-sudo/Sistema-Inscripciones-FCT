@@ -229,6 +229,11 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
+                                        <label for="academiaUsuarioEditar" class="form-label">Academia</label>
+                                        <input class="form-control form-control-sm academiaUsuarioInput" type="text"
+                                            id="academiaUsuarioEditar" name="academia" readonly>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="fotoUsuarioEditar" class="form-label">Foto de Perfil</label>
                                         <input class="form-control form-control-sm fotoUsuarioInput" type="file"
                                             id="fotoUsuarioEditar" name="imagen" accept="image/*">
@@ -539,6 +544,7 @@
             modal.find('#nombreUsuarioEditar').val(usuario.nombre_completo);
             modal.find('#correoUsuarioEditar').val(usuario.email);
             modal.find('#rolUsuarioEditar').val(usuario.rol);
+            modal.find('#academiaUsuarioEditar').val(usuario.academia ?? 'Sin academia asignada');
             modal.find('input[name="estado"][value="' + usuario.estado + '"]').prop('checked', true);
             modal.find('#contrasenaUsuarioEditar').val('');
             modal.find('#confirmarContrasenaEditar').val('');

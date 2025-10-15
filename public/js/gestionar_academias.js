@@ -273,6 +273,8 @@ $(document).ready(function () {
                 $('#profesorAcademiaEditar').val(data.profesor_encargado);
                 $('#telefonoAcademiaEditar').val(data.telefono);
                 $('#correoAcademiaEditar').val(data.correo);
+                $('#usuarioAcademiaEditar').val(data.usuario ? data.usuario.nombre_completo : 'Sin usuario asignado');
+
                 $('#direccionAcademiaEditar').val(data.direccion);
 
                 $('input[name="estado"][value="' + data.estado.toLowerCase() + '"]').prop('checked', true);
