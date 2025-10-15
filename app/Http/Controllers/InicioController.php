@@ -60,10 +60,11 @@ class InicioController extends Controller
             
         ));
         }
-    
 
-         // ACADEMIA
+        // ACADEMIA
     $academia = $usuario->academia;
+    $id_academia = $academia->id_academia ?? null;
+    $nombre_academia = $academia->nombre ?? null;
 
      // Eventos en los que la academia está inscrita
         $eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
@@ -125,7 +126,9 @@ class InicioController extends Controller
         'categorias',
             'inscripciones',
             'gradosLabels',
-            'gradosCount'
+            'gradosCount',
+            'id_academia',
+            'nombre_academia'
         ));
     } 
 }
