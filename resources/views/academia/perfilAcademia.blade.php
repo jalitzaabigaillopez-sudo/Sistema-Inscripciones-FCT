@@ -16,60 +16,76 @@
 
             {{-- VISUALIZACIÓN DE ACADEMIA (100% RESPONSIVA) --}}
             <div class="col-12 col-lg-6">
-                <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card shadow border-1 rounded-3 mb-4 p-3">
                     <!-- Encabezado -->
                     <div
-                        class="card-header bg-white fw-semibold fs-5 d-flex flex-wrap justify-content-between align-items-center border-0">
-                        <span class="text-primary mb-2 mb-sm-0">
+                        class="card-header bg-white fw-semibold fs-5 d-flex flex-column flex-sm-row justify-content-between align-items-center border-0 gap-3 text-center text-sm-start">
+                        <span class="text-primary">
                             <i class="bi bi-building me-2"></i> Información de la Academia
                         </span>
-                        <button class="btn btn-sm btn-warning rounded-pill text-light mt-2 mt-sm-0" data-bs-toggle="modal"
-                            data-bs-target="#modalEditarAcademia" data-academia='@json($academia)'>
-                            <i class="bi bi-pencil-square"></i> Editar Academia
+                        <button
+                            class="btn btn-sm btn-warning text-light rounded-pill d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal" data-bs-target="#modalEditarAcademia"
+                            data-academia='@json($academia)'>
+                            <i class="bi bi-pencil-square me-2"></i> Editar Academia
                         </button>
                     </div>
 
                     <!-- Cuerpo -->
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Nombre de la Academia</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->nombre }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->nombre }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Profesor Encargado</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->profesor_encargado }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->profesor_encargado }}" readonly>
                             </div>
+                        </div>
 
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Teléfono</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->telefono }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->telefono }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Correo</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->correo }}</div>
+                                <input type="email" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->correo }}" readonly>
                             </div>
+                        </div>
 
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Dirección</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->direccion }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->direccion }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Ubicación Geográfica</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $academia->distrito->canton->provincia->nombre ?? '—' }},
-                                    {{ $academia->distrito->canton->nombre ?? '—' }},
-                                    {{ $academia->distrito->nombre ?? '—' }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ ($academia->distrito->canton->provincia->nombre ?? '—') .
+                                        ', ' .
+                                        ($academia->distrito->canton->nombre ?? '—') .
+                                        ', ' .
+                                        ($academia->distrito->nombre ?? '—') }}"
+                                    readonly>
                             </div>
+                        </div>
 
-                            <!-- Imagen -->
-                            <div class="col-12 mt-3 text-center">
+                        <hr class="my-4">
+
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Logo de la Academia</label>
                                 <div class="d-flex flex-column align-items-center">
                                     <img src="{{ $academia->imagen ? asset('storage/' . $academia->imagen) : asset('images/default-academia.png') }}"
-                                        alt="Imagen de la academia" class="rounded-circle shadow-sm border img-fluid"
-                                        style="width: 150px; height: 150px; object-fit: cover;">
+                                        alt="Logo de la Academia" class="rounded-circle shadow-sm border"
+                                        style="width: 130px; height: 130px; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -77,9 +93,10 @@
                 </div>
             </div>
 
+
             <!-- ================================
-                                    MODAL DE EDICIÓN DE ACADEMIA
-                                  ================================ -->
+                    MODAL DE EDICIÓN DE ACADEMIA
+                ================================ -->
             <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -230,87 +247,83 @@
 
             {{-- VISUALIZACIÓN DE USUARIO (100% RESPONSIVO) --}}
             <div class="col-12 col-lg-6">
-                <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card shadow border-1 rounded-3 mb-4 p-3">
                     <!-- Encabezado -->
                     <div
-                        class="card-header bg-white fw-semibold fs-5 d-flex flex-wrap justify-content-between align-items-center border-0">
-                        <span class="text-primary mb-2 mb-sm-0">
+                        class="card-header bg-white fw-semibold fs-5 d-flex flex-column flex-sm-row justify-content-between align-items-center border-0 gap-3 text-center text-sm-start">
+                        <span class="text-primary">
                             <i class="bi bi-person-badge me-2"></i> Perfil del Usuario
                         </span>
-                        <button class="btn btn-sm btn-warning rounded-pill text-light mt-2 mt-sm-0" data-bs-toggle="modal"
-                            data-bs-target="#modalEditarPerfilAcademia" data-usuario='@json($usuario)'>
-                            <i class="bi bi-pencil-square"></i> Editar Perfil
+                        <button
+                            class="btn btn-sm btn-warning text-light rounded-pill d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal" data-bs-target="#modalEditarPerfilAcademia"
+                            data-usuario='@json($usuario)'>
+                            <i class="bi bi-pencil-square me-2"></i> Editar Perfil
                         </button>
                     </div>
 
                     <!-- Cuerpo -->
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <!-- Identificación -->
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Número de Identificación</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->identificacion }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->identificacion }}" readonly>
                             </div>
-
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Rol</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ ucfirst($usuario->rol) }}
-                                </div>
-                            </div>
-
-                            <!-- Nombre y Estado -->
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Nombre completo</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->nombre_completo }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->nombre_completo }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold text-muted small">Correo electrónico</label>
+                                <input type="email" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->email }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Rol</label>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ ucfirst($usuario->rol) }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold text-muted small">Contraseña</label>
+                                <input type="password" class="form-control bg-light border-1 shadow-sm" value="••••••••"
+                                    readonly>
                             </div>
 
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Estado</label>
-                                <div class=" mt-1">
+                                <div class="form-control border-0">
                                     <span
-                                        class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2">
+                                        class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
                                         {{ ucfirst($usuario->estado) }}
                                     </span>
                                 </div>
                             </div>
-                            <!-- Correo -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Correo electrónico</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->email }}
-                                </div>
-                            </div>
+                        </div>
 
+                        {{-- <hr class="my-4"> --}}
 
-                            <!-- Contraseña -->
-
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Contraseña</label>
-                                <div class="p-2 border rounded bg-light">
-                                    ••••••••
-                                </div>
-                            </div>
-
-
-                            <!-- Imagen de perfil -->
-                            {{-- <div class="col-12 mt-3 text-center">
+                        {{-- <div class="row mt-3">
+                            <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
                                 <div class="d-flex flex-column align-items-center">
                                     <img src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : asset('images/default.png') }}"
-                                        alt="Foto de perfil" class="rounded-circle shadow-sm border img-fluid"
+                                        alt="Foto de perfil" class="rounded-circle shadow-sm border"
                                         style="width: 130px; height: 130px; object-fit: cover;">
-                                    <span class="text-muted small mt-2">{{ $usuario->nombre_completo }}</span>
                                 </div>
-                            </div> --}}
-                        </div>
+                            </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
+
 
             <!-- Modal de edición USUARIO-->
             <div class="modal fade modal-editar" id="modalEditarPerfilAcademia" tabindex="-1"

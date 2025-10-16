@@ -218,7 +218,8 @@
                                         <div class="input-group input-group-sm">
                                             <input type="password" class="form-control form-control-sm"
                                                 id="contrasenaUsuarioEditar" name="password"
-                                                placeholder="Mínimo 8 caracteres">
+                                                placeholder="Mínimo 8 caracteres" autocomplete="new-password"
+                                                autocapitalize="off" spellcheck="false">
                                             <button class="btn btn-outline-primary toggle-password" type="button"
                                                 data-target="#contrasenaUsuarioEditar">
                                                 <i class="bi bi-eye"></i>
@@ -231,7 +232,8 @@
                                         <div class="input-group input-group-sm">
                                             <input type="password" class="form-control form-control-sm"
                                                 id="confirmarContrasenaEditar" name="password_confirmation"
-                                                placeholder="Repetir la contraseña">
+                                                placeholder="Repetir la contraseña" autocomplete="new-password"
+                                                autocapitalize="off" spellcheck="false">
                                             <button class="btn btn-outline-primary toggle-password" type="button"
                                                 data-target="#confirmarContrasenaEditar">
                                                 <i class="bi bi-eye"></i>
@@ -261,6 +263,15 @@
                                                 contraseñas coinciden</li>
                                         </ul>
                                     </div>
+
+                                    <div class="d-grid gap-2 col-12 mx-auto">
+                                        <button type="button" class="btn btn-link rounded-pill me-2"
+                                            id="btnResetPassword">
+                                            <i class="bi bi-arrow-repeat me-1"></i> Restablecer Contraseña
+                                        </button>
+                                    </div>
+
+
 
                                 </div>
                                 <div class="col-md-6 ps-md-4">
@@ -314,6 +325,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+
                                 <button type="button" class="btn btn-outline-secondary rounded-pill me-2"
                                     data-bs-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn btn-success rounded-pill">Guardar cambios</button>
@@ -590,8 +602,7 @@
 
 
     // EDITAR
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         const editarModal = document.getElementById("modalEditarUsuario");
         if (editarModal) setupImagePreview(editarModal);
 
@@ -601,7 +612,7 @@
         const panel = document.getElementById('passwordRequirementsEditar');
 
         // ============================
-        // 🔐 Validación en tiempo real (sin parpadeo)
+        // Validación en tiempo real (sin parpadeo)
         // ============================
         if (passwordInput && confirmInput && panel) {
             const req = {
@@ -645,16 +656,16 @@
             passwordInput.addEventListener('input', update);
             confirmInput.addEventListener('input', update);
 
-            // 🔄 Cuando se abre el modal
-            $('#modalEditarUsuario').on('show.bs.modal', function () {
+            // Cuando se abre el modal
+            $('#modalEditarUsuario').on('show.bs.modal', function() {
                 passwordInput.value = '';
                 confirmInput.value = '';
                 panel.style.display = 'none'; // se mantiene oculto hasta escribir
                 update();
             });
 
-            // 🔄 Cuando se cierra el modal
-            $('#modalEditarUsuario').on('hidden.bs.modal', function () {
+            // Cuando se cierra el modal
+            $('#modalEditarUsuario').on('hidden.bs.modal', function() {
                 passwordInput.value = '';
                 confirmInput.value = '';
                 panel.style.display = 'none';
@@ -662,7 +673,7 @@
         }
 
         // ============================
-        // 🧠 Validación previa al submit
+        // Validación previa al submit
         // ============================
         function validarContraseñaEditar() {
             const p = passwordInput.value || '';
@@ -672,7 +683,9 @@
 
             const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
             if (!regex.test(p)) {
-                Swal.fire('Contraseña no segura', 'Debe incluir mayúscula, minúscula, número y carácter especial (8 a 11 caracteres).', 'warning');
+                Swal.fire('Contraseña no segura',
+                    'Debe incluir mayúscula, minúscula, número y carácter especial (8 a 11 caracteres).',
+                    'warning');
                 return false;
             }
             if (p !== c) {
@@ -683,10 +696,10 @@
         }
 
         // ============================
-        // 💾 Envío AJAX
+        // Envío AJAX
         // ============================
         if (formEditarUsuario) {
-            formEditarUsuario.addEventListener("submit", function (e) {
+            formEditarUsuario.addEventListener("submit", function(e) {
                 e.preventDefault();
 
                 if (!validarContraseñaEditar()) return;
@@ -707,8 +720,10 @@
                     data: formData,
                     processData: false,
                     contentType: false,
-                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                    success: function (response) {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
                         if (response.success) {
                             Swal.fire({
                                 title: '¡Éxito!',
@@ -723,10 +738,11 @@
                             });
                         }
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         let errorMessage = 'Error al actualizar el usuario.';
                         if (xhr.status === 422) {
-                            errorMessage = Object.values(xhr.responseJSON?.errors || {}).flat().join('<br>');
+                            errorMessage = Object.values(xhr.responseJSON?.errors || {})
+                                .flat().join('<br>');
                         } else if (xhr.status === 500) {
                             errorMessage = xhr.responseJSON?.error || 'Error interno.';
                         }
@@ -743,9 +759,9 @@
         }
 
         // ============================
-        // 📸 Cargar datos e imagen al abrir modal
+        //  Cargar datos e imagen al abrir modal
         // ============================
-        $('#modalEditarUsuario').on('show.bs.modal', function (event) {
+        $('#modalEditarUsuario').on('show.bs.modal', function(event) {
             const button = $(event.relatedTarget);
             const usuario = button.data('usuario');
             const modal = $(this);
@@ -779,9 +795,8 @@
             inputFile.val('');
         });
 
-        // ============================
-        // 🖼️ Previsualizar imagen
-        // ============================
+        //  Previsualizar imagen
+
         function setupImagePreview(modalElement) {
             const inputFile = modalElement.querySelector(".fotoUsuarioInput");
             const previewImage = modalElement.querySelector(".previewImage");
@@ -790,11 +805,11 @@
             const removeImagenInput = modalElement.querySelector("#removeImagen");
 
             if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
-                inputFile.addEventListener("change", function () {
+                inputFile.addEventListener("change", function() {
                     const file = this.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = function (e) {
+                        reader.onload = function(e) {
                             previewImage.src = e.target.result;
                             previewImage.style.display = "block";
                             previewText.style.display = "none";
@@ -805,7 +820,7 @@
                     }
                 });
 
-                removeBtn.addEventListener("click", function () {
+                removeBtn.addEventListener("click", function() {
                     previewImage.src = "";
                     previewImage.style.display = "none";
                     previewText.style.display = "block";
@@ -815,6 +830,88 @@
                 });
             }
         }
+
+        // ======================================================
+        // RESTABLECER CONTRASEÑA DESDE EL ADMIN 
+        // ======================================================
+        const btnResetPassword = document.getElementById("btnResetPassword");
+
+        if (btnResetPassword) {
+            btnResetPassword.addEventListener("click", async function() {
+                const correo = document.getElementById("correoUsuarioEditar").value;
+
+                if (!correo) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Correo no válido',
+                        text: 'El usuario no tiene un correo registrado.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+
+                const confirm = await Swal.fire({
+                    title: '¿Restablecer contraseña?',
+                    html: `Se enviará una contraseña temporal al correo:<br><b>${correo}</b>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, enviar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33'
+                });
+
+                if (!confirm.isConfirmed) return;
+
+                Swal.fire({
+                    title: 'Enviando correo...',
+                    text: 'Por favor, espere unos segundos.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    const response = await fetch(`/recuperar-contraseña`, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector(
+                                'meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            correo
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Correo enviado!',
+                            text: data.message,
+                            confirmButtonColor: '#3085d6'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'No se pudo enviar el correo.',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error inesperado',
+                        text: 'No se pudo conectar con el servidor.',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            });
+        }
+
     });
 
     // ELIMINAR

@@ -82,6 +82,7 @@
                             <th>Nombre Completo</th>
                             <th>Sexo</th>
                             <th>Fecha Nacimiento</th>
+                            <th>Foto</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -97,6 +98,21 @@
                                
                             </td>
                             <td>{{ \Carbon\Carbon::parse($atleta->fecha_nacimiento)->format('d/m/Y') }}</td>
+                           <td class="text-center">
+                                @if ($atleta->imagen)
+                                    <img src="{{ asset('storage/' . $atleta->imagen) }}"
+                                        alt="Foto de {{ $atleta->nombre }}"
+                                        class="rounded-circle shadow-sm"
+                                        width="60" height="60"
+                                        style="object-fit: cover;">
+                                @else
+                                    <img src="{{ asset('images/default-user.png') }}"
+                                        alt="Sin foto"
+                                        class="rounded-circle shadow-sm"
+                                        width="60" height="60"
+                                        style="object-fit: cover;">
+                                @endif
+                            </td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editarModal{{ $atleta->id_atleta }}">
