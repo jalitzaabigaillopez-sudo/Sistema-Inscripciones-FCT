@@ -1,3 +1,4 @@
+// ...existing code...
 @extends('academia')
 
 @section('content')
@@ -7,39 +8,75 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-2">
         <h4 class="fw-bold mb-0">Gestión de Atletas</h4>
 
-        {{-- 🔍 Buscador --}}
-        <form action="{{ route('registro-atletas.index') }}" method="GET" class="d-flex flex-wrap" style="max-width: 420px;">
-            <input 
-                type="text" 
-                name="buscar" 
-                class="form-control form-control-sm me-2 mb-2" 
-                placeholder="Buscar atleta..." 
-                value="{{ $busqueda ?? '' }}">
-            <button class="btn btn-sm btn-outline-primary mb-2">
-                <i class="bi bi-search"></i> Buscar
-            </button>
-            @if (!empty($busqueda))
-                <a href="{{ route('registro-atletas.index') }}" class="btn btn-sm btn-outline-secondary ms-2 mb-2">
-                    <i class="bi bi-x-circle"></i> Limpiar
-                </a>
-            @endif
-        </form>
-    </div>
-
     {{-- 🔹 Botón Crear --}}
-    <div class="text-end mb-3">
-        <button hidden class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#crearModal">
-            <i class="bi bi-person-plus"></i> Nuevo Atleta
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearModal">
+            <i class="bi bi-plus-lg"></i> Nuevo Atleta
         </button>
+
+        {{-- 🔸 Modal Crear --}}
+        <div class="modal fade" id="crearModal" tabindex="-1" aria-labelledby="crearLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="crearLabel">
+                            <i class="bi bi-plus-lg"></i> Nuevo Atleta
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('registro-atletas.store') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            {{-- Formulario --}}
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label class="form-label fw-semibold">Tipo Identificación</label>
+                                    <input type="text" name="tipo_identificacion" class="form-control" required>
+                                </div>  
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {{-- 🔹 Tabla --}}
+    {{-- 🔹 Tabla dentro de card con buscador en header y paginación en footer --}}
     <div class="card table-card shadow">
-        <div class="card-body p-3">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                
+                <div class="text-muted small">Mostrando
+                    {{ method_exists($atletas, 'count') ? $atletas->count() : 0 }}
+                    de
+                    {{ method_exists($atletas, 'total') ? $atletas->total() : (is_countable($atletas) ? count($atletas) : 0) }}
+                    registros
+                </div>
+            </div>
+
+            {{-- 🔍 Buscador dentro del card header --}}
+            <form action="{{ route('registro-atletas.index') }}" method="GET" class="d-flex align-items-center" style="min-width:260px;">
+                <input
+                    type="text"
+                    name="buscar"
+                    class="form-control form-control-sm me-2"
+                    placeholder="Buscar atleta..."
+                    value="{{ $busqueda ?? '' }}">
+                <button class="btn btn-sm btn-outline-primary me-2">
+                    <i class="bi bi-search"></i>
+                </button>
+                @if (!empty($busqueda))
+                    <a href="{{ route('registro-atletas.index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i>
+                    </a>
+                @endif
+            </form>
+        </div>
+
+        <div class="card-body p-0">
             <div class="table-responsive" style="overflow-x: auto;">
-                <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
+                <table id="tabla" class="table table-striped table-hover table-bordered text-center border mb-0">
                     <thead class="table-light">
-                        <tr>
+                       <tr id="tabla-headers">
                             <th>ID</th>
                             <th>Identificación</th>
                             <th>Nombre Completo</th>
@@ -53,11 +90,11 @@
                         <tr>
                             <td class="fw-semibold">{{ $atleta->id_atleta }}</td>
                             <td>{{ $atleta->identificacion }}</td>
-                            <td>{{ $atleta->nombre }} {{ $atleta->primer_apellido }} {{ $atleta->segundo_apellido }}</td>
+                            <td class="text-start">{{ $atleta->nombre }} {{ $atleta->primer_apellido }} {{ $atleta->segundo_apellido }}</td>
                             <td>
-                                <span class="badge" style="background-color: {{ $atleta->sexo === 'Masculino' ? '#0d6efd' : '#e83e8c' }};">
+                               
                                   {{ $atleta->sexo }}
-                                </span>
+                               
                             </td>
                             <td>{{ \Carbon\Carbon::parse($atleta->fecha_nacimiento)->format('d/m/Y') }}</td>
                             <td>
@@ -144,158 +181,42 @@
                     </tbody>
                 </table>
             </div>
-
-            <span>Descargar <a href="{{ route('atletas.academia.pdf', $academia->id_academia) }}">PDF</a></span>
         </div>
-    </div>
 
-    {{-- 🔹 Paginación simple --}}
-    @if ($atletas->hasPages())
-    <nav class="d-flex justify-content-center mt-3">
-        <ul class="pagination pagination-sm mb-0">
-            @if ($atletas->onFirstPage())
-                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-            @else
-                <li class="page-item"><a class="page-link" href="{{ $atletas->previousPageUrl() }}">Anterior</a></li>
-            @endif
-
-            <li class="page-item active"><span class="page-link">{{ $atletas->currentPage() }}</span></li>
-
-            @if ($atletas->hasMorePages())
-                <li class="page-item"><a class="page-link" href="{{ $atletas->nextPageUrl() }}">Siguiente</a></li>
-            @else
-                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-            @endif
-        </ul>
-    </nav>
-    @endif
-
-</div>
-
-{{-- 🔸 Modal Crear --}}
-<div class="modal fade" id="crearModal" tabindex="-1" aria-labelledby="crearLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-bold" id="crearLabel">
-                    <i class="bi bi-person-plus"></i> Registrar Nuevo Atleta
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        {{-- Card footer con paginación y contador --}}
+        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center">
+            <div class="small text-muted">
+                Mostrando
+                <strong>{{ method_exists($atletas, 'firstItem') ? $atletas->firstItem() : (method_exists($atletas, 'count') ? ($atletas->count() ? 1 : 0) : 0) }}</strong>
+                -
+                <strong>{{ method_exists($atletas, 'lastItem') ? $atletas->lastItem() : (method_exists($atletas, 'count') ? $atletas->count() : 0) }}</strong>
+                de
+                <strong>{{ method_exists($atletas, 'total') ? $atletas->total() : (is_countable($atletas) ? count($atletas) : 0) }}</strong>
+                registros
             </div>
-            <form action="{{ route('registro-atletas.store') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label class="form-label fw-semibold">Tipo Identificación</label>
-                            <input type="text" name="tipo_identificacion" class="form-control" required>
-                        </div>
-                        <div class="col">
-                            <label class="form-label fw-semibold">Identificación</label>
-                            <input type="text" name="identificacion" class="form-control" required>
-                        </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label class="form-label fw-semibold">Primer Apellido</label>
-                            <input type="text" name="primer_apellido" class="form-control" required>
-                        </div>
-                        <div class="col">
-                            <label class="form-label fw-semibold">Segundo Apellido</label>
-                            <input type="text" name="segundo_apellido" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nombre</label>
-                        <input type="text" name="nombre" class="form-control" required>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label class="form-label fw-semibold">Sexo</label>
-                            <select name="sexo" class="form-select" required>
-                                <option value="">-- Seleccione --</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Femenino">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label class="form-label fw-semibold">Fecha de Nacimiento</label>
-                            <input type="date" name="fecha_nacimiento" class="form-control" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Guardar
-                    </button>
-                </div>
-            </form>
+            <div>
+                @if (method_exists($atletas, 'links'))
+                    {{-- Enlaces de paginación (Bootstrap) --}}
+                    <nav aria-label="Page navigation">
+                        {{ $atletas->links('pagination::bootstrap-5') }}
+                    </nav>
+                @else
+                    {{-- Paginación manual simple si no es LengthAwarePaginator --}}
+                    <nav class="d-flex">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                            <li class="page-item active"><span class="page-link">1</span></li>
+                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                        </ul>
+                    </nav>
+                @endif
+            </div>
         </div>
     </div>
+
+    <span class="d-block mt-2">Descargar <a href="{{ route('atletas.academia.pdf', $academia->id_academia) }}">PDF</a></span>
 </div>
 
-{{-- 🔸 Scripts SweetAlert2 --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- 🔹 Éxito --}}
-@if(session('success'))
-<script>
-Swal.fire({
-    icon: 'success',
-    title: '¡Éxito!',
-    text: '{{ session('success') }}',
-    showConfirmButton: false,
-    timer: 2000,
-    timerProgressBar: true
-});
-</script>
-@endif
-
-{{-- 🔹 Error --}}
-@if(session('error'))
-<script>
-Swal.fire({
-    icon: 'error',
-    title: 'Error',
-    text: '{{ session('error') }}'
-});
-</script>
-@endif
-
-{{-- 🔹 Confirmar eliminación --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.btn-eliminar').forEach(button => {
-        button.addEventListener('click', function() {
-            const atletaId = this.dataset.id;
-            Swal.fire({
-                title: '¿Eliminar atleta?',
-                text: "Esta acción no se puede deshacer.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/registro-atletas/${atletaId}`;
-                    form.innerHTML = `
-                        @csrf
-                        @method('DELETE')
-                    `;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-    });
-});
-</script>
 @endsection
