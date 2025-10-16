@@ -284,6 +284,16 @@
                                     </div>
                                 </div>
 
+                                 <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="usuarioAcademiaEditar" class="form-label">Usuario <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            id="usuarioAcademiaEditar" name="usuario" readonly>
+                                    </div>
+                                   
+                                </div>
+
                                 <div class="mb-3 mt-3">
                                     <label for="fotoAcademiaEditar" class="form-label">Foto de Perfil</label>
                                     <input class="form-control form-control-sm fotoAcademiaInput" type="file"

@@ -1,107 +1,118 @@
 @extends('app')
 
+@section('tituloArriba')
+    Administrar Atletas
+@endsection
+
+@section('breadcrumb-title', 'Administración del Perfil')
+
 @section('title', 'Administración de Perfil')
 
 @section('content')
-    <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
+    {{-- <a href="{{ route('adminDash') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
-    </a>
+    </a> --}}
 
     <div class="container py-4">
-        <h3 class="mb-4 text-black fw-bold">Administración de Perfil</h3>
+
+        <div class="d-flex align-items-center mb-4">
+            <h4 class="fw-bold mb-0">Administración del Perfil</h4>
+        </div>
+        <hr>
+
 
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
-                <div class="card shadow border-0 rounded-3">
+                <div class="card shadow border-1 rounded-3">
                     <!-- Encabezado -->
                     <div
-                        class="card-header bg-white fw-semibold fs-5 d-flex justify-content-between align-items-center border-0">
+                        class="card-header bg-white fw-semibold fs-5 d-flex flex-column flex-sm-row justify-content-between align-items-center border-0 gap-3 text-center text-sm-start">
+                        <!-- Título -->
                         <span class="text-primary">
                             <i class="bi bi-person-badge me-2"></i> Perfil del Usuario
                         </span>
-                        <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal"
-                            data-bs-target="#modalEditarPerfilAdmin" data-usuario='@json($usuario)'>
-                            <i class="bi bi-pencil-square"></i> Editar Perfil
+                        <!-- Botón editar -->
+                        <button
+                            class="btn btn-sm btn-warning text-light rounded-pill d-flex align-items-center justify-content-center "
+                            data-bs-toggle="modal" data-bs-target="#modalEditarPerfilAdmin"
+                            data-usuario='@json($usuario)'>
+                            <i class="bi bi-pencil-square me-2"></i>
+                            Editar Perfil
                         </button>
                     </div>
 
                     <!-- Cuerpo -->
                     <div class="card-body p-4">
-                        <!-- Identificación -->
                         <div class="row mb-3">
-                            <div class="col-12">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Número de Identificación</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->identificacion }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->identificacion }}" readonly>
                             </div>
-                        </div>
 
-                        <!-- Nombre, Rol y Estado -->
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Nombre completo</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->nombre_completo }}
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold text-muted small">Rol</label>
-                                <div class="badge bg-info-subtle text-dark w-100 p-2">
-                                    {{ ucfirst($usuario->rol) }}
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold text-muted small">Estado</label>
-                                <div
-                                    class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} w-100 p-2">
-                                    {{ ucfirst($usuario->estado) }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->nombre_completo }}" readonly>
                             </div>
                         </div>
 
-                        <!-- Correo y Contraseña -->
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Correo electrónico</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->email }}
-                                </div>
+                                <input type="email" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->email }}" readonly>
                             </div>
+
                             <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Rol</label>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ ucfirst($usuario->rol) }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Contraseña</label>
-                                <div class="p-2 border rounded bg-light">
-                                    ••••••••
+                                <input type="password" class="form-control bg-light border-1 shadow-sm" value="••••••••"
+                                    readonly>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Estado</label>
+                                <div class="form-control border-0">
+                                    <span
+                                        class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
+                                        {{ ucfirst($usuario->estado) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Imagen de perfil -->
-                        <div class="row mt-4">
+                        <hr class="my-4">
+
+                        <div class="row mt-3">
                             <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
                                 <div class="d-flex flex-column align-items-center">
                                     @php
-                                        // Si es administrador → usar logo de federación
-                                        $imagenPerfil =
-                                            $usuario->rol === 'administrador'
-                                                ? asset('images/Logotipo.png')
-                                                : ($usuario->imagen
-                                                    ? asset('storage/' . $usuario->imagen)
-                                                    : asset('images/Logotipo.png'));
+                                        $imagenPerfil = $usuario->imagen
+                                            ? asset('storage/' . $usuario->imagen)
+                                            : ($usuario->rol === 'administrador'
+                                                ? asset('images/fct_logo.jpg')
+                                                : asset('images/Logotipo.png'));
                                     @endphp
 
                                     <img src="{{ $imagenPerfil }}" alt="Foto de perfil"
                                         class="rounded-circle shadow-sm border"
                                         style="width: 130px; height: 130px; object-fit: cover;">
 
-                                    <span class="text-muted small mt-2">
+                                    {{-- <span class="text-muted small mt-2 fw-semibold">
                                         {{ $usuario->nombre_completo }}
-                                    </span>
+                                    </span> --}}
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -219,12 +230,11 @@
                                                 style="width: 150px; height: 150px; background-color: #f0f0f0; border: 1px dashed #ccc; position: relative; overflow: hidden;">
                                                 <span class="previewText text-muted">Sin foto</span>
                                                 @php
-                                                    $imagenModal =
-                                                        $usuario->rol === 'administrador'
-                                                            ? asset('images/Logotipo.png')
-                                                            : ($usuario->imagen
-                                                                ? asset('storage/' . $usuario->imagen)
-                                                                : '');
+                                                    $imagenModal = $usuario->imagen
+                                                        ? asset('storage/' . $usuario->imagen)
+                                                        : ($usuario->rol === 'administrador'
+                                                            ? asset('images/fct_logo.jpg')
+                                                            : asset('images/Logotipo.png'));
                                                 @endphp
 
                                                 <img class="previewImage img-thumbnail rounded-circle"
@@ -302,7 +312,7 @@
 
                         $.ajax({
                             url: `/usuarios/${idUsuario}`,
-                            method: "POST", // Laravel acepta POST + _method=PUT
+                            method: "POST",
                             data: formData,
                             processData: false,
                             contentType: false,
@@ -320,31 +330,51 @@
                                     }).then(() => {
                                         $('#modalEditarPerfilAdmin').modal('hide');
                                         formEditarPerfil.reset();
-                                        location.reload();
-                                    });
-                                }
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        title: '¡Éxito!',
-                                        text: response.message,
-                                        icon: 'success',
-                                        confirmButtonColor: '#3085d6',
-                                        confirmButtonText: 'Aceptar'
-                                    }).then(() => {
+
+                                        // Actualizar imagen del perfil
+                                        if (response.newImagePath) {
+                                            const perfilImg = document.querySelector(
+                                                '.card-body img.rounded-circle');
+                                            if (perfilImg) {
+                                                perfilImg.src = response.newImagePath +
+                                                    '?t=' + new Date().getTime();
+                                            }
+                                        }
+
+                                        // Actualizar navbar
+                                        const dropdown = document.getElementById(
+                                            'userDropdown');
+                                        if (dropdown && response.newImagePath) {
+                                            const img = dropdown.querySelector('img');
+                                            const icon = dropdown.querySelector(
+                                                '.user-icon');
+
+                                            if (img) {
+                                                img.src = response.newImagePath + '?t=' +
+                                                    new Date().getTime();
+                                            } else if (icon) {
+                                                icon.remove();
+                                                const newImg = document.createElement(
+                                                    'img');
+                                                newImg.src = response.newImagePath + '?t=' +
+                                                    new Date().getTime();
+                                                newImg.alt = "Foto de perfil";
+                                                newImg.style.cssText =
+                                                    "height:35px;width:35px;border-radius:50%;object-fit:cover;";
+                                                dropdown.prepend(newImg);
+                                            }
+                                        }
+
+                                        // Si cambió contraseña → redirigir
                                         if (response.logout) {
-                                            // 🔴 Redirigir al login si se cerró la sesión
                                             window.location.href = "{{ route('login') }}";
                                         } else {
-                                            $('#modalEditarPerfilAdmin').modal('hide');
-                                            formEditarPerfil.reset();
-                                            location.reload();
+                                            // Opcional: recarga ligera
+                                            setTimeout(() => location.reload(), 300);
                                         }
                                     });
                                 }
                             },
-
                             error: function(xhr) {
                                 let errorMessage = 'Error al actualizar el perfil.';
                                 if (xhr.status === 422) {
@@ -362,6 +392,7 @@
                                 });
                             }
                         });
+
                     });
                 }
 
@@ -387,20 +418,23 @@
                     const inputFile = modal.find('#fotoPerfilEditar');
 
                     previewText.text('Sin foto');
-                    if (usuario.rol === 'administrador') {
-                        // Mostrar logo si es admin
-                        previewImage.attr('src', '/images/Logotipo.png').css('display', 'block');
-                        previewText.css('display', 'none');
-                        removeBtn.css('display', 'none');
-                    } else if (usuario.imagen && usuario.imagen !== '') {
-                        previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
-                        previewText.css('display', 'none');
-                        removeBtn.css('display', 'inline-block');
+                    if (usuario.imagen && usuario.imagen !== '') {
+                        // Tiene imagen personalizada
+                        previewImage.attr('src', '/storage/' + usuario.imagen).show();
+                        previewText.hide();
+                        removeBtn.show();
+                    } else if (usuario.rol === 'administrador') {
+                        // Es admin pero no tiene imagen → mostrar logo FCT
+                        previewImage.attr('src', '/images/fct_logo.jpg').show();
+                        previewText.hide();
+                        removeBtn.hide();
                     } else {
-                        previewImage.attr('src', '').css('display', 'none');
-                        previewText.css('display', 'block');
-                        removeBtn.css('display', 'none');
+                        // Usuario sin imagen (academia/arbitro)
+                        previewImage.hide();
+                        previewText.show();
+                        removeBtn.hide();
                     }
+
 
                     inputFile.val('');
                 });

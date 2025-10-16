@@ -70,6 +70,10 @@ class InicioController extends Controller
             ));
         }
 
+        // ACADEMIA
+        // $academia = $usuario->academia;
+        // $id_academia = $academia->id_academia ?? null;
+        // $nombre_academia = $academia->nombre ?? null;
 
         // ACADEMIA
         $academia = $usuario->academia;
@@ -134,7 +138,9 @@ class InicioController extends Controller
             'categorias',
             'inscripciones',
             'gradosLabels',
-            'gradosCount'
+            'gradosCount',
+            'id_academia',
+            'nombre_academia'
         ));
     }
 }

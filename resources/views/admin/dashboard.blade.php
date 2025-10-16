@@ -160,36 +160,41 @@ new Chart(ctxGenero, {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // 🔹 Al entrar al Dashboard
-  Swal.fire({
-    title: '¡Bienvenido Administrador!',
-    text: 'Has ingresado al panel de control general del sistema.',
-    icon: 'success',
-    confirmButtonColor: '#0d6efd',
-    confirmButtonText: 'Continuar'
-  });
+  // Mostrar solo una vez por sesión
+  if (!sessionStorage.getItem('bienvenidaAdminMostrada')) {
+    Swal.fire({
+      title: '¡Bienvenido Administrador!',
+      text: 'Has ingresado al panel de control general del sistema.',
+      icon: 'success',
+      confirmButtonColor: '#0d6efd',
+      confirmButtonText: 'Continuar'
+    }).then(() => {
+      sessionStorage.setItem('bienvenidaAdminMostrada', 'true');
+    });
+  }
 
-  // 🔹 Ejemplo: Notificación dinámica si hay sesión flash de éxito
+  // Mensaje de éxito
   @if(session('success'))
     Swal.fire({
       title: 'Éxito',
-      text: '{{ session('success') }}',
+      text: @json(session('success')),
       icon: 'success',
       confirmButtonColor: '#0d6efd'
     });
   @endif
 
-  // 🔹 Ejemplo: Notificación si hay error
+  // Mensaje de error
   @if(session('error'))
     Swal.fire({
       title: 'Error',
-      text: '{{ session('error') }}',
+      text: @json(session('error')),
       icon: 'error',
       confirmButtonColor: '#dc3545'
     });
   @endif
 });
 </script>
+
 
 @endsection
 

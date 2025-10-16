@@ -25,7 +25,7 @@ class UsuariosController extends Controller
     {
         // Si es una solicitud AJAX, procesamos los datos para DataTables
         if ($request->ajax()) {
-            $query = Usuario::query(); // Inicia la consulta del modelo
+            $query = Usuario::with('academia'); // Inicia la consulta del modelo
 
             //  Usuario actual (de la sesión)
             $usuarioActualId = session('usuario'); // o Auth::id() si usas Auth
@@ -79,7 +79,9 @@ class UsuariosController extends Controller
                     'rol' => $item->rol,
                     'estado' => $item->estado,
                     'imagen' => $item->imagen,
-                   'usuario_actual'   => ($item->id_usuario == $usuarioActualId), // Se usa el ID para generar los botones
+                    'usuario_actual'   => ($item->id_usuario == $usuarioActualId), // Se usa el ID para generar los botones
+
+                    'academia' => $item->academia ? $item->academia->nombre : '—',
                 ];
             }
 
@@ -240,12 +242,12 @@ class UsuariosController extends Controller
                 'remove_imagen' => 'nullable|in:0,1',
             ], $messages);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
             // Actualizar los datos del usuario
             $usuario->identificacion = $request->identificacion;
@@ -256,12 +258,12 @@ class UsuariosController extends Controller
 
             $passwordCambiada = false; // bandera
 
-        // ✅ Si el usuario cambia su contraseña
-        if ($request->filled('password')) {
-            $usuario->password = $request->password;
-            $usuario->password_vencimiento = 180;
-            $passwordCambiada = true;
-        }
+            //  Si el usuario cambia su contraseña
+            if ($request->filled('password')) {
+                $usuario->password = $request->password;
+                $usuario->password_vencimiento = 180;
+                $passwordCambiada = true;
+            }
 
             // Manejar la imagen
             if ($request->input('remove_imagen') === '1') {
@@ -282,16 +284,16 @@ class UsuariosController extends Controller
 
             $usuario->save();
 
-            // 🔐 Si el usuario editado es el mismo que está logueado y cambió su contraseña → cerrar sesión
-        if ($passwordCambiada && session('usuario') == $usuario->id_usuario) {
-            Session::flush(); // elimina sesión
-            Auth::logout();   // si usas Auth
-            return response()->json([
-                'success' => true,
-                'logout' => true, // indicamos al frontend que debe redirigir al login
-                'message' => 'Tu contraseña ha sido actualizada. Por seguridad, debes volver a iniciar sesión.'
-            ], 200);
-        }
+            //  Si el usuario editado es el mismo que está logueado y cambió su contraseña → cerrar sesión
+            if ($passwordCambiada && session('usuario') == $usuario->id_usuario) {
+                Session::flush(); // elimina sesión
+                Auth::logout();   // si usas Auth
+                return response()->json([
+                    'success' => true,
+                    'logout' => true, // indicamos al frontend que debe redirigir al login
+                    'message' => 'Tu contraseña ha sido actualizada. Por seguridad, debes volver a iniciar sesión.'
+                ], 200);
+            }
 
             return response()->json([
                 'success' => true,

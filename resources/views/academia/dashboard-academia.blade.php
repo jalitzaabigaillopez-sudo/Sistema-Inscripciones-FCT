@@ -213,42 +213,68 @@
       plugins: { legend: { position: 'bottom' } }
     }
   });
-</script>
-{{-- ==================== SWEETALERT ==================== --}}
+
+  {{-- DEBUG --}}
+@if(isset($academia))
+  <pre>{{ print_r($academia->toArray(), true) }}</pre>
+@else
+  <p>No hay academia definida</p>
+@endif
+
+{{-- ==================== SWEETALERT ACADEMIA ==================== --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // 🔹 Mensaje de bienvenida a la academia
-  Swal.fire({
-    title: '¡Bienvenida{{ isset($academia->nombre) ? ", " . $academia->nombre : "" }}!',
-    text: 'Este es tu panel para gestionar atletas, categorías y eventos.',
-    icon: 'info',
-    confirmButtonColor: '#0d6efd',
-    confirmButtonText: 'Continuar'
-  });
 
-  // 🔹 Éxito dinámico (por ejemplo, al registrar atleta)
+  // 🔹 Mostrar bienvenida solo una vez por academia
+  @if(isset($id_academia))
+    const academiaId = {{ $id_academia }};
+    const academiaNombre = @json($nombre_academia ?? null);
+    const key = `bienvenidaAcademia_${academiaId}`;
+
+    if (!sessionStorage.getItem(key)) {
+      Swal.fire({
+        title: `¡Bienvenida${academiaNombre ? ', ' + academiaNombre : ''}!`,
+        text: 'Has ingresado al panel de control de tu academia.',
+        icon: 'info',
+        confirmButtonColor: '#0d6efd',
+        confirmButtonText: 'Continuar'
+      }).then(() => {
+        sessionStorage.setItem(key, 'true');
+      });
+    }
+  @else
+    console.warn('No se encontró id_academia, no se muestra bienvenida.');
+  @endif
+
+  // 🔹 Mensaje de éxito (por ejemplo, al registrar atleta)
   @if(session('success'))
     Swal.fire({
       title: '¡Operación Exitosa!',
-      text: '{{ session('success') }}',
+      text: @json(session('success')),
       icon: 'success',
       confirmButtonColor: '#198754'
     });
   @endif
 
-  // 🔹 Error dinámico
+  // 🔹 Mensaje de error
   @if(session('error'))
     Swal.fire({
       title: 'Ups...',
-      text: '{{ session('error') }}',
+      text: @json(session('error')),
       icon: 'error',
       confirmButtonColor: '#dc3545'
     });
   @endif
+
 });
 </script>
+
+
+
+
+
 
 @endsection
 
