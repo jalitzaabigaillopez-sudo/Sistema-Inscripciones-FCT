@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Provincia;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\URL;
@@ -113,8 +114,14 @@ class AuthController extends Controller
             ? 'admin.perfil-admin'
             : 'academia.perfilAcademia';
 
-        $academia = $usuario->academia;
+        // Cargar academia con sus relaciones
+        $academia = $usuario->academia()
+            ->with(['distrito.canton.provincia'])
+            ->first();
 
-        return view($vista, compact('usuario', 'academia'));
+        // Cargar provincias para los selects
+        $provincias = Provincia::orderBy('nombre')->get(['id_provincia', 'nombre']);
+
+        return view($vista, compact('usuario', 'academia', 'provincias'));
     }
 }

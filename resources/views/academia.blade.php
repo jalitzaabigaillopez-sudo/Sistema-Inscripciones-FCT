@@ -433,7 +433,7 @@
                                 $imagenAcademia =
                                     $usuario->academia && $usuario->academia->imagen
                                         ? asset('storage/' . $usuario->academia->imagen)
-                                        : asset('images/default_academia.png');
+                                        : asset('images/default-academia.png');
                             @endphp
                             <img src="{{ $imagenAcademia }}" alt="Logo Academia"
                                 class="rounded-circle shadow-sm border"
