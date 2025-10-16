@@ -3,12 +3,14 @@
 @section('title', 'Administración de Perfil')
 
 @section('content')
-    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
+    {{-- <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
-    </a>
+    </a> --}}
 
     <div class="container py-4">
         <h3 class="mb-4 text-black fw-bold">Administración de Perfil</h3>
+
+        <hr>
 
         <div class="row justify-content-center">
 
@@ -76,8 +78,8 @@
             </div>
 
             <!-- ================================
-                            MODAL DE EDICIÓN DE ACADEMIA
-                            ================================ -->
+                                    MODAL DE EDICIÓN DE ACADEMIA
+                                  ================================ -->
             <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -310,7 +312,7 @@
                 </div>
             </div>
 
-            <!-- Modal de edición -->
+            <!-- Modal de edición USUARIO-->
             <div class="modal fade modal-editar" id="modalEditarPerfilAcademia" tabindex="-1"
                 aria-labelledby="modalEditarPerfilAcademiaLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -385,6 +387,30 @@
                                                 </button>
                                             </div>
                                         </div>
+
+                                        <!-- Requisitos de contraseña -->
+                                        <div id="passwordRequirementsPerfil" class="mt-2 text-muted small"
+                                            style="display:none;">
+                                            <p class="mb-1 fw-semibold text-dark">
+                                                <i class="bi bi-shield-lock me-1 text-primary"></i> Requisitos de la
+                                                contraseña:
+                                            </p>
+                                            <ul class="list-unstyled ms-3 mb-0">
+                                                <li id="reqLengthPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Entre 8 y 11 caracteres</li>
+                                                <li id="reqUpperPerfil"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                    menos una letra mayúscula</li>
+                                                <li id="reqLowerPerfil"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                    menos una letra minúscula</li>
+                                                <li id="reqNumberPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Al menos un número</li>
+                                                <li id="reqSpecialPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Al menos un carácter especial (!@#$%^&*_-.,;:?)</li>
+                                                <li id="reqMatchPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Las contraseñas coinciden</li>
+                                            </ul>
+                                        </div>
+
                                     </div>
 
                                     {{-- Columna derecha --}}
@@ -489,7 +515,29 @@
                         const password = formEditarPerfil.querySelector('#contrasenaPerfilEditar').value;
                         const passwordConfirmation = formEditarPerfil.querySelector(
                             '#confirmarContrasenaPerfil').value;
-                        if (!password && !passwordConfirmation) {
+                        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
+
+                        // Validación antes de enviar
+                        if (password || passwordConfirmation) {
+                            if (!regex.test(password)) {
+                                Swal.fire({
+                                    title: "Contraseña no válida",
+                                    text: "Debe tener entre 8 y 11 caracteres, incluir mayúscula, minúscula, número y carácter especial.",
+                                    icon: "warning",
+                                    confirmButtonColor: "#3085d6"
+                                });
+                                return;
+                            }
+                            if (password !== passwordConfirmation) {
+                                Swal.fire({
+                                    title: "Contraseñas no coinciden",
+                                    text: "Asegúrese de que ambas contraseñas sean iguales.",
+                                    icon: "warning",
+                                    confirmButtonColor: "#3085d6"
+                                });
+                                return;
+                            }
+                        } else {
                             formData.delete('password');
                             formData.delete('password_confirmation');
                         }
@@ -530,6 +578,49 @@
                                 });
                             }
                         });
+                    });
+                }
+
+                // ✅ VALIDACIÓN VISUAL DE CONTRASEÑA (ya existe en HTML)
+                const passwordInput = document.getElementById("contrasenaPerfilEditar");
+                const confirmInput = document.getElementById("confirmarContrasenaPerfil");
+                const panel = document.getElementById("passwordRequirementsPerfil");
+
+                if (passwordInput && confirmInput && panel) {
+                    const req = {
+                        length: document.getElementById("reqLengthPerfil"),
+                        upper: document.getElementById("reqUpperPerfil"),
+                        lower: document.getElementById("reqLowerPerfil"),
+                        number: document.getElementById("reqNumberPerfil"),
+                        special: document.getElementById("reqSpecialPerfil"),
+                        match: document.getElementById("reqMatchPerfil")
+                    };
+
+                    function setIcon(li, ok) {
+                        const i = li.querySelector("i");
+                        i.className = ok ? "bi bi-check-circle text-success me-1" : "bi bi-x-circle text-danger me-1";
+                    }
+
+                    function updateValidation() {
+                        const p = passwordInput.value;
+                        const c = confirmInput.value;
+                        const typing = p || c;
+                        panel.style.display = typing ? "block" : "none";
+                        setIcon(req.length, p.length >= 8 && p.length <= 11);
+                        setIcon(req.upper, /[A-Z]/.test(p));
+                        setIcon(req.lower, /[a-z]/.test(p));
+                        setIcon(req.number, /\d/.test(p));
+                        setIcon(req.special, /[^A-Za-z0-9]/.test(p));
+                        setIcon(req.match, p && c && p === c);
+                    }
+
+                    passwordInput.addEventListener("input", updateValidation);
+                    confirmInput.addEventListener("input", updateValidation);
+
+                    $("#modalEditarPerfilAcademia").on("show.bs.modal hidden.bs.modal", function() {
+                        passwordInput.value = "";
+                        confirmInput.value = "";
+                        panel.style.display = "none";
                     });
                 }
 
@@ -722,7 +813,7 @@
                         const id = document.getElementById("idAcademia").value;
                         const formData = new FormData(formAcademia);
 
-                        // ⚠️ Confirmación previa
+                        //  Confirmación previa
                         const confirm = await Swal.fire({
                             title: '¿Guardar cambios?',
                             text: 'Se actualizará la información de la academia.',
@@ -736,7 +827,7 @@
 
                         if (!confirm.isConfirmed) return;
 
-                        // 🕓 Mostrar loading
+                        //  Mostrar loading
                         Swal.fire({
                             title: 'Actualizando...',
                             text: 'Por favor, espere mientras se guardan los cambios.',
@@ -756,7 +847,7 @@
 
                             const result = await response.json();
 
-                            // ⚠️ Validaciones del backend
+                            //  Validaciones del backend
                             if (response.status === 422) {
                                 const errores = Object.values(result.errors || {})
                                     .flat()
@@ -770,7 +861,7 @@
                                 return;
                             }
 
-                            // ❌ Errores internos
+                            //  Errores internos
                             if (!response.ok) {
                                 Swal.fire({
                                     title: 'Error',
@@ -782,7 +873,7 @@
                                 return;
                             }
 
-                            // ✅ Éxito
+                            //  Éxito
                             if (result.success) {
                                 Swal.fire({
                                     title: '¡Actualización exitosa!',
@@ -805,7 +896,7 @@
                             }
 
                         } catch (error) {
-                            console.error('❌ Error inesperado al actualizar:', error);
+                            console.error(' Error inesperado al actualizar:', error);
                             Swal.fire({
                                 title: 'Error inesperado',
                                 text: 'No se pudo conectar con el servidor. Intente nuevamente.',

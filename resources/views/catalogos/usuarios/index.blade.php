@@ -105,6 +105,30 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <!-- Requisitos (CREAR) -->
+                                    <div id="passwordRequirementsCrear" class="mt-2 text-muted small"
+                                        style="display:none;">
+                                        <p class="mb-1 fw-semibold text-dark">
+                                            <i class="bi bi-shield-lock me-1 text-primary"></i> Requisitos de la
+                                            contraseña:
+                                        </p>
+                                        <ul class="list-unstyled ms-3 mb-0">
+                                            <li id="reqLengthCrear"><i class="bi bi-x-circle text-danger me-1"></i> Entre
+                                                8 y 11 caracteres</li>
+                                            <li id="reqUpperCrear"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos una letra mayúscula</li>
+                                            <li id="reqLowerCrear"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos una letra minúscula</li>
+                                            <li id="reqNumberCrear"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos un número</li>
+                                            <li id="reqSpecialCrear"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos un carácter especial (!@#$%^&*_-.,;:?)</li>
+                                            <li id="reqMatchCrear"><i class="bi bi-x-circle text-danger me-1"></i> Las
+                                                contraseñas coinciden</li>
+                                        </ul>
+                                    </div>
+
+
                                 </div>
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Rol y Foto de Perfil</h6>
@@ -214,6 +238,30 @@
                                             </button>
                                         </div>
                                     </div>
+
+                                    <!-- Requisitos (EDITAR) -->
+                                    <div id="passwordRequirementsEditar" class="mt-2 text-muted small"
+                                        style="display:none;">
+                                        <p class="mb-1 fw-semibold text-dark">
+                                            <i class="bi bi-shield-lock me-1 text-primary"></i> Requisitos de la
+                                            contraseña:
+                                        </p>
+                                        <ul class="list-unstyled ms-3 mb-0">
+                                            <li id="reqLengthEditar"><i class="bi bi-x-circle text-danger me-1"></i> Entre
+                                                8 y 11 caracteres</li>
+                                            <li id="reqUpperEditar"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos una letra mayúscula</li>
+                                            <li id="reqLowerEditar"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos una letra minúscula</li>
+                                            <li id="reqNumberEditar"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos un número</li>
+                                            <li id="reqSpecialEditar"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                menos un carácter especial (!@#$%^&*_-.,;:?)</li>
+                                            <li id="reqMatchEditar"><i class="bi bi-x-circle text-danger me-1"></i> Las
+                                                contraseñas coinciden</li>
+                                        </ul>
+                                    </div>
+
                                 </div>
                                 <div class="col-md-6 ps-md-4">
                                     <h6 class="text-secondary mb-3">Rol y Foto de Perfil</h6>
@@ -383,12 +431,83 @@
         const formCrearUsuario = document.getElementById("formCrearUsuario");
         const guardarBtn = document.querySelector("#modalUsuario .btn-success");
 
+        /* ===============================
+         VALIDACIÓN DE CONTRASEÑA
+        =============================== */
+        const password = document.getElementById('contrasenaUsuario');
+        const confirm = document.getElementById('confirmarContrasena');
+        const panel = document.getElementById('passwordRequirementsCrear');
+
+        if (password && confirm && panel) {
+            const req = {
+                length: document.getElementById('reqLengthCrear'),
+                upper: document.getElementById('reqUpperCrear'),
+                lower: document.getElementById('reqLowerCrear'),
+                number: document.getElementById('reqNumberCrear'),
+                special: document.getElementById('reqSpecialCrear'),
+                match: document.getElementById('reqMatchCrear')
+            };
+
+            function setIcon(li, ok) {
+                const i = li.querySelector('i');
+                i.classList.toggle('bi-check-circle', ok);
+                i.classList.toggle('text-success', ok);
+                i.classList.toggle('bi-x-circle', !ok);
+                i.classList.toggle('text-danger', !ok);
+            }
+
+            function update() {
+                const p = password.value || '';
+                const c = confirm.value || '';
+                panel.style.display = (p || c) ? 'block' : 'none';
+                setIcon(req.length, p.length >= 8 && p.length <= 11);
+                setIcon(req.upper, /[A-Z]/.test(p));
+                setIcon(req.lower, /[a-z]/.test(p));
+                setIcon(req.number, /\d/.test(p));
+                setIcon(req.special, /[^A-Za-z0-9]/.test(p));
+                setIcon(req.match, p && c && p === c);
+            }
+
+            password.addEventListener('input', update);
+            confirm.addEventListener('input', update);
+
+            $('#modalUsuario').on('hidden.bs.modal', function() {
+                panel.style.display = 'none';
+                password.value = '';
+                confirm.value = '';
+                update();
+            });
+        }
+
+        // Validación final antes del envío
+        function validarContraseña() {
+            const p = password.value || '';
+            const c = confirm.value || '';
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
+            if (!regex.test(p)) {
+                Swal.fire('Contraseña no segura',
+                    'Debe incluir mayúscula, minúscula, número y carácter especial (8 a 11 caracteres).',
+                    'warning');
+                return false;
+            }
+            if (p !== c) {
+                Swal.fire('Contraseña no coincide', 'Ambas contraseñas deben ser iguales.', 'warning');
+                return false;
+            }
+            return true;
+        }
+
+        /* ===============================
+         ENVÍO AJAX
+        =============================== */
         if (formCrearUsuario && guardarBtn) {
             guardarBtn.addEventListener("click", function(e) {
                 e.preventDefault();
 
+                // Validar antes de enviar
+                if (!validarContraseña()) return;
+
                 const formData = new FormData(formCrearUsuario);
-                console.log([...formData]); // Registra datos para depuración
 
                 $.ajax({
                     url: "{{ route('usuarios.store') }}",
@@ -434,6 +553,9 @@
             });
         }
 
+        /* ===============================
+         PREVISUALIZAR IMAGEN
+        =============================== */
         function setupImagePreview(modalElement) {
             const inputFile = modalElement.querySelector(".fotoUsuarioInput");
             const previewImage = modalElement.querySelector(".previewImage");
@@ -466,30 +588,118 @@
         }
     });
 
+
     // EDITAR
-    document.addEventListener("DOMContentLoaded", function() {
+
+    document.addEventListener("DOMContentLoaded", function () {
         const editarModal = document.getElementById("modalEditarUsuario");
-        if (editarModal) {
-            setupImagePreview(editarModal);
-        }
+        if (editarModal) setupImagePreview(editarModal);
 
         const formEditarUsuario = document.getElementById("formEditarUsuario");
+        const passwordInput = document.getElementById('contrasenaUsuarioEditar');
+        const confirmInput = document.getElementById('confirmarContrasenaEditar');
+        const panel = document.getElementById('passwordRequirementsEditar');
+
+        // ============================
+        // 🔐 Validación en tiempo real (sin parpadeo)
+        // ============================
+        if (passwordInput && confirmInput && panel) {
+            const req = {
+                length: document.getElementById('reqLengthEditar'),
+                upper: document.getElementById('reqUpperEditar'),
+                lower: document.getElementById('reqLowerEditar'),
+                number: document.getElementById('reqNumberEditar'),
+                special: document.getElementById('reqSpecialEditar'),
+                match: document.getElementById('reqMatchEditar')
+            };
+
+            function setIcon(li, ok) {
+                const i = li.querySelector('i');
+                i.classList.toggle('bi-check-circle', ok);
+                i.classList.toggle('text-success', ok);
+                i.classList.toggle('bi-x-circle', !ok);
+                i.classList.toggle('text-danger', !ok);
+            }
+
+            function update() {
+                const p = passwordInput.value || '';
+                const c = confirmInput.value || '';
+                const typing = p || c;
+
+                if (typing) {
+                    if (panel.style.display === "none" || panel.style.display === "") {
+                        $(panel).fadeIn(200);
+                    }
+                } else {
+                    $(panel).fadeOut(200);
+                }
+
+                setIcon(req.length, !typing || (p.length >= 8 && p.length <= 11));
+                setIcon(req.upper, !typing || /[A-Z]/.test(p));
+                setIcon(req.lower, !typing || /[a-z]/.test(p));
+                setIcon(req.number, !typing || /\d/.test(p));
+                setIcon(req.special, !typing || /[^A-Za-z0-9]/.test(p));
+                setIcon(req.match, !typing || (p && c && p === c));
+            }
+
+            passwordInput.addEventListener('input', update);
+            confirmInput.addEventListener('input', update);
+
+            // 🔄 Cuando se abre el modal
+            $('#modalEditarUsuario').on('show.bs.modal', function () {
+                passwordInput.value = '';
+                confirmInput.value = '';
+                panel.style.display = 'none'; // se mantiene oculto hasta escribir
+                update();
+            });
+
+            // 🔄 Cuando se cierra el modal
+            $('#modalEditarUsuario').on('hidden.bs.modal', function () {
+                passwordInput.value = '';
+                confirmInput.value = '';
+                panel.style.display = 'none';
+            });
+        }
+
+        // ============================
+        // 🧠 Validación previa al submit
+        // ============================
+        function validarContraseñaEditar() {
+            const p = passwordInput.value || '';
+            const c = confirmInput.value || '';
+            // Permitir vacío si no se cambia
+            if (!p && !c) return true;
+
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
+            if (!regex.test(p)) {
+                Swal.fire('Contraseña no segura', 'Debe incluir mayúscula, minúscula, número y carácter especial (8 a 11 caracteres).', 'warning');
+                return false;
+            }
+            if (p !== c) {
+                Swal.fire('Contraseña no coincide', 'Ambas contraseñas deben ser iguales.', 'warning');
+                return false;
+            }
+            return true;
+        }
+
+        // ============================
+        // 💾 Envío AJAX
+        // ============================
         if (formEditarUsuario) {
-            formEditarUsuario.addEventListener("submit", function(e) {
+            formEditarUsuario.addEventListener("submit", function (e) {
                 e.preventDefault();
+
+                if (!validarContraseñaEditar()) return;
+
                 const formData = new FormData(this);
                 const idUsuario = document.getElementById("idUsuarioEditar").value;
 
-                // Excluir password y password_confirmation si están vacíos
-                const password = formEditarUsuario.querySelector('#contrasenaUsuarioEditar').value;
-                const passwordConfirmation = formEditarUsuario.querySelector(
-                    '#confirmarContrasenaEditar').value;
-                if (!password && !passwordConfirmation) {
+                const pwdVal = formEditarUsuario.querySelector('#contrasenaUsuarioEditar').value;
+                const pwdConfVal = formEditarUsuario.querySelector('#confirmarContrasenaEditar').value;
+                if (!pwdVal && !pwdConfVal) {
                     formData.delete('password');
                     formData.delete('password_confirmation');
                 }
-
-                console.log('Datos enviados:', [...formData]);
 
                 $.ajax({
                     url: `/usuarios/${idUsuario}`,
@@ -497,10 +707,8 @@
                     data: formData,
                     processData: false,
                     contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    success: function (response) {
                         if (response.success) {
                             Swal.fire({
                                 title: '¡Éxito!',
@@ -515,11 +723,10 @@
                             });
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         let errorMessage = 'Error al actualizar el usuario.';
                         if (xhr.status === 422) {
-                            errorMessage = Object.values(xhr.responseJSON?.errors || {})
-                                .flat().join('<br>');
+                            errorMessage = Object.values(xhr.responseJSON?.errors || {}).flat().join('<br>');
                         } else if (xhr.status === 500) {
                             errorMessage = xhr.responseJSON?.error || 'Error interno.';
                         }
@@ -535,10 +742,14 @@
             });
         }
 
-        $('#modalEditarUsuario').on('show.bs.modal', function(event) {
+        // ============================
+        // 📸 Cargar datos e imagen al abrir modal
+        // ============================
+        $('#modalEditarUsuario').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget);
             const usuario = button.data('usuario');
             const modal = $(this);
+
             modal.find('#idUsuarioEditar').val(usuario.id_usuario);
             modal.find('#identificacionUsuarioEditar').val(usuario.identificacion);
             modal.find('#nombreUsuarioEditar').val(usuario.nombre_completo);
@@ -555,7 +766,7 @@
             const removeBtn = modal.find('.removeImageBtn');
             const inputFile = modal.find('#fotoUsuarioEditar');
 
-            previewText.text('Sin foto'); // Forzar "Sin foto" por defecto
+            previewText.text('Sin foto');
             if (usuario.imagen && usuario.imagen !== '') {
                 previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
                 previewText.css('display', 'none');
@@ -568,6 +779,9 @@
             inputFile.val('');
         });
 
+        // ============================
+        // 🖼️ Previsualizar imagen
+        // ============================
         function setupImagePreview(modalElement) {
             const inputFile = modalElement.querySelector(".fotoUsuarioInput");
             const previewImage = modalElement.querySelector(".previewImage");
@@ -576,11 +790,11 @@
             const removeImagenInput = modalElement.querySelector("#removeImagen");
 
             if (inputFile && previewImage && previewText && removeBtn && removeImagenInput) {
-                inputFile.addEventListener("change", function() {
+                inputFile.addEventListener("change", function () {
                     const file = this.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             previewImage.src = e.target.result;
                             previewImage.style.display = "block";
                             previewText.style.display = "none";
@@ -591,7 +805,7 @@
                     }
                 });
 
-                removeBtn.addEventListener("click", function() {
+                removeBtn.addEventListener("click", function () {
                     previewImage.src = "";
                     previewImage.style.display = "none";
                     previewText.style.display = "block";

@@ -32,7 +32,8 @@ class AuthController extends Controller
         }
 
         //  Contraseña incorrecta
-        if ($password !== $usuario->password) {
+        // Verificar contraseña encriptada
+        if (!Hash::check($password, $usuario->password)) {
             return response()->json([
                 'status' => 'error',
                 'error' => 'Contraseña incorrecta.'
