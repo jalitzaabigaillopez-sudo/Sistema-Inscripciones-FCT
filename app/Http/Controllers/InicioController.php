@@ -30,13 +30,8 @@ class InicioController extends Controller
     public function index(Request $request)
     {
         $usuarioId = $request->session()->get('usuario');
-        if (!$usuarioId) {
-            return redirect()->route('login');
-        }
-
         $usuario = Usuario::find($usuarioId);
 
-        // Verificar tipo de usuarios
         if ($usuario->rol != 'academia') {
 
             // admin
@@ -71,17 +66,12 @@ class InicioController extends Controller
         }
 
         // ACADEMIA
-        // $academia = $usuario->academia;
-        // $id_academia = $academia->id_academia ?? null;
-        // $nombre_academia = $academia->nombre ?? null;
-
-        // ACADEMIA
         $academia = $usuario->academia;
+        $id_academia = $academia->id_academia ?? null;
+        $nombre_academia = $academia->nombre ?? null;
 
-        // Eventos en los que la academia está inscrita
+  
         $eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
-
-        // Total de atletas de la academia
         $totalAtletas = Atleta::where('id_academia', $academia->id_academia)->count();
 
         // Avance de eventos (porcentaje)

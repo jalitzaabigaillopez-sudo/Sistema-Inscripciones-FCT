@@ -871,7 +871,9 @@ $(document).ready(function () {
         fila.find('td:eq(6)').text(obj.categoria + " (kg)");
         fila.find('td:eq(7)').text(obj.grupo);
 
-        // 🔹 Cambiar atributos al nuevo code y id
+        marcadorAmarillo();
+
+        // Cambiar atributos al nuevo code y id
         fila.attr({
             "data-code": obj.tr_code,
             "data-id": obj.id_atleta
@@ -879,6 +881,19 @@ $(document).ready(function () {
 
         fila.data("code", obj.tr_code);
         fila.data("id", obj.id_atleta);
+    }
+
+    function marcadorAmarillo() {
+        $('#tabla-inscripcion tbody tr').each(function () {
+            let td7 = $(this).find('td:eq(7)');
+            let texto = td7.text().trim();
+
+            if (texto.slice(-2) === "-p") {
+                td7.css('background-color', 'yellow');
+            } else {
+                td7.css('background-color', 'white');
+            }
+        });
     }
 
     /**
@@ -1125,16 +1140,11 @@ $(document).ready(function () {
                             rol: item.rol
                         }
                         atletasModificar.push(datos);
-                        // console.log("atleta a modificar: ", atletasModificar);
-
 
                         let panelOriginal = $("#panelRegistro");
                         let contenedor = $("#contenedor");
 
                         let atleta = item;
-
-                        console.log(atleta);
-
 
                         // Verificar si Select2 ya está inicializado antes de destruirlo                     
                         const select = panelOriginal.find('.atletas-select');
@@ -1157,8 +1167,6 @@ $(document).ready(function () {
                         nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
                         nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
-
-
 
                         var newSelect = nuevaCard.find('.atletas-select');
 
@@ -1244,7 +1252,7 @@ $(document).ready(function () {
                     });
                 }
 
-            } else { // ATLETAS EN GRUPO
+            } else { // ATLETAS EN GRUPO //@audit grupo 1
                 let panelOriginal = $("#panelRegistro");
                 let contenedor = $("#contenedor");
                 let atletaReferencia;
@@ -1290,8 +1298,14 @@ $(document).ready(function () {
                         // 🔹 Copiar selects del padre
                         // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                        nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html())
-                        nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
+                        let indicator = grupo.slice(-2);
+                        if (indicator === "-p") {
+                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
+                            nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                        } else {
+                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html())
+                            nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
+                        }
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                         /**
@@ -1378,7 +1392,7 @@ $(document).ready(function () {
                         // Quitar id duplicado y marcarlo como clon
                         nuevaCard.removeAttr("id").removeClass("baseCard").addClass("clonEdit").attr({
                             "data-code": "",
-                            "data-grupo": grupo
+                            "data-grupo": ""
                         });
 
                         // 🔹 Copiar selects del padre
@@ -1482,6 +1496,7 @@ $(document).ready(function () {
             let rol = $(this).find(".rol-select option:selected").val();
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
             let pesoMax = $(this).find(".categorias-select option:selected").data('max');
+            contAlertas++;
 
             if (modalidad === "Combate") {
 
@@ -1491,9 +1506,25 @@ $(document).ready(function () {
 
                 }
             }
+
+            if (validarCampos(rol) === false) {
+                if (contAlertas === totalCards) {
+                    mostrarAlerta("Verifique que no hayan campos vacíos en su formulario.", "Aviso", "⚠️");
+                    contAlertas = 0;
+                }
+                continuar = false
+            } else if (atletaRepetidoGrupo() === false) {
+                if (totalCards > 1) {
+                    if (contAlertas === totalCards) {
+                        mostrarAlerta("Uno o mas atletas estan repetidos en su formulario.", "Aviso", "⚠️");
+                    }
+                }
+                continuar = false
+            }
         });
 
         if (continuar === true) {
+            contAlertas = 0;
 
             // GUARDAR EDICION INDIVIDUAL
             $(".clonEdit").not(".baseCard").each(function () {
@@ -1522,26 +1553,11 @@ $(document).ready(function () {
 
                 let tr_code = $(this).data("code");
                 let grupo = $(this).data("grupo");
+
                 contAlertas++;
 
-                console.log("edicionGrupo_modo_p: ", edicionGrupo_modo_p);
+                // console.log("edicionGrupo_modo_p: ", edicionGrupo_modo_p);
 
-
-                if (validarCampos(rol) === false) {
-                    if (contAlertas === totalCards) {
-                        mostrarAlerta("Verifique que no hayan campos vacíos en su formulario.", "Aviso", "⚠️");
-                        contAlertas = 0;
-
-                    }
-                    return;
-                } else if (atletaRepetidoGrupo() === false) {
-                    if (totalCards > 1) {
-                        if (contAlertas === totalCards) {
-                            mostrarAlerta("Uno o mas atletas estan repetidos en su formulario.", "Aviso", "⚠️");
-                        }
-                    }
-                    return;
-                }
 
                 listaCompleta = listaAtletas.concat(gruposAtletas);
 
@@ -1623,7 +1639,7 @@ $(document).ready(function () {
                         modalidad: modalidad,
                         submodalidad: submodalidad,
                         categoria: pesoMin + " - " + pesoMax,
-                        grupo: edicionGrupo_modo_p === true ? grupoEdicion_p : grupo,
+                        grupo: grupoEdicion_p,
                         tr_code: nuevo_tr_code,
                         //ids
                         id_evento: id_evento,
@@ -1634,6 +1650,7 @@ $(document).ready(function () {
                         id_categoria: id_categoria,
                         id_academia: id_academia
                     };
+                    gruposAtletas.push(obj);
                     actualizarTablaInscripciones(obj);
                     guardarAtletaInscrito(obj);
                 }
@@ -1646,34 +1663,44 @@ $(document).ready(function () {
                 }
             });
 
-            console.log("estos son los atletas cambios: ", atletasCambios);
 
+            console.log("atletasCambios: ", atletasCambios);
 
             for (let i = 0; i < atletasCambios.length; i++) {
                 if (cambioImportante === true) {
                     if (atletasCambios[i].obj.grupo.includes('—')) {
+                        console.log("_1");
+
 
                         id = atletasCambios[i].obj.id_atleta;
+
                         let atleta = atletasModificar.find(a => a.id_atleta === id);
+                        tempx.push(atleta);
 
                         // Eliminarlo del array atletasModificar
                         atletasModificar = atletasModificar.filter(a => a.id_atleta !== id);
-
-                        // Guardarlo en tempx
-                        tempx.push(atleta);
 
                         modificarAtletaInscrito_p(atletasCambios[i].obj, tempx);
                         actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
 
                     }
                     else {
+                        console.log("_2");
                         if (atletasCambios[i].obj.grupo.includes('#')) {
                             atletasCambios[i].obj.grupo = atletasCambios[i].obj.grupo + "-p";
 
-                            modificarAtletaInscrito(atletasCambios[i].obj);
-                            actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
-                        } else {
-                            modificarAtletaInscrito(atletasCambios[i].obj);
+                            //_______________________________________________________________________________
+                            id = atletasCambios[i].obj.id_atleta;
+
+                            let atleta = atletasModificar.find(a => a.id_atleta === id);
+                            tempx.push(atleta);
+
+                            // Eliminarlo del array atletasModificar
+                            atletasModificar = atletasModificar.filter(a => a.id_atleta !== id);
+                            //_______________________________________________________________________________
+
+                            // modificarAtletaInscrito(atletasCambios[i].obj);
+                            modificarAtletaInscrito_p(atletasCambios[i].obj, tempx);
                             actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
                         }
                     }
@@ -1684,9 +1711,8 @@ $(document).ready(function () {
                 }
             }
 
-            if (contAlertas === totalCards) {
-                console.log("Borra todo");
 
+            if (contAlertas === totalCards) {
                 $("#contenedor .clonEdit").remove();
                 $("#panelRegistro").show();
 
@@ -1708,9 +1734,9 @@ $(document).ready(function () {
                     </button>
                 `);
             }
-        }
 
-        edicionGrupo_modo_p = false;
+            edicionGrupo_modo_p = false;
+        }
     });
 
     // ☑️ Delegación
@@ -1789,7 +1815,6 @@ $(document).ready(function () {
 
         btn_edit_code = "";
 
-        //CARGAR CATEGORIAS
 
         //distribuir
         const atletasPHP = window.inscripcionApp.atletasInscripcion;//@audit aqui
@@ -1853,9 +1878,6 @@ $(document).ready(function () {
                     id_categoria: null,
                     id_academia: atleta.id_academia || null
                 };
-
-                console.log("AQUI VAMOS: ", obj);
-
             }
 
             // LLENAR LAS LISTAS 🚩
@@ -1866,13 +1888,12 @@ $(document).ready(function () {
             }
         }
 
-        // console.log("lista atletas: ", listaAtletas);
-        // console.log("grupos atletas: ", gruposAtletas);
-
         let listaCompleta = listaAtletas.concat(gruposAtletas);
         for (let atleta of listaCompleta) {
             actualizarTablaInscripciones2(atleta);
         }
+
+        marcadorAmarillo();//para resaltar los grupos incompletos
 
         //LLENAR MODALIDADES🏳️
         function cargarModalidades() {
@@ -2121,56 +2142,6 @@ $(document).ready(function () {
                     }
                 }
 
-
-                //================================== COMPROBADOR DE FALTANTES =========================================
-                /*
-                let indicator = grupo.slice(-2);
-                if (indicator === "-p") {
-                    let numeroFaltantes = grupo[1] - cantidadMiembrosActuales;
-                    console.log("Faltan miembros: ", numeroFaltantes);
-
-                    let panelOriginal = $("#panelRegistro");
-                    let contenedor = $("#contenedor");
-
-                    for (let i = 0; i < numeroFaltantes; i++) {
-                        // Crear clon
-                        let nuevaCard = panelOriginal.clone();
-
-                        // Verificar si Select2 ya está inicializado antes de destruirlo                     
-                        const select = panelOriginal.find('.atletas-select');
-                        if (select.data('select2')) {
-                            select.select2('destroy');
-                        }
-
-                        // Quitar id duplicado y marcarlo como clon
-                        nuevaCard.removeAttr("id").removeClass("baseCard").addClass("clonEdit").attr({
-                            "data-code": "",
-                            "data-grupo": grupo
-                        });
-
-                        // 🔹 Copiar selects del padre
-                        // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
-                        nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                        nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html())
-                        nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
-                        nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
-
-                        var newSelect = nuevaCard.find('.atletas-select');
-
-                        // Inicializar Select2
-                        newSelect.select2({
-                            placeholder: "Selecciona un atleta",
-                            width: '100%'
-                        });
-
-                        // Mostrar clon aunque el original esté oculto
-                        nuevaCard.show();
-                        contenedor.append(nuevaCard);
-                    }
-                }
-                    */
-
-
                 // Ocultar campos segun el rol
                 if (trRol === 'entrenador' || trRol === 'asistente') {
                     // Ocultar los elementos específicos dentro de los clones
@@ -2190,12 +2161,16 @@ $(document).ready(function () {
                     });
                 }
 
-            } else { // ATLETAS EN GRUPO
+            } else { // ATLETAS EN GRUPO //@audit grupo 2
                 let panelOriginal = $("#panelRegistro");
                 let contenedor = $("#contenedor");
+                let atletaReferencia;
 
                 for (let item of gruposAtletas) {
+
                     if (item.grupo === grupo) {
+                        cantidadMiembrosActuales++;
+
                         let datos = {
                             id_atleta: item.id_atleta,
                             id_academia: item.id_academia,
@@ -2210,6 +2185,7 @@ $(document).ready(function () {
 
                         // Buscar atleta por id
                         let atleta = item;
+                        atletaReferencia = atleta;
 
                         // Verificar si Select2 ya está inicializado antes de destruirlo                     
                         const select = panelOriginal.find('.atletas-select');
@@ -2229,8 +2205,14 @@ $(document).ready(function () {
                         // 🔹 Copiar selects del padre
                         // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                        nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
-                        nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
+                        let indicator = grupo.slice(-2);
+                        if (indicator === "-p") {
+                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
+                            nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                        } else {
+                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html())
+                            nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
+                        }
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
                         /**
@@ -2343,6 +2325,112 @@ $(document).ready(function () {
                         contenedor.append(nuevaCard);
                     }
                 }
+
+
+
+                //================================== COMPROBADOR DE FALTANTES =========================================\\
+                let indicator = grupo.slice(-2);
+                if (indicator === "-p") {
+                    edicionGrupo_modo_p = true;
+
+                    let numeroFaltantes = grupo[1] - cantidadMiembrosActuales;
+                    console.log("Faltan miembros: ", numeroFaltantes);
+
+                    for (let i = 0; i < numeroFaltantes; i++) {
+                        // Crear clon
+                        let nuevaCard = panelOriginal.clone();
+
+                        // Quitar id duplicado y marcarlo como clon
+                        nuevaCard.removeAttr("id").removeClass("baseCard").addClass("clonEdit").attr({
+                            "data-code": "",
+                            "data-grupo": ""
+                        });
+
+                        // 🔹 Copiar selects del padre
+                        // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
+                        nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
+                        nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
+                        nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
+                        nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
+
+                        var select = nuevaCard.find('.categorias-select');
+                        select.empty();
+                        select.append('<option value="">Seleccione una categoria</option>');
+
+                        /**
+                         * PATCH 
+                         * Seleccionar la submodalidad correspondiente manualmente
+                         */
+
+                        $.ajax({
+                            url: '/obtenerSubModalidades',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: {
+                                id_modalidad: atletaReferencia.id_modalidad,
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (res) {
+                                let submodalidadSelect = nuevaCard.find(".submodalidades-select");
+                                submodalidadSelect.empty();
+                                submodalidadSelect.append('<option value="">Seleccione una submodalidad</option>');
+
+                                res.forEach(function (item) {
+                                    submodalidadSelect.append(
+                                        '<option value="' + item.id_subModalidad + '" ' +
+                                        'data-nombre="' + item.nombre + '" data-cantidad-atletas="' + item.cantidad_atletas + '">' + item.nombre + '</option>'
+                                    );
+                                });
+
+                                // 🔹 Seleccionar automáticamente si tienes el nombre guardado
+                                var nombreSub = submodalidad
+                                if (nombreSub) {
+                                    let opcion = submodalidadSelect.find('option').filter(function () {
+                                        return $(this).data('nombre') == nombreSub;
+                                    });
+
+                                    if (opcion.length) {
+                                        opcion.prop('selected', true);
+                                        submodalidadSelect.val(opcion.val()).trigger("change");
+                                    }
+                                }
+                            },
+                            error: function () {
+                                mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al cargar las submodalidades", "Aviso", "⚠️");
+                            }
+                        });
+
+
+                        // 🔹 Limpiar todos los selects y inputs del clon
+                        nuevaCard.find("select").val('').trigger('change');
+                        nuevaCard.find("input[type='text'], input[type='number'], input[type='hidden']").val(''); // limpia inputs de texto/número
+
+                        var newSelect = nuevaCard.find('.atletas-select');
+                        // Inicializar Select2
+                        newSelect.select2({
+                            placeholder: "Selecciona un atleta",
+                            width: '100%'
+                        });
+
+                        nuevaCard.find(".rol-select option").filter(function () {
+                            return $(this).val() == atletaReferencia.rol;
+                        }).prop("selected", true);
+                        nuevaCard.find(".modalidades-select option").filter(function () {
+                            return $(this).data("nombre") == atletaReferencia.modalidad;
+                        }).prop("selected", true);
+                        nuevaCard.find(".submodalidades-select option").filter(function () {
+                            return $(this).data("nombre") == atletaReferencia.submodalidad;
+                        }).prop("selected", true);
+
+                        // Mostrar clon aunque el original esté oculto
+                        nuevaCard.show();
+                        contenedor.append(nuevaCard);
+                    }
+                }
+                //================================== COMPROBADOR DE FALTANTES =========================================\\
+
+
+
                 // Ocultar campos segun el rol
                 if (trRol === 'entrenador' || trRol === 'asistente') {
                     // Ocultar los elementos específicos dentro de los clones
