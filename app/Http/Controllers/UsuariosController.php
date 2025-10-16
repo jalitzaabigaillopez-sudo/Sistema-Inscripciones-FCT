@@ -201,10 +201,10 @@ class UsuariosController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, string $id)
     {
         try {
-
             $messages = [
                 'identificacion.required' => 'La identificación es obligatoria.',
                 'identificacion.string' => 'La identificación debe ser una cadena de texto.',
@@ -214,12 +214,12 @@ class UsuariosController extends Controller
                 'nombre_completo.string' => 'El nombre completo debe ser una cadena de texto.',
                 'nombre_completo.max' => 'El nombre completo no puede tener más de :max caracteres.',
                 'email.required' => 'El correo electrónico es obligatorio.',
-                'email.email' => 'El correo electrónico debe ser una dirección válida.',
+                'email.email' => 'El correo electrónico debe ser válido.',
                 'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
                 'email.unique' => 'El correo electrónico ya está registrado.',
-                'password.required' => 'La contraseña es obligatoria.',
-                'password.string' => 'La contraseña debe ser una cadena de texto.',
-                'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+                'password.regex' => 'La contraseña debe incluir mayúscula, minúscula, número y carácter especial.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.max' => 'La contraseña no puede tener más de 11 caracteres.',
                 'password.confirmed' => 'La confirmación de la contraseña no coincide.',
                 'rol.required' => 'El rol es obligatorio.',
                 'rol.in' => 'El rol seleccionado no es válido.',
@@ -227,15 +227,21 @@ class UsuariosController extends Controller
                 'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
                 'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
             ];
-            // Buscar el usuario
+
             $usuario = Usuario::findOrFail($id);
 
-            // Validar los datos del formulario
             $validator = Validator::make($request->all(), [
                 'identificacion' => 'required|string|max:20|unique:usuarios,identificacion,' . $id . ',id_usuario',
                 'nombre_completo' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:usuarios,email,' . $id . ',id_usuario',
-                'password' => 'nullable|string|min:8|confirmed',
+                'password' => [
+                    'nullable',
+                    'string',
+                    'min:8',
+                    'max:11',
+                    'confirmed',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/'
+                ],
                 'rol' => 'required|in:administrador,academia,arbitro',
                 'estado' => 'required|in:activo,inactivo',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
@@ -249,55 +255,55 @@ class UsuariosController extends Controller
                 ], 422);
             }
 
-            // Actualizar los datos del usuario
+            // Actualizar datos generales
             $usuario->identificacion = $request->identificacion;
             $usuario->nombre_completo = $request->nombre_completo;
             $usuario->email = $request->email;
             $usuario->rol = $request->rol;
             $usuario->estado = $request->estado;
 
-            $passwordCambiada = false; // bandera
+            $passwordCambiada = false;
 
-            //  Si el usuario cambia su contraseña
+            // Si hay nueva contraseña
             if ($request->filled('password')) {
-                $usuario->password = $request->password;
+                $usuario->password = $request->password; // El mutator en el modelo hará el hash
                 $usuario->password_vencimiento = 180;
                 $passwordCambiada = true;
             }
 
-            // Manejar la imagen
+            // Manejo de imagen
             if ($request->input('remove_imagen') === '1') {
-                Log::info('Eliminando imagen del usuario: ' . $usuario->imagen);
                 if ($usuario->imagen) {
                     Storage::disk('public')->delete($usuario->imagen);
                     $usuario->imagen = null;
                 }
             } elseif ($request->hasFile('imagen')) {
-                Log::info('Subiendo nueva imagen en update: ' . $request->file('imagen')->getClientOriginalName());
                 if ($usuario->imagen) {
                     Storage::disk('public')->delete($usuario->imagen);
                 }
                 $path = $request->file('imagen')->store('perfiles', 'public');
                 $usuario->imagen = $path;
-                Log::info('Imagen guardada en update: ' . $path);
             }
 
             $usuario->save();
 
-            //  Si el usuario editado es el mismo que está logueado y cambió su contraseña → cerrar sesión
+            // Si cambió su contraseña, cerrar sesión
             if ($passwordCambiada && session('usuario') == $usuario->id_usuario) {
-                Session::flush(); // elimina sesión
-                Auth::logout();   // si usas Auth
+                Session::flush();
+                Auth::logout();
+
                 return response()->json([
                     'success' => true,
-                    'logout' => true, // indicamos al frontend que debe redirigir al login
-                    'message' => 'Tu contraseña ha sido actualizada. Por seguridad, debes volver a iniciar sesión.'
+                    'logout' => true,
+                    'message' => 'Tu contraseña ha sido actualizada. Por seguridad, debes volver a iniciar sesión. 
+                Recuerda cambiarla periódicamente para mantener tu cuenta protegida.'
                 ], 200);
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Usuario actualizado correctamente.'
+                'message' => 'Usuario actualizado correctamente. 
+            Se recomienda cambiar la contraseña periódicamente para mayor seguridad.'
             ], 200);
         } catch (\Exception $e) {
             Log::error('Error en update: ' . $e->getMessage());
@@ -307,6 +313,7 @@ class UsuariosController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

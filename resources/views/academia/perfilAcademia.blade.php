@@ -3,71 +3,89 @@
 @section('title', 'Administración de Perfil')
 
 @section('content')
-    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
+    {{-- <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
-    </a>
+    </a> --}}
 
     <div class="container py-4">
         <h3 class="mb-4 text-black fw-bold">Administración de Perfil</h3>
+
+        <hr>
 
         <div class="row justify-content-center">
 
             {{-- VISUALIZACIÓN DE ACADEMIA (100% RESPONSIVA) --}}
             <div class="col-12 col-lg-6">
-                <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card shadow border-1 rounded-3 mb-4 p-3">
                     <!-- Encabezado -->
                     <div
-                        class="card-header bg-white fw-semibold fs-5 d-flex flex-wrap justify-content-between align-items-center border-0">
-                        <span class="text-primary mb-2 mb-sm-0">
+                        class="card-header bg-white fw-semibold fs-5 d-flex flex-column flex-sm-row justify-content-between align-items-center border-0 gap-3 text-center text-sm-start">
+                        <span class="text-primary">
                             <i class="bi bi-building me-2"></i> Información de la Academia
                         </span>
-                        <button class="btn btn-sm btn-warning rounded-pill text-light mt-2 mt-sm-0" data-bs-toggle="modal"
-                            data-bs-target="#modalEditarAcademia" data-academia='@json($academia)'>
-                            <i class="bi bi-pencil-square"></i> Editar Academia
+                        <button
+                            class="btn btn-sm btn-warning text-light rounded-pill d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal" data-bs-target="#modalEditarAcademia"
+                            data-academia='@json($academia)'>
+                            <i class="bi bi-pencil-square me-2"></i> Editar Academia
                         </button>
                     </div>
 
                     <!-- Cuerpo -->
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Nombre de la Academia</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->nombre }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->nombre }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Profesor Encargado</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->profesor_encargado }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->profesor_encargado }}" readonly>
                             </div>
+                        </div>
 
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Teléfono</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->telefono }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->telefono }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Correo</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->correo }}</div>
+                                <input type="email" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->correo }}" readonly>
                             </div>
+                        </div>
 
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Dirección</label>
-                                <div class="p-2 border rounded bg-light">{{ $academia->direccion }}</div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $academia->direccion }}" readonly>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Ubicación Geográfica</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $academia->distrito->canton->provincia->nombre ?? '—' }},
-                                    {{ $academia->distrito->canton->nombre ?? '—' }},
-                                    {{ $academia->distrito->nombre ?? '—' }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ ($academia->distrito->canton->provincia->nombre ?? '—') .
+                                        ', ' .
+                                        ($academia->distrito->canton->nombre ?? '—') .
+                                        ', ' .
+                                        ($academia->distrito->nombre ?? '—') }}"
+                                    readonly>
                             </div>
+                        </div>
 
-                            <!-- Imagen -->
-                            <div class="col-12 mt-3 text-center">
+                        <hr class="my-4">
+
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Logo de la Academia</label>
                                 <div class="d-flex flex-column align-items-center">
                                     <img src="{{ $academia->imagen ? asset('storage/' . $academia->imagen) : asset('images/default-academia.png') }}"
-                                        alt="Imagen de la academia" class="rounded-circle shadow-sm border img-fluid"
-                                        style="width: 150px; height: 150px; object-fit: cover;">
+                                        alt="Logo de la Academia" class="rounded-circle shadow-sm border"
+                                        style="width: 130px; height: 130px; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -75,9 +93,10 @@
                 </div>
             </div>
 
+
             <!-- ================================
-                            MODAL DE EDICIÓN DE ACADEMIA
-                            ================================ -->
+                    MODAL DE EDICIÓN DE ACADEMIA
+                ================================ -->
             <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -228,89 +247,85 @@
 
             {{-- VISUALIZACIÓN DE USUARIO (100% RESPONSIVO) --}}
             <div class="col-12 col-lg-6">
-                <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card shadow border-1 rounded-3 mb-4 p-3">
                     <!-- Encabezado -->
                     <div
-                        class="card-header bg-white fw-semibold fs-5 d-flex flex-wrap justify-content-between align-items-center border-0">
-                        <span class="text-primary mb-2 mb-sm-0">
+                        class="card-header bg-white fw-semibold fs-5 d-flex flex-column flex-sm-row justify-content-between align-items-center border-0 gap-3 text-center text-sm-start">
+                        <span class="text-primary">
                             <i class="bi bi-person-badge me-2"></i> Perfil del Usuario
                         </span>
-                        <button class="btn btn-sm btn-warning rounded-pill text-light mt-2 mt-sm-0" data-bs-toggle="modal"
-                            data-bs-target="#modalEditarPerfilAcademia" data-usuario='@json($usuario)'>
-                            <i class="bi bi-pencil-square"></i> Editar Perfil
+                        <button
+                            class="btn btn-sm btn-warning text-light rounded-pill d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal" data-bs-target="#modalEditarPerfilAcademia"
+                            data-usuario='@json($usuario)'>
+                            <i class="bi bi-pencil-square me-2"></i> Editar Perfil
                         </button>
                     </div>
 
                     <!-- Cuerpo -->
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <!-- Identificación -->
-                            <div class="col-12 col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label class="form-label fw-bold text-muted small">Número de Identificación</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->identificacion }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->identificacion }}" readonly>
                             </div>
-
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Rol</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ ucfirst($usuario->rol) }}
-                                </div>
-                            </div>
-
-                            <!-- Nombre y Estado -->
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Nombre completo</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->nombre_completo }}
-                                </div>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->nombre_completo }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold text-muted small">Correo electrónico</label>
+                                <input type="email" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ $usuario->email }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-muted small">Rol</label>
+                                <input type="text" class="form-control bg-light border-1 shadow-sm"
+                                    value="{{ ucfirst($usuario->rol) }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label fw-bold text-muted small">Contraseña</label>
+                                <input type="password" class="form-control bg-light border-1 shadow-sm" value="••••••••"
+                                    readonly>
                             </div>
 
-                            <div class="col-12 col-md-6">
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold text-muted small">Estado</label>
-                                <div class=" mt-1">
+                                <div class="form-control border-0">
                                     <span
-                                        class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2">
+                                        class="badge {{ $usuario->estado == 'activo' ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2 shadow-sm">
                                         {{ ucfirst($usuario->estado) }}
                                     </span>
                                 </div>
                             </div>
-                            <!-- Correo -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Correo electrónico</label>
-                                <div class="p-2 border rounded bg-light">
-                                    {{ $usuario->email }}
-                                </div>
-                            </div>
+                        </div>
 
+                        {{-- <hr class="my-4"> --}}
 
-                            <!-- Contraseña -->
-
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-muted small">Contraseña</label>
-                                <div class="p-2 border rounded bg-light">
-                                    ••••••••
-                                </div>
-                            </div>
-
-
-                            <!-- Imagen de perfil -->
-                            {{-- <div class="col-12 mt-3 text-center">
+                        {{-- <div class="row mt-3">
+                            <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Imagen de perfil</label>
                                 <div class="d-flex flex-column align-items-center">
                                     <img src="{{ $usuario->imagen ? asset('storage/' . $usuario->imagen) : asset('images/default.png') }}"
-                                        alt="Foto de perfil" class="rounded-circle shadow-sm border img-fluid"
+                                        alt="Foto de perfil" class="rounded-circle shadow-sm border"
                                         style="width: 130px; height: 130px; object-fit: cover;">
-                                    <span class="text-muted small mt-2">{{ $usuario->nombre_completo }}</span>
                                 </div>
-                            </div> --}}
-                        </div>
+                            </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
 
-            <!-- Modal de edición -->
+
+            <!-- Modal de edición USUARIO-->
             <div class="modal fade modal-editar" id="modalEditarPerfilAcademia" tabindex="-1"
                 aria-labelledby="modalEditarPerfilAcademiaLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -385,6 +400,30 @@
                                                 </button>
                                             </div>
                                         </div>
+
+                                        <!-- Requisitos de contraseña -->
+                                        <div id="passwordRequirementsPerfil" class="mt-2 text-muted small"
+                                            style="display:none;">
+                                            <p class="mb-1 fw-semibold text-dark">
+                                                <i class="bi bi-shield-lock me-1 text-primary"></i> Requisitos de la
+                                                contraseña:
+                                            </p>
+                                            <ul class="list-unstyled ms-3 mb-0">
+                                                <li id="reqLengthPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Entre 8 y 11 caracteres</li>
+                                                <li id="reqUpperPerfil"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                    menos una letra mayúscula</li>
+                                                <li id="reqLowerPerfil"><i class="bi bi-x-circle text-danger me-1"></i> Al
+                                                    menos una letra minúscula</li>
+                                                <li id="reqNumberPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Al menos un número</li>
+                                                <li id="reqSpecialPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Al menos un carácter especial (!@#$%^&*_-.,;:?)</li>
+                                                <li id="reqMatchPerfil"><i class="bi bi-x-circle text-danger me-1"></i>
+                                                    Las contraseñas coinciden</li>
+                                            </ul>
+                                        </div>
+
                                     </div>
 
                                     {{-- Columna derecha --}}
@@ -489,7 +528,29 @@
                         const password = formEditarPerfil.querySelector('#contrasenaPerfilEditar').value;
                         const passwordConfirmation = formEditarPerfil.querySelector(
                             '#confirmarContrasenaPerfil').value;
-                        if (!password && !passwordConfirmation) {
+                        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
+
+                        // Validación antes de enviar
+                        if (password || passwordConfirmation) {
+                            if (!regex.test(password)) {
+                                Swal.fire({
+                                    title: "Contraseña no válida",
+                                    text: "Debe tener entre 8 y 11 caracteres, incluir mayúscula, minúscula, número y carácter especial.",
+                                    icon: "warning",
+                                    confirmButtonColor: "#3085d6"
+                                });
+                                return;
+                            }
+                            if (password !== passwordConfirmation) {
+                                Swal.fire({
+                                    title: "Contraseñas no coinciden",
+                                    text: "Asegúrese de que ambas contraseñas sean iguales.",
+                                    icon: "warning",
+                                    confirmButtonColor: "#3085d6"
+                                });
+                                return;
+                            }
+                        } else {
                             formData.delete('password');
                             formData.delete('password_confirmation');
                         }
@@ -530,6 +591,49 @@
                                 });
                             }
                         });
+                    });
+                }
+
+                // ✅ VALIDACIÓN VISUAL DE CONTRASEÑA (ya existe en HTML)
+                const passwordInput = document.getElementById("contrasenaPerfilEditar");
+                const confirmInput = document.getElementById("confirmarContrasenaPerfil");
+                const panel = document.getElementById("passwordRequirementsPerfil");
+
+                if (passwordInput && confirmInput && panel) {
+                    const req = {
+                        length: document.getElementById("reqLengthPerfil"),
+                        upper: document.getElementById("reqUpperPerfil"),
+                        lower: document.getElementById("reqLowerPerfil"),
+                        number: document.getElementById("reqNumberPerfil"),
+                        special: document.getElementById("reqSpecialPerfil"),
+                        match: document.getElementById("reqMatchPerfil")
+                    };
+
+                    function setIcon(li, ok) {
+                        const i = li.querySelector("i");
+                        i.className = ok ? "bi bi-check-circle text-success me-1" : "bi bi-x-circle text-danger me-1";
+                    }
+
+                    function updateValidation() {
+                        const p = passwordInput.value;
+                        const c = confirmInput.value;
+                        const typing = p || c;
+                        panel.style.display = typing ? "block" : "none";
+                        setIcon(req.length, p.length >= 8 && p.length <= 11);
+                        setIcon(req.upper, /[A-Z]/.test(p));
+                        setIcon(req.lower, /[a-z]/.test(p));
+                        setIcon(req.number, /\d/.test(p));
+                        setIcon(req.special, /[^A-Za-z0-9]/.test(p));
+                        setIcon(req.match, p && c && p === c);
+                    }
+
+                    passwordInput.addEventListener("input", updateValidation);
+                    confirmInput.addEventListener("input", updateValidation);
+
+                    $("#modalEditarPerfilAcademia").on("show.bs.modal hidden.bs.modal", function() {
+                        passwordInput.value = "";
+                        confirmInput.value = "";
+                        panel.style.display = "none";
                     });
                 }
 
@@ -722,7 +826,7 @@
                         const id = document.getElementById("idAcademia").value;
                         const formData = new FormData(formAcademia);
 
-                        // ⚠️ Confirmación previa
+                        //  Confirmación previa
                         const confirm = await Swal.fire({
                             title: '¿Guardar cambios?',
                             text: 'Se actualizará la información de la academia.',
@@ -736,7 +840,7 @@
 
                         if (!confirm.isConfirmed) return;
 
-                        // 🕓 Mostrar loading
+                        //  Mostrar loading
                         Swal.fire({
                             title: 'Actualizando...',
                             text: 'Por favor, espere mientras se guardan los cambios.',
@@ -756,7 +860,7 @@
 
                             const result = await response.json();
 
-                            // ⚠️ Validaciones del backend
+                            //  Validaciones del backend
                             if (response.status === 422) {
                                 const errores = Object.values(result.errors || {})
                                     .flat()
@@ -770,7 +874,7 @@
                                 return;
                             }
 
-                            // ❌ Errores internos
+                            //  Errores internos
                             if (!response.ok) {
                                 Swal.fire({
                                     title: 'Error',
@@ -782,7 +886,7 @@
                                 return;
                             }
 
-                            // ✅ Éxito
+                            //  Éxito
                             if (result.success) {
                                 Swal.fire({
                                     title: '¡Actualización exitosa!',
@@ -805,7 +909,7 @@
                             }
 
                         } catch (error) {
-                            console.error('❌ Error inesperado al actualizar:', error);
+                            console.error(' Error inesperado al actualizar:', error);
                             Swal.fire({
                                 title: 'Error inesperado',
                                 text: 'No se pudo conectar con el servidor. Intente nuevamente.',

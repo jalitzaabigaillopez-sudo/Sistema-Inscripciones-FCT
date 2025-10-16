@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Encryptable;
+use Illuminate\Support\Facades\Hash;
 
 class Usuario extends Model
 {
     use Encryptable;
-    protected $encrypted = ['password'];
+    // protected $encrypted = ['password'];
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';
@@ -18,5 +19,12 @@ class Usuario extends Model
     public function academia()
     {
         return $this->belongsTo(Academia::class, 'id_usuario', 'id_usuario');
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['password'] = Hash::make($value);
+        }
     }
 }

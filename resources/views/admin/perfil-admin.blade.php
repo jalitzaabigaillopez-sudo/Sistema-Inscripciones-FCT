@@ -20,7 +20,6 @@
         </div>
         <hr>
 
-
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
                 <div class="card shadow border-1 rounded-3">
@@ -193,6 +192,39 @@
                                                 </button>
                                             </div>
                                         </div>
+
+                                        <div id="passwordRequirements" class="mt-2 text-muted small"
+                                            style="display:none;">
+                                            <p class="mb-1 fw-semibold text-dark">
+                                                <i class="bi bi-shield-lock me-1 text-primary"></i> Requisitos de la
+                                                contraseña:
+                                            </p>
+                                            <ul class="list-unstyled ms-3 mb-0">
+                                                <li id="reqLength">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Entre 8 y 11 caracteres
+                                                </li>
+                                                <li id="reqUpper">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Al menos una letra
+                                                    mayúscula
+                                                </li>
+                                                <li id="reqLower">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Al menos una letra
+                                                    minúscula
+                                                </li>
+                                                <li id="reqNumber">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Al menos un número
+                                                </li>
+                                                <li id="reqSpecial">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Al menos un carácter
+                                                    especial (!@#$%^&*_-.,;:?)
+                                                </li>
+                                                <li id="reqMatch">
+                                                    <i class="bi bi-x-circle text-danger me-1"></i> Las contraseñas
+                                                    coinciden
+                                                </li>
+                                            </ul>
+                                        </div>
+
                                     </div>
 
                                     {{-- Columna derecha --}}
@@ -288,6 +320,55 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {
+
+                // ======================================================
+                // 🧩 VALIDACIÓN VISUAL DE CONTRASEÑA EN TIEMPO REAL
+                // ======================================================
+                const passwordInput = document.getElementById('contrasenaPerfilEditar');
+                const confirmPasswordInput = document.getElementById('confirmarContrasenaPerfil');
+                const passwordRequirements = document.getElementById('passwordRequirements');
+
+                // Elementos de lista
+                const reqItems = {
+                    length: document.getElementById('reqLength'),
+                    upper: document.getElementById('reqUpper'),
+                    lower: document.getElementById('reqLower'),
+                    number: document.getElementById('reqNumber'),
+                    special: document.getElementById('reqSpecial'),
+                    match: document.getElementById('reqMatch')
+                };
+
+                // Función auxiliar para cambiar íconos dinámicamente
+                function setIcon(item, condition) {
+                    const icon = item.querySelector('i');
+                    if (condition) {
+                        icon.classList.remove('bi-x-circle', 'text-danger');
+                        icon.classList.add('bi-check-circle', 'text-success');
+                    } else {
+                        icon.classList.remove('bi-check-circle', 'text-success');
+                        icon.classList.add('bi-x-circle', 'text-danger');
+                    }
+                }
+
+                function updatePasswordRequirements() {
+                    const password = passwordInput.value;
+                    const confirm = confirmPasswordInput.value;
+
+                    passwordRequirements.style.display = password || confirm ? 'block' : 'none';
+
+                    // Validaciones visuales
+                    setIcon(reqItems.length, password.length >= 8 && password.length <= 11);
+                    setIcon(reqItems.upper, /[A-Z]/.test(password));
+                    setIcon(reqItems.lower, /[a-z]/.test(password));
+                    setIcon(reqItems.number, /\d/.test(password));
+                    setIcon(reqItems.special, /[^A-Za-z0-9]/.test(password));
+                    setIcon(reqItems.match, password && confirm && password === confirm);
+                }
+
+                passwordInput.addEventListener('input', updatePasswordRequirements);
+                confirmPasswordInput.addEventListener('input', updatePasswordRequirements);
+
+
                 const editarPerfilModal = document.getElementById("modalEditarPerfilAdmin");
 
                 if (editarPerfilModal) {
