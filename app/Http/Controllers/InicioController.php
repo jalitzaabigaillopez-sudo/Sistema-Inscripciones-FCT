@@ -11,61 +11,70 @@ use App\Models\Evento;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Services\SessionService;
 
 class InicioController extends Controller
 {
-     /**
+
+    public function __construct(Request $request)
+    {
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+    }
+
+    /**
      * Este metodo toma el usuario en sesion una vez se han verificado los credenciales
      * Verifica el tipo de usuario y lo redirige a su vista respectiva admin o academia
      */
     public function index(Request $request)
-    {   
+    {
         $usuarioId = $request->session()->get('usuario');
         if (!$usuarioId) {
-            return redirect()->route('login'); 
+            return redirect()->route('login');
         }
 
         $usuario = Usuario::find($usuarioId);
 
         // Verificar tipo de usuarios
-        if($usuario->rol != 'academia'){
-            
+        if ($usuario->rol != 'academia') {
+
             // admin
-        $usersCount        = Usuario::count();
-        $academiesCount    = Academia::count();
-        $atletasCount      = Atleta::count();
-        $inscripcionesCount= Inscripcion::count();
-        $eventosCount      = Evento::where('estado', 'Activo')->count();
-       $proximosEventos = Evento::where('fecha_inicio', '>=', now())->orderBy('fecha_inicio')->take(5)->get();
-        $meses             = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        $eventosPorMes   = Evento::selectRaw('MONTH(fecha_inicio) as mes, COUNT(*) as total')
-    ->groupBy('mes')->orderBy('mes')
-    ->pluck('total', 'mes')->toArray();
-        $generoDistribucion= [
-            Atleta::where('sexo', 'Masculino')->count(),
-            Atleta::where('sexo', 'Femenino')->count()
-        ];
+            $usersCount = Usuario::count();
+            $academiesCount = Academia::count();
+            $atletasCount = Atleta::count();
+            $inscripcionesCount = Inscripcion::count();
+            $eventosCount = Evento::where('estado', 'Activo')->count();
+            $proximosEventos = Evento::where('fecha_inicio', '>=', now())->orderBy('fecha_inicio')->take(5)->get();
+            $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            $eventosPorMes = Evento::selectRaw('MONTH(fecha_inicio) as mes, COUNT(*) as total')
+                ->groupBy('mes')->orderBy('mes')
+                ->pluck('total', 'mes')->toArray();
+            $generoDistribucion = [
+                Atleta::where('sexo', 'Masculino')->count(),
+                Atleta::where('sexo', 'Femenino')->count()
+            ];
 
             return view('admin/dashboard', compact(
-            'usuario',
-            'usersCount',
-            'academiesCount',
-            'atletasCount',
-            'inscripcionesCount',
-            'eventosCount',
-            'proximosEventos',
-            'meses',
-            'eventosPorMes',
-            'generoDistribucion',
-            
-        ));
+                'usuario',
+                'usersCount',
+                'academiesCount',
+                'atletasCount',
+                'inscripcionesCount',
+                'eventosCount',
+                'proximosEventos',
+                'meses',
+                'eventosPorMes',
+                'generoDistribucion',
+
+            ));
         }
-    
 
-         // ACADEMIA
-    $academia = $usuario->academia;
 
-     // Eventos en los que la academia está inscrita
+        // ACADEMIA
+        $academia = $usuario->academia;
+
+        // Eventos en los que la academia está inscrita
         $eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
 
         // Total de atletas de la academia
@@ -81,8 +90,8 @@ class InicioController extends Controller
             ->take(5)
             ->get();
 
-                // =================== DATOS PARA GRÁFICOS ===================
-   
+        // =================== DATOS PARA GRÁFICOS ===================
+
         // =======================================
         // GRÁFICOS
         // =======================================
@@ -112,20 +121,20 @@ class InicioController extends Controller
             ->toArray();
 
         $gradosLabels = array_keys($grados);
-        $gradosCount  = array_values($grados);
+        $gradosCount = array_values($grados);
         // =========================================================
 
         return view('academia/dashboard-academia', compact(
-        'usuario',
-        'academia',
-        'eventosInscritos',
-        'totalAtletas',
-        'avanceEventos',
-        'proximosEventos',
-        'categorias',
+            'usuario',
+            'academia',
+            'eventosInscritos',
+            'totalAtletas',
+            'avanceEventos',
+            'proximosEventos',
+            'categorias',
             'inscripciones',
             'gradosLabels',
             'gradosCount'
         ));
-    } 
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
+use App\Services\SessionService;
 
 class AuthController extends Controller
 {
@@ -61,7 +62,7 @@ class AuthController extends Controller
 
         //  Login correcto
         $request->session()->put('usuario', $usuario->id_usuario);
-        $request->session()->put('usuario_expira', now()->addMinutes(10));
+        $request->session()->put('usuario_expira', now()->addMinutes(50));
         return response()->json([
             'status' => 'success',
             'message' => 'Inicio de sesión exitoso.',
@@ -75,6 +76,11 @@ class AuthController extends Controller
      */
     public function cerrarSesion(Request $request)
     {
+
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+
         // Elimina todas las variables de sesión
         $request->session()->invalidate();
 
@@ -105,6 +111,11 @@ class AuthController extends Controller
 
     public function perfil(Request $request)
     {
+
+        if (!SessionService::checkSession($request)) {
+            redirect()->route('login')->send();
+        }
+
         $usuario = $this->obtenerUsuarioSesion($request);
         if ($usuario instanceof \Illuminate\Http\RedirectResponse)
             return $usuario;
