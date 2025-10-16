@@ -453,12 +453,13 @@
                         data-bs-toggle="dropdown" aria-expanded="false"
                         style="border: none; background: transparent;">
 
-                        {{-- Si es admin → mostrar logo federación --}}
-                        @if ($usuario && $usuario->rol === 'administrador')
+                        @if ($usuario && $usuario->imagen)
+                            <img src="{{ asset('storage/' . $usuario->imagen) }}" alt="Foto de perfil"
+                                style="height: 35px; width: 35px; border-radius: 50%; object-fit: cover;">
+                        @elseif ($usuario && $usuario->rol === 'administrador')
                             <img src="{{ asset('images/fct_logo.jpg') }}" alt="Logo Federación"
                                 style="height: 35px; width: 35px; border-radius: 50%; object-fit: cover;">
                         @else
-                            {{-- Si no, mostrar ícono normal --}}
                             <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.7rem;"></i>
                         @endif
                     </button>
