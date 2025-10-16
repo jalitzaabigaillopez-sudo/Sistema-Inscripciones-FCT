@@ -97,10 +97,12 @@ Route::get('/atletas-academia', [AtletasController::class, 'indexAtltetasAcademi
 //==============================================================================================================================================
 
 /**
- * Reportes PDF y Excel
+ * Reportes
  */
 Route::get('/exportar-atletas-academia-pdf/{id_academia}', [ReporteController::class, 'exportarAtletasAcadamiaPdf'])->name('atletas.academia.pdf');
 Route::get('/exportar-inscripciones-academia-pdf/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiasPdf'])->name('inscripciones.academia.pdf');
+Route::get('/reportes-generales', [ReporteController::class, 'vistaReportesGeneralesAcademia'])->name('reportes.generales.academia');
+Route::get('/reporte/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoAcademiasPdf']);
 
 
 //prueba frontend

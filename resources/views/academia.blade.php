@@ -377,7 +377,7 @@
                 {{-- <a href="#"><i class="bi bi-bar-chart-line me-2"></i> Avance de eventos</a>
                 <a href="#"><i class="bi bi-people me-2"></i> Estadística atletas</a>
                 <a href="#"><i class="bi bi-calendar-check me-2"></i> Estadística eventos</a> --}}
-                <a href="#"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes generales</a>
+                <a href="{{ route('reportes.generales.academia') }}"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes generales</a>
 
             </div>
         </div>
@@ -674,6 +674,7 @@
     @stack('scripts')
     <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->
     <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
+    <script src="{{ asset('js/reportesAcademias.js') }}"></script>
 </body>
 
 </html>
