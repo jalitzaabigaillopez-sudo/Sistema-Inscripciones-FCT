@@ -127,6 +127,7 @@ class InicioController extends Controller
             'proximosEventos',
             'categorias',
             'inscripciones',
+            'grados',
             'gradosLabels',
             'gradosCount',
             'id_academia',

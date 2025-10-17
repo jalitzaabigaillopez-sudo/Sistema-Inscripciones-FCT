@@ -201,7 +201,7 @@
   new Chart(ctxGrados, {
     type: 'pie',
     data: {
-      labels: {!! json_encode($grados ?? ['Blanca','Amarilla','Verde','Azul','Roja','Negra']) !!},
+      labels: {!! json_encode($grados ?? ($gradosLabels ?? ['Blanca','Amarilla','Verde','Azul','Roja','Negra'])) !!},
       datasets: [{
         data: {!! json_encode($gradosCount ?? [5,8,10,7,4,3]) !!},
         backgroundColor: ['#ffffff','#ffc107','#28a745','#0d6efd','#dc3545','#212529']
@@ -213,13 +213,75 @@
       plugins: { legend: { position: 'bottom' } }
     }
   });
+</script>
 
-  {{-- DEBUG --}}
-@if(isset($academia))
-  <pre>{{ print_r($academia->toArray(), true) }}</pre>
-@else
-  <p>No hay academia definida</p>
-@endif
+
+
+{{-- ==================== SWEETALERT ACADEMIA ==================== --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // 🔹 Mostrar bienvenida solo una vez por academia
+  @if(isset($id_academia))
+    const academiaId = {{ $id_academia }};
+    const academiaNombre = @json($nombre_academia ?? null);
+    const key = `bienvenidaAcademia_${academiaId}`;
+
+    if (!sessionStorage.getItem(key)) {
+      Swal.fire({
+        title: `¡Bienvenida${academiaNombre ? ', ' + academiaNombre : ''}!`,
+        text: 'Has ingresado al panel de control de tu academia.',
+        icon: 'info',
+        confirmButtonColor: '#0d6efd',
+        confirmButtonText: 'Continuar'
+      }).then(() => {
+        sessionStorage.setItem(key, 'true');
+      });
+    }
+  @else
+    console.warn('No se encontró id_academia, no se muestra bienvenida.');
+  @endif
+
+  // 🔹 Mensaje de éxito (por ejemplo, al registrar atleta)
+  @if(session('success'))
+    Swal.fire({
+      title: '¡Operación Exitosa!',
+      text: @json(session('success')),
+      icon: 'success',
+      confirmButtonColor: '#198754'
+    });
+  @endif
+
+  // 🔹 Mensaje de error
+  @if(session('error'))
+    Swal.fire({
+      title: 'Ups...',
+      text: @json(session('error')),
+      icon: 'error',
+      confirmButtonColor: '#dc3545'
+    });
+  @endif
+
+});
+</script>
+
+{{-- CORRECION EN LISTADO DE PRÓXIMOS EVENTOS: usar fecha_inicio (si esa es la columna) --}}
+{{-- ...existing code... --}}
+<!-- dentro de la tabla de eventos: -->
+@foreach($proximosEventos as $evento)
+  <tr>
+    <td>{{ $evento->nombre }}</td>
+    <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio ?? $evento->fecha ?? null)->format('d/m/Y') }}</td>
+    <td>
+      <span class="badge bg-{{ ($evento->estado ?? '') == 'Activo' ? 'success' : 'secondary' }}">
+        {{ $evento->estado ?? '' }}
+      </span>
+    </td>
+  </tr>
+@endforeach
+{{-- ...existing code... --}}
+
 
 {{-- ==================== SWEETALERT ACADEMIA ==================== --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
