@@ -1,238 +1,132 @@
-// ...existing code...
 @extends('academia')
 
 @section('content')
 <div class="container py-4">
 
-    {{-- 🔹 Encabezado --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h4 class="fw-bold mb-0">Gestión de Atletas</h4>
+    <h4 class="fw-bold mb-3">Atletas registrados en esta academia</h4>
 
-    {{-- 🔹 Botón Crear --}}
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearModal">
-            <i class="bi bi-plus-lg"></i> Nuevo Atleta
+    {{-- Botón para abrir modal --}}
+    <div class="mb-3 text-end">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrear">
+            + Nuevo Atleta
         </button>
+    </div>
 
-        {{-- 🔸 Modal Crear --}}
-        <div class="modal fade" id="crearModal" tabindex="-1" aria-labelledby="crearLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title fw-bold" id="crearLabel">
-                            <i class="bi bi-plus-lg"></i> Nuevo Atleta
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    {{-- Tabla --}}
+    <table class="table table-bordered table-striped text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Foto</th>
+                <th>Identificación</th>
+                <th>Nombre completo</th>
+                <th>Sexo</th>
+                <th>Fecha nacimiento</th>
+                <th>Grado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($atletas as $a)
+                <tr>
+                    <td>
+                        @if($a->imagen)
+                            <img src="{{ asset('storage/' . $a->imagen) }}" alt="Foto" width="50" height="50" class="rounded-circle">
+                        @else
+                            <span class="text-muted">Sin foto</span>
+                        @endif
+                    </td>
+                    <td>{{ $a->identificacion }}</td>
+                    <td>{{ $a->nombre }} {{ $a->primer_apellido }} {{ $a->segundo_apellido }}</td>
+                    <td>{{ $a->sexo }}</td>
+                    <td>{{ \Carbon\Carbon::parse($a->fecha_nacimiento)->format('d/m/Y') }}</td>
+                    <td>{{ $a->grado->nombre ?? '' }}</td>
+                    <td>
+                        <a href="{{ route('registro-atletas.edit', $a->id_atleta) }}" class="btn btn-sm btn-primary">Editar</a>
+                        <form action="{{ route('registro-atletas.destroy', $a->id_atleta) }}" method="POST" style="display:inline;">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="7">No hay atletas registrados.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    {{-- Modal Crear --}}
+    <div class="modal fade" id="modalCrear" tabindex="-1" aria-labelledby="modalCrearLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('registro-atletas.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="id_academia" value="{{ $academia->id_academia }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCrearLabel">Registrar Nuevo Atleta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form action="{{ route('registro-atletas.store') }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            {{-- Formulario --}}
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label class="form-label fw-semibold">Tipo Identificación</label>
-                                    <input type="text" name="tipo_identificacion" class="form-control" required>
-                                </div>  
+                    <div class="modal-body">
+                        {{-- Campos básicos --}}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Tipo de Identificación *</label>
+                                <select name="tipo_identificacion" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="Nacional">Nacional</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Identificación *</label>
+                                <input type="text" name="identificacion" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" name="nombre" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Primer Apellido *</label>
+                                <input type="text" name="primer_apellido" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Segundo Apellido</label>
+                                <input type="text" name="segundo_apellido" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fecha de Nacimiento *</label>
+                                <input type="date" name="fecha_nacimiento" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Sexo *</label>
+                                <select name="sexo" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Grado *</label>
+                                <select name="id_grado" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    @foreach ($grados as $grado)
+                                        <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Foto de Perfil</label>
+                                <input type="file" name="imagen" class="form-control" accept="image/*">
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    {{-- 🔹 Tabla dentro de card con buscador en header y paginación en footer --}}
-    <div class="card table-card shadow">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
-            <div>
-                
-                <div class="text-muted small">Mostrando
-                    {{ method_exists($atletas, 'count') ? $atletas->count() : 0 }}
-                    de
-                    {{ method_exists($atletas, 'total') ? $atletas->total() : (is_countable($atletas) ? count($atletas) : 0) }}
-                    registros
-                </div>
-            </div>
-
-            {{-- 🔍 Buscador dentro del card header --}}
-            <form action="{{ route('registro-atletas.index') }}" method="GET" class="d-flex align-items-center" style="min-width:260px;">
-                <input
-                    type="text"
-                    name="buscar"
-                    class="form-control form-control-sm me-2"
-                    placeholder="Buscar atleta..."
-                    value="{{ $busqueda ?? '' }}">
-                <button class="btn btn-sm btn-outline-primary me-2">
-                    <i class="bi bi-search"></i>
-                </button>
-                @if (!empty($busqueda))
-                    <a href="{{ route('registro-atletas.index') }}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-x-circle"></i>
-                    </a>
-                @endif
-            </form>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive" style="overflow-x: auto;">
-                <table id="tabla" class="table table-striped table-hover table-bordered text-center border mb-0">
-                    <thead class="table-light">
-                       <tr id="tabla-headers">
-                            <th>ID</th>
-                            <th>Identificación</th>
-                            <th>Nombre Completo</th>
-                            <th>Sexo</th>
-                            <th>Fecha Nacimiento</th>
-                            <th>Foto</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($atletas as $atleta)
-                        <tr>
-                            <td class="fw-semibold">{{ $atleta->id_atleta }}</td>
-                            <td>{{ $atleta->identificacion }}</td>
-                            <td class="text-start">{{ $atleta->nombre }} {{ $atleta->primer_apellido }} {{ $atleta->segundo_apellido }}</td>
-                            <td>
-                               
-                                  {{ $atleta->sexo }}
-                               
-                            </td>
-                            <td>{{ \Carbon\Carbon::parse($atleta->fecha_nacimiento)->format('d/m/Y') }}</td>
-                           <td class="text-center">
-                                @if ($atleta->imagen)
-                                    <img src="{{ asset('storage/' . $atleta->imagen) }}"
-                                        alt="Foto de {{ $atleta->nombre }}"
-                                        class="rounded-circle shadow-sm"
-                                        width="60" height="60"
-                                        style="object-fit: cover;">
-                                @else
-                                    <img src="{{ asset('images/default-user.png') }}"
-                                        alt="Sin foto"
-                                        class="rounded-circle shadow-sm"
-                                        width="60" height="60"
-                                        style="object-fit: cover;">
-                                @endif
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editarModal{{ $atleta->id_atleta }}">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar" data-id="{{ $atleta->id_atleta }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        {{-- 🔸 Modal Editar --}}
-                        <div class="modal fade" id="editarModal{{ $atleta->id_atleta }}" tabindex="-1" aria-labelledby="editarLabel{{ $atleta->id_atleta }}" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content border-0 shadow-lg">
-                                    <div class="modal-header bg-warning text-dark">
-                                        <h5 class="modal-title fw-bold" id="editarLabel{{ $atleta->id_atleta }}">
-                                            <i class="bi bi-pencil"></i> Editar Atleta
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <form action="{{ route('registro-atletas.update', $atleta->id_atleta) }}" method="POST">
-                                        @csrf @method('PUT')
-                                        <div class="modal-body">
-                                            {{-- Formulario --}}
-                                            <div class="row mb-3">
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Tipo Identificación</label>
-                                                    <input type="text" name="tipo_identificacion" class="form-control" value="{{ $atleta->tipo_identificacion }}">
-                                                </div>
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Identificación</label>
-                                                    <input type="text" name="identificacion" class="form-control" value="{{ $atleta->identificacion }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mb-3">
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Primer Apellido</label>
-                                                    <input type="text" name="primer_apellido" class="form-control" value="{{ $atleta->primer_apellido }}">
-                                                </div>
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Segundo Apellido</label>
-                                                    <input type="text" name="segundo_apellido" class="form-control" value="{{ $atleta->segundo_apellido }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label fw-semibold">Nombre</label>
-                                                <input type="text" name="nombre" class="form-control" value="{{ $atleta->nombre }}">
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Sexo</label>
-                                                    <select name="sexo" class="form-select">
-                                                        <option value="Masculino" {{ $atleta->sexo == 'Masculino' ? 'selected' : '' }}>Masculino</option>
-                                                        <option value="Femenino" {{ $atleta->sexo == 'Femenino' ? 'selected' : '' }}>Femenino</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col">
-                                                    <label class="form-label fw-semibold">Fecha Nacimiento</label>
-                                                    <input type="date" name="fecha_nacimiento" class="form-control" value="{{ $atleta->fecha_nacimiento }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-muted py-3">No hay atletas registrados.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {{-- Card footer con paginación y contador --}}
-        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center">
-            <div class="small text-muted">
-                Mostrando
-                <strong>{{ method_exists($atletas, 'firstItem') ? $atletas->firstItem() : (method_exists($atletas, 'count') ? ($atletas->count() ? 1 : 0) : 0) }}</strong>
-                -
-                <strong>{{ method_exists($atletas, 'lastItem') ? $atletas->lastItem() : (method_exists($atletas, 'count') ? $atletas->count() : 0) }}</strong>
-                de
-                <strong>{{ method_exists($atletas, 'total') ? $atletas->total() : (is_countable($atletas) ? count($atletas) : 0) }}</strong>
-                registros
-            </div>
-
-            <div>
-                @if (method_exists($atletas, 'links'))
-                    {{-- Enlaces de paginación (Bootstrap) --}}
-                    <nav aria-label="Page navigation">
-                        {{ $atletas->links('pagination::bootstrap-5') }}
-                    </nav>
-                @else
-                    {{-- Paginación manual simple si no es LengthAwarePaginator --}}
-                    <nav class="d-flex">
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-                            <li class="page-item active"><span class="page-link">1</span></li>
-                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-                        </ul>
-                    </nav>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <span class="d-block mt-2">Descargar <a href="{{ route('atletas.academia.pdf', $academia->id_academia) }}">PDF</a></span>
 </div>
-
-
 @endsection

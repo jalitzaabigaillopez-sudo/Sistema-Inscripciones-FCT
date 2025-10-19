@@ -342,7 +342,7 @@
 
         <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-circle me-2"></i>
             Administración de Perfil</a>
-        <a href="{{ route('registro-atletas.index') }}" onclick="handleSidebarClick(event)"><i
+        <a href="{{ route('mostrar.atletas.index') }}"><i
                 class="bi bi-people me-2"></i>
             Gestión de atletas</a>
 
