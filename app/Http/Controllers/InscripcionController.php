@@ -156,7 +156,11 @@ class InscripcionController extends Controller
 
         $bloquearSelectEventos = false;
 
-        $eventos = Evento::where('fecha_final_inscripcion', '>=', Carbon::now())->get();
+        $hoy = Carbon::today();
+
+        $eventos = Evento::where('estado', 'activo')
+            ->where('fecha_final_inscripcion', '>=', $hoy)
+            ->get();
 
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
