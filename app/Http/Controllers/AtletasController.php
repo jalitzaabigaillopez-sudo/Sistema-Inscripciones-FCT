@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use App\Services\SessionService;
+use Illuminate\Validation\Rule;
 
 class AtletasController extends Controller
 {
@@ -104,142 +105,12 @@ class AtletasController extends Controller
         return view('catalogos.atletas.index', compact('grados', 'categorias', 'academias'));
     }
 
-    /**
-     * Academia 🏳️
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\View\View
-     */
-    public function indexAtltetasAcademia(Request $request)
-    {
-    $usuarioId = $request->session()->get('usuario');
-    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
-    $academia = $usuario && $usuario->academia ? $usuario->academia : null;
-
-    if (!$academia) {
-        return redirect()->route('login')->withErrors(['error' => 'No se pudo identificar la academia del usuario.']);
-    }
-
-    $grados = Grado::all();
-
-    // Obtener atletas de la academia del usuario
- // $atletas = Atleta::where('id_academia', $academia->id_academia)
-               // ->orderBy('id_atleta', 'asc')
-                //->get();
-
-    $atletas = Atleta::where('id_academia', $academia->id_academia)->with('grado')->get();
-
-    return view('academia.registrosAtletas', compact('grados', 'academia', 'atletas'));
-}
-
-    public function storeAcademia(Request $request)
-{
-    $usuarioId = $request->session()->get('usuario');
-    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
-
-    if (!$usuario || !$usuario->id_academia) {
-        return redirect()->back()->withErrors(['error' => 'No se pudo determinar la academia del usuario.']);
-    }
-
-    $validated = $request->validate([
-        'tipo_identificacion' => 'required|in:Nacional,Otro',
-        'identificacion' => 'required|unique:atletas,identificacion|max:30',
-        'nombre' => 'required|string|max:255',
-        'primer_apellido' => 'required|string|max:255',
-        'segundo_apellido' => 'nullable|string|max:255',
-        'sexo' => 'required|in:Masculino,Femenino',
-        'fecha_nacimiento' => 'required|date',
-        'id_grado' => 'required|exists:grados,id_grado',
-        'imagen' => 'nullable|image|max:2048',
-    ]);
-
-    $atleta = new Atleta($validated);
-    $atleta->id_academia = $usuario->id_academia;
-
-    if ($request->hasFile('imagen')) {
-        $atleta->imagen = $request->file('imagen')->store('atletas', 'public');
-    }
-
-    $atleta->save();
-
-    return redirect()->route('registro-atletas.index')->with('success', 'Atleta registrado correctamente.');
-}
-
-public function editAcademia($id)
-{
-    $atleta = Atleta::findOrFail($id);
-
-    // Validar que el atleta pertenece a la academia del usuario
-    $usuarioId = session()->get('usuario');
-    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
-
-    if (!$usuario || $atleta->id_academia !== $usuario->id_academia) {
-        abort(403, 'No autorizado');
-    }
-
-    $grados = Grado::all();
-    $academia = $usuario->academia;
-
-    return view('academia.editarAtleta', compact('atleta', 'grados', 'academia'));
-}
-
-
-public function updateAcademia(Request $request, $id)
-{
-    $atleta = Atleta::findOrFail($id);
-
-    $usuarioId = session()->get('usuario');
-    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
-
-    if (!$usuario || $atleta->id_academia !== $usuario->id_academia) {
-        abort(403, 'No autorizado');
-    }
-
-    $validated = $request->validate([
-        'tipo_identificacion' => 'required|in:Nacional,Otro',
-        'identificacion' => 'required|max:30|unique:atletas,identificacion,' . $id . ',id_atleta',
-        'nombre' => 'required|string|max:255',
-        'primer_apellido' => 'required|string|max:255',
-        'segundo_apellido' => 'nullable|string|max:255',
-        'sexo' => 'required|in:Masculino,Femenino',
-        'fecha_nacimiento' => 'required|date',
-        'id_grado' => 'required|exists:grados,id_grado',
-        'imagen' => 'nullable|image|max:2048',
-    ]);
-
-    $atleta->fill($validated);
-
-    if ($request->hasFile('imagen')) {
-        $atleta->imagen = $request->file('imagen')->store('atletas', 'public');
-    }
-
-    $atleta->save();
-
-    return redirect()->route('registro-atletas.index')->with('success', 'Atleta actualizado correctamente.');
-}
-
-public function destroyAcademia($id)
-{
-    $atleta = Atleta::findOrFail($id);
-
-    $usuarioId = session()->get('usuario');
-    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
-
-    if (!$usuario || $atleta->id_academia !== $usuario->id_academia) {
-        abort(403, 'No autorizado');
-    }
-
-    $atleta->delete();
-
-    return redirect()->route('registro-atletas.index')->with('success', 'Atleta eliminado correctamente.');
-}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        //
-    }
+    {}
 
     /**
      * Store a newly created resource in storage.
@@ -576,4 +447,166 @@ public function destroyAcademia($id)
             return response()->json(['error' => 'Ocurrió un error al intentar eliminar el atleta.'], 500);
         }
     }
+
+     /**
+     * Academia 🏳️
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indexAtletasAcademia(Request $request)
+    {
+    $usuarioId = $request->session()->get('usuario');
+    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
+    $academia = $usuario && $usuario->academia ? $usuario->academia : null;
+
+    if (!$academia) {
+        return redirect()->route('login')->withErrors(['error' => 'No se pudo identificar la academia del usuario.']);
+    }
+
+    $grados = Grado::all();
+
+    $atletas = Atleta::where('id_academia', $academia->id_academia)->orderBy('id_atleta', 'asc')->with('grado')->get();
+
+    return view('academia.registrosAtletas', compact('grados', 'academia', 'atletas'));
+}
+
+// ...existing code...
+public function storeAcademia(Request $request)
+{
+    try {
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
+        if (!$request->filled('id_academia') && $usuario && $usuario->id_academia) {
+            $request->merge(['id_academia' => $usuario->id_academia]);
+        }
+
+        $validated = $request->validate([
+            'tipo_identificacion' => ['required', 'in:Nacional,Otro'],
+            'identificacion'      => ['required', 'string', 'max:30', 'unique:atletas,identificacion'],
+            'nombre'              => ['required', 'string', 'max:255'],
+            'primer_apellido'     => ['required', 'string', 'max:255'],
+            'segundo_apellido'    => ['nullable', 'string', 'max:255'],
+            'sexo'                => ['required', 'in:Masculino,Femenino'],
+            'fecha_nacimiento'    => ['required', 'date'],
+            'id_grado'            => ['required', 'exists:grados,id_grado'],
+            'id_academia'         => ['required', 'exists:academias,id_academia'],
+            'estado'              => ['nullable', 'in:activo,inactivo'],
+            'imagen'              => ['nullable','image','mimes:jpeg,png,jpg,gif','max:10240'],
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            $validated['imagen'] = $request->file('imagen')->store('atletas', 'public');
+        }
+
+        $validated['estado'] = $validated['estado'] ?? 'activo';
+
+        $atleta = Atleta::create($validated);
+        $atleta->load(['grado', 'academia']);
+        $atleta->imagen_url = $atleta->imagen ? asset('storage/' . $atleta->imagen) : null;
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Atleta registrado con éxito',
+                'atleta'  => $atleta
+            ], 201);
+        }
+
+        return redirect()->route('registro-atletas.index')->with('success', 'Atleta registrado correctamente.');
+    } catch (\Illuminate\Validation\ValidationException $ve) {
+        // Laravel ya gestiona esto, pero devolvemos JSON explícito por si acaso
+        return response()->json(['success' => false, 'errors' => $ve->errors()], 422);
+    } catch (\Exception $e) {
+        Log::error('storeAcademia error: '.$e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Error interno del servidor.'], 500);
+    }
+}
+
+public function editAcademia($id)
+{
+    $atleta = Atleta::findOrFail($id);
+    $usuarioId = session()->get('usuario');
+    $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
+
+    if (!$usuario || $atleta->id_academia !== $usuario->id_academia) {
+        return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+    }
+
+    return response()->json($atleta);
+}
+
+
+public function updateAcademia(Request $request, $id)
+{
+    try {
+        $atleta = Atleta::findOrFail($id);
+
+        $usuarioId = $request->session()->get('usuario');
+        $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
+        if (!$request->filled('id_academia') && $usuario && $usuario->id_academia) {
+            $request->merge(['id_academia' => $usuario->id_academia]);
+        }
+
+        $validated = $request->validate([
+            'tipo_identificacion' => ['required','in:Nacional,Otro'],
+            'identificacion'      => ['required','max:30', Rule::unique('atletas','identificacion')->ignore($atleta->id_atleta,'id_atleta')],
+            'nombre'              => ['required','string','max:255'],
+            'primer_apellido'     => ['required','string','max:255'],
+            'segundo_apellido'    => ['nullable','string','max:255'],
+            'sexo'                => ['required','in:Masculino,Femenino'],
+            'fecha_nacimiento'    => ['required','date'],
+            'id_grado'            => ['required','exists:grados,id_grado'],
+            'id_academia'         => ['required','exists:academias,id_academia'],
+            'estado'              => ['nullable','in:activo,inactivo'],
+            'imagen'              => ['nullable','image','mimes:jpeg,png,jpg,gif','max:10240'],
+            'remove_imagen'       => ['nullable','in:1,0'],
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            if ($atleta->imagen && Storage::disk('public')->exists($atleta->imagen)) {
+                Storage::disk('public')->delete($atleta->imagen);
+            }
+            $validated['imagen'] = $request->file('imagen')->store('atletas', 'public');
+        } elseif ($request->input('remove_imagen') == '1') {
+            if ($atleta->imagen && Storage::disk('public')->exists($atleta->imagen)) {
+                Storage::disk('public')->delete($atleta->imagen);
+            }
+            $validated['imagen'] = null;
+        }
+
+        $atleta->update($validated);
+        $atleta->load(['grado', 'academia']);
+        $atleta->imagen_url = $atleta->imagen ? asset('storage/' . $atleta->imagen) : null;
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Atleta actualizado correctamente.', 'atleta' => $atleta], 200);
+        }
+
+        return redirect()->route('registro-atletas.index')->with('success', 'Atleta actualizado correctamente.');
+    } catch (\Illuminate\Validation\ValidationException $ve) {
+        return response()->json(['success' => false, 'errors' => $ve->errors()], 422);
+    } catch (\Exception $e) {
+        Log::error('updateAcademia error: '.$e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Error interno del servidor.'], 500);
+    }
+}
+// ...existing code...
+
+public function destroyAcademia(Request $request, $id)
+{
+     $atleta = Atleta::findOrFail($id);
+
+        if ($atleta->imagen && Storage::disk('public')->exists($atleta->imagen)) {
+            Storage::disk('public')->delete($atleta->imagen);
+        }
+
+        $atleta->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+
+    return redirect()->route('registro-atletas.index')->with('success', 'Atleta eliminado correctamente.');
+}
 }

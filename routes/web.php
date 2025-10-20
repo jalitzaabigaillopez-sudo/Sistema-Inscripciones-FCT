@@ -17,7 +17,6 @@ use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ReporteController;
-use App\Http\Controllers\RegistroAtletasController;
 use Illuminate\Types\Relations\Role;
 
 
@@ -149,12 +148,18 @@ Route::view('/perfil-academia', 'academia.perfilAcademia')->name('academia.perfi
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 
-// Rutas para registro de atletas (similar a /atletas)
-Route::get('/mostrar-atletas', [AtletasController::class, 'indexAtltetasAcademia'])->name('mostrar.atletas.index');
+// Rutas para registro de atletas (similar a atletas)
+
+Route::get('/mostrar-atletas', [AtletasController::class, 'indexAtletasAcademia'])->name('mostrar.atletas.index');
 Route::post('/registro-atletas', [AtletasController::class, 'storeAcademia'])->name('registro-atletas.store');
 Route::get('/registro-atletas/{id}/edit', [AtletasController::class, 'editAcademia'])->name('registro-atletas.edit');
 Route::put('/registro-atletas/{id}', [AtletasController::class, 'updateAcademia'])->name('registro-atletas.update');
 Route::delete('/registro-atletas/{id}', [AtletasController::class, 'destroyAcademia'])->name('registro-atletas.destroy');
+
+
+
+
+
 //preregistro academia
 Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAcademia'])->name('academia.preregistro.process');
 
