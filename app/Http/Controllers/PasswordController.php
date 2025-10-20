@@ -17,8 +17,17 @@ class PasswordController extends Controller
 {
     public function __construct(Request $request)
     {
-        if (!SessionService::checkSession($request)) {
-            redirect()->route('login')->send();
+        // Evitar que bloquee rutas públicas
+        if (!in_array($request->route()?->getName(), [
+            'correo.cambiarContraseña',
+            'vista.cambiarContraseña',
+            'cambiar.contraseña',
+            'vista.cambiarContraseñaVencida',
+            'cambiar.contraseñaVencida',
+        ])) {
+            if (!SessionService::checkSession($request)) {
+                redirect()->route('login')->send();
+            }
         }
     }
     /**
@@ -30,10 +39,10 @@ class PasswordController extends Controller
         // Verificar que exista el usuario
         $usuario = Usuario::where('email', $request['correo'])->first();
         if (!$usuario) {
-             return response()->json([
-            'status' => 'error',
-            'message' => 'El correo ingresado no está registrado en el sistema.'
-        ], 404);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El correo ingresado no está registrado en el sistema.'
+            ], 404);
         }
 
         // Generara contraseña temporal
@@ -43,10 +52,10 @@ class PasswordController extends Controller
         // Verificar que NO EXISTA una contraseña temporal vigente de este usuario
         $contraseñaTemporal = ContraseñaTemporal::where('id_usuario', $usuario->id_usuario)->where('vigente', 'si')->first();
         if ($contraseñaTemporal) {
-             return response()->json([
-            'status' => 'error',
-            'message' => 'Ya existe una solicitud de contraseña temporal activa. Inténtelo de nuevo más tarde.'
-        ], 401);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ya existe una solicitud de contraseña temporal activa. Inténtelo de nuevo más tarde.'
+            ], 401);
         }
 
         // Crear el registro de la nueva contraseña temporal
@@ -63,16 +72,16 @@ class PasswordController extends Controller
         $contraseñaTemporal->save();
 
         // url que llevara a la ventana de cambio de contraseña al usuario
-        $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
+        $url = URL::signedRoute('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
 
         // Enviar correo usando una clase Mailable
         Mail::to($usuario->email)->send(new PasswordMail($usuario, $contraseñaTemporal, $url));
 
         // Redirigir al login :_ Falta alertas de avisos
         return response()->json([
-        'status' => 'success',
-        'message' => 'Se ha enviado una contraseña temporal a su correo electrónico.'
-    ]); 
+            'status' => 'success',
+            'message' => 'Se ha enviado una contraseña temporal a su correo electrónico.'
+        ]);
     }
 
     /**
