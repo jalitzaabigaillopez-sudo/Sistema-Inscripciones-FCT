@@ -10,12 +10,12 @@
   <div class="row mb-4 g-4">
     <div class="col-12 col-sm-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#1E3A8A,#3B82F6);">
-        <div class="card-body text-center">
+        <a href="{{ route('usuarios.index') }}" class="card-body text-center text-white text-decoration-none" role="button">
           <i class="bi bi-person-badge fs-1 mb-2"></i>
           <h6 class="fw-semibold">Usuarios</h6>
           <h3 class="fw-bold">{{ $usersCount ?? 0 }}</h3>
           <small>Actualizado hoy</small>
-        </div>
+        </a>
       </div>
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
@@ -88,7 +88,7 @@
         <div class="card-body">
           @if(isset($proximosEventos) && count($proximosEventos))
             <table class="table table-sm align-middle">
-              <thead class="table-light"><tr><th>Nombre</th><th>Fecha</th><th>Estado</th></tr></thead>
+              <thead class="table-light"><tr><th>Nombre</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
               <tbody>
                 @foreach($proximosEventos as $evento)
                   <tr>
@@ -96,6 +96,11 @@
                     <td>{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</td>
                     <td>
                       <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">{{ $evento->estado }}</span>
+                    </td>
+                    <td>
+                      <a href="{{ route('inscripciones.index') }}" class="btn btn-sm btn-primary">
+                      Inscribir
+                    </a>
                     </td>
                   </tr>
                 @endforeach
@@ -194,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
   @endif
 });
 </script>
-
 
 @endsection
 

@@ -118,6 +118,7 @@
                   <th>Nombre</th>
                   <th>Fecha</th>
                   <th>Estado</th>
+                  <th>Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -129,6 +130,11 @@
                       <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">
                         {{ $evento->estado }}
                       </span>
+                    </td>
+                    <td>
+                      <a href="{{ route('inscripcion.academia') }}" class="btn btn-sm btn-primary">
+                      Inscribir
+                    </a>
                     </td>
                   </tr>
                 @endforeach
@@ -157,7 +163,6 @@
         </div>
       </div>
     </div>
-
     <!-- Distribución de grados -->
     <div class="col-12 col-lg-4">
       <div class="card border-0 shadow-sm rounded-3 h-100">
@@ -173,7 +178,6 @@
     </div>
   </div>
 </div>
-
 {{-- Chart.js responsivo --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -267,78 +271,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-
-{{-- CORRECION EN LISTADO DE PRÓXIMOS EVENTOS: usar fecha_inicio (si esa es la columna) --}}
-{{-- ...existing code... --}}
-<!-- dentro de la tabla de eventos: -->
-@foreach($proximosEventos as $evento)
-  <tr>
-    <td>{{ $evento->nombre }}</td>
-    <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio ?? $evento->fecha ?? null)->format('d/m/Y') }}</td>
-    <td>
-      <span class="badge bg-{{ ($evento->estado ?? '') == 'Activo' ? 'success' : 'secondary' }}">
-        {{ $evento->estado ?? '' }}
-      </span>
-    </td>
-  </tr>
-@endforeach
-{{-- ...existing code... --}}
-
-
-{{-- ==================== SWEETALERT ACADEMIA ==================== --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  // 🔹 Mostrar bienvenida solo una vez por academia
-  @if(isset($id_academia))
-    const academiaId = {{ $id_academia }};
-    const academiaNombre = @json($nombre_academia ?? null);
-    const key = `bienvenidaAcademia_${academiaId}`;
-
-    if (!sessionStorage.getItem(key)) {
-      Swal.fire({
-        title: `¡Bienvenida${academiaNombre ? ', ' + academiaNombre : ''}!`,
-        text: 'Has ingresado al panel de control de tu academia.',
-        icon: 'info',
-        confirmButtonColor: '#0d6efd',
-        confirmButtonText: 'Continuar'
-      }).then(() => {
-        sessionStorage.setItem(key, 'true');
-      });
-    }
-  @else
-    console.warn('No se encontró id_academia, no se muestra bienvenida.');
-  @endif
-
-  // 🔹 Mensaje de éxito (por ejemplo, al registrar atleta)
-  @if(session('success'))
-    Swal.fire({
-      title: '¡Operación Exitosa!',
-      text: @json(session('success')),
-      icon: 'success',
-      confirmButtonColor: '#198754'
-    });
-  @endif
-
-  // 🔹 Mensaje de error
-  @if(session('error'))
-    Swal.fire({
-      title: 'Ups...',
-      text: @json(session('error')),
-      icon: 'error',
-      confirmButtonColor: '#dc3545'
-    });
-  @endif
-
-});
-</script>
-
-
-
-
-
-
 @endsection
-
