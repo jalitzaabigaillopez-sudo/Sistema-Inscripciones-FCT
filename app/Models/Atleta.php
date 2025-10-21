@@ -13,7 +13,7 @@ class Atleta extends Model
     protected $table = 'atletas';
     protected $primaryKey = 'id_atleta';
     public $timestamps = false;    // se deben colocar las columnas created_at y updated_at
-    protected $fillable = ['tipo_identificacion', 'identificacion', 'primer_apellido', 'segundo_apellido', 'nombre', 'sexo', 'fecha_nacimiento', 'estado', 'imagen', 'id_division', 'id_grado', 'id_padron_nacimiento', 'id_academia'];
+    protected $fillable = ['tipo_identificacion', 'identificacion', 'primer_apellido', 'segundo_apellido', 'nombre', 'sexo', 'fecha_nacimiento', 'estado', 'imagen', 'id_division', 'id_grado', 'id_padron_nacimiento', 'id_academia',];
 
 
     public function academias()
@@ -36,8 +36,12 @@ class Atleta extends Model
         return $this->belongsTo(Division::class, 'id_division', 'id_division');
     }
 
-     public function grado()
+       public function grado()
     {
         return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
     }
+
+    
+    
+ 
 }

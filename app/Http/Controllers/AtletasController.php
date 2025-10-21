@@ -15,6 +15,8 @@ use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use App\Services\SessionService;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
+
 
 class AtletasController extends Controller
 {
@@ -453,7 +455,8 @@ class AtletasController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function indexAtletasAcademia(Request $request)
+  
+  public function indexAtletasAcademia(Request $request)
     {
     $usuarioId = $request->session()->get('usuario');
     $usuario = $usuarioId ? Usuario::find($usuarioId) : null;
@@ -465,12 +468,29 @@ class AtletasController extends Controller
 
     $grados = Grado::all();
 
-    $atletas = Atleta::where('id_academia', $academia->id_academia)->orderBy('id_atleta', 'asc')->with('grado')->get();
+    $atletas = Atleta::where('id_academia', $academia->id_academia)->orderBy('id_atleta', 'asc')->with('grados')->get();
+
+    $query = Atleta::with(['grados', 'academias']);
+
+    if ($request->filled('buscar')) {
+        $buscar = $request->buscar;
+        $query->where(function ($q) use ($buscar) {
+            $q->where('nombre', 'like', "%$buscar%")
+              ->orWhere('primer_apellido', 'like', "%$buscar%")
+              ->orWhere('identificacion', 'like', "%$buscar%")
+              ->orWhere('sexo', 'like', "%$buscar%")
+              ->orWhere('fecha_nacimiento', 'like', "%$buscar%")
+              ->orWhere('estado', 'like', "%$buscar%")
+              ->orWhere('tipo_identificacion', 'like', "%$buscar%");
+        });
+    }
+    $query->where('id_academia', $academia->id_academia);
+
+    $atletas = $query->orderBy('nombre')->paginate(10); // 10 por página
 
     return view('academia.registrosAtletas', compact('grados', 'academia', 'atletas'));
 }
 
-// ...existing code...
 public function storeAcademia(Request $request)
 {
     try {
@@ -582,7 +602,7 @@ public function updateAcademia(Request $request, $id)
             return response()->json(['success' => true, 'message' => 'Atleta actualizado correctamente.', 'atleta' => $atleta], 200);
         }
 
-        return redirect()->route('registro-atletas.index')->with('success', 'Atleta actualizado correctamente.');
+        return redirect()->route('mostrar.atletas.index')->with('success', 'Atleta actualizado correctamente.');
     } catch (\Illuminate\Validation\ValidationException $ve) {
         return response()->json(['success' => false, 'errors' => $ve->errors()], 422);
     } catch (\Exception $e) {
@@ -590,7 +610,8 @@ public function updateAcademia(Request $request, $id)
         return response()->json(['success' => false, 'message' => 'Error interno del servidor.'], 500);
     }
 }
-// ...existing code...
+
+// eliminar atleta academia
 
 public function destroyAcademia(Request $request, $id)
 {
@@ -607,6 +628,7 @@ public function destroyAcademia(Request $request, $id)
         }
 
 
-    return redirect()->route('registro-atletas.index')->with('success', 'Atleta eliminado correctamente.');
+    return redirect()->route('mostrar.atletas.index')->with('success', 'Atleta eliminado correctamente.');
 }
+
 }
