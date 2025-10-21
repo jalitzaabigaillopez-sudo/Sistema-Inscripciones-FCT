@@ -318,6 +318,10 @@
         .table-responsive {
             overflow-y: hidden;
         }
+
+        #userDropdown::after {
+            border-top-color: #fff !important;
+        }
     </style>
 </head>
 

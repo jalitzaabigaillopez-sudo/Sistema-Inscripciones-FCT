@@ -47,7 +47,10 @@
     <div class="container py-5 flex-grow">
         <div class="custom-card p-4">
             <div class="text-center mb-4">
-                <img src="{{ asset('images/LogoFCT_transpa.png') }}" alt="Logo FCT" style="max-height: 60px;">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ asset('images/LogoFCT_transpa.png') }}" alt="Logo FCT" class="img-fluid"
+                        style="max-height: 60px;">
+                </div>
                 <h2 class="text-2xl font-bold text-gray-800 mt-3">Cambiar Contraseña</h2>
                 <p class="text-gray-600">Ingrese su contraseña temporal y cree una nueva contraseña segura.</p>
             </div>
