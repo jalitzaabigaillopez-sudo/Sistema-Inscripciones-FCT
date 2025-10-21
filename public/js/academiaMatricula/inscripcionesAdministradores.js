@@ -1279,6 +1279,7 @@ $(document).ready(function () {
                 }
             }
 
+            marcadorAmarillo();//pinta en la lista el td de drupo para indicar que el grupo esta incompleto
 
             if (contAlertas === totalCards) {
                 $("#contenedor .clonEdit").remove();

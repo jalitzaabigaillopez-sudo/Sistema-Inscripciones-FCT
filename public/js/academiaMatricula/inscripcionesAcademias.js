@@ -93,7 +93,7 @@ $(document).ready(function () {
                 res.forEach(function (item) {
                     select.append(
                         '<option value="' + item.id_subModalidad + '" ' +
-                        'data-nombre="' + item.nombre + '" data-cantidad-atletas="' + item.cantidad_atletas + '">' + item.nombre + '</option>'
+                        'data-nombre="' + item.nombre + '" data-cantidad-atletas="' + item.cantidad_atletas + '" data-sexo-mixto="' + item.sexo_mixto + '">' + item.nombre + '</option>'
                     );
                 });
 
@@ -331,7 +331,7 @@ $(document).ready(function () {
         var id_academia = $('#idAcademia').val();
 
         let atletasGrupoTemporal = [];
-        let sexosTemporal = [];
+        let sexos = [];
         let contAlertas1 = 0;
 
         let submodalidad;
@@ -347,7 +347,6 @@ $(document).ready(function () {
             let rol = $(this).find(".rol-select option:selected").val();
             let modalidad = $(this).find(".modalidades-select option:selected").text();
             submodalidad = $(this).find(".submodalidades-select option:selected").text();
-            let sexo_mixto = $(this).find(".submodalidades-select option:selected").data('sexo-mixto');
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
             let pesoMax = $(this).find(".categorias-select option:selected").data('max');
 
@@ -363,7 +362,7 @@ $(document).ready(function () {
 
             //otros
             contAlertas1++;
-            sexosTemporal.push(sexo);
+            sexos.push(sexo);
 
             // Solo si es atleta se toma medidas de revision
             if (validarCampos(rol) === false) {
@@ -481,12 +480,6 @@ $(document).ready(function () {
                 }
             }
 
-            if (contAlertas1 === totalCards) {
-                if (validarSexos(submodalidad, 'Poomsae', sexosTemporal) === true) {
-                    return;
-                }
-            }
-
             //🤪
             // UPDATE (Aqui se actualiza la tabla) SI es un atleta🔄️
             if (totalCards > 1) {
@@ -502,35 +495,47 @@ $(document).ready(function () {
             }
         });
 
-        // UPDATE (Aqui se actualiza la tabla) SI es un grupo de atletas🔄️
-        if (atletasGrupoTemporal.length === totalCards) {
-            for (let atleta of atletasGrupoTemporal) {
-                actualizarTablaInscripciones(atleta);
-                gruposAtletas.push(atleta);
-                guardarAtletaInscrito(atleta);
+        // VALIDAR SI EL GRUPO PUEDE SER DE SEXO MIXTO O NO
+        if (contAlertas1 === totalCards) {
+            let sexo_mixto = $("#contenedor .submodalidades-select")
+                .first()
+                .find("option:selected")
+                .data("sexo-mixto");
+            if (validarSexos(sexo_mixto, sexos) === true) {
+                return;
             }
-            limpiarCards();
-            mostrarAlerta("Se han añadido atletas a su lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "", "Éxito", "✅");
-            proceder = true;
-        }
 
-        if (proceder === true) {
-            $("#contenedor .baseCard").remove();
-            $("#panelRegistro").show();
 
-            $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+            // UPDATE (Aqui se actualiza la tabla) SI es un grupo de atletas🔄️
+            if (atletasGrupoTemporal.length === totalCards) {
+                for (let atleta of atletasGrupoTemporal) {
+                    actualizarTablaInscripciones(atleta);
+                    gruposAtletas.push(atleta);
+                    guardarAtletaInscrito(atleta);
+                }
+                limpiarCards();
+                mostrarAlerta("Se han añadido atletas a su lista. Ahora puedes verlo en la seccion de " + "Mis inscripciones" + "", "Éxito", "✅");
+                proceder = true;
+            }
 
-            $("#panelRegistro").find('.modalidades-select').show();
-            $("#panelRegistro").find('.submodalidades-select').show();
-            $("#panelRegistro").find('.categorias-select').show();
-            $("#panelRegistro").find('#pesoInput').show();
+            if (proceder === true) {
+                $("#contenedor .baseCard").remove();
+                $("#panelRegistro").show();
 
-            $("#containerButton").html(`
+                $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+
+                $("#panelRegistro").find('.modalidades-select').show();
+                $("#panelRegistro").find('.submodalidades-select').show();
+                $("#panelRegistro").find('.categorias-select').show();
+                $("#panelRegistro").find('#pesoInput').show();
+
+                $("#containerButton").html(`
             <button id="bInscribir" class="btn btn-outline-success w-100">
                 <i class="bi bi-plus-circle"></i> Inscribir
             </button>
             `);
-            proceder = false;
+                proceder = false;
+            }
         }
 
     });
@@ -638,28 +643,28 @@ $(document).ready(function () {
      * @param {*} sexosTemporal 
      * @returns 
      */
-    function validarSexos(submodalidad, busqueda, sexosTemporal) {
-        // Normalizar: quitar espacios y pasar a minúsculas
-        let normalizado = submodalidad.replace(/\s+/g, "").toLowerCase();
-        let normalizadoBusqueda = busqueda.replace(/\s+/g, "").toLowerCase();
+    function validarSexos(sexo_mixto, sexos) {
+        console.log("sexos: ", sexos);
+        console.log("sexo_mixto: ", sexo_mixto);
+        
+        
         let salida = false
 
-        if (normalizado.includes(normalizadoBusqueda)) {
-            if (sexosTemporal.length === 2) {
-                if (sexosTemporal.every(e => e === sexosTemporal[0]) === true) {
-                    mostrarAlerta("No se permiten atletas del mismo sexo en esta submodalidad.", "Aviso", "⚠️");
-                    salida = true;
-                } else
-                    salida = false;
-            } else if (sexosTemporal.length > 2) {
-                if (sexosTemporal.every(e => e === sexosTemporal[0]) !== true) {
-                    mostrarAlerta("Solo se permiten atletas del mismo sexo en esta submodalidad.", "Aviso", "⚠️");
-                    salida = true;
-                } else {
-                    salida = false;
-                }
+        if (sexo_mixto === true) {
+            if (sexos.every(e => e === sexos[0]) === true) {
+                console.log("1-NOT CONTINUE");
+                
+                mostrarAlerta("No se permiten atletas del mismo sexo en esta submodalidad.", "Aviso", "⚠️");
+                salida = true;
+            }
+        } else {
+            if (sexos.every(e => e === sexos[0]) !== true) {
+                console.log("2-NOT CONTINUE");
+                mostrarAlerta("Solo se permiten atletas del mismo sexo en esta submodalidad.", "Aviso", "⚠️");
+                salida = true;
             }
         }
+
         return salida;
     }
 
@@ -871,12 +876,11 @@ $(document).ready(function () {
         fila.find('td:eq(6)').text(obj.categoria + " (kg)");
         fila.find('td:eq(7)').text(obj.grupo);
 
-        marcadorAmarillo();
-
         // Cambiar atributos al nuevo code y id
         fila.attr({
             "data-code": obj.tr_code,
-            "data-id": obj.id_atleta
+            "data-id": obj.id_atleta,
+            "data-grupo": obj.grupo
         });
 
         fila.data("code", obj.tr_code);
@@ -1240,7 +1244,7 @@ $(document).ready(function () {
                             grupo: item.grupo,
                             rol: item.rol
                         }
-                        atletasModificar.push(datos);                    
+                        atletasModificar.push(datos);
 
                         // Buscar atleta por id
                         let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
@@ -1475,7 +1479,7 @@ $(document).ready(function () {
                     }
                 }
                 continuar = false
-            } 
+            }
         });
 
         if (continuar === true) {
@@ -1663,6 +1667,7 @@ $(document).ready(function () {
                 }
             }
 
+            marcadorAmarillo();//pinta en la lista el td de drupo para indicar que el grupo esta incompleto
 
             if (contAlertas === totalCards) {
                 $("#contenedor .clonEdit").remove();
