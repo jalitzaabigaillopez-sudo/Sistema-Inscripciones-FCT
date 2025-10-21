@@ -41,6 +41,8 @@
           <div class="d-flex justify-content-center align-items-center mb-2">
             <i class="bi bi-person-fill fs-2 text-white me-2"></i>
             <span class="fs-1 fw-bold text-white">{{ $totalAtletas ?? 0 }}</span>
+          
+
           </div>
           <small class="text-light">Actualizado hoy</small>
         </div>

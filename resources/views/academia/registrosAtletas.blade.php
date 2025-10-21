@@ -1,38 +1,69 @@
 @extends('academia')
 
+@section('tituloArriba')
+   Gestion de Atletas
+@endsection
+
+@section('breadcrumb-title', 'Gestion de Atletas')
+
 @section('content')
+
 <div class="container py-4">
-
-    <h4 class="fw-bold mb-3">Atletas registrados en esta academia</h4>
-
-    {{-- Botón para abrir modal --}}
-    <div class="mb-3 text-end">
-        <button type="button" id="btnNuevoAtleta" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCrear">
-            + Nuevo Atleta
+    <div class="d-flex align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Gestión de Atletas</h4>
+        <button id="btnNuevoAtleta" type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal"
+            data-bs-target="#modalCrear" aria-controls="modalCrear" aria-label="Nuevo atleta">
+            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Nuevo Atleta
         </button>
     </div>
+    <hr>
 
-    {{-- Script para limpiar formulario al abrir modal --}}
+    {{-- Script para limpiar formulario al abrir modal y mejorar interacción --}}
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('btnNuevoAtleta');
-        btn && btn.addEventListener('click', function () {
-            const form = document.querySelector('#modalCrear form');
-            if (!form) return;
-            form.reset(); // limpiar campos
-            // quitar vista previa de imagen si existe
-            const preview = form.querySelector('img');
-            if (preview) preview.remove();
-            // limpiar posibles mensajes de error (si los muestra el DOM)
-            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
-        });
+        // Resetear y limpiar modalCrear cada vez que se abre
+        const modalCrearEl = document.getElementById('modalCrear');
+        if (modalCrearEl) {
+            modalCrearEl.addEventListener('show.bs.modal', function () {
+                const form = modalCrearEl.querySelector('form');
+                if (!form) return;
+                form.reset();
+                // eliminar vista previa de imagen si existe
+                const preview = form.querySelector('img');
+                if (preview) preview.remove();
+                // quitar clases de error y mensajes
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+            });
+        }
+
+        // Botón limpiar búsqueda
+        const btnClear = document.getElementById('btnClearBuscar');
+        if (btnClear) {
+            btnClear.addEventListener('click', function () {
+                const formBuscar = document.getElementById('formBuscarAtletas');
+                if (!formBuscar) return;
+                formBuscar.querySelector('input[name="buscar"]').value = '';
+                formBuscar.submit();
+            });
+        }
     });
     </script>
-    
 
+    <form id="formBuscarAtletas" method="GET" action="{{ route('mostrar.atletas.index') }}"
+          class="mb-3 d-flex gap-2 align-items-center" role="search" aria-label="Buscar atletas">
+        <input type="search" name="buscar" value="{{ request('buscar') }}" class="form-control"
+               placeholder="Buscar cualquier campo... excepto imagen y academia" style="max-width:500px;" aria-label="Buscar atletas">
+        <div class="btn-group">
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+            <button type="button" id="btnClearBuscar" class="btn btn-outline-secondary" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
 
     {{-- Tabla de atletas --}}
+
   <table class="table table-minimalista" id="tabla-atletas">
     <thead class="table-light" role="rowgroup" style="position:sticky; top:0; z-index:1020; backdrop-filter: blur(6px); background-color:#f8f9fa; border-bottom:2px solid #dee2e6;">
         <tr style="font-weight:600; color:#495057;">
@@ -48,13 +79,12 @@
             <th style="min-width:140px;">Acciones</th>
         </tr>
     </thead>
-
     <tbody>
         @forelse ($atletas as $a)
             <tr data-id="{{ $a->id_atleta }}">
                 <td>
                     @if($a->imagen)
-                        <img src="{{ asset('storage/' . $a->imagen) }}" alt="Foto" style="width:45px; height:45px; object-fit:cover; border-radius:50%; border:1px solid #ced4da;">
+                       <img src="{{ asset('storage/' . $a->imagen) }}" alt="Foto">
                     @else
                         <span class="text-muted fst-italic">Sin foto</span>
                     @endif
@@ -81,11 +111,9 @@
                 </td>
 
                 <td>
-                  <button type="button" class="btn-edit" data-id="{{ $a->id_atleta }}">
+                     <button type="button" class="btn-edit" data-id="{{ $a->id_atleta }}">
                    <i class="bi bi-pencil-square"></i>
                     </button>
-
-
                     <form class="form-eliminar d-inline" action="{{ route('registro-atletas.destroy', $a->id_atleta) }}" method="POST">
                         @csrf
                         @method('DELETE')
@@ -103,11 +131,22 @@
     </tbody>
 </table>
 
+    {{-- Paginación --}}
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+    <p class="text-muted small mb-0" aria-live="polite">
+        Mostrando {{ $atletas->firstItem() ?? 0 }}–{{ $atletas->lastItem() ?? 0 }} de {{ $atletas->total() }} atletas
+    </p>
+    <br>
+    <nav aria-label="Paginación de atletas">
+        {{ $atletas->withQueryString()->links('pagination::bootstrap-5') }}
+    </nav>
+</div>
+
 {{-- Modal Crear --}}
 <div class="modal fade" id="modalCrear" tabindex="-1" aria-labelledby="modalCrearLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form id="formCrear" method="POST" action="{{ route('registro-atletas.store') }}" enctype="multipart/form-data">
+                <form id="formCrear" method="POST" action="{{ route('atletas.store') }}" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="id_academia" value="{{ $academia->id_academia }}">
                     <div class="modal-header">
@@ -258,6 +297,9 @@
   </div>
 </div>
 
+
+
+
 <script>
 const modalEditar = new bootstrap.Modal(document.getElementById('modalEditar'));
 
@@ -331,7 +373,8 @@ document.querySelector('#tabla-atletas').addEventListener('click', function (e) 
         Swal.close();
         const data = json && json.atleta ? json.atleta : json;
 
-        document.getElementById('formEditar').action = '{{ url("registro-atletas.edit") }}/' + id;
+// CAMBIA ESTA LÍNEA:
+   document.getElementById('formEditar').action = '{{ route("registro-atletas.update", ":id") }}'.replace(':id', id);
 
         document.getElementById('e_tipo_identificacion').value = data.tipo_identificacion || '';
         document.getElementById('e_identificacion').value = data.identificacion || '';
@@ -405,6 +448,8 @@ document.getElementById('formEditar').addEventListener('submit', async function 
     }
 });
 
+
+
 // ELIMINAR ATLETA
 document.querySelector('#tabla-atletas').addEventListener('submit', function (e) {
     const form = e.target.closest('.form-eliminar');
@@ -449,7 +494,9 @@ document.querySelector('#tabla-atletas').addEventListener('submit', function (e)
         }).catch(() => Swal.fire('Error', 'Error al eliminar atleta.', 'error'));
     });
 });
+
 </script>
+
 
 <style>
     /* Estilo general de la tabla */
@@ -556,8 +603,5 @@ document.querySelector('#tabla-atletas').addEventListener('submit', function (e)
     background-color: #c82333;
 }
 
-
 </style>
 @endsection
-
-

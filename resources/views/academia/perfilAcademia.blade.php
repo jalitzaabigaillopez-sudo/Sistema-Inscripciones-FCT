@@ -83,20 +83,28 @@
                             <div class="col-12 text-center">
                                 <label class="form-label fw-bold text-muted small mb-2">Logo de la Academia</label>
                                 <div class="d-flex flex-column align-items-center">
-                                    <img src="{{ $academia->imagen ? asset('storage/' . $academia->imagen) : asset('images/default-academia.png') }}"
-                                        alt="Logo de la Academia" class="rounded-circle shadow-sm border"
-                                        style="width: 130px; height: 130px; object-fit: cover;">
+                                    @if ($academia->imagen)
+                                        <img src="{{ asset('storage/' . $academia->imagen) }}" alt="Logo de la Academia"
+                                            class="rounded-circle shadow-sm border"
+                                            style="width: 130px; height: 130px; object-fit: cover;">
+                                    @else
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm border bg-light"
+                                            style="width: 130px; height: 130px;">
+                                            <i class="bi bi-house text-secondary" style="font-size: 3rem;"></i>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
 
 
             <!-- ================================
-                    MODAL DE EDICIÓN DE ACADEMIA
-                ================================ -->
+                        MODAL DE EDICIÓN DE ACADEMIA
+                    ================================ -->
             <div class="modal fade" id="modalEditarAcademia" tabindex="-1" aria-labelledby="modalEditarAcademiaLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">

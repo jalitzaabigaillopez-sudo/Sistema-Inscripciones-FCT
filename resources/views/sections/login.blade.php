@@ -1,4 +1,4 @@
-@if(session('alerta'))
+@if (session('alerta'))
     <div class="alert alert-warning text-center">
         {{ session('alerta') }}
     </div>
@@ -21,7 +21,7 @@
         .header-image {
             background-color: #000080;
             height: 110px;
-            background-image: url('https://img.olympicchannel.com/images/image/private/t_16-9_1920/f_auto/primary/lo6iwcfrrjtw8kqcff1b');
+            background-image: url('{{ asset('images/login.webp') }}');
             background-size: cover;
             background-position: center;
             opacity: 0.7;
@@ -65,6 +65,8 @@
         .card {
             border-radius: 1rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            min-height: 450px;
+            height: auto;
         }
 
         .card:hover {
@@ -84,7 +86,7 @@
     <div class="container p-5">
         <div class="row centered-row">
             <div class="col-md-6 login-container me-3">
-                <div class="card" style="height: 450px;">
+                <div class="card">
                     <div class="card-body shadow-lg">
                         <h2 class="text-center">Iniciar Sesión</h2>
                         <p class="text-center">Bienvenido al Panel Administrativo de FCT</p>
@@ -148,13 +150,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             /* ============================================================
                👁️ VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
             ============================================================ */
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -173,7 +175,7 @@
             ============================================================ */
             const form = document.querySelector('#loginForm');
 
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 const formData = new FormData(form);
@@ -187,12 +189,12 @@
                 });
 
                 fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                    },
-                    body: formData
-                })
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        },
+                        body: formData
+                    })
                     .then(async response => {
                         Swal.close();
 

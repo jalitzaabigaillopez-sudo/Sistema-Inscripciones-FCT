@@ -324,6 +324,10 @@
         .breadcrumb-item+.breadcrumb-item::before {
             color: var(--text-light);
         }
+
+        #userDropdown::after {
+            border-top-color: #fff !important;
+        }
     </style>
 </head>
 
@@ -342,8 +346,7 @@
 
         <a href="{{ route('perfil') }}" onclick="handleSidebarClick(event)"><i class="bi bi-person-circle me-2"></i>
             Administración de Perfil</a>
-        <a href="{{ route('mostrar.atletas.index') }}"><i
-                class="bi bi-people me-2"></i>
+        <a href="{{ route('mostrar.atletas.index') }}"><i class="bi bi-people me-2"></i>
             Gestión de atletas</a>
 
 
@@ -377,7 +380,8 @@
                 {{-- <a href="#"><i class="bi bi-bar-chart-line me-2"></i> Avance de eventos</a>
                 <a href="#"><i class="bi bi-people me-2"></i> Estadística atletas</a>
                 <a href="#"><i class="bi bi-calendar-check me-2"></i> Estadística eventos</a> --}}
-                <a href="{{ route('reportes.generales.academia') }}"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes generales</a>
+                <a href="{{ route('reportes.generales.academia') }}"><i class="bi bi-file-earmark-bar-graph me-2"></i>
+                    Reportes generales</a>
 
             </div>
         </div>
@@ -421,31 +425,32 @@
                     <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent;">
 
-                        {{--  Si es administrador, logo de la federación --}}
+                        {{-- Si es administrador, logo de la federación --}}
                         @if ($usuario && $usuario->rol === 'administrador')
                             <img src="{{ asset('images/logo_federacion.png') }}" alt="Logo Federación"
                                 class="rounded-circle shadow-sm border"
                                 style="width: 38px; height: 38px; object-fit: cover;">
 
-                            {{-- Si es academia, foto de la academia o default --}}
+                            {{-- Si es academia, muestra logo o ícono blanco si no hay imagen --}}
                         @elseif ($usuario && $usuario->rol === 'academia')
-                            @php
-                                $imagenAcademia =
-                                    $usuario->academia && $usuario->academia->imagen
-                                        ? asset('storage/' . $usuario->academia->imagen)
-                                        : asset('images/default-academia.png');
-                            @endphp
-                            <img src="{{ $imagenAcademia }}" alt="Logo Academia"
-                                class="rounded-circle shadow-sm border"
-                                style="width: 38px; height: 38px; object-fit: cover;">
+                            @if ($usuario->academia && $usuario->academia->imagen)
+                                <img src="{{ asset('storage/' . $usuario->academia->imagen) }}" alt="Logo Academia"
+                                    class="rounded-circle shadow-sm border"
+                                    style="width: 38px; height: 38px; object-fit: cover;">
+                            @else
+                                <div class="rounded-circle d-flex align-items-center justify-content-center border shadow-sm"
+                                    style="width: 38px; height: 38px; background-color: #222A59;">
+                                    <i class="bi bi-house" style="color: #fff; font-size: 1.3rem;"></i>
+                                </div>
+                            @endif
 
-                            {{-- 👤 Cualquier otro rol: icono genérico --}}
+                            {{-- Cualquier otro rol: ícono genérico --}}
                         @else
                             <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.7rem;"></i>
                         @endif
                     </button>
 
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end bg-white" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
                         <li>
                             <form action="{{ route('logout.process') }}" method="POST">
@@ -455,6 +460,7 @@
                         </li>
                     </ul>
                 </div>
+
             </div>
 
         </div>

@@ -47,7 +47,10 @@
     <div class="container py-5 flex-grow">
         <div class="custom-card p-4">
             <div class="text-center mb-4">
-                <img src="{{ asset('images/LogoFCT_transpa.png') }}" alt="Logo FCT" style="max-height: 60px;">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ asset('images/LogoFCT_transpa.png') }}" alt="Logo FCT" class="img-fluid"
+                        style="max-height: 60px;">
+                </div>
                 <h2 class="text-2xl font-bold text-gray-800 mt-3">Cambiar Contraseña</h2>
                 <p class="text-gray-600">Ingrese su contraseña temporal y cree una nueva contraseña segura.</p>
             </div>
@@ -89,14 +92,14 @@
 
                 <div class="mb-3">
                     <label for="password_confirmation" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
-                     <div class="input-group input-group-sm">
-                    <input type="password" class="form-control" name="password_confirmation" id="password_confirmation"
-                        required minlength="8" autocomplete="new-password">
-                          <button class="btn btn-outline-primary toggle-password" type="button"
-                                                data-target="#password_confirmation">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                        </div>
+                    <div class="input-group input-group-sm">
+                        <input type="password" class="form-control" name="password_confirmation"
+                            id="password_confirmation" required minlength="8" autocomplete="new-password">
+                        <button class="btn btn-outline-primary toggle-password" type="button"
+                            data-target="#password_confirmation">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="d-grid gap-2 d-md-block text-center">
@@ -117,25 +120,14 @@
 
 
     <script>
-        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('password_confirmation').value;
-            if (password !== confirm) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Las contraseñas no coinciden',
-                    text: 'Por favor, asegúrese de que ambas contraseñas sean iguales.'
-                });
-            }
-        });
-
-        // VISUALIZAR CONTRA CON OJO
         document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar / ocultar contraseña
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const input = document.querySelector(this.dataset.target);
+                    // Busca el input solo dentro del mismo input-group
+                    const input = this.closest('.input-group').querySelector('input');
                     const icon = this.querySelector('i');
+
                     if (input.type === 'password') {
                         input.type = 'text';
                         icon.classList.replace('bi-eye', 'bi-eye-slash');
@@ -145,8 +137,23 @@
                     }
                 });
             });
+
+            // Verificar que las contraseñas coincidan
+            document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('password_confirmation').value;
+                if (password !== confirm) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Las contraseñas no coinciden',
+                        text: 'Por favor, asegúrese de que ambas contraseñas sean iguales.'
+                    });
+                }
+            });
         });
     </script>
+
 </body>
 
 </html>
