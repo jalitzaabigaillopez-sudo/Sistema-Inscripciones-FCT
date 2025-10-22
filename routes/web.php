@@ -151,11 +151,12 @@ Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.m
 // Rutas para registro de atletas (similar a atletas)
 
 
-Route::get('/mostrar-atletas', [AtletasController::class, 'indexAtletasAcademia'])->name('mostrar.atletas.index');
-Route::post('/registro-atletas', [AtletasController::class, 'storeAcademia'])->name('registro-atletas.store');
-Route::get('/registro-atletas/{id}/edit', [AtletasController::class, 'editAcademia'])->name('registro-atletas.edit');
-Route::put('/registro-atletas/{id}', [AtletasController::class, 'updateAcademia'])->name('registro-atletas.update');
-Route::delete('/registro-atletas/{id}', [AtletasController::class, 'destroyAcademia'])->name('registro-atletas.destroy');
+// Route::get('/mostrarAtletas', [AtletasController::class, 'indexAcademia'])->name('mostrar.atletas.index');
+// Route::get('/indexAtletas', [AtletasController::class, 'indexAtletas'])->name('indexAtletas');
+// Route::post('/registroAtletas', [AtletasController::class, 'storeAtletas'])->name('storeAtletas');
+// Route::get('/registro-atletas/{id}/edit', [AtletasController::class, 'editAcademia'])->name('registro-atletas.edit');
+// Route::put('/registro-atletas/{id}', [AtletasController::class, 'updateAcademia'])->name('registro-atletas.update');
+// Route::delete('/registro-atletas/{id}', [AtletasController::class, 'destroyAcademia'])->name('registro-atletas.destroy');
 
 
 //preregistro academia
