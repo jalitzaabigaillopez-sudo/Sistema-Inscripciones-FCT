@@ -165,14 +165,14 @@ class AcademiaController extends Controller
             $usuario->save();
 
             // ===============================
-            // 🖼️ PROCESAR IMAGEN (si se sube)
+            // PROCESAR IMAGEN (si se sube)
             // ===============================
             $rutaImagen = null;
             if ($request->hasFile('imagen')) {
                 try {
-                    $rutaImagen = $request->file('imagen')->store('perfiles', 'public');
+                    $rutaImagen = $request->file('imagen')->store('academias', 'public');
                 } catch (\Exception $e) {
-                    Log::error('❌ Error al guardar imagen de academia: ' . $e->getMessage());
+                    Log::error(' Error al guardar imagen de academia: ' . $e->getMessage());
                 }
             }
 
@@ -216,13 +216,13 @@ class AcademiaController extends Controller
             }
             throw $e;
         } catch (\Illuminate\Database\QueryException $e) {
-            Log::error('❌ Error SQL al crear academia: ' . $e->getMessage());
+            Log::error(' Error SQL al crear academia: ' . $e->getMessage());
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'error' => 'El correo ya está registrado o hubo un error al guardar los datos.'], 500);
             }
             return redirect()->back()->with('error', 'El correo ya está registrado o hubo un error al guardar los datos.');
         } catch (\Exception $e) {
-            Log::error('❌ Error general al registrar academia: ' . $e->getMessage());
+            Log::error(' Error general al registrar academia: ' . $e->getMessage());
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'error' => 'Error interno del servidor.'], 500);
             }
@@ -418,7 +418,7 @@ class AcademiaController extends Controller
                     }
                 }
                 try {
-                    $path = $request->file('imagen')->store('perfiles', 'public');
+                    $path = $request->file('imagen')->store('academias', 'public');
                     $academia->imagen = $path;
                     Log::info('Nueva imagen guardada: ' . $path);
                 } catch (\Exception $e) {
