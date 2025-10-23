@@ -395,6 +395,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // Mostrar el modal
                     $('#modalEditarEvento').modal('show');
+
+                    // Bloquear fechas según estado del evento
+                    manejarBloqueoDeFechas(evento);
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -463,6 +466,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
     $('.editModalidadCheckbox').prop('checked', false);
+
+    function manejarBloqueoDeFechas(evento) {
+        const hoy = new Date();
+        const fechaInicio = new Date(evento.fecha_inicio);
+        const fechaFin = new Date(evento.fecha_final);
+
+        const inputInicioIns = document.getElementById("editFechaInicioInscripcion");
+        const inputFinIns = document.getElementById("editFechaFinInscripcion");
+        const inputInicioEvt = document.getElementById("editFechaInicio");
+        const inputFinEvt = document.getElementById("editFechaFin");
+
+        const labelIns = document.querySelector('h6.text-secondary.fw-bold:nth-of-type(2)');
+        const labelEvt = document.querySelector('h6.text-secondary.fw-bold:nth-of-type(3)');
+
+        // Reset por si venía desbloqueado antes
+        [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.removeAttribute('disabled'));
+
+        // Lógica de bloqueo según las fechas
+        if (fechaFin < hoy) {
+            // Evento finalizado
+            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
+            mostrarAvisoBloqueo("Este evento ya finalizó. No se pueden modificar las fechas ni inscripciones.");
+        } else if (fechaInicio <= hoy && fechaFin >= hoy) {
+            // Evento en curso
+            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
+            mostrarAvisoBloqueo("El evento está en curso. No se pueden modificar las fechas.");
+        } else {
+            // Evento futuro (puede editar todo)
+            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.removeAttribute('disabled'));
+        }
+    }
+
+    function mostrarAvisoBloqueo(mensaje) {
+        Swal.fire({
+            title: 'Edición restringida',
+            text: mensaje,
+            icon: 'info',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Entendido'
+        });
+    }
 
 });
 

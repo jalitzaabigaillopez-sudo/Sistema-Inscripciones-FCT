@@ -28,6 +28,7 @@
                         style="width: 100% !important;">
                         <thead class="table-light small">
                             <tr>
+                                <th class="text-center">Foto</th>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Descripción</th>
                                 <th class="text-center">Tipo evento</th>
@@ -424,6 +425,29 @@
             $(document).ready(function() {
                 // Configuración de columnas para la tabla de Eventos
                 let columnsConfig = [{
+                        data: "imagen",
+                        title: "Imagen",
+                        orderable: false,
+                        render: function(data) {
+                            if (data) {
+                                return `
+                                    <img src="${data}" 
+                                        alt="Foto" 
+                                        class="rounded-circle border shadow-sm" 
+                                        width="55" height="55" 
+                                        style="object-fit: cover;">
+                                `;
+                            } else {
+                                return `
+                                        <div class="d-flex align-items-center justify-content-center rounded-circle border bg-light shadow-sm"
+                                            style="width:55px; height:55px; color:#6c757d;">
+                                            <i class="bi bi-calendar-event" style="font-size:1.5rem;"></i>
+                                        </div>
+                                    `;
+                            }
+                        }
+                    },
+                    {
                         data: "nombre",
                         title: "Nombre del Evento"
                     },

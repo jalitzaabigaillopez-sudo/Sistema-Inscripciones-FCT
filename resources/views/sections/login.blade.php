@@ -153,7 +153,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             /* ============================================================
-               👁️ VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
+                VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
             ============================================================ */
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -215,7 +215,8 @@
                                     icon: 'success',
                                     title: '¡Bienvenido!',
                                     text: data.message,
-                                    confirmButtonText: 'Entrar'
+                                    confirmButtonText: 'Entrar',
+                                    confirmButtonColor: '#3085d6'
                                 }).then(() => {
                                     window.location.href = data.redirect;
                                 });
@@ -226,7 +227,8 @@
                                     icon: 'info',
                                     title: 'Contraseña vencida',
                                     text: data.message,
-                                    confirmButtonText: 'Actualizar ahora'
+                                    confirmButtonText: 'Actualizar ahora',
+                                    confirmButtonColor: '#3085d6'
                                 }).then(() => {
                                     window.location.href = data.redirect;
                                 });
@@ -237,7 +239,8 @@
                                     icon: 'error',
                                     title: 'Error',
                                     text: data.error,
-                                    confirmButtonText: 'Aceptar'
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#3085d6'
                                 });
                                 break;
 
