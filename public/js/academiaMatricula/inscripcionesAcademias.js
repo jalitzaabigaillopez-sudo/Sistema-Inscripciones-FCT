@@ -2027,17 +2027,13 @@ $(document).ready(function () {
 
     $(document).on("click", ".bEditar2", function () {//@audit bEditar2
         let $fila = $(this).closest("tr");
-        let tr_code = $fila.attr("data-code"); // más seguro que .data()
+        let tr_code = $fila.attr("data-code");
         let grupo = $fila.find("td:eq(7)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
-        let submodalidad = $fila.find("td:eq(5)").text().trim();
         let cantidadMiembrosActuales = 0;
 
-
         if (btn_edit_code != tr_code) {
-
             atletasModificar = [];
-
             editMode = true;
             $("#panelRegistro").hide();
 
@@ -2045,103 +2041,86 @@ $(document).ready(function () {
             $("#contenedor .baseCard").remove();
             $("#contenedor .clonEdit").remove();
 
-            if (!grupo.includes("#")) {// ATLETA INDIVIDUAL 
+            if (!grupo.includes("#")) { // ATLETA INDIVIDUAL
+                edicionIndividual_modo_ = true;
 
                 for (let item of listaAtletas) {
-
                     if (item.tr_code === tr_code) {
-                        let datos = {
-                            id_atleta: item.id_atleta,
-                            id_academia: item.id_academia,
-                            id_evento: item.id_evento,
-                            id_modalidad: item.id_modalidad,
-                            id_subModalidad: item.id_subModalidad,
-                            id_categoria: item.id_categoria,
-                            grupo: item.grupo,
-                            rol: item.rol
-                        }
-                        atletasModificar.push(datos);
+
+                        let atleta = item;
+                        atletasModificar.push(atleta);
 
                         let panelOriginal = $("#panelRegistro");
                         let contenedor = $("#contenedor");
 
-                        let atleta = item;
-
-                        // Verificar si Select2 ya está inicializado antes de destruirlo                     
+                        // Destruir Select2 si existe
                         const select = panelOriginal.find('.atletas-select');
-                        if (select.data('select2')) {
-                            select.select2('destroy');
-                        }
+                        if (select.data('select2')) select.select2('destroy');
 
-                        // Crear clon
+                        // Clonar panel
                         let nuevaCard = panelOriginal.clone();
-
-                        // Quitar id duplicado y marcarlo como clon
                         nuevaCard.removeAttr("id").removeClass("baseCard").addClass("clonEdit").attr({
                             "data-code": atleta.tr_code,
                             "data-grupo": atleta.grupo
                         });
 
-                        // 🔹 Copiar selects del padre .prop("disabled", true)
-                        // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
+                        // Copiar contenido de selects
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html());
                         nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
                         nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
-                        if (atleta.rol === "atleta") {
+                        // Inicializar Select2
+                        nuevaCard.find('.atletas-select').select2({ placeholder: "Selecciona un atleta", width: '100%' });
+                        // Seleccionar atleta correcto
+                        let optionAtleta = nuevaCard.find(".atletas-select option").filter(function () {
+                            return $(this).data("id") == atleta.id_atleta;
+                        });
+                        if (optionAtleta.length) nuevaCard.find(".atletas-select").val(optionAtleta.val()).trigger("change");
 
-                            $.ajax({
-                                url: '/obtenerSubModalidades',
-                                method: 'POST',
-                                dataType: 'json',
-                                data: {
-                                    id_modalidad: atleta.id_modalidad,
-                                    _token: $('meta[name="csrf-token"]').attr('content')
-                                },
-                                success: function (res) {
-                                    let submodalidadSelect = nuevaCard.find(".submodalidades-select");
-                                    submodalidadSelect.empty();
-                                    submodalidadSelect.append('<option value="">Seleccione una submodalidad</option>');
 
-                                    res.forEach(function (item) {
-                                        submodalidadSelect.append(
-                                            '<option value="' + item.id_subModalidad + '" ' +
-                                            'data-nombre="' + item.nombre + '" data-cantidad-atletas="' + item.cantidad_atletas + '">' + item.nombre + '</option>'
-                                        );
-                                    });
+                        // Seleccionar rol y modalidad
+                        nuevaCard.find(".rol-select option").filter(function () {
+                            return $(this).val() == atleta.rol;
+                        }).prop("selected", true);
+                        nuevaCard.find(".modalidades-select option").filter(function () {
+                            return $(this).data("nombre") == atleta.modalidad;
+                        }).prop("selected", true);
+                        // Llenar submodalidades y seleccionar la correcta
+                        let selectSub = nuevaCard.find(".submodalidades-select");
+                        $.ajax({
+                            url: '/obtenerSubModalidades',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: {
+                                id_modalidad: atleta.id_modalidad,
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (res) {
+                                selectSub.empty();
+                                selectSub.append('<option value="">Seleccione una submodalidad</option>');
 
-                                    // 🔹 Seleccionar automáticamente si tienes el nombre guardado
-                                    var nombreSub = submodalidad
-                                    if (nombreSub) {
-                                        let opcion = submodalidadSelect.find('option').filter(function () {
-                                            return $(this).data('nombre') == nombreSub;
-                                        });
+                                res.forEach(function (item) {
+                                    selectSub.append(
+                                        '<option value="' + item.id_subModalidad + '" ' +
+                                        'data-nombre="' + item.nombre + '" ' +
+                                        'data-cantidad-atletas="' + item.cantidad_atletas + '" ' +
+                                        'data-sexo-mixto="' + item.sexo_mixto + '">' + item.nombre + '</option>'
+                                    );
+                                });
 
-                                        if (opcion.length) {
-                                            opcion.prop('selected', true);
-                                            submodalidadSelect.val(opcion.val()).trigger("change");
-                                        }
-                                    }
-
-                                    /*
-                                    // 🔹 Eliminar paneles clones
-                                    if ($(this).closest('#panelRegistro').length) {
-                                        $("#contenedor .baseCard").remove();
-                                        $("#contenedor .clonEdit").remove();
-                                    }
-                                        */
-                                },
-                                error: function () {
-                                    mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al cargar las submodalidades", "Aviso", "⚠️");
-                                }
-                            });
-                        }
-
-                        /**
-                         * PATCH 
-                         * Las categorias no se estaban llenando posiblemente por tema de sincronizacion 
-                         */
+                                // Selección automática
+                                let opcionSub = selectSub.find('option').filter(function () {
+                                    return $(this).data('nombre') == atleta.submodalidad;
+                                });
+                                if (opcionSub.length) selectSub.val(opcionSub.val()).trigger('change');
+                            },
+                            error: function () {
+                                mostrarAlerta("Error al cargar submodalidades.", "Aviso", "⚠️");
+                            }
+                        });
+                        // Llenar categorías
+                        let selectCat = nuevaCard.find('.categorias-select');
                         $.ajax({
                             url: '/obtenerCategorias',
                             method: 'POST',
@@ -2152,84 +2131,49 @@ $(document).ready(function () {
                                 _token: $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function (res) {
-                                var select = nuevaCard.find('.categorias-select');
-                                select.empty();
-
-                                select.append('<option value="">Seleccione una categoria</option>');
-
+                                selectCat.empty();
+                                selectCat.append('<option value="">Seleccione una categoria</option>');
                                 res.forEach(function (item) {
-                                    select.append('<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' + 'Peso minimo: ' + item.peso_min + ' - Peso maximo: ' + item.peso_max + '</option>');
+                                    selectCat.append(
+                                        '<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' +
+                                        'Peso mínimo: ' + item.peso_min + ' - Peso máximo: ' + item.peso_max +
+                                        '</option>'
+                                    );
                                 });
                             },
-                            error: function (xhr, status, error) {
-                                mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al cargar las categorias.", "Aviso", "⚠️");
+                            error: function () {
+                                mostrarAlerta("Error al cargar categorías.", "Aviso", "⚠️");
                             }
                         });
 
-                        // 🔹 Limpiar inputs de texto
-                        // nuevaCard.find("input").val("");
-
-                        var newSelect = nuevaCard.find('.atletas-select');
-
-                        // Inicializar Select2
-                        newSelect.select2({
-                            placeholder: "Selecciona un atleta",
-                            width: '100%'
-                        });
-
-                        // Buscar la opción con el data-id correcto
-                        var option = nuevaCard.find(".atletas-select option").filter(function () {
-                            return $(this).data("id") == atleta.id_atleta;
-                        });
-
-                        // Si existe, seleccionarla por su value
-                        if (option.length) {
-                            var value = option.val(); // obtener el value real del <option>
-                            nuevaCard.find(".atletas-select").val(value).trigger("change");
-                        }
-
-                        nuevaCard.find(".rol-select option").filter(function () {
-                            return $(this).val() == atleta.rol;
-                        }).prop("selected", true);
-                        nuevaCard.find(".modalidades-select option").filter(function () {
-                            return $(this).data("nombre") == atleta.modalidad;
-                        }).prop("selected", true);
-
+                        // Rellenar datos del atleta
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
 
+                        // Mostrar clon
                         nuevaCard.show();
                         contenedor.append(nuevaCard);
                     }
                 }
 
-                // Ocultar campos segun el rol
-                if (trRol === 'entrenador' || trRol === 'asistente') {
-                    // Ocultar los elementos específicos dentro de los clones
-                    $('.clonEdit').each(function () {
-                        $(this).find('.modalidades-select').hide();
-                        $(this).find('.submodalidades-select').hide();
-                        $(this).find('.categorias-select').hide();
-                        $(this).find('#pesoInput').hide();
-                    });
-                } else {
-                    // Mostrar de nuevo si no es rol especial
-                    $('.clonEdit').each(function () {
-                        $(this).find('.modalidades-select').show();
-                        $(this).find('.submodalidades-select').show();
-                        $(this).find('.categorias-select').show();
-                        $(this).find('#pesoInput').show();
-                    });
-                }
+                // Ajustar visibilidad según rol
+                $('.clonEdit').each(function () {
+                    if (trRol === 'entrenador' || trRol === 'asistente') {
+                        $(this).find('.modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
+                    } else {
+                        $(this).find('.modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').show();
+                    }
+                });
+
 
             } else { // ATLETAS EN GRUPO 
                 let panelOriginal = $("#panelRegistro");
                 let contenedor = $("#contenedor");
                 let atletaReferencia;
+                edicionGrupal_modo_ = true;
 
                 for (let item of gruposAtletas) {
-
                     if (item.grupo === grupo) {
                         cantidadMiembrosActuales++;
 
@@ -2242,147 +2186,102 @@ $(document).ready(function () {
                             id_categoria: item.id_categoria,
                             grupo: item.grupo,
                             rol: item.rol
-                        }
+                        };
                         atletasModificar.push(datos);
 
-                        // Buscar atleta por id
-                        let atleta = item;
+                        // Buscar atleta por tr_code
+                        let atleta = gruposAtletas.find(a => a.tr_code == item.tr_code);
                         atletaReferencia = atleta;
 
-                        // Verificar si Select2 ya está inicializado antes de destruirlo                     
+                        // Destruir Select2 si existe
                         const select = panelOriginal.find('.atletas-select');
-                        if (select.data('select2')) {
-                            select.select2('destroy');
-                        }
+                        if (select.data('select2')) select.select2('destroy');
 
-                        // Crear clon
+                        // Clonar panel
                         let nuevaCard = panelOriginal.clone();
-
-                        // Quitar id duplicado y marcarlo como clon
                         nuevaCard.removeAttr("id").removeClass("baseCard").addClass("clonEdit").attr({
                             "data-code": atleta.tr_code,
                             "data-grupo": atleta.grupo
                         });
 
                         // 🔹 Copiar selects del padre
-                        // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
                         let indicator = grupo.slice(-2);
                         if (indicator === "-p") {
                             nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
                             nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
                         } else {
-                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html())
+                            nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html());
                             nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html());
                         }
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
 
-                        /**
-                         * PATCH 
-                         * Seleccionar la submodalidad correspondiente manualmente
-                         */
-                        if (atleta.rol === "atleta") {
+                        // Inicializar Select2
+                        let newSelect = nuevaCard.find('.atletas-select');
+                        newSelect.select2({ placeholder: "Selecciona un atleta", width: '100%' });
 
-                            $.ajax({
-                                url: '/obtenerSubModalidades',
-                                method: 'POST',
-                                dataType: 'json',
-                                data: {
-                                    id_modalidad: atleta.id_modalidad,
-                                    _token: $('meta[name="csrf-token"]').attr('content')
-                                },
-                                success: function (res) {
-                                    let submodalidadSelect = nuevaCard.find(".submodalidades-select");
-                                    submodalidadSelect.empty();
-                                    submodalidadSelect.append('<option value="">Seleccione una submodalidad</option>');
+                        // Seleccionar atleta
+                        let option = nuevaCard.find(".atletas-select option").filter(function () {
+                            return $(this).data("id") == atleta.id_atleta;
+                        });
+                        if (option.length) newSelect.val(option.val()).trigger("change");
 
-                                    res.forEach(function (item) {
-                                        submodalidadSelect.append(
-                                            '<option value="' + item.id_subModalidad + '" ' +
-                                            'data-nombre="' + item.nombre + '" data-cantidad-atletas="' + item.cantidad_atletas + '">' + item.nombre + '</option>'
-                                        );
-                                    });
+                        // Seleccionar rol y modalidad
+                        nuevaCard.find(".rol-select option").filter(function () { return $(this).val() == atleta.rol; }).prop("selected", true);
+                        nuevaCard.find(".modalidades-select option").filter(function () { return $(this).data("nombre") == atleta.modalidad; }).prop("selected", true);
 
-                                    // 🔹 Seleccionar automáticamente si tienes el nombre guardado
-                                    var nombreSub = submodalidad
-                                    if (nombreSub) {
-                                        let opcion = submodalidadSelect.find('option').filter(function () {
-                                            return $(this).data('nombre') == nombreSub;
-                                        });
+                        // 🔹 Cargar submodalidades vía AJAX y seleccionar la correcta
+                        let selectSub = nuevaCard.find('.submodalidades-select');
+                        $.ajax({
+                            url: '/obtenerSubModalidades',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: { id_modalidad: atleta.id_modalidad, _token: $('meta[name="csrf-token"]').attr('content') },
+                            success: function (res) {
+                                selectSub.empty();
+                                selectSub.append('<option value="">Seleccione una submodalidad</option>');
+                                res.forEach(function (item) {
+                                    selectSub.append(
+                                        '<option value="' + item.id_subModalidad + '" ' +
+                                        'data-nombre="' + item.nombre + '" ' +
+                                        'data-cantidad-atletas="' + item.cantidad_atletas + '" ' +
+                                        'data-sexo-mixto="' + item.sexo_mixto + '">' + item.nombre + '</option>'
+                                    );
+                                });
+                                // Selección automática
+                                let opcionSub = selectSub.find('option').filter(function () { return $(this).data('nombre') == atleta.submodalidad; });
+                                if (opcionSub.length) selectSub.val(opcionSub.val()).trigger('change');
+                            },
+                            error: function () { mostrarAlerta("Error al cargar submodalidades.", "Aviso", "⚠️"); }
+                        });
 
-                                        if (opcion.length) {
-                                            opcion.prop('selected', true);
-                                            submodalidadSelect.val(opcion.val()).trigger("change");
-                                        }
-                                    }
-                                },
-                                error: function () {
-                                    mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al cargar las submodalidades", "Aviso", "⚠️");
-                                }
-                            });
-                        }
-
-                        /**
-                         * PATCH 
-                         * Las categorias no se estaban llenando posiblemente por tema de sincronizacion 
-                         */
+                        // 🔹 Cargar categorías vía AJAX
+                        let selectCat = nuevaCard.find('.categorias-select');
                         $.ajax({
                             url: '/obtenerCategorias',
                             method: 'POST',
                             dataType: 'json',
-                            data: {
-                                id_division: atleta.id_division,
-                                sexo: atleta.sexo,
-                                _token: $('meta[name="csrf-token"]').attr('content')
-                            },
+                            data: { id_division: atleta.id_division, sexo: atleta.sexo, _token: $('meta[name="csrf-token"]').attr('content') },
                             success: function (res) {
-                                var select = nuevaCard.find('.categorias-select');
-                                select.empty();
-
-                                select.append('<option value="">Seleccione una categoria</option>');
-
+                                selectCat.empty();
+                                selectCat.append('<option value="">Seleccione una categoria</option>');
                                 res.forEach(function (item) {
-                                    select.append('<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' + 'Peso minimo: ' + item.peso_min + ' - Peso maximo: ' + item.peso_max + '</option>');
+                                    selectCat.append(
+                                        '<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' +
+                                        'Peso mínimo: ' + item.peso_min + ' - Peso máximo: ' + item.peso_max +
+                                        '</option>'
+                                    );
                                 });
                             },
-                            error: function (xhr, status, error) {
-                                mostrarAlerta("Lo sentimos, al parecer a ocurrido un error al cargar las categorias.", "Aviso", "⚠️");
-                            }
+                            error: function () { mostrarAlerta("Error al cargar categorías.", "Aviso", "⚠️"); }
                         });
 
-                        var newSelect = nuevaCard.find('.atletas-select');
-
-                        // Inicializar Select2
-                        newSelect.select2({
-                            placeholder: "Selecciona un atleta",
-                            width: '100%'
-                        });
-
-                        // Buscar la opción con el data-id correcto
-                        var option = nuevaCard.find(".atletas-select option").filter(function () {
-                            return $(this).data("id") == atleta.id_atleta;
-                        });
-
-                        // Si existe, seleccionarla por su value
-                        if (option.length) {
-                            var value = option.val(); // obtener el value real del <option>
-                            nuevaCard.find(".atletas-select").val(value).trigger("change");
-                        }
-                        nuevaCard.find(".rol-select option").filter(function () {
-                            return $(this).val() == atleta.rol;
-                        }).prop("selected", true);
-                        nuevaCard.find(".modalidades-select option").filter(function () {
-                            return $(this).data("nombre") == atleta.modalidad;
-                        }).prop("selected", true);
-                        nuevaCard.find(".submodalidades-select option").filter(function () {
-                            return $(this).data("nombre") == atleta.submodalidad;
-                        }).prop("selected", true);
-
+                        // Rellenar datos del atleta
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
 
-                        // Mostrar clon aunque el original esté oculto
+                        // Mostrar clon
                         nuevaCard.show();
                         contenedor.append(nuevaCard);
                     }
