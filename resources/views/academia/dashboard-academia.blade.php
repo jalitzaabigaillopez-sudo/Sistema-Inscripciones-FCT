@@ -41,8 +41,6 @@
           <div class="d-flex justify-content-center align-items-center mb-2">
             <i class="bi bi-person-fill fs-2 text-white me-2"></i>
             <span class="fs-1 fw-bold text-white">{{ $totalAtletas ?? 0 }}</span>
-          
-
           </div>
           <small class="text-light">Actualizado hoy</small>
         </div>
@@ -65,89 +63,113 @@
         </div>
       </div>
     </div>
-  </div>
 
   {{-- Información de la academia --}}
-  <div class="row mb-4 g-3">
-    <div class="col-12 col-lg-6">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-        <div class="card-header bg-success text-white fw-semibold">
-          <i class="bi bi-info-circle-fill me-2"></i> Información de la Academia
-        </div>
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-building-check fs-1 text-success me-3"></i>
-            <div>
-              <h5 class="fw-bold mb-0">{{ $academia->nombre ?? 'Academia Desconocida' }}</h5>
-              @if(!empty($academia->direccion))
-              <small class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i>{{ $academia->direccion }}</small>
-              @else
-              <small class="text-muted">Ubicación no registrada</small>
-              @endif
-            </div>
-          </div>
-            <ul class="list-unstyled mb-0">
-            <li class="mb-2">
-      <i class="bi bi-person-badge-fill me-2 text-primary"></i>
-      <strong>Profesor Encargado:</strong> {{ $academia->profesor_encargado ?? 'No asignado' }}
-    </li>
-            <li class="mb-2">
-              <i class="bi bi-envelope-fill me-2 text-primary"></i>
-              <strong>Correo:</strong> {{ $academia->correo ?? 'N/A' }}
-            </li>
-            <li>
-              <i class="bi bi-telephone-fill me-2 text-primary"></i>
-              <strong>Teléfono:</strong> {{ $academia->telefono ?? 'N/A' }}
-            </li>
-            </ul>
-        </div>
+ <div class="row mb-4 g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm rounded-3 h-100">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-info-circle-fill me-2"></i> Información de la Academia
       </div>
-    </div>
-
-    {{-- Próximos eventos --}}
-    <div class="col-12 col-lg-6">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-        <div class="card-header bg-primary text-white fw-semibold">
-          <i class="bi bi-calendar-event-fill me-2"></i> Próximos Eventos
-        </div>
-        <div class="card-body">
-          @if(isset($proximosEventos) && count($proximosEventos) > 0)
-            <table class="table table-sm align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($proximosEventos as $evento)
-                  <tr>
-                    <td>{{ $evento->nombre }}</td>
-                    <td>{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</td>
-                    <td>
-                      <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">
-                        {{ $evento->estado }}
-                      </span>
-                    </td>
-                    <td>
-                      <a href="{{ route('inscripcion.academia') }}" class="btn btn-sm btn-primary">
-                      Inscribir
-                    </a>
-                    </td>
-                  </tr>
-                @endforeach
-              </tbody>
-            </table>
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          @if(!empty($academia->imagen))
+            <img src="{{ asset('storage/' . $academia->imagen) }}"
+                 alt="Logo de {{ $academia->nombre }}"
+                 class="rounded-circle me-3"
+                 style="width: 64px; height: 64px; object-fit: cover;">
           @else
-            <p class="text-muted mb-0">No hay próximos eventos registrados.</p>
+            <i class="bi bi-building-check fs-1 text-success me-3"></i>
           @endif
+          <div>
+            <h5 class="fw-bold mb-0">{{ $academia->nombre ?? 'Academia Desconocida' }}</h5>
+            @if(!empty(trim($academia->direccion)))
+              <small class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i>{{ $academia->direccion }}</small>
+            @else
+              <small class="text-muted">Ubicación no registrada</small>
+            @endif
+          </div>
         </div>
+
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <i class="bi bi-person-badge-fill me-2 text-primary"></i>
+            <strong>Profesor Encargado:</strong> {{ $academia->profesor_encargado ?? 'No asignado' }}
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-envelope-fill me-2 text-primary"></i>
+            <strong>Correo:</strong> {{ $academia->correo ?? 'N/A' }}
+          </li>
+          <li>
+            <i class="bi bi-telephone-fill me-2 text-primary"></i>
+            <strong>Teléfono:</strong> {{ $academia->telefono ?? 'N/A' }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
+  {{-- ==================== EVENTOS Y SISTEMA ==================== --}}
+  
+  {{-- Próximos eventos --}}
+ 
+    <!-- Próximos eventos -->
+ <div class="col-12 col-lg-6">
+  <div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header bg-primary text-white fw-semibold">
+      <i class="bi bi-calendar-event-fill me-2"></i> Próximos Eventos
+    </div>
+    <div class="card-body">
+      @if(isset($proximosEventos) && count($proximosEventos) > 0)
+        <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($proximosEventos as $evento)
+              <tr>
+                <td>
+                  @if(!empty($evento->imagen))
+                    <img src="{{ asset('storage/' . $evento->imagen) }}"
+                         alt="Miniatura de {{ $evento->nombre }}"
+                         class="rounded"
+                         style="width: 48px; height: 48px; object-fit: cover;">
+                  @else
+                    <span class="text-muted">Sin imagen</span>
+                  @endif
+                </td>
+                <td>{{ $evento->nombre }}</td>
+                <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }}</td>
+                <td>
+                  <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">
+                    {{ $evento->estado }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{{ route('inscripcion.academia') }}" class="btn btn-sm btn-primary" title="Inscribir a este evento">
+                    <i class="bi bi-pencil-square me-1"></i> Inscribir
+                  </a>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+        </div>
+      @else
+        <p class="text-muted mb-0">No hay próximos eventos registrados.</p>
+      @endif
+    </div>
+  </div>
+</div>
+</div>
+  
   {{-- ==================== GRÁFICOS ==================== --}}
   <div class="row g-4 mt-2">
     <!-- Inscripciones por categoría -->
@@ -157,9 +179,13 @@
           <i class="bi bi-bar-chart-fill me-2"></i> Inscripciones por Categoría de Edad
         </div>
         <div class="card-body">
-          <div class="chart-container" style="position: relative; height:50vh; width:100%;">
-            <canvas id="graficoCategorias"></canvas>
-          </div>
+           @if(empty($inscripciones) || array_sum($inscripciones) === 0)
+    <p class="text-muted">No hay inscripciones registradas por categoría.</p>
+  @else
+    <div class="chart-container" style="position: relative; height:50vh; width:100%;">
+      <canvas id="graficoCategorias"></canvas>
+    </div>
+  @endif
         </div>
       </div>
     </div>
@@ -170,58 +196,18 @@
           <i class="bi bi-pie-chart-fill me-2"></i> Distribución por Grado / Cinta
         </div>
         <div class="card-body">
-          <div class="chart-container" style="position: relative; height:50vh; width:100%;">
-            <canvas id="graficoGrados"></canvas>
+          @if(empty($gradosCount) || array_sum($gradosCount) === 0)
+  <p class="text-muted">No hay atletas registrados por grado.</p>
+@else
+  <div class="chart-container" style="position: relative; height:50vh; width:100%;">
+    <canvas id="graficoGrados"></canvas>
+  </div>
+@endif
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{{-- Chart.js responsivo --}}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const ctxCategorias = document.getElementById('graficoCategorias');
-  new Chart(ctxCategorias, {
-    type: 'bar',
-    data: {
-      labels: {!! json_encode($categorias ?? ['Infantil','Cadete','Junior','Adulto','Master']) !!},
-      datasets: [{
-        label: 'Inscripciones',
-        data: {!! json_encode($inscripciones ?? [10,15,8,12,5]) !!},
-        backgroundColor: '#0d6efd'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
-        x: { title: { display: true, text: 'Categorías' } }
-      }
-    }
-  });
-
-  const ctxGrados = document.getElementById('graficoGrados');
-  new Chart(ctxGrados, {
-    type: 'pie',
-    data: {
-      labels: {!! json_encode($grados ?? ($gradosLabels ?? ['Blanca','Amarilla','Verde','Azul','Roja','Negra'])) !!},
-      datasets: [{
-        data: {!! json_encode($gradosCount ?? [5,8,10,7,4,3]) !!},
-        backgroundColor: ['#ffffff','#ffc107','#28a745','#0d6efd','#dc3545','#212529']
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' } }
-    }
-  });
-</script>
-
-
 
 {{-- ==================== SWEETALERT ACADEMIA ==================== --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -270,5 +256,57 @@ document.addEventListener('DOMContentLoaded', () => {
   @endif
 
 });
+</script>
+
+{{-- ==================== GRÁFICOS CON CHART.JS ==================== --}}
+
+<div style="width:100%; height:300px;">
+  <canvas id="graficoGrados"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctxGrados = document.getElementById('graficoGrados');
+  new Chart(ctxGrados, {
+    type: 'doughnut',
+    data: {         
+      labels: {!! json_encode($gradosLabels ?? []) !!},
+      datasets: [{
+        label: 'Atletas por Grado',
+        data: {!! json_encode($gradosCount ?? []) !!},
+        backgroundColor: {!! json_encode($coloresGrados ?? []) !!},
+        borderColor: '#f8f9fa',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } }
+    } 
+  });
+
+  const ctxCategorias = document.getElementById('graficoCategorias');
+  new Chart(ctxCategorias, {
+    type: 'bar',
+    data: {
+      labels: {!! json_encode($categorias ?? ['Infantil','Cadete','Junior','Adulto','Master']) !!},
+      datasets: [{
+        label: 'Inscripciones',
+        data: {!! json_encode($inscripciones ?? [10,15,8,12,5]) !!},
+        backgroundColor: '#0d6efd'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
+        x: { title: { display: true, text: 'Categorías' } }
+      }
+    }
+  });
+
 </script>
 @endsection

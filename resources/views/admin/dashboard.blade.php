@@ -28,6 +28,7 @@
         </div>
       </div>
     </div>
+
     <div class="col-12 col-sm-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#FACC15,#CA8A04);">
         <div class="card-body text-center">
@@ -40,12 +41,12 @@
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#0284C7,#38BDF8);">
-        <div class="card-body text-center">
-          <i class="bi bi-journal-text fs-1 mb-2"></i>
-          <h6 class="fw-semibold">Inscripciones</h6>
-          <h3 class="fw-bold">{{ $inscripcionesCount ?? 0 }}</h3>
-          <small>Datos acumulados</small>
-        </div>
+      <div class="card-body text-center">
+      <i class="bi bi-journal-text fs-1 mb-2"></i>
+      <h6 class="fw-semibold">Inscripciones</h6>
+      <h3 class="fw-bold">{{ $inscripcionesCount ?? 0 }}</h3>
+      <small>Datos acumulados</small>
+      </div>
       </div>
     </div>
   </div>
@@ -80,38 +81,61 @@
   {{-- ==================== EVENTOS Y SISTEMA ==================== --}}
   <div class="row g-4 mb-4">
     <!-- Próximos eventos -->
-    <div class="col-12 col-lg-6">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-        <div class="card-header bg-primary text-white fw-semibold">
-          <i class="bi bi-calendar-event-fill me-2"></i> Próximos Eventos
-        </div>
-        <div class="card-body">
-          @if(isset($proximosEventos) && count($proximosEventos))
-            <table class="table table-sm align-middle">
-              <thead class="table-light"><tr><th>Nombre</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
-              <tbody>
-                @foreach($proximosEventos as $evento)
-                  <tr>
-                    <td>{{ $evento->nombre }}</td>
-                    <td>{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</td>
-                    <td>
-                      <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">{{ $evento->estado }}</span>
-                    </td>
-                    <td>
-                      <a href="{{ route('inscripciones.index') }}" class="btn btn-sm btn-primary">
-                      Inscribir
-                    </a>
-                    </td>
-                  </tr>
-                @endforeach
-              </tbody>
-            </table>
-          @else
-            <p class="text-muted">No hay próximos eventos.</p>
-          @endif
-        </div>
-      </div>
+ <div class="col-12 col-lg-6">
+  <div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header bg-primary text-white fw-semibold">
+      <i class="bi bi-calendar-event-fill me-2"></i> Próximos Eventos
     </div>
+    <div class="card-body">
+      @if(isset($proximosEventos) && count($proximosEventos) > 0)
+        <table class="table table-sm align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($proximosEventos as $evento)
+              <tr>
+                <td>
+                  @if(!empty($evento->imagen))
+                    <img src="{{ asset('storage/' . $evento->imagen) }}"
+                         alt="Miniatura de {{ $evento->nombre }}"
+                         class="rounded"
+                         style="width: 48px; height: 48px; object-fit: cover;">
+                  @else
+                    <span class="text-muted">Sin imagen</span>
+                  @endif
+                </td>
+                <td>{{ $evento->nombre }}</td>
+                <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }}</td>
+                <td>
+                  <span class="badge bg-{{ $evento->estado == 'Activo' ? 'success' : 'secondary' }}">
+                    {{ $evento->estado }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{{ route('inscripciones.index') }}" class="btn btn-sm btn-primary" title="Inscribir a este evento">
+                    <i class="bi bi-pencil-square me-1"></i> Inscribir
+                  </a>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      @else
+        <p class="text-muted mb-0">No hay próximos eventos registrados.</p>
+      @endif
+    </div>
+  </div>
+</div>
+
+
+
 
     <!-- Info del sistema -->
     <div class="col-12 col-lg-6">

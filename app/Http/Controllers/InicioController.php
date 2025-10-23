@@ -31,6 +31,7 @@ class InicioController extends Controller
     {
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
+        $today = \Carbon\Carbon::today();
 
         if ($usuario->rol != 'academia') {
 
@@ -49,6 +50,15 @@ class InicioController extends Controller
                 Atleta::where('sexo', 'Masculino')->count(),
                 Atleta::where('sexo', 'Femenino')->count()
             ];
+
+             // Obtener eventos activos: los que empiezan en el futuro o que aún no han terminado
+    $proximosEventos = \App\Models\Evento::where('estado', 'Activo')
+        ->where(function($q) use ($today) {
+            $q->whereDate('fecha_inicio', '>=', $today)
+              ->orWhereDate('fecha_final', '>=', $today);
+        })
+        ->orderBy('fecha_inicio', 'asc')
+        ->get();
 
             return view('admin/dashboard', compact(
                 'usuario',
@@ -79,10 +89,15 @@ class InicioController extends Controller
         $avanceEventos = $totalEventos > 0 ? round(($eventosInscritos / $totalEventos) * 100) : 0;
 
         // Próximos eventos
-        $proximosEventos = Evento::where('fecha_inicio', '>=', now())
-            ->orderBy('fecha_inicio')
-            ->take(5)
-            ->get();
+      $proximosEventos = \App\Models\Evento::where('estado', 'Activo')
+        ->where(function($q) use ($today) {
+            $q->whereDate('fecha_inicio', '>=', $today)
+              ->orWhereDate('fecha_final', '>=', $today);
+        })
+        ->orderBy('fecha_inicio', 'asc')
+        ->get();
+
+
 
         // =================== DATOS PARA GRÁFICOS ===================
 
@@ -92,6 +107,9 @@ class InicioController extends Controller
 
         // 1️⃣ Categorías de edad (basadas en fecha_nacimiento)
         $categorias = ['Infantil', 'Cadete', 'Junior', 'Adulto', 'Master'];
+   
+
+
         $inscripciones = [
             Atleta::where('id_academia', $academia->id_academia)
                 ->whereRaw('TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) BETWEEN 0 AND 11')->count(), // Infantil
@@ -106,16 +124,32 @@ class InicioController extends Controller
         ];
 
         // 2️⃣ Distribución de grados (usando la tabla grados)
-        $grados = DB::table('grados')
-            ->join('atletas', 'grados.id_grado', '=', 'atletas.id_grado')
-            ->where('atletas.id_academia', $academia->id_academia)
-            ->select('grados.nombre as grado', DB::raw('COUNT(*) as total'))
-            ->groupBy('grados.nombre')
-            ->pluck('total', 'grado')
-            ->toArray();
+$grados = DB::table('grados')
+    ->join('atletas', 'grados.id_grado', '=', 'atletas.id_grado')
+    ->where('atletas.id_academia', $academia->id_academia)
+    ->select('grados.nombre as grado', DB::raw('COUNT(*) as total'))
+    ->groupBy('grados.nombre')
+    ->pluck('total', 'grado')
+    ->toArray();
 
-        $gradosLabels = array_keys($grados);
-        $gradosCount = array_values($grados);
+$gradosLabels = array_keys($grados); // ['Blanco', 'Amarillo', 'Verde', ...]
+$gradosCount = array_values($grados); // [10, 5, 7, ...]
+
+$coloresGrados = [];
+foreach ($gradosLabels as $grado) {
+    $coloresGrados[] = match(strtolower($grado)) {
+        'blanco', 'blanca' => '#ffffff',
+        'amarillo', 'amarilla' => '#ffc107',
+        'verde' => '#28a745',
+        'azul' => '#0d6efd',
+        'rojo' => '#dc3545',
+        'negro' => '#212529',
+        default => '#6c757d', // gris para grados desconocidos
+    };
+}
+
+ 
+        
         // =========================================================
 
         return view('academia/dashboard-academia', compact(
@@ -130,8 +164,7 @@ class InicioController extends Controller
             'grados',
             'gradosLabels',
             'gradosCount',
-            'id_academia',
-            'nombre_academia'
+            'coloresGrados',
         ));
     }
 }
