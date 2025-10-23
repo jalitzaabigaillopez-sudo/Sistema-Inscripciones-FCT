@@ -145,7 +145,7 @@
                                 <th>Tipo</th>
                                 <th>Modalidad</th>
                                 <th>SubModalidad</th>
-                                <th>Rango peso</th>
+                                <th>Categoria</th>
                                 <th>Grupo</th>
                                 <th>Acciones</th>
                             </tr>
