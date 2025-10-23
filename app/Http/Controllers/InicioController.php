@@ -29,51 +29,67 @@ class InicioController extends Controller
      */
     public function index(Request $request)
     {
-        $usuarioId = $request->session()->get('usuario');
-        $usuario = Usuario::find($usuarioId);
-        $today = \Carbon\Carbon::today();
+  
+    $usuarioId = $request->session()->get('usuario');
+    $usuario = Usuario::find($usuarioId);
+    $today = \Carbon\Carbon::today();
 
-        if ($usuario->rol != 'academia') {
+    if ($usuario->rol != 'academia') {
 
-            // admin
-            $usersCount = Usuario::count();
-            $academiesCount = Academia::count();
-            $atletasCount = Atleta::count();
-            $inscripcionesCount = Inscripcion::count();
-            $eventosCount = Evento::where('estado', 'Activo')->count();
-            $proximosEventos = Evento::where('fecha_inicio', '>=', now())->orderBy('fecha_inicio')->take(5)->get();
-            $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-            $eventosPorMes = Evento::selectRaw('MONTH(fecha_inicio) as mes, COUNT(*) as total')
-                ->groupBy('mes')->orderBy('mes')
-                ->pluck('total', 'mes')->toArray();
-            $generoDistribucion = [
-                Atleta::where('sexo', 'Masculino')->count(),
-                Atleta::where('sexo', 'Femenino')->count()
-            ];
+        // ================= ADMIN =================
+        $usersCount = Usuario::count();
+        $academiesCount = Academia::count();
+        $atletasCount = Atleta::count();
+        $inscripcionesCount = Inscripcion::count();
+        $eventosCount = Evento::where('estado', 'Activo')->count();
 
-             // Obtener eventos activos: los que empiezan en el futuro o que aún no han terminado
-    $proximosEventos = \App\Models\Evento::where('estado', 'Activo')
-        ->where(function($q) use ($today) {
-            $q->whereDate('fecha_inicio', '>=', $today)
-              ->orWhereDate('fecha_final', '>=', $today);
-        })
-        ->orderBy('fecha_inicio', 'asc')
-        ->get();
+        // Próximos eventos (activos y que aún no han terminado)
+        $proximosEventos = Evento::where('estado', 'Activo')
+            ->where(function($q) use ($today) {
+                $q->whereDate('fecha_inicio', '>=', $today)
+                  ->orWhereDate('fecha_final', '>=', $today);
+            })
+            ->orderBy('fecha_inicio', 'asc')
+            ->take(5)
+            ->get();
 
-            return view('admin/dashboard', compact(
-                'usuario',
-                'usersCount',
-                'academiesCount',
-                'atletasCount',
-                'inscripcionesCount',
-                'eventosCount',
-                'proximosEventos',
-                'meses',
-                'eventosPorMes',
-                'generoDistribucion',
+        // ================== EVENTOS POR MES ==================
+        $meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        $eventosMesDB = Evento::selectRaw('MONTH(fecha_inicio) as mes, COUNT(*) as total')
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->pluck('total', 'mes')
+            ->toArray();
 
-            ));
+        // Asegurar 12 meses (llenar con 0 si no hay eventos)
+        $eventosPorMes = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $eventosPorMes[] = $eventosMesDB[$i] ?? 0;
         }
+
+        // ================== DISTRIBUCIÓN POR GÉNERO ==================
+        $generoDistribucion = [
+            Atleta::whereIn('sexo', ['Masculino','M'])->count(),
+            Atleta::whereIn('sexo', ['Femenino','F'])->count()
+        ];
+
+        // ================== RETORNO A LA VISTA ==================
+        return view('admin/dashboard', compact(
+            'usuario',
+            'usersCount',
+            'academiesCount',
+            'atletasCount',
+            'inscripcionesCount',
+            'eventosCount',
+            'proximosEventos',
+            'meses',
+            'eventosPorMes',
+            'generoDistribucion'
+        ));
+    } 
+    // ================= ACADEMIA =================
+    // Aquí tu código para academia, si lo quieres también puedo revisarlo
+
 
         // ACADEMIA
         $academia = $usuario->academia;
@@ -168,3 +184,5 @@ foreach ($gradosLabels as $grado) {
         ));
     }
 }
+
+

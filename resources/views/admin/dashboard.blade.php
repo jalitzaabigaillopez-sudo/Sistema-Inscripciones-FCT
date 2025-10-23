@@ -52,31 +52,35 @@
   </div>
 
   {{-- ==================== GRÁFICOS ==================== --}}
-  <div class="row g-4 mb-4">
-    <!-- Eventos por Mes -->
-    <div class="col-12 col-lg-6">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-        <div class="card-header bg-primary text-white fw-semibold">
-          <i class="bi bi-bar-chart-fill me-2"></i> Eventos por Mes
-        </div>
-        <div class="card-body">
-          <canvas id="graficoEventosMes" height="220"></canvas>
-        </div>
+<div class="row g-4 mt-2">
+  <!-- Eventos por mes -->
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm rounded-3 h-100">
+      <div class="card-header bg-primary text-white fw-semibold">
+        <i class="bi bi-bar-chart-fill me-2"></i> Eventos por Mes
       </div>
-    </div>
-
-    <!-- Distribución de Género -->
-    <div class="col-12 col-lg-6">
-      <div class="card border-0 shadow-sm rounded-3 h-100">
-        <div class="card-header bg-info text-white fw-semibold">
-          <i class="bi bi-pie-chart-fill me-2"></i> Distribución de Sexo de Atletas
-        </div>
-        <div class="card-body">
-          <canvas id="graficoGenero" height="220"></canvas>
+      <div class="card-body">
+        <div style="position: relative; height:50vh; width:100%;">
+          <canvas id="graficoEventosMes"></canvas>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Distribución por género -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm rounded-3 h-100">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-pie-chart-fill me-2"></i> Distribución por Género
+      </div>
+      <div class="card-body">
+        <div style="position: relative; height:50vh; width:100%;">
+          <canvas id="graficoGenero"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   {{-- ==================== EVENTOS Y SISTEMA ==================== --}}
   <div class="row g-4 mb-4">
@@ -88,6 +92,7 @@
     </div>
     <div class="card-body">
       @if(isset($proximosEventos) && count($proximosEventos) > 0)
+      <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead class="table-light">
             <tr>
@@ -127,6 +132,7 @@
             @endforeach
           </tbody>
         </table>
+      </div>
       @else
         <p class="text-muted mb-0">No hay próximos eventos registrados.</p>
       @endif
@@ -163,14 +169,21 @@ const ctxEventos = document.getElementById('graficoEventosMes');
 new Chart(ctxEventos, {
   type: 'bar',
   data: {
-    labels: {!! json_encode($meses ?? ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']) !!},
+    labels: {!! json_encode($meses) !!},
     datasets: [{
       label: 'Eventos',
-      data: {!! json_encode($eventosPorMes ?? [3,5,2,8,4,6,7,1,2,3,4,5]) !!},
+      data: {!! json_encode($eventosPorMes) !!},
       backgroundColor: '#0d6efd'
     }]
   },
-  options: { responsive: true, maintainAspectRatio: false }
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true, title: { display: true, text: 'Cantidad de eventos' } },
+      x: { title: { display: true, text: 'Meses' } }
+    }
+  }
 });
 
 const ctxGenero = document.getElementById('graficoGenero');
@@ -178,9 +191,18 @@ new Chart(ctxGenero, {
   type: 'doughnut',
   data: {
     labels: ['Masculino','Femenino'],
-    datasets: [{ data: {!! json_encode($generoDistribucion ?? [60,40]) !!}, backgroundColor: ['#0d6efd','#10B981'] }]
+    datasets: [{
+      data: {!! json_encode($generoDistribucion) !!},
+      backgroundColor: ['#0d6efd','#10B981'],
+      borderColor: '#f8f9fa',
+      borderWidth: 2
+    }]
   },
-  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } }
+  }
 });
 </script>
 
