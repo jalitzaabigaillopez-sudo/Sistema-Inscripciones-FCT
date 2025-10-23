@@ -472,29 +472,69 @@ document.addEventListener("DOMContentLoaded", function () {
         const fechaInicio = new Date(evento.fecha_inicio);
         const fechaFin = new Date(evento.fecha_final);
 
+        const form = document.getElementById('formEditarEvento');
         const inputInicioIns = document.getElementById("editFechaInicioInscripcion");
         const inputFinIns = document.getElementById("editFechaFinInscripcion");
         const inputInicioEvt = document.getElementById("editFechaInicio");
         const inputFinEvt = document.getElementById("editFechaFin");
 
-        const labelIns = document.querySelector('h6.text-secondary.fw-bold:nth-of-type(2)');
-        const labelEvt = document.querySelector('h6.text-secondary.fw-bold:nth-of-type(3)');
+        // Siempre se restaura el formulario antes de aplicar bloqueos
+        restaurarFormularioEditable(form);
 
-        // Reset por si venía desbloqueado antes
-        [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.removeAttribute('disabled'));
-
-        // Lógica de bloqueo según las fechas
+        // ---- Evento finalizado ----
         if (fechaFin < hoy) {
-            // Evento finalizado
+            bloquearTodoElFormulario(form);
+            mostrarAvisoBloqueo("Este evento ya finalizó. No se pueden modificar los datos ni las fechas.");
+            return;
+        }
+
+        // ---- Evento en curso ----
+        if (fechaInicio <= hoy && fechaFin >= hoy) {
             [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
-            mostrarAvisoBloqueo("Este evento ya finalizó. No se pueden modificar las fechas ni inscripciones.");
-        } else if (fechaInicio <= hoy && fechaFin >= hoy) {
-            // Evento en curso
-            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
-            mostrarAvisoBloqueo("El evento está en curso. No se pueden modificar las fechas.");
-        } else {
-            // Evento futuro (puede editar todo)
-            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.removeAttribute('disabled'));
+            mostrarAvisoBloqueo("El evento está en curso. No se pueden modificar las fechas, pero puedes editar otros datos.");
+            return;
+        }
+
+        // ---- Evento futuro ----
+        [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.removeAttribute('disabled'));
+    }
+
+    function bloquearTodoElFormulario(form) {
+        // Deshabilita todos los campos, menos el botón "Cancelar"
+        $(form)
+            .find('input, textarea, select, button')
+            .not('[data-bs-dismiss="modal"]') // exceptuar el botón cancelar
+            .prop('disabled', true);
+
+        // Deshabilitar checkboxes y radios manualmente
+        $(form).find('.form-check-input').prop('disabled', true);
+
+        // Visualmente desactivar el botón guardar
+        const guardarBtn = form.querySelector('.btn-success');
+        if (guardarBtn) {
+            guardarBtn.classList.add('disabled');
+            guardarBtn.disabled = true;
+            guardarBtn.style.opacity = '0.6';
+            guardarBtn.style.cursor = 'not-allowed';
+        }
+    }
+
+    function restaurarFormularioEditable(form) {
+        // Reactivar todos los campos
+        $(form)
+            .find('input, textarea, select, button')
+            .prop('disabled', false);
+
+        // Reactivar checkboxes y radios
+        $(form).find('.form-check-input').prop('disabled', false);
+
+        // Reactivar botón guardar visualmente
+        const guardarBtn = form.querySelector('.btn-success');
+        if (guardarBtn) {
+            guardarBtn.classList.remove('disabled');
+            guardarBtn.disabled = false;
+            guardarBtn.style.opacity = '1';
+            guardarBtn.style.cursor = 'pointer';
         }
     }
 
@@ -507,6 +547,7 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmButtonText: 'Entendido'
         });
     }
+
 
 });
 

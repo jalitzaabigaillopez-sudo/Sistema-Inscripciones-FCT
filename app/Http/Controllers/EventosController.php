@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Services\SessionService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class EventosController extends Controller
 {
@@ -284,39 +285,55 @@ class EventosController extends Controller
             $evento = Evento::findOrFail($id);
             $hoy = now();
 
-            // Validación de datos
-            $validator = Validator::make(
-                $request->all(),
-                [
-                    'nombre' => 'required|string|max:255',
-                    'descripcion' => 'nullable|string',
+            // ===============================
+            // Determinar estado del evento
+            // ===============================
+            $fechaInicioEvento = $evento->fecha_inicio ? Carbon::parse($evento->fecha_inicio) : null;
+            $fechaFinalEvento  = $evento->fecha_final ? Carbon::parse($evento->fecha_final) : null;
+
+            $eventoYaTermino = $fechaFinalEvento && $fechaFinalEvento->lt($hoy);
+            $eventoEnCurso = $fechaInicioEvento && $fechaInicioEvento->lte($hoy) && $fechaFinalEvento && $fechaFinalEvento->gte($hoy);
+
+            // ===============================
+            // Reglas de validación
+            // ===============================
+            $reglas = [
+                'nombre' => 'required|string|max:255',
+                'descripcion' => 'nullable|string',
+                'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
+                'estado' => 'required|in:activo,inactivo,finalizado',
+                'modalidades' => 'required|array|min:1',
+                'modalidades.*' => 'exists:modalidades,id_modalidad',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'eliminar_imagen' => 'nullable|boolean',
+            ];
+
+            // Si el evento no ha iniciado → validar fechas
+            if (!$eventoEnCurso && !$eventoYaTermino) {
+                $reglas = array_merge($reglas, [
                     'fecha_inicio_inscripcion' => 'required|date',
                     'fecha_final_inscripcion' => 'required|date|after_or_equal:fecha_inicio_inscripcion',
                     'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
                     'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
-                    'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
-                    'estado' => 'required|in:activo,inactivo,finalizado',
-                    'modalidades' => 'required|array|min:1',
-                    'modalidades.*' => 'exists:modalidades,id_modalidad',
-                    'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                    'eliminar_imagen' => 'nullable|boolean',
-                ],
-                [
-                    // Mensajes personalizados
-                    'nombre.required' => 'El nombre del evento es obligatorio.',
-                    'fecha_inicio_inscripcion.required' => 'La fecha de inicio de inscripción es obligatoria.',
-                    'fecha_final_inscripcion.required' => 'La fecha final de inscripción es obligatoria.',
-                    'fecha_inicio.required' => 'La fecha de inicio del evento es obligatoria.',
-                    'fecha_final.required' => 'La fecha final del evento es obligatoria.',
-                    'id_tipo_evento.required' => 'Debe seleccionar un tipo de evento.',
-                    'modalidades.required' => 'Debe seleccionar al menos una modalidad.',
-                    'modalidades.array' => 'El formato de las modalidades no es válido.',
-                    'modalidades.*.exists' => 'Una o más modalidades seleccionadas no existen.',
-                    'imagen.image' => 'El archivo debe ser una imagen válida.',
-                    'imagen.mimes' => 'La imagen debe tener un formato válido (jpeg, png, jpg, gif).',
-                    'imagen.max' => 'La imagen no puede pesar más de 2 MB.'
-                ]
-            );
+                ]);
+            }
+
+            $mensajes = [
+                'nombre.required' => 'El nombre del evento es obligatorio.',
+                'fecha_inicio_inscripcion.required' => 'La fecha de inicio de inscripción es obligatoria.',
+                'fecha_final_inscripcion.required' => 'La fecha final de inscripción es obligatoria.',
+                'fecha_inicio.required' => 'La fecha de inicio del evento es obligatoria.',
+                'fecha_final.required' => 'La fecha final del evento es obligatoria.',
+                'id_tipo_evento.required' => 'Debe seleccionar un tipo de evento.',
+                'modalidades.required' => 'Debe seleccionar al menos una modalidad.',
+                'modalidades.array' => 'El formato de las modalidades no es válido.',
+                'modalidades.*.exists' => 'Una o más modalidades seleccionadas no existen.',
+                'imagen.image' => 'El archivo debe ser una imagen válida.',
+                'imagen.mimes' => 'La imagen debe tener un formato válido (jpeg, png, jpg, gif).',
+                'imagen.max' => 'La imagen no puede pesar más de 2 MB.'
+            ];
+
+            $validator = Validator::make($request->all(), $reglas, $mensajes);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -326,42 +343,42 @@ class EventosController extends Controller
             }
 
             // ===============================
-            // RESTRICCIONES DE FECHAS
+            // Restricciones por estado
             // ===============================
-            $fechaInicioEvento = Carbon::parse($evento->fecha_inicio);
-            $fechaFinalEvento = Carbon::parse($evento->fecha_final);
-
-            $eventoYaTermino = $fechaFinalEvento->lt($hoy);
-            $eventoEnCurso = $fechaInicioEvento->lte($hoy) && $fechaFinalEvento->gte($hoy);
-
-            // Caso 1️: Evento finalizado → bloquear todo
             if ($eventoYaTermino) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Este evento ya finalizó. No se pueden realizar cambios en las fechas ni inscripciones.'
+                    'error' => 'Este evento ya finalizó. No se pueden modificar fechas ni datos.'
                 ], 403);
             }
 
-            // Caso 2️: Evento en curso → bloquear fechas
             if ($eventoEnCurso) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'El evento está actualmente en curso. No se pueden modificar las fechas.'
-                ], 403);
+                // Bloquear modificación de fechas, mantener las actuales
+                $request->merge([
+                    'fecha_inicio_inscripcion' => $evento->fecha_inicio_inscripcion,
+                    'fecha_final_inscripcion'  => $evento->fecha_final_inscripcion,
+                    'fecha_inicio'             => $evento->fecha_inicio,
+                    'fecha_final'              => $evento->fecha_final,
+                ]);
+            } else {
+                // Si el frontend no envía las fechas, usar las del evento
+                $request->merge([
+                    'fecha_inicio_inscripcion' => $request->fecha_inicio_inscripcion ?: $evento->fecha_inicio_inscripcion,
+                    'fecha_final_inscripcion'  => $request->fecha_final_inscripcion  ?: $evento->fecha_final_inscripcion,
+                    'fecha_inicio'             => $request->fecha_inicio             ?: $evento->fecha_inicio,
+                    'fecha_final'              => $request->fecha_final              ?: $evento->fecha_final,
+                ]);
             }
 
-            // Caso 3️: Evento futuro → se puede modificar todo (fechas e inscripciones)
-            // No hacemos nada porque se permite??
-
-
+            // ===============================
             // Manejo de imagen
+            // ===============================
             if ($request->has('eliminar_imagen') && $request->eliminar_imagen == '1') {
                 if ($evento->imagen) {
                     Storage::disk('public')->delete($evento->imagen);
                     $evento->imagen = null;
                 }
             } elseif ($request->hasFile('imagen')) {
-                // Eliminar anterior si existe
                 if ($evento->imagen) {
                     Storage::disk('public')->delete($evento->imagen);
                 }
@@ -369,7 +386,9 @@ class EventosController extends Controller
                 $evento->imagen = $path;
             }
 
-            // Actualizar campos generales
+            // ===============================
+            // Actualizar campos
+            // ===============================
             $evento->update([
                 'nombre' => $request->nombre,
                 'descripcion' => $request->descripcion,
@@ -381,20 +400,26 @@ class EventosController extends Controller
                 'estado' => $request->estado,
             ]);
 
-            // Sincronizar modalidades seleccionadas
-            $evento->modalidades()->sync($request->modalidades);
+            // ===============================
+            // Modalidades
+            // ===============================
+            if ($request->has('modalidades')) {
+                $evento->modalidades()->sync($request->modalidades);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Evento actualizado correctamente.'
             ], 200);
         } catch (\Exception $e) {
+            Log::error('Error al actualizar evento: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'error' => 'Ocurrió un error al actualizar el evento: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
 
     /**
