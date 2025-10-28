@@ -146,7 +146,8 @@
                                 <th>Modalidad</th>
                                 <th>SubModalidad</th>
                                 <th>Categoria</th>
-                                <th>Grupo</th>
+                                <th style="display:none;">Grupo</th>
+                                <th>Equipo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
