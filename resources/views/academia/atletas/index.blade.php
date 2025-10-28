@@ -359,9 +359,9 @@
 
 @section('scripts')
 
+    <script src="{{ asset('js/datatable.js') }}"></script>
 
     <script src="{{ asset('js/gestion_atleta.js') }}"></script>
-    <script src="{{ asset('js/datatable.js') }}"></script>
     <script>
         $(document).ready(function() {
             let columnsConfig = [{

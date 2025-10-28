@@ -133,14 +133,52 @@
 
         /* Content */
         .content-wrapper {
-            margin-top: 60px;
+
+            position: relative;
+            margin-top: 70px;
+            /* espacio debajo del navbar */
             margin-left: var(--sidebar-width);
-            padding: 1rem;
-            transition: margin-left 0.3s ease-in-out;
+            padding: 2rem 2.5rem;
+            background-color: #f8f9fa;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s ease-in-out, padding 0.3s ease-in-out;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+
         }
 
+        /* Cuando el sidebar está cerrado (por JS) */
         .content-wrapper-full {
-            margin-left: 0;
+            margin-left: 0 !important;
+        }
+
+        /* ================================================
+         VISTA MÓVIL
+        ================================================= */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                margin-left: 0 !important;
+                margin-top: 110px; /* más espacio para el navbar compacto */
+                padding-top: 1.5rem 1rem; /* padding: 1.5rem 1rem; */
+            }
+
+            /* Reorganizar cabecera de secciones (título + botón) */
+            .content-wrapper .d-flex.align-items-center.mb-4 {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 0.75rem;
+            }
+
+            .content-wrapper h4 {
+                font-size: 1.25rem;
+                margin-bottom: 0;
+            }
+
+            .content-wrapper #btnNuevoAtleta {
+                width: 100%;
+                font-size: 0.95rem;
+            }
         }
 
         /* Submenu - Estilos mejorados */
@@ -507,7 +545,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-        </script>
+    </script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -539,7 +577,7 @@
             return estado === 'true';
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             // GUARDAR ESTADO DE SUBMENÚ SIN IMPORTAR SI SE REFRESCA
 
@@ -554,7 +592,7 @@
                 inscripcionesToggle.classList.add('active');
             }
 
-            inscripcionesToggle.addEventListener('click', function (e) {
+            inscripcionesToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const estaAbierto = !inscripcionesItems.classList.contains('d-none');
 
@@ -580,7 +618,7 @@
                 analisisToggle.classList.add('active');
             }
 
-            analisisToggle.addEventListener('click', function (e) {
+            analisisToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 const estaAbierto = !analisisItems.classList.contains('d-none');
 
@@ -620,7 +658,7 @@
                 }
             }
 
-            toggleSidebar.addEventListener('click', function () {
+            toggleSidebar.addEventListener('click', function() {
                 // En móvil, abre sidebar con clase sidebar-open
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('sidebar-open');
@@ -631,7 +669,7 @@
                 }
             });
 
-            sidebarClose.addEventListener('click', function () {
+            sidebarClose.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
                 setContentMargin();
@@ -641,7 +679,7 @@
             adjustSidebarOnLoad();
 
             // Cerrar sidebar si se hace clic fuera (solo en móviles)
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 if (
                     window.innerWidth <= 768 &&
                     !sidebar.contains(e.target) &&
@@ -654,7 +692,7 @@
 
             // VISUALIZAR CONTRA
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -671,12 +709,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-        </script>
+    </script>
 
     <!-- Bootstrap-Select -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
     <!-- jQuery primero -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
     <!-- Bootstrap-Select -->
     {{--
