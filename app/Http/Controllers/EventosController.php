@@ -43,6 +43,7 @@ class EventosController extends Controller
                 'descripcion',
                 'fecha_inicio_inscripcion',
                 'fecha_final_inscripcion',
+                'fecha_final_inscripcion_tardia',
                 'fecha_inicio',
                 'fecha_final',
                 'estado'
@@ -120,6 +121,7 @@ class EventosController extends Controller
                     'descripcion' => $item->descripcion,
                     'fecha_inicio_inscripcion' => $item->fecha_inicio_inscripcion ? \Carbon\Carbon::parse($item->fecha_inicio_inscripcion)->format('Y/m/d') : '',
                     'fecha_final_inscripcion' => $item->fecha_final_inscripcion ? \Carbon\Carbon::parse($item->fecha_final_inscripcion)->format('Y/m/d') : '',
+                    'fecha_final_inscripcion_tardia' => $item->fecha_final_inscripcion_tardia ? \Carbon\Carbon::parse($item->fecha_final_inscripcion_tardia)->format('Y/m/d') : '',
                     'fecha_inicio' => $item->fecha_inicio ? \Carbon\Carbon::parse($item->fecha_inicio)->format('Y/m/d') : '',
                     'fecha_final' => $item->fecha_final ? \Carbon\Carbon::parse($item->fecha_final)->format('Y/m/d') : '',
                     'estado' => $item->estado,
@@ -167,6 +169,8 @@ class EventosController extends Controller
                     'descripcion' => 'nullable|string',
                     'fecha_inicio_inscripcion' => 'required|date',
                     'fecha_final_inscripcion' => 'required|date|after_or_equal:fecha_inicio_inscripcion',
+                    'fecha_final_inscripcion_tardia' => 'nullable|date|after_or_equal:fecha_final_inscripcion'
+                        . '|before_or_equal:fecha_inicio',
                     'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
                     'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
                     'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
@@ -179,6 +183,9 @@ class EventosController extends Controller
                     'nombre.required' => 'El nombre del evento es obligatorio.',
                     'fecha_inicio_inscripcion.required' => 'La fecha de inicio de inscripción es obligatoria.',
                     'fecha_final_inscripcion.required' => 'La fecha final de inscripción es obligatoria.',
+                    'fecha_final_inscripcion_tardia.after_or_equal' => 'La fecha de inscripción tardía debe ser posterior al fin de inscripción normal.',
+                    'fecha_final_inscripcion_tardia.before_or_equal' => 'La inscripción tardía no puede extenderse más allá del inicio del evento.',
+
                     'fecha_inicio.required' => 'La fecha de inicio del evento es obligatoria.',
                     'fecha_final.required' => 'La fecha final del evento es obligatoria.',
                     'id_tipo_evento.required' => 'Debe seleccionar un tipo de evento.',
@@ -204,6 +211,7 @@ class EventosController extends Controller
             $evento->descripcion = $request->descripcion;
             $evento->fecha_inicio_inscripcion = $request->fecha_inicio_inscripcion;
             $evento->fecha_final_inscripcion = $request->fecha_final_inscripcion;
+            $evento->fecha_final_inscripcion_tardia = $request->fecha_final_inscripcion_tardia;
             $evento->fecha_inicio = $request->fecha_inicio;
             $evento->fecha_final = $request->fecha_final;
             $evento->id_tipo_evento = $request->id_tipo_evento;
@@ -258,6 +266,7 @@ class EventosController extends Controller
                     'descripcion' => $evento->descripcion,
                     'fecha_inicio_inscripcion' => $evento->fecha_inicio_inscripcion,
                     'fecha_final_inscripcion' => $evento->fecha_final_inscripcion,
+                    'fecha_final_inscripcion_tardia' => $evento->fecha_final_inscripcion_tardia,
                     'fecha_inicio' => $evento->fecha_inicio,
                     'fecha_final' => $evento->fecha_final,
                     'id_tipo_evento' => $evento->id_tipo_evento,
@@ -306,6 +315,8 @@ class EventosController extends Controller
                 'modalidades.*' => 'exists:modalidades,id_modalidad',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'eliminar_imagen' => 'nullable|boolean',
+
+                'fecha_final_inscripcion_tardia' => 'nullable|date|after_or_equal:fecha_final_inscripcion|before_or_equal:fecha_inicio',
             ];
 
             // Si el evento no ha iniciado → validar fechas
@@ -322,6 +333,8 @@ class EventosController extends Controller
                 'nombre.required' => 'El nombre del evento es obligatorio.',
                 'fecha_inicio_inscripcion.required' => 'La fecha de inicio de inscripción es obligatoria.',
                 'fecha_final_inscripcion.required' => 'La fecha final de inscripción es obligatoria.',
+                'fecha_final_inscripcion_tardia.after_or_equal' => 'La inscripción tardía debe ser posterior o igual a la fecha final de inscripción.',
+                'fecha_final_inscripcion_tardia.before_or_equal' => 'La inscripción tardía no puede superar la fecha de inicio del evento.',
                 'fecha_inicio.required' => 'La fecha de inicio del evento es obligatoria.',
                 'fecha_final.required' => 'La fecha final del evento es obligatoria.',
                 'id_tipo_evento.required' => 'Debe seleccionar un tipo de evento.',
@@ -394,6 +407,7 @@ class EventosController extends Controller
                 'descripcion' => $request->descripcion,
                 'fecha_inicio_inscripcion' => $request->fecha_inicio_inscripcion,
                 'fecha_final_inscripcion' => $request->fecha_final_inscripcion,
+                'fecha_final_inscripcion_tardia' => $request->fecha_final_inscripcion_tardia,
                 'fecha_inicio' => $request->fecha_inicio,
                 'fecha_final' => $request->fecha_final,
                 'id_tipo_evento' => $request->id_tipo_evento,

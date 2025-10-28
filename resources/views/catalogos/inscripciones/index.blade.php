@@ -71,6 +71,18 @@
             </div>
         </div>
 
+         {{-- EXPORTAR PDF O EXCEL --}}
+        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
+            <a href="{{ route('inscripciones.pdf') }}"
+                class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+            </a>
+            <a href="{{ url('/inscripciones/exportar-excel') }}"
+                class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-1"></i> Excel
+            </a>
+        </div>
+
         {{-- Tabla de Inscripciones --}}
         <div class="table-responsive mt-4">
             <table class="table table-striped table-hover table-bordered text-center border" id="tablaInscripciones">
@@ -126,7 +138,6 @@
             </table>
         </div>
 
-        <span>Descargar <a href="{{ route('inscripciones.pdf') }}">PDF</a> - <a href="{{ url('/inscripciones/exportar-excel') }}">Excel</a></span>
     </div>
   
 

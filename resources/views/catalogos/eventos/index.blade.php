@@ -35,6 +35,7 @@
                                 <th class="text-center"></th>
                                 <th class="text-center">Inicio Ins.</th>
                                 <th class="text-center">Fin Ins.</th>
+                                <th class="text-center">Ins. Tardía</th>
                                 <th class="text-center">Inicio</th>
                                 <th class="text-center">Fin</th>
                                 <th class="text-center">Estado</th>
@@ -214,6 +215,15 @@
                                                 <div class="text-danger small mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
+
+                                        <div class="col-md-12">
+                                            <label for="fechaFinInscripcionTardia" class="form-label">
+                                                Fin de Inscripción Tardía
+                                            </label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="fechaFinInscripcionTardia" name="fecha_final_inscripcion_tardia"
+                                                value="{{ old('fecha_final_inscripcion_tardia') }}">
+                                        </div>
                                         <h6 class="text-secondary fw-bold mb-3">Fechas del evento</h6>
 
                                         <div class="col-md-6">
@@ -384,6 +394,18 @@
                                             <input type="date" class="form-control form-control-sm"
                                                 id="editFechaFinInscripcion" name="fecha_final_inscripcion">
                                         </div>
+
+                                        <div class="col-md-12">
+                                            <label for="editFechaFinInscripcionTardia" class="form-label">
+                                                Fin Inscripción Tardía
+                                            </label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="editFechaFinInscripcionTardia" name="fecha_final_inscripcion_tardia">
+                                            <div class="form-text text-muted small">
+                                                Si se establece, permitirá inscripciones tardías hasta esta fecha.
+                                            </div>
+                                        </div>
+
                                         <h6 class="text-secondary fw-bold">Fechas del Evento</h6>
 
                                         <div class="col-md-6">
@@ -429,21 +451,25 @@
                         title: "Imagen",
                         orderable: false,
                         render: function(data) {
+                            const size = 45; // tamaño consistente
                             if (data) {
                                 return `
+                                <div class="d-flex align-items-center justify-content-center"
+                                    style="width:${size}px; height:${size}px; margin:auto;">
                                     <img src="${data}" 
                                         alt="Foto" 
                                         class="rounded-circle border shadow-sm" 
-                                        width="55" height="55" 
+                                        width="${size}" height="${size}" 
                                         style="object-fit: cover;">
-                                `;
+                                </div>
+                            `;
                             } else {
                                 return `
-                                        <div class="d-flex align-items-center justify-content-center rounded-circle border bg-light shadow-sm"
-                                            style="width:55px; height:55px; color:#6c757d;">
-                                            <i class="bi bi-calendar-event" style="font-size:1.5rem;"></i>
-                                        </div>
-                                    `;
+                                <div class="d-flex align-items-center justify-content-center rounded-circle border bg-light shadow-sm mx-auto"
+                                    style="width:${size}px; height:${size}px; color:#6c757d;">
+                                    <i class="bi bi-calendar-event" style="font-size:1.6rem;"></i>
+                                </div>
+                            `;
                             }
                         }
                     },
@@ -482,6 +508,16 @@
                         data: "fecha_final_inscripcion",
                         title: "Fin Ins.",
                         render: function(data, type, row) {
+                            return data ? new Date(data).toLocaleDateString('es-ES') : '';
+                        }
+                    },
+                    {
+                        data: "fecha_final_inscripcion_tardia",
+                        title: "Ins. Tardía",
+                        render: function(data, type, row) {
+                            if (!data) {
+                                return `<span class="text-muted fst-italic">Sin fecha tardía</span>`;
+                            }
                             return data ? new Date(data).toLocaleDateString('es-ES') : '';
                         }
                     },

@@ -20,13 +20,23 @@
         </div>
         <hr>
 
+        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
+            <a href="{{ route('atletas.pdf') }}"
+                class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+            </a>
+            <a href="{{ url('/atletas/exportar-excel') }}"
+                class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-1"></i> Excel
+            </a>
+        </div>
 
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
                 <div class="table-responsive" style="overflow-x: auto;">
                     <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
-                        
+
                         <thead class="table-light">
                             <tr id="tabla-headers"></tr>
 
@@ -40,15 +50,13 @@
             </div>
         </div>
 
-        <span>Descargar <a href="{{ route('atletas.pdf') }}">PDF</a> - <a href="{{ url('/atletas/exportar-excel') }}">Excel</a></span>
-
         {{-- Modal NUEVO ATLETA --}}
         <div class="modal fade" id="modalAtleta" tabindex="-1" aria-labelledby="modalAtletaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
                     <div class="modal-header border-bottom-0 pb-2">
                         <h5 class="modal-title text-center fw-bold text-success w-100 mb-3" id="modalAtletaLabel">Registrar
-                            Nuevo Atleta</h5> 
+                            Nuevo Atleta</h5>
                         <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="CerrarM"
                             aria-label="Cerrar"></button>
                     </div>
@@ -188,8 +196,9 @@
                                                 alt="Vista previa"
                                                 style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
-                                            style="display: none;"><i class="bi bi-trash"></i> Eliminar Foto</button>
+                                        <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                            name="eliminarFoto" style="display: none;"><i class="bi bi-trash"></i>
+                                            Eliminar Foto</button>
                                     </div>
                                 </div>
                             </div>
@@ -198,7 +207,8 @@
                     <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill me-2" name="cancelar"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta" id="btnGuardarAtleta">Guardar
+                        <button type="submit" class="btn btn-success rounded-pill" form="formRegistrarAtleta"
+                            id="btnGuardarAtleta">Guardar
                             Atleta</button>
                     </div>
                 </div>
@@ -214,8 +224,8 @@
                         <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="modalEditarAtletaLabel">
                             Actualizar Datos del Atleta</h5>
 
-                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="cerrar"
-                            aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal"
+                            name="cerrar" aria-label="Cerrar"></button>
                     </div>
                     <form method="POST" action="" id="formEditarAtleta" data-id="">
                         @csrf
@@ -368,8 +378,9 @@
                                                         alt="Vista previa"
                                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
                                                 </div>
-                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn" name="eliminarFoto"
-                                                    style="display: none;"><i class="bi bi-trash"></i> Eliminar
+                                                <button type="button" class="btn btn-sm btn-danger removeImageBtn"
+                                                    name="eliminarFoto" style="display: none;"><i
+                                                        class="bi bi-trash"></i> Eliminar
                                                     Foto</button>
                                                 <input type="hidden" name="remove_imagen" id="removeImagen"
                                                     value="0">
@@ -432,7 +443,7 @@
                     {
                         data: "estado",
                         title: "Estado",
-                         render: function(data) {
+                        render: function(data) {
                             let badgeClass =
                                 data === 'activo' ? 'success' :
                                 data === 'inactivo' ? 'danger' :
@@ -445,7 +456,7 @@
                         title: "Acciones",
                         orderable: false,
                         render: function(data, type, row) {
-                             return `
+                            return `
                             <div class="d-flex justify-content-center gap-2">
                                 <button class="btn btn-sm btn-warning rounded-circle btn-edit"  name="editar"
                                         data-id="${data}" title="Editar">

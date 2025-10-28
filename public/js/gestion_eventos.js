@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const regStartDate = new Date(document.getElementById('editFechaInicioInscripcion')
                 .value);
             const regEndDate = new Date(document.getElementById('editFechaFinInscripcion').value);
+            const regLateEndDate = new Date(document.getElementById('editFechaFinInscripcionTardia').value);
             const tipoEvento = document.getElementById('editIdTipoEvento').value;
 
             // CAMBIO AQUÍ
@@ -222,6 +223,15 @@ document.addEventListener("DOMContentLoaded", function () {
             if (regEndDate && startDate && regEndDate > startDate) {
                 errorMessage +=
                     'Las inscripciones deben finalizar antes de la fecha de inicio del evento. ';
+                hasError = true;
+            }
+
+            if (regLateEndDate && regEndDate && regLateEndDate < regEndDate) {
+                errorMessage += 'La fecha de inscripción tardía no puede ser anterior al fin de inscripción normal. ';
+                hasError = true;
+            }
+            if (regLateEndDate && startDate && regLateEndDate > startDate) {
+                errorMessage += 'La inscripción tardía no puede superar la fecha de inicio del evento. ';
                 hasError = true;
             }
 
@@ -345,6 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         .fecha_inicio_inscripcion;
                     document.getElementById('editFechaFinInscripcion').value = evento
                         .fecha_final_inscripcion;
+                    document.getElementById('editFechaFinInscripcionTardia').value =
+                        evento.fecha_final_inscripcion_tardia || '';
                     document.getElementById('editFechaInicio').value = evento.fecha_inicio;
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;

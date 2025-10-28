@@ -684,7 +684,7 @@ $(document).ready(function () {
         }
 
         return salida;
-    } S
+    } 
 
 
     // Evista que al inscribir varios atletas en un grupo se puede inscribir mas de una vez.  
