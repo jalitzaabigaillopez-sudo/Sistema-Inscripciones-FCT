@@ -322,7 +322,7 @@
             document.addEventListener("DOMContentLoaded", function() {
 
                 // ======================================================
-                // 🧩 VALIDACIÓN VISUAL DE CONTRASEÑA EN TIEMPO REAL
+                // VALIDACIÓN VISUAL DE CONTRASEÑA EN TIEMPO REAL
                 // ======================================================
                 const passwordInput = document.getElementById('contrasenaPerfilEditar');
                 const confirmPasswordInput = document.getElementById('confirmarContrasenaPerfil');
@@ -337,6 +337,7 @@
                     special: document.getElementById('reqSpecial'),
                     match: document.getElementById('reqMatch')
                 };
+                passwordRequirements.style.display = "none";
 
                 // Función auxiliar para cambiar íconos dinámicamente
                 function setIcon(item, condition) {
@@ -354,7 +355,12 @@
                     const password = passwordInput.value;
                     const confirm = confirmPasswordInput.value;
 
-                    passwordRequirements.style.display = password || confirm ? 'block' : 'none';
+                    // Mostrar solo si hay algo en uno de los campos
+                    if (password.length > 0 || confirm.length > 0) {
+                        passwordRequirements.style.display = "block";
+                    } else {
+                        passwordRequirements.style.display = "none";
+                    }
 
                     // Validaciones visuales
                     setIcon(reqItems.length, password.length >= 8 && password.length <= 11);
@@ -368,6 +374,12 @@
                 passwordInput.addEventListener('input', updatePasswordRequirements);
                 confirmPasswordInput.addEventListener('input', updatePasswordRequirements);
 
+                // Cuando se abre el modal, siempre ocultamos los requisitos
+                $('#modalEditarPerfilAdmin').on('show.bs.modal', function() {
+                    passwordRequirements.style.display = "none";
+                    passwordInput.value = "";
+                    confirmPasswordInput.value = "";
+                });
 
                 const editarPerfilModal = document.getElementById("modalEditarPerfilAdmin");
 
