@@ -25,6 +25,19 @@ class AcademiaController extends Controller
 {
     public function __construct(Request $request)
     {
+        $rutasExentas = [
+            'pre-registro-academia',
+            'activar-cuenta/*',
+            'activar',
+        ];
+
+        foreach ($rutasExentas as $ruta) {
+            if ($request->is($ruta)) {
+                return; // no redirige al login
+            }
+        }
+
+        // Si no es una ruta exenta, aplica el chequeo normal
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }

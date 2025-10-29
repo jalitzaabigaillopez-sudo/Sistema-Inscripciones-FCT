@@ -193,7 +193,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             /* ============================================================
-                 👁️ VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
+                 VISUALIZAR / OCULTAR CONTRASEÑA (OJO)
               ============================================================ */
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {
