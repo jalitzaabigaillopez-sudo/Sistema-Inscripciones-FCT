@@ -33,4 +33,9 @@ class Evento extends Model
     return $this->belongsTo(Academia::class, 'id_academia');
 }
 
+public function inscripciones()
+{
+    return $this->hasMany(Inscripcion::class, 'id_evento');
+}
+
 }

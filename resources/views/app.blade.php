@@ -361,6 +361,11 @@
                 <i class="bi bi-ui-checks me-2"></i>
                 <span>Inscripciones</span>
             </a>
+            <a href="{{ route('estadisticas.eventos') }}">
+             <i class="bi bi-graph-up-arrow me-2"></i>
+             <span>Estadísticas por Evento</span>
+            </a>
+
 
 
             <!-- Submenú de Catálogos Generales -->

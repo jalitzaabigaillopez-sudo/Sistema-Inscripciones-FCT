@@ -23,10 +23,78 @@ class InicioController extends Controller
         }
     }
 
-    /**
-     * Este metodo toma el usuario en sesion una vez se han verificado los credenciales
-     * Verifica el tipo de usuario y lo redirige a su vista respectiva admin o academia
-     */
+// ...existing code...
+public function estadisticasEventos(Request $request)
+{
+    $eventos = Evento::orderBy('nombre')->get();
+
+    // Estructura por defecto
+    $estadisticas = [
+        'total_inscripciones' => 0,
+        'total_atletas' => 0,
+        'total_academias' => 0,
+        'por_modalidad' => [],
+        'por_submodalidad' => [],
+        'por_grado' => [],
+        'por_categoria' => [],
+    ];
+
+    $eventoSeleccionado = null;
+
+    if ($request->filled('id_evento')) {
+        $eventoId = $request->input('id_evento');
+
+        // Buscar por id_evento o por id
+        $eventoSeleccionado = Evento::where('id_evento', $eventoId)->first() ?? Evento::find($eventoId);
+
+        if (!$eventoSeleccionado) {
+            session()->flash('error', 'Evento no encontrado');
+            return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
+        }
+
+        // Obtener inscripciones (soportando id_evento o evento_id en la tabla inscripciones)
+        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'grado', 'categoria'])
+            ->where(function($q) use ($eventoSeleccionado, $eventoId) {
+                $valor = $eventoSeleccionado->id_evento ?? $eventoId;
+                $q->where('id_evento', $valor)->orWhere('id_evento', $valor);
+            })
+            ->get();
+
+        // Si hay inscripciones, calcular estadísticas
+        if ($inscripciones->isNotEmpty()) {
+            $estadisticas['total_inscripciones'] = $inscripciones->count();
+            $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
+            $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
+
+            $estadisticas['por_modalidad'] = $inscripciones
+                ->map(fn($i) => $i->modalidad->nombre ?? ($i->modalidad_nombre ?? 'Sin modalidad'))
+                ->countBy()
+                ->toArray();
+
+            $estadisticas['por_submodalidad'] = $inscripciones
+                ->map(fn($i) => $i->submodalidad->nombre ?? ($i->submodalidad_nombre ?? 'Sin submodalidad'))
+                ->countBy()
+                ->toArray();
+
+            $estadisticas['por_grado'] = $inscripciones
+                ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
+                ->countBy()
+                ->toArray();
+
+            $estadisticas['por_categoria'] = $inscripciones
+                ->map(fn($i) => $i->categoria->nombre ?? ($i->categoria_nombre ?? 'Sin categoría'))
+                ->countBy()
+                ->toArray();
+        } else {
+            // No hay inscripciones: se deja la estructura por defecto (0 y arrays vacíos)
+            session()->flash('info', 'No hay inscripciones para el evento seleccionado');
+        }
+    }
+
+    return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
+}
+// ...existing code...
+
     public function index(Request $request)
     {
   
@@ -72,6 +140,8 @@ class InicioController extends Controller
             Atleta::whereIn('sexo', ['Masculino','M'])->count(),
             Atleta::whereIn('sexo', ['Femenino','F'])->count()
         ];
+        // ================== ESTADÍSTICAS DE EVENTOS ==================
+
 
         // ================== RETORNO A LA VISTA ==================
         return view('admin/dashboard', compact(
@@ -97,15 +167,29 @@ class InicioController extends Controller
         $nombre_academia = $academia->nombre ?? null;
 
   
-        $eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
+        //$eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
         $totalAtletas = Atleta::where('id_academia', $academia->id_academia)->count();
 
         // Avance de eventos (porcentaje)
         $totalEventos = Evento::count();
-        $avanceEventos = $totalEventos > 0 ? round(($eventosInscritos / $totalEventos) * 100) : 0;
+        //$avanceEventos = $totalEventos > 0 ? round(($eventosInscritos / $totalEventos) * 100) : 0;
+
+        // Eventos únicos inscritos por la academia
+$eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)
+    ->distinct('id_evento')
+    ->count('id_evento');
+
+// Total de eventos disponibles (puedes filtrar por estado si lo deseas)
+$totalEventos = Evento::count(); // o Evento::where('estado', 'Activo')->count();
+
+// Porcentaje de avance institucional
+$avanceEventos = $totalEventos > 0
+    ? round(($eventosInscritos / $totalEventos) * 100)
+    : 0;
+
 
         // Próximos eventos
-      $proximosEventos = \App\Models\Evento::where('estado', 'Activo')
+      $proximosEventos = Evento::where('estado', 'Activo')
         ->where(function($q) use ($today) {
             $q->whereDate('fecha_inicio', '>=', $today)
               ->orWhereDate('fecha_final', '>=', $today);
@@ -183,6 +267,7 @@ foreach ($gradosLabels as $grado) {
             'coloresGrados',
         ));
     }
+
 }
 
 

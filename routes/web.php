@@ -211,6 +211,8 @@ Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
 
 Route::resource('/inscripciones', InscripcionController::class);
 
+// Estadísticas de eventos
+Route::get('/estadisticas-eventos', [InicioController::class, 'estadisticasEventos'])->name('estadisticas.eventos');
 
 
 Route::post('/admin/profile/update', function () {
