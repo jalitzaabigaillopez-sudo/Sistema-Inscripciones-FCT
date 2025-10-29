@@ -107,9 +107,9 @@ Route::get('/reporte/{id_evento}', [ReporteController::class, 'exportarInscripci
 //prueba frontend
 
 // Ruta principal del dashboard
-Route::get('/adminDash', function () {
-    return view('admin.dashboard');
-})->name('adminDash');
+//Route::get('/adminDash', function () {
+    //return view('admin.dashboard');
+//})->name('adminDash');
 
 
 

@@ -140,9 +140,6 @@
   </div>
 </div>
 
-
-
-
     <!-- Info del sistema -->
     <div class="col-12 col-lg-6">
       <div class="card border-0 shadow-sm rounded-3 h-100">
