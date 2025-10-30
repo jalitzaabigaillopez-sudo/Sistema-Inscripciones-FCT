@@ -36,10 +36,41 @@ class ReporteController extends Controller
     {
         return Excel::download(new InscripcionesExport, 'inscripciones.xlsx');
     }
+
+    public function prueba1()
+    {
+        return Excel::download(new InscripcionesExport, 'inscripciones.xlsx');
+    }
+
     public function exportarInscripcionesPdf()
     {
         $export = new InscripcionesExport();
         return $export->exportPdf();
+    }
+
+    //EXCEL
+    public function exportarInscripcionesEventoExcel($id_evento)
+    {
+        return Excel::download(new InscripcionesExport($id_evento, null), "inscripciones_eventos_{$id_evento}.xlsx");
+    }
+
+    public function exportarInscripcionesAcademiaExcel($id_academia)
+    {
+        return Excel::download(new InscripcionesExport(null, $id_academia), "inscripciones_academia_{$id_academia}.xlsx");
+    }
+
+
+    //PDF
+    public function exportarInscripcionesEventoPdf($id_evento)
+    {
+        $export = new InscripcionesExport();
+        return $export->exportarInscripcionesEventoPdf($id_evento);
+    }
+
+    public function exportarInscripcionesAcademiaPdf($id_academia)
+    {
+        $export = new InscripcionesExport();
+        return $export->exportarInscripcionesAcademiaPdf($id_academia);
     }
 
     /** ======================================== ACADEMIA ======================================== */

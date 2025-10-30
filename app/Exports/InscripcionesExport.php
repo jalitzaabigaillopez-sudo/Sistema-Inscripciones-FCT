@@ -15,10 +15,28 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
 
+    protected $id_evento;
+    protected $id_academia;
+
+    public function __construct($id_evento = null, $id_academia = null)
+    {
+        $this->id_evento = $id_evento;
+        $this->id_academia = $id_academia;
+    }
+
     /** ===================================================================== ADMINISTRADOR ============================================================================ */
     public function collection()
     {
-        $inscripciones = Inscripcion::with(['academia', 'atleta', 'evento', 'modalidad', 'subModalidad', 'categoria'])->get();
+        $query = Inscripcion::with(['academia', 'atleta', 'evento', 'modalidad', 'subModalidad', 'categoria']);
+
+        if ($this->id_evento) {
+            $query->where('id_evento', $this->id_evento);
+        }
+        if ($this->id_academia) {
+            $query->where('id_academia', $this->id_academia);
+        }
+
+        $inscripciones = $query->get();
 
         return new Collection($inscripciones->map(function ($i) {
             return [
@@ -56,6 +74,79 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Código de equipo',
             'Rol'
         ];
+    }
+
+    public function exportarInscripcionesEventoPdf($id_evento)
+    {
+        $inscripciones = Inscripcion::with([
+            'academia',
+            'atleta',
+            'evento',
+            'modalidad',
+            'subModalidad',
+            'categoria'
+        ])->where('id_evento', $id_evento)->get();
+
+        $datos = $inscripciones->map(function ($i) {
+            return [
+                'ID inscripción' => $i->id_inscripcion,
+                'Academia' => $i->academia->nombre ?? '—',
+                'Atleta' => $i->atleta ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido : '—',
+                'Evento' => $i->evento->nombre ?? '—',
+                'Modalidad' => $i->modalidad->nombre ?? '—',
+                'Submodalidad' => $i->subModalidad->nombre ?? '—',
+                'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
+                    ? "Más de {$i->categoria->peso_min} kg & No excede {$i->categoria->peso_max} kg"
+                    : '—',
+                'Fecha inscripción' => $i->fecha_inscripcion,
+                'Estado' => $i->estado,
+                'Peso' => $i->peso ?? '—',
+                'Código de equipo' => $i->codigo_equipo ?? '—',
+                'Rol' => $i->rol ?? '—',
+            ];
+        });
+
+        $datosAgrupados = $datos->groupBy('Academia');
+
+        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados]);
+        return $pdf->download('inscripciones.pdf');
+    }
+
+
+    public function exportarInscripcionesAcademiaPdf($id_academia)
+    {
+        $inscripciones = Inscripcion::with([
+            'academia',
+            'atleta',
+            'evento',
+            'modalidad',
+            'subModalidad',
+            'categoria'
+        ])->where('id_academia', $id_academia)->get();
+
+        $datos = $inscripciones->map(function ($i) {
+            return [
+                'ID inscripción' => $i->id_inscripcion,
+                'Academia' => $i->academia->nombre ?? '—',
+                'Atleta' => $i->atleta ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido : '—',
+                'Evento' => $i->evento->nombre ?? '—',
+                'Modalidad' => $i->modalidad->nombre ?? '—',
+                'Submodalidad' => $i->subModalidad->nombre ?? '—',
+                'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
+                    ? "Más de {$i->categoria->peso_min} kg & No excede {$i->categoria->peso_max} kg"
+                    : '—',
+                'Fecha inscripción' => $i->fecha_inscripcion,
+                'Estado' => $i->estado,
+                'Peso' => $i->peso ?? '—',
+                'Código de equipo' => $i->codigo_equipo ?? '—',
+                'Rol' => $i->rol ?? '—',
+            ];
+        });
+
+        $datosAgrupados = $datos->groupBy('Academia');
+
+        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados]);
+        return $pdf->download('inscripciones.pdf');
     }
 
 

@@ -52,6 +52,12 @@ Route::get('/exportar-atletas-pdf', [ReporteController::class, 'exportarAtletasP
 Route::get('/inscripciones/exportar-excel', [ReporteController::class, 'exportarInscripcionesExcel']);
 Route::get('/exportar-inscripciones-pdf', [ReporteController::class, 'exportarInscripcionesPdf'])->name('inscripciones.pdf');
 
+Route::get('/reporteAdministradorInscripcionesEvento/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoPdf']);
+Route::get('/reporteAdministradorInscripcionesAcademia/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaPdf']);
+
+Route::get('/reporteAdministradorInscripcionesEventoExcel/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoExcel']);
+Route::get('/reporteAdministradorInscripcionesAcademiaExcel/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaExcel']);
+
 
 //####################################### SOLO ACADEMIA #######################################################################################
 /**
