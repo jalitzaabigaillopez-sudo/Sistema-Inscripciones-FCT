@@ -153,7 +153,7 @@
                   </span>
                 </td>
                 <td>
-                  <a href="{{ route('inscripcion.academia') }}" class="btn btn-sm btn-primary" title="Inscribir a este evento">
+                  <a href="{{ route('inscripcion.academia')}}" class="btn btn-sm btn-primary" title="Inscribir a este evento">
                     <i class="bi bi-pencil-square me-1"></i> Inscribir
                   </a>
                 </td>

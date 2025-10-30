@@ -15,4 +15,6 @@ class Grado extends Model
     {
         return $this->hasMany(Atleta::class, 'id_grado');
     }
+
+    
 }

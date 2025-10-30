@@ -41,14 +41,19 @@ class Inscripcion extends Model
 
     public function categoria()//bt_export
     {
-        return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(Categoria::class, 'id_categoria');
     }
-
 
     public function modalidadEvento()
     {
         return $this->belongsTo(ModalidadEvento::class, 'id_modalidad_evento', 'id_modalidad_evento');
     }
+
+    public function grado()
+{
+    return $this->belongsTo(Grado::class, 'id_grado'); // ajustá el nombre de la columna si es diferente
+}
+
 
     /*
     // Relación indirecta para acceder a Evento a través de ModalidadEvento

@@ -22,8 +22,7 @@ class InicioController extends Controller
             redirect()->route('login')->send();
         }
     }
-
-// ...existing code...
+// Estadísticas detalladas de eventos
 public function estadisticasEventos(Request $request)
 {
     $eventos = Evento::orderBy('nombre')->get();
@@ -93,7 +92,6 @@ public function estadisticasEventos(Request $request)
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
-// ...existing code...
 
     public function index(Request $request)
     {
