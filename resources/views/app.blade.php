@@ -337,7 +337,7 @@
         </div>
 
         <div class="sidebar-content">
-            <a href="{{ route('adminDash') }}" onclick="handleSidebarClick(event)">
+            <a href="{{ route('dashboard') }}" onclick="handleSidebarClick(event)">
                 <i class="bi bi-speedometer2 me-2"></i>
                 <span>Dashboard</span>
             </a>
@@ -361,6 +361,11 @@
                 <i class="bi bi-ui-checks me-2"></i>
                 <span>Inscripciones</span>
             </a>
+            <a href="{{ route('estadisticas.eventos') }}">
+             <i class="bi bi-graph-up-arrow me-2"></i>
+             <span>Estadísticas por Evento</span>
+            </a>
+
 
 
             <!-- Submenú de Catálogos Generales -->
@@ -434,7 +439,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item">
-                        <a class="text-white text-decoration-none" href="{{ route('adminDash') }}">Dashboard</a>
+                        <a class="text-white text-decoration-none" href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
                         @yield('breadcrumb-title', '')
