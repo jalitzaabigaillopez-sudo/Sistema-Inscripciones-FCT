@@ -57,7 +57,7 @@ class InscripcionController extends Controller
             'id_evento' => $atleta['id_evento'],
             'id_modalidad' => $atleta['id_modalidad'],
             'id_subModalidad' => $atleta['id_subModalidad'],
-            'id_categoria' => $atleta['id_categoria'],
+            'id_categoria' => ($atleta['id_categoria'] == 0) ? null : $atleta['id_categoria'],// en el caso de pommsae y freestyle llega en 0
             'fecha_inscripcion' => date("Y-m-d H:i:s"),
             'estado' => 'inactiva',
             'peso' => $atleta['peso'],
@@ -81,7 +81,7 @@ class InscripcionController extends Controller
                 ->where('id_evento', $atleta['id_evento'])
                 ->where('id_modalidad', $atleta['id_modalidad'])
                 ->where('id_subModalidad', $atleta['id_subModalidad'])
-                ->where('id_categoria', $atleta['id_categoria'])
+                // ->where('id_categoria', $atleta['id_categoria'])
                 ->where('codigo_equipo', $atleta['grupo'])
                 ->where('rol', $atleta['rol'])
                 ->first();
@@ -95,7 +95,7 @@ class InscripcionController extends Controller
                 $inscripcion->id_modalidad = $datosNuevos['id_modalidad'];
                 $inscripcion->id_subModalidad = $datosNuevos['id_subModalidad'];
 
-                $inscripcion->id_categoria = $datosNuevos['id_categoria'];
+                $inscripcion->id_categoria = ($datosNuevos['id_categoria'] == 0) ? null : $datosNuevos['id_categoria'];
                 $inscripcion->codigo_equipo = $datosNuevos['grupo'];
                 $inscripcion->rol = $datosNuevos['rol'];
                 $inscripcion->estado = 'inactiva';
@@ -123,7 +123,7 @@ class InscripcionController extends Controller
                 ->where('id_evento', $atleta['id_evento'])
                 ->where('id_modalidad', $atleta['id_modalidad'])
                 ->where('id_subModalidad', $atleta['id_subModalidad'])
-                ->where('id_categoria', $atleta['id_categoria'])
+                // ->where('id_categoria', $atleta['id_categoria'])
                 ->where('codigo_equipo', $atleta['grupo'])
                 ->first();
 

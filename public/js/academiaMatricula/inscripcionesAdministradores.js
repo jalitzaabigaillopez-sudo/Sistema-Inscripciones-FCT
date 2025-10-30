@@ -1440,7 +1440,7 @@ $(document).ready(function () {
                     // ids
                     id_evento: atleta.evento?.id_evento || null,
                     id_atleta: atleta.id_atleta || null,
-                    id_division: atleta.categoria.id_division || null,
+                    id_division: atleta.id_division || null,
                     id_modalidad: atleta.modalidad?.id_modalidad || null,
                     id_subModalidad: atleta.subModalidad?.id_subModalidad || null,
                     id_categoria: atleta.categoria?.id_categoria || null,

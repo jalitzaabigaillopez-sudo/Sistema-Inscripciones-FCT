@@ -9,7 +9,7 @@ class Categoria extends Model
     protected $table = 'categorias';
     protected $primaryKey= 'id_categoria';
     public $timestamps = false;    // se deben colocar las columnas created_at y updated_at
-    protected $fillable = ['id_division', 'sexo', 'peso_min', 'peso_max'];
+    protected $fillable = ['sexo', 'peso_min', 'peso_max', 'id_division'];
 
     public function atletas()
     {
