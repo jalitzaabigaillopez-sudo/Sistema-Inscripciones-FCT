@@ -26,6 +26,7 @@
                             <th>Cantidad de inscritos</th>
                             <th>Estado</th>
                             <th>Inicio del evento</th>
+                            <th>Tipo Inscripción</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -49,6 +50,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $ins->evento->fecha_inicio }}</td>
+                                <td>tardiaaa ejemplo</td>
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill"

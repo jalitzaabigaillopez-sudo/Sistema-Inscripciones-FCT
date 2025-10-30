@@ -48,8 +48,35 @@ class InscripcionController extends Controller
 
     public function inscribirAtleta(Request $request)
     {
+        try {
 
         $atleta = $request->input('atleta');
+
+         // Obtener el evento
+        $evento = Evento::findOrFail($atleta['id_evento']);
+
+        $hoy = Carbon::today();
+
+        // Determinar tipo de inscripción (normal o tardía)
+        $tipoInscripcion = 'normal';
+        if ($evento->fecha_final_inscripcion && $evento->fecha_final_inscripcion_tardia) {
+            $fechaFinalNormal = Carbon::parse($evento->fecha_final_inscripcion);
+            $fechaFinalTardia = Carbon::parse($evento->fecha_final_inscripcion_tardia);
+
+            if ($hoy->gt($fechaFinalNormal) && $hoy->lte($fechaFinalTardia)) {
+                $tipoInscripcion = 'tardia';
+            } elseif ($hoy->gt($fechaFinalTardia)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El periodo de inscripción (incluyendo tardía) ya ha finalizado.'
+                ], 400);
+            }
+        } elseif ($evento->fecha_final_inscripcion && $hoy->gt(Carbon::parse($evento->fecha_final_inscripcion))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El periodo de inscripción ha finalizado.'
+            ], 400);
+        }
 
         $inscripcion = Inscripcion::create([
             'id_academia' => $atleta['id_academia'],
@@ -58,7 +85,8 @@ class InscripcionController extends Controller
             'id_modalidad' => $atleta['id_modalidad'],
             'id_subModalidad' => $atleta['id_subModalidad'],
             'id_categoria' => ($atleta['id_categoria'] == 0) ? null : $atleta['id_categoria'],// en el caso de pommsae y freestyle llega en 0
-            'fecha_inscripcion' => date("Y-m-d H:i:s"),
+            'fecha_inscripcion'=> now(),
+            'tipo_inscripcion' => $tipoInscripcion,
             'estado' => 'inactiva',
             'peso' => $atleta['peso'],
             'codigo_equipo' => $atleta['grupo'],
@@ -66,7 +94,19 @@ class InscripcionController extends Controller
             'codigo_equipo' => $atleta['grupo'],
             'rol' => $atleta['rol'],
         ]);
-        return response()->json($inscripcion, 201);
+         return response()->json([
+            'success' => true,
+            'message' => "Atleta inscrito correctamente como inscripción {$tipoInscripcion}.",
+            'data' => $inscripcion
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ocurrió un error al registrar la inscripción: ' . $e->getMessage()
+        ], 500);
+    }
+
     }
 
     public function modificarInscripcionAtleta(Request $request)
@@ -159,8 +199,12 @@ class InscripcionController extends Controller
         $hoy = Carbon::today();
 
         $eventos = Evento::where('estado', 'activo')
-            ->where('fecha_final_inscripcion', '>=', $hoy)
-            ->get();
+           ->where(function ($query) use ($hoy) {
+            $query->where('fecha_final_inscripcion', '>=', $hoy)
+                  ->orWhere('fecha_final_inscripcion_tardia', '>=', $hoy);
+        })
+        ->orderBy('fecha_inicio_inscripcion', 'asc')
+        ->get();
 
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
@@ -217,6 +261,11 @@ class InscripcionController extends Controller
     {
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+
+        $eventosIds = Inscripcion::where('id_academia', $academia->id_academia)
+        ->distinct()
+        ->pluck('id_evento');
 
         $eventos = Evento::where('id_evento', $id_evento)->get();
         $bloquearSelectEventos = true;
@@ -250,7 +299,7 @@ class InscripcionController extends Controller
         $evento = Evento::find($id_evento);
         $modalidades = $evento->modalidades;
 
-        return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos'));
+        return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos', 'eventosIds'));
     }
 
     public function eliminarInscripcion(Request $request)
