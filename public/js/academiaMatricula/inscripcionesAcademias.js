@@ -196,8 +196,10 @@ $(document).ready(function () {
         console.log("totalCardsBaseCard: ", totalCardsBaseCard);
         console.log("totalCardsClonEdit: ", totalCardsClonEdit);
 
+        let modalidad = panel.find(".modalidades-select option:selected").text().trim().toLowerCase();
 
-        if (totalCardsBaseCard === 1 && totalCardsClonEdit === 0) {
+        // if (totalCardsBaseCard === 1 && totalCardsClonEdit === 0) {
+        if (modalidad === "combate") {
 
             $.ajax({
                 url: '/obtenerCategorias',
@@ -293,6 +295,7 @@ $(document).ready(function () {
                 nuevaCard.find('input').val('');
                 crearElementos(nuevaCard, panelOriginal, contenedor)
                 console.log("_1");
+
             } else if (edicionGrupal_modo_ === false) {
 
                 nuevaCard = panelOriginal.clone();
@@ -309,12 +312,13 @@ $(document).ready(function () {
 
 
         //AQUI
+        // var card = $(this).closest('.card');
         let card = $(this).closest('.baseCard, .clonEdit, #panelRegistro');
         let modalidad = card.find(".modalidades-select option:selected").text().trim().toLowerCase();
         let submodalidad = card.find(".submodalidades-select option:selected").text();
 
         if (modalidad === "poomsae" || modalidad === "freestyle") {
-            var selectsCategorias = $('.categorias-select');
+            var selectsCategorias = card.find('.categorias-select');
 
             selectsCategorias.each(function () {
                 var select = $(this);
@@ -390,6 +394,21 @@ $(document).ready(function () {
 
         // Inicializar Select2
         nuevaCard.find('.atletas-select').select2({ placeholder: "Selecciona un atleta", width: '100%' });
+
+
+        //AQUI
+        let modalidad = nuevaCard.find(".modalidades-select option:selected").text().trim().toLowerCase();
+        let submodalidad = nuevaCard.find(".submodalidades-select option:selected").text();
+
+        if (modalidad === "poomsae" || modalidad === "freestyle") {
+            var selectsCategorias = nuevaCard.find('.categorias-select');
+
+            selectsCategorias.each(function () {
+                var select = $(this);
+                select.empty();
+                select.append('<option value="0" data-min="0" data-max="0">' + submodalidad + '</option>');
+            });
+        }
     }
 
     // ⬅️ Delegación de eventos para todos los selects de categorias
@@ -688,7 +707,7 @@ $(document).ready(function () {
     function modificarAtletaInscrito_p(obj, temp) {
         console.log("🏴");
         console.log("obj: ", obj);
-        
+
 
         $.ajax({
             url: '/modificarInscripcionAtleta',
@@ -720,6 +739,7 @@ $(document).ready(function () {
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (res) {
+                mostrarAlerta("Uno o más atletas han sido eliminados correctamente.", "Éxito", "✅");
                 atletasModificar = [];
             },
             error: function (xhr, status, error) {
@@ -923,7 +943,7 @@ $(document).ready(function () {
         fila.find('td:eq(3)').text(obj.rol);
         fila.find('td:eq(4)').text(obj.modalidad);
         fila.find('td:eq(5)').text(obj.submodalidad);
-        fila.find('td:eq(6)').text(obj.categoria + " (kg)");
+        fila.find('td:eq(6)').text(obj.categoria);
         fila.find('td:eq(7)').text(obj.grupo);
 
         // Cambiar atributos al nuevo code y id
@@ -1493,6 +1513,41 @@ $(document).ready(function () {
                             return $(this).data("nombre") == atletaReferencia.submodalidad;
                         }).prop("selected", true);
 
+
+                        // 🔹 Cargar categorías //@audit aqui 
+                        if (atletaReferencia.id_categoria != 0) {//poomsae y freestyle tienen id = 0
+
+                            let selectCat = nuevaCard.find('.categorias-select');
+                            $.ajax({
+                                url: '/obtenerCategorias',
+                                method: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    id_division: atletaReferencia.id_division,
+                                    sexo: atletaReferencia.sexo,
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function (res) {
+                                    selectCat.empty();
+                                    selectCat.append('<option value="">Seleccione una categoria</option>');
+                                    res.forEach(function (item) {
+                                        selectCat.append(
+                                            '<option value="' + item.id_categoria + '" data-min="' + item.peso_min + '" data-max="' + item.peso_max + '">' +
+                                            'Peso mínimo: ' + item.peso_min + ' - Peso máximo: ' + item.peso_max +
+                                            '</option>'
+                                        );
+                                    });
+                                },
+                                error: function () { mostrarAlerta("Error al cargar categorías.", "Aviso", "⚠️"); }
+                            });
+                        } else {
+                            console.log("atletaReferencia: ", atletaReferencia);
+                            
+                            let selectCat = nuevaCard.find('.categorias-select');
+                            selectCat.empty();
+                            selectCat.append('<option value="0" data-min="0" data-max="0">' + atletaReferencia.submodalidad + '</option>');
+                        }
+
                         // Mostrar clon aunque el original esté oculto
                         nuevaCard.show();
                         contenedor.append(nuevaCard);
@@ -1926,7 +1981,6 @@ $(document).ready(function () {
         let id_evento = $(this).data('id-evento');
     });
 
-    //@audit aqui
     if (window.inscripcionApp && window.inscripcionApp.continuarEdicion) {
         $("#panelRegistro").show();
         $("#containerButton").show();
