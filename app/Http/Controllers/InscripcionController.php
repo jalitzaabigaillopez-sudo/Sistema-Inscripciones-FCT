@@ -10,6 +10,7 @@ use App\Models\ModalidadEvento;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use App\Services\SessionService;
+use Illuminate\Support\Facades\Schema;
 
 class InscripcionController extends Controller
 {
@@ -50,62 +51,62 @@ class InscripcionController extends Controller
     {
         try {
 
-        $atleta = $request->input('atleta');
+            $atleta = $request->input('atleta');
 
-         // Obtener el evento
-        $evento = Evento::findOrFail($atleta['id_evento']);
+            // Obtener el evento
+            $evento = Evento::findOrFail($atleta['id_evento']);
 
-        $hoy = Carbon::today();
+            $hoy = Carbon::today();
 
-        // Determinar tipo de inscripción (normal o tardía)
-        $tipoInscripcion = 'normal';
-        if ($evento->fecha_final_inscripcion && $evento->fecha_final_inscripcion_tardia) {
-            $fechaFinalNormal = Carbon::parse($evento->fecha_final_inscripcion);
-            $fechaFinalTardia = Carbon::parse($evento->fecha_final_inscripcion_tardia);
+            // Determinar tipo de inscripción (normal o tardía)
+            $tipoInscripcion = 'normal';
+            if ($evento->fecha_final_inscripcion && $evento->fecha_final_inscripcion_tardia) {
+                $fechaFinalNormal = Carbon::parse($evento->fecha_final_inscripcion);
+                $fechaFinalTardia = Carbon::parse($evento->fecha_final_inscripcion_tardia);
 
-            if ($hoy->gt($fechaFinalNormal) && $hoy->lte($fechaFinalTardia)) {
-                $tipoInscripcion = 'tardia';
-            } elseif ($hoy->gt($fechaFinalTardia)) {
+                if ($hoy->gt($fechaFinalNormal) && $hoy->lte($fechaFinalTardia)) {
+                    $tipoInscripcion = 'tardia';
+                } elseif ($hoy->gt($fechaFinalTardia)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El periodo de inscripción (incluyendo tardía) ya ha finalizado.'
+                    ], 400);
+                }
+            } elseif ($evento->fecha_final_inscripcion && $hoy->gt(Carbon::parse($evento->fecha_final_inscripcion))) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El periodo de inscripción (incluyendo tardía) ya ha finalizado.'
+                    'message' => 'El periodo de inscripción ha finalizado.'
                 ], 400);
             }
-        } elseif ($evento->fecha_final_inscripcion && $hoy->gt(Carbon::parse($evento->fecha_final_inscripcion))) {
+
+            $inscripcion = Inscripcion::create([
+                'id_academia' => $atleta['id_academia'],
+                'id_atleta' => $atleta['id_atleta'],
+                'id_evento' => $atleta['id_evento'],
+                'id_modalidad' => $atleta['id_modalidad'],
+                'id_subModalidad' => $atleta['id_subModalidad'],
+                'id_categoria' => ($atleta['id_categoria'] == 0) ? null : $atleta['id_categoria'],// en el caso de pommsae y freestyle llega en 0
+                'fecha_inscripcion' => now(),
+                'tipo_inscripcion' => $tipoInscripcion,
+                'estado' => 'inactiva',
+                'peso' => $atleta['peso'],
+                'codigo_equipo' => $atleta['grupo'],
+                'peso' => $atleta['peso'],
+                'codigo_equipo' => $atleta['grupo'],
+                'rol' => $atleta['rol'],
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => "Atleta inscrito correctamente como inscripción {$tipoInscripcion}.",
+                'data' => $inscripcion
+            ], 201);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'El periodo de inscripción ha finalizado.'
-            ], 400);
+                'message' => 'Ocurrió un error al registrar la inscripción: ' . $e->getMessage()
+            ], 500);
         }
-
-        $inscripcion = Inscripcion::create([
-            'id_academia' => $atleta['id_academia'],
-            'id_atleta' => $atleta['id_atleta'],
-            'id_evento' => $atleta['id_evento'],
-            'id_modalidad' => $atleta['id_modalidad'],
-            'id_subModalidad' => $atleta['id_subModalidad'],
-            'id_categoria' => ($atleta['id_categoria'] == 0) ? null : $atleta['id_categoria'],// en el caso de pommsae y freestyle llega en 0
-            'fecha_inscripcion'=> now(),
-            'tipo_inscripcion' => $tipoInscripcion,
-            'estado' => 'inactiva',
-            'peso' => $atleta['peso'],
-            'codigo_equipo' => $atleta['grupo'],
-            'peso' => $atleta['peso'],
-            'codigo_equipo' => $atleta['grupo'],
-            'rol' => $atleta['rol'],
-        ]);
-         return response()->json([
-            'success' => true,
-            'message' => "Atleta inscrito correctamente como inscripción {$tipoInscripcion}.",
-            'data' => $inscripcion
-        ], 201);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Ocurrió un error al registrar la inscripción: ' . $e->getMessage()
-        ], 500);
-    }
 
     }
 
@@ -195,19 +196,29 @@ class InscripcionController extends Controller
             ->pluck('id_evento');
 
         $bloquearSelectEventos = false;
-
         $hoy = Carbon::today();
 
         $eventos = Evento::where('estado', 'activo')
-           ->where(function ($query) use ($hoy) {
-            $query->where('fecha_final_inscripcion', '>=', $hoy)
-                  ->orWhere('fecha_final_inscripcion_tardia', '>=', $hoy);
-        })
-        ->orderBy('fecha_inicio_inscripcion', 'asc')
-        ->get();
+            ->where(function ($query) use ($hoy) {
+                // Eventos dentro del rango normal de inscripción
+                $query->where(function ($q) use ($hoy) {
+                    $q->whereNotNull('fecha_inicio_inscripcion')
+                        ->whereNotNull('fecha_final_inscripcion')
+                        ->where('fecha_inicio_inscripcion', '<=', $hoy)
+                        ->where('fecha_final_inscripcion', '>=', $hoy);
+                })
+                    // O eventos con inscripción tardía aún abierta
+                    ->orWhere(function ($q) use ($hoy) {
+                    $q->whereNotNull('fecha_final_inscripcion_tardia')
+                        ->where('fecha_final_inscripcion_tardia', '>=', $hoy);
+                });
+            })
+            ->orderBy('fecha_inicio_inscripcion', 'asc')
+            ->get();
 
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
+        // dd($eventos);
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
     }
 
@@ -238,7 +249,7 @@ class InscripcionController extends Controller
 
             $atletas = $grupo->pluck('atletas')->flatten();// Todos los atletas del grupo
 
-            $cantidad_inscritos = $atletas->count();// Cantidad de inscritos
+            $cantidad_inscritos = $atletas->count();
 
             $inscripcionesAgrupadas[] = (object) [
                 'evento' => $primera->evento,
@@ -264,8 +275,8 @@ class InscripcionController extends Controller
         $academia = $usuario->academia;
 
         $eventosIds = Inscripcion::where('id_academia', $academia->id_academia)
-        ->distinct()
-        ->pluck('id_evento');
+            ->distinct()
+            ->pluck('id_evento');
 
         $eventos = Evento::where('id_evento', $id_evento)->get();
         $bloquearSelectEventos = true;
