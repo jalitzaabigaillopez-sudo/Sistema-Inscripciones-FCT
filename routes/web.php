@@ -17,6 +17,7 @@ use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\EstadisticaController;
 use Illuminate\Types\Relations\Role;
 
 
@@ -219,6 +220,8 @@ Route::resource('/inscripciones', InscripcionController::class);
 
 // Estadísticas de eventos
 Route::get('/estadisticas-eventos', [InicioController::class, 'estadisticasEventos'])->name('estadisticas.eventos');
+
+
 
 
 Route::post('/admin/profile/update', function () {

@@ -54,6 +54,10 @@ class Inscripcion extends Model
     return $this->belongsTo(Grado::class, 'id_grado'); // ajustá el nombre de la columna si es diferente
 }
 
+    public function division()
+{
+    return $this->belongsTo(Division::class, 'id_division'); // ajustá el nombre de la columna si es diferente
+}
 
     /*
     // Relación indirecta para acceder a Evento a través de ModalidadEvento

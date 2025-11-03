@@ -35,7 +35,7 @@ public function estadisticasEventos(Request $request)
         'por_modalidad' => [],
         'por_submodalidad' => [],
         'por_grado' => [],
-        'por_categoria' => [],
+        'por_division' => [],
     ];
 
     $eventoSeleccionado = null;
@@ -52,7 +52,7 @@ public function estadisticasEventos(Request $request)
         }
 
         // Obtener inscripciones (soportando id_evento o evento_id en la tabla inscripciones)
-        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'grado', 'categoria'])
+        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'grado', 'division'])
             ->where(function($q) use ($eventoSeleccionado, $eventoId) {
                 $valor = $eventoSeleccionado->id_evento ?? $eventoId;
                 $q->where('id_evento', $valor)->orWhere('id_evento', $valor);
@@ -80,10 +80,12 @@ public function estadisticasEventos(Request $request)
                 ->countBy()
                 ->toArray();
 
-            $estadisticas['por_categoria'] = $inscripciones
-                ->map(fn($i) => $i->categoria->nombre ?? ($i->categoria_nombre ?? 'Sin categoría'))
-                ->countBy()
-                ->toArray();
+            $estadisticas['por_division'] = $inscripciones
+    ->map(fn($i) => $i->division->nombre ?? 'Sin división')
+    ->countBy()
+    ->toArray();
+
+
         } else {
             // No hay inscripciones: se deja la estructura por defecto (0 y arrays vacíos)
             session()->flash('info', 'No hay inscripciones para el evento seleccionado');

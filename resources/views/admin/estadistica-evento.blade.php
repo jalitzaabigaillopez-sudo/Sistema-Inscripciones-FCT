@@ -66,7 +66,7 @@
             'por_modalidad' => 'Distribución por Modalidad',
             'por_submodalidad' => 'Distribución por Submodalidad',
             'por_grado' => 'Distribución por Grado',
-            'por_categoria' => 'Distribución por Categoría'
+            'por_division' => 'Distribución por División'
           ] as $key => $titulo)
             @php $items = $estadisticas[$key] ?? []; @endphp
             <div class="accordion mb-3" id="accordion-{{ $key }}">
