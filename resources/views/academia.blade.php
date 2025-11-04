@@ -152,14 +152,42 @@
             margin-left: 0 !important;
         }
 
+
+        /* @audit aqui css */
+        /* Bloqueo visual */
+        .bloqueado {
+            position: relative;
+        }
+
+        .bloqueado::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.4);
+            /* backdrop-filter: blur(2px); */
+            cursor: not-allowed;
+            z-index: 10;
+        }
+
+        .bloqueado * {
+            pointer-events: none;
+        }
+
+
+
         /* ================================================
          VISTA MÓVIL
         ================================================= */
         @media (max-width: 768px) {
             .content-wrapper {
                 margin-left: 0 !important;
-                margin-top: 110px; /* más espacio para el navbar compacto */
-                padding-top: 1.5rem 1rem; /* padding: 1.5rem 1rem; */
+                margin-top: 110px;
+                /* más espacio para el navbar compacto */
+                padding-top: 1.5rem 1rem;
+                /* padding: 1.5rem 1rem; */
             }
 
             /* Reorganizar cabecera de secciones (título + botón) */
@@ -509,8 +537,17 @@
         </div>
         </div>
     </nav>
+
     <!-- Main Content -->
-    <div class="content-wrapper" id="contentWrapper">
+    <div class="content-wrapper {{ $academia->estado === 'inactivo' ? 'bloqueado' : '' }}" id="contentWrapper">
+
+        @if($academia->estado === 'inactivo')
+            <div
+                style="position:absolute; top:70px; left:0; right:0; text-align:center; background:#ffdddd; color:#b00; padding:10px; z-index:11;">
+                ⚠️ Esta academia está inactiva. Las acciones están deshabilitadas.
+            </div>
+        @endif
+
         @yield('content')
     </div>
 
@@ -545,7 +582,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -577,7 +614,7 @@
             return estado === 'true';
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             // GUARDAR ESTADO DE SUBMENÚ SIN IMPORTAR SI SE REFRESCA
 
@@ -592,7 +629,7 @@
                 inscripcionesToggle.classList.add('active');
             }
 
-            inscripcionesToggle.addEventListener('click', function(e) {
+            inscripcionesToggle.addEventListener('click', function (e) {
                 e.preventDefault();
                 const estaAbierto = !inscripcionesItems.classList.contains('d-none');
 
@@ -618,7 +655,7 @@
                 analisisToggle.classList.add('active');
             }
 
-            analisisToggle.addEventListener('click', function(e) {
+            analisisToggle.addEventListener('click', function (e) {
                 e.preventDefault();
                 const estaAbierto = !analisisItems.classList.contains('d-none');
 
@@ -658,7 +695,7 @@
                 }
             }
 
-            toggleSidebar.addEventListener('click', function() {
+            toggleSidebar.addEventListener('click', function () {
                 // En móvil, abre sidebar con clase sidebar-open
                 if (window.innerWidth <= 768) {
                     sidebar.classList.add('sidebar-open');
@@ -669,7 +706,7 @@
                 }
             });
 
-            sidebarClose.addEventListener('click', function() {
+            sidebarClose.addEventListener('click', function () {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('sidebar-open');
                 setContentMargin();
@@ -679,7 +716,7 @@
             adjustSidebarOnLoad();
 
             // Cerrar sidebar si se hace clic fuera (solo en móviles)
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (
                     window.innerWidth <= 768 &&
                     !sidebar.contains(e.target) &&
@@ -692,7 +729,7 @@
 
             // VISUALIZAR CONTRA
             document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const input = document.querySelector(this.dataset.target);
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
@@ -709,12 +746,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 
     <!-- Bootstrap-Select -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
     <!-- jQuery primero -->
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+    {{--
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
     <!-- Bootstrap-Select -->
     {{--
