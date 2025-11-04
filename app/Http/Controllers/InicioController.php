@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Models\Academia;
 use App\Models\Atleta;
+use App\Models\Categoria;
 use App\Models\Inscripcion;
 use App\Models\Evento;
 use Illuminate\Http\Request;
@@ -36,6 +37,8 @@ public function estadisticasEventos(Request $request)
         'por_submodalidad' => [],
         'por_grado' => [],
         'por_division' => [],
+        'por_categoria' => [],
+        'por_academia' => [],
     ];
 
     $eventoSeleccionado = null;
@@ -52,7 +55,7 @@ public function estadisticasEventos(Request $request)
         }
 
         // Obtener inscripciones (soportando id_evento o evento_id en la tabla inscripciones)
-        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'grado', 'division'])
+        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'atleta.grado', 'evento.division', 'evento.categoria'])
             ->where(function($q) use ($eventoSeleccionado, $eventoId) {
                 $valor = $eventoSeleccionado->id_evento ?? $eventoId;
                 $q->where('id_evento', $valor)->orWhere('id_evento', $valor);
@@ -66,25 +69,40 @@ public function estadisticasEventos(Request $request)
             $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
 
             $estadisticas['por_modalidad'] = $inscripciones
-                ->map(fn($i) => $i->modalidad->nombre ?? ($i->modalidad_nombre ?? 'Sin modalidad'))
+                ->map(function($i) {
+                    $nombre = $i->modalidad->nombre ?? $i->modalidad_nombre ?? '';
+                    $nombre = is_string($nombre) ? trim($nombre) : '';
+                    return $nombre !== '' ? $nombre : 'No especificada';
+                })
                 ->countBy()
                 ->toArray();
 
             $estadisticas['por_submodalidad'] = $inscripciones
-                ->map(fn($i) => $i->submodalidad->nombre ?? ($i->submodalidad_nombre ?? 'Sin submodalidad'))
+                ->map(function($i) {
+                    $nombre = $i->submodalidad->nombre ?? $i->submodalidad_nombre ?? '';
+                    $nombre = is_string($nombre) ? trim($nombre) : '';
+                    return $nombre !== '' ? $nombre : 'No asignada';
+                })
                 ->countBy()
                 ->toArray();
-
+   
             $estadisticas['por_grado'] = $inscripciones
                 ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
                 ->countBy()
                 ->toArray();
 
-            $estadisticas['por_division'] = $inscripciones
-    ->map(fn($i) => $i->division->nombre ?? 'Sin división')
-    ->countBy()
-    ->toArray();
+          $estadisticas['por_categoria'] = $inscripciones
+    ->groupBy(fn($i) => $i->evento->categoria->nombre ?? 'Entrenador / Asistente')
+    ->map(fn($grupo) => $grupo->count());
 
+$estadisticas['por_division'] = $inscripciones
+    ->groupBy(fn($i) => $i->evento->division->nombre ?? 'Entrenador / Asistente')
+    ->map(fn($grupo) => $grupo->count());
+    
+            $estadisticas['por_academia'] = $inscripciones
+                ->map(fn($i) => $i->academia->nombre ?? ($i->academia_nombre ?? 'Sin academia'))
+                ->countBy()
+                ->toArray();
 
         } else {
             // No hay inscripciones: se deja la estructura por defecto (0 y arrays vacíos)

@@ -12,11 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inscripciones', function (Blueprint $table) {
-        $table->unsignedBigInteger('id_division')->nullable()->after('id_categoria');
-
-        // Si tenés la tabla `divisiones`, agregá la clave foránea:
-        $table->foreign('id_division')->references('id_division')->on('divisiones')->onDelete('set null');
-    });
+            //
+           $table->unsignedInteger('division_id')->nullable()->after('id_categoria');
+        });
     }
 
     /**
@@ -25,8 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('inscripciones', function (Blueprint $table) {
-        $table->dropForeign(['id_division']);
-        $table->dropColumn('id_division');
-    });
+            
+        });
     }
 };

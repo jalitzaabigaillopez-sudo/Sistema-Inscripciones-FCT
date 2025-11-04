@@ -66,7 +66,9 @@
             'por_modalidad' => 'Distribución por Modalidad',
             'por_submodalidad' => 'Distribución por Submodalidad',
             'por_grado' => 'Distribución por Grado',
-            'por_division' => 'Distribución por División'
+            'por_categoria' => 'Distribución por Categoría',
+            'por_division' => 'Distribución por División',
+            'por_academia' => 'Distribución por Academia'
           ] as $key => $titulo)
             @php $items = $estadisticas[$key] ?? []; @endphp
             <div class="accordion mb-3" id="accordion-{{ $key }}">
@@ -88,7 +90,7 @@
                         @endforeach
                       </ul>
                     @else
-                      <p class="text-muted">Sin datos registrados.</p>
+                    <span>{{ $nombre ?: 'Sin nombre registrado' }}</span>
                     @endif
                   </div>
                 </div>

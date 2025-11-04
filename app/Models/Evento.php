@@ -38,4 +38,14 @@ public function inscripciones()
     return $this->hasMany(Inscripcion::class, 'id_evento');
 }
 
+public function categoria()
+{
+    return $this->belongsTo(Categoria::class, 'id_categoria');
+}
+
+public function division()
+{
+    return $this->belongsTo(Division::class, 'id_division');
+}
+
 }

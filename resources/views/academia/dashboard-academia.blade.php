@@ -153,9 +153,13 @@
                   </span>
                 </td>
                 <td>
-                  <a href="{{ route('inscripcion.academia')}}" class="btn btn-sm btn-primary" title="Inscribir a este evento">
-                    <i class="bi bi-pencil-square me-1"></i> Inscribir
-                  </a>
+                  <a href="{{ route('editar.inscripcion', ['id_evento' => $evento->id_evento]) }}"
+     class="btn btn-sm btn-primary btn-inscribir"
+     data-url="{{ route('editar.inscripcion', ['id_evento' => $evento->id_evento]) }}"
+     data-id="{{ $evento->id_evento }}"
+     title="Ver o editar inscripción">
+    <i class="bi bi-pencil-square me-1"></i> Inscribir
+  </a>
                 </td>
               </tr>
             @endforeach
@@ -308,5 +312,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.btn-inscribir').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const url = this.dataset.url;
+      const id = this.dataset.id;
+
+      // Confirmación antes de redirigir
+      Swal.fire({
+        title: 'Inscribir atleta',
+        text: `¿Deseas gestionar la inscripción para el evento #${id}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0d6efd'
+      }).then(result => {
+        if (result.isConfirmed) {
+          // Redirigir a la URL (puedes cambiar por fetch/AJAX si quieres cargar modal)
+          window.location.href = url;
+        }
+      });
+    });
+  });
+});
 </script>
 @endsection
