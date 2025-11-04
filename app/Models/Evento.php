@@ -40,12 +40,12 @@ public function inscripciones()
 
 public function categoria()
 {
-    return $this->belongsTo(Categoria::class, 'id_categoria');
+    return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
 }
 
 public function division()
 {
-    return $this->belongsTo(Division::class, 'id_division');
+    return $this->belongsTo(Division::class, 'id_division', 'id_division');
 }
 
 }

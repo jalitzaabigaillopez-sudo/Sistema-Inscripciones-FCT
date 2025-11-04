@@ -23,21 +23,11 @@ class InicioController extends Controller
             redirect()->route('login')->send();
         }
     }
-    // Estadísticas detalladas de eventos
+
     public function estadisticasEventos(Request $request)
     {
         $eventos = Evento::orderBy('nombre')->get();
 
-        // // Estructura por defecto
-        // $estadisticas = [
-        //     'total_inscripciones' => 0,
-        //     'total_atletas' => 0,
-        //     'total_academias' => 0,
-        //     'por_modalidad' => [],
-        //     'por_submodalidad' => [],
-        //     'por_grado' => [],
-        //     'por_division' => [],
-        // ];
     // Estructura por defecto
     $estadisticas = [
         'total_inscripciones' => 0,
@@ -51,77 +41,40 @@ class InicioController extends Controller
         'por_academia' => [],
     ];
 
-        $eventoSeleccionado = null;
+    $eventoSeleccionado = null;
+    // aceptar ambos nombres por seguridad
+    $eventoId = $request->input('id_evento', $request->input('evento_id'));
 
-        if ($request->filled('id_evento')) {
-            $eventoId = $request->input('id_evento');
+    if ($eventoId) {
+        $eventoSeleccionado = Evento::where('id_evento', $eventoId)->first() ?? Evento::find($eventoId);
 
-            // Buscar por id_evento o por id
-            $eventoSeleccionado = Evento::where('id_evento', $eventoId)->first() ?? Evento::find($eventoId);
-
-            if (!$eventoSeleccionado) {
-                session()->flash('error', 'Evento no encontrado');
-                return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
-            }
-
-            // Obtener inscripciones (soportando id_evento o evento_id en la tabla inscripciones)
-            $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'grado', 'division'])
-                ->where(function ($q) use ($eventoSeleccionado, $eventoId) {
-                    $valor = $eventoSeleccionado->id_evento ?? $eventoId;
-                    $q->where('id_evento', $valor)->orWhere('id_evento', $valor);
-                })
-                ->get();
-
-            // Si hay inscripciones, calcular estadísticas
-            if ($inscripciones->isNotEmpty()) {
-                $estadisticas['total_inscripciones'] = $inscripciones->count();
-                $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
-                $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
-
-                $estadisticas['por_modalidad'] = $inscripciones
-                    ->map(fn($i) => $i->modalidad->nombre ?? ($i->modalidad_nombre ?? 'Sin modalidad'))
-                    ->countBy()
-                    ->toArray();
-
-                $estadisticas['por_submodalidad'] = $inscripciones
-                    ->map(fn($i) => $i->submodalidad->nombre ?? ($i->submodalidad_nombre ?? 'Sin submodalidad'))
-                    ->countBy()
-                    ->toArray();
-
-                $estadisticas['por_grado'] = $inscripciones
-                    ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
-                    ->countBy()
-                    ->toArray();
-
-                $estadisticas['por_division'] = $inscripciones
-                    ->map(fn($i) => $i->division->nombre ?? 'Sin división')
-                    ->countBy()
-                    ->toArray();
-
-
-            } else {
-                // No hay inscripciones: se deja la estructura por defecto (0 y arrays vacíos)
-                session()->flash('info', 'No hay inscripciones para el evento seleccionado');
-            }
+        if (!$eventoSeleccionado) {
+            session()->flash('error', 'Evento no encontrado');
+            return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
         }
 
-        // return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
-        // Obtener inscripciones (soportando id_evento o evento_id en la tabla inscripciones)
-        $inscripciones = Inscripcion::with(['atleta', 'academia', 'modalidad', 'submodalidad', 'atleta.grado', 'evento.division', 'evento.categoria'])
-            ->where(function($q) use ($eventoSeleccionado, $eventoId) {
-                $valor = $eventoSeleccionado->id_evento ?? $eventoId;
-                $q->where('id_evento', $valor)->orWhere('id_evento', $valor);
-            })
+        $valor = $eventoSeleccionado->id_evento ?? $eventoId;
+
+        // Usar solo la columna real 'id_evento' (quitar orWhere sobre 'evento_id' que no existe)
+        $inscripciones = Inscripcion::with([
+                'atleta',
+                'academia',
+                'modalidad',
+                'submodalidad',
+                'grado',
+                'evento.categoria',
+                'evento.division'
+            ])
+            ->where('id_evento', $valor)
             ->get();
 
-        // Si hay inscripciones, calcular estadísticas
         if ($inscripciones->isNotEmpty()) {
             $estadisticas['total_inscripciones'] = $inscripciones->count();
             $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
             $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
 
             $estadisticas['por_modalidad'] = $inscripciones
-                ->map(function($i) {
+                ->map(function ($i) {
                     $nombre = $i->modalidad->nombre ?? $i->modalidad_nombre ?? '';
                     $nombre = is_string($nombre) ? trim($nombre) : '';
                     return $nombre !== '' ? $nombre : 'No especificada';
@@ -130,38 +83,40 @@ class InicioController extends Controller
                 ->toArray();
 
             $estadisticas['por_submodalidad'] = $inscripciones
-                ->map(function($i) {
+                ->map(function ($i) {
                     $nombre = $i->submodalidad->nombre ?? $i->submodalidad_nombre ?? '';
                     $nombre = is_string($nombre) ? trim($nombre) : '';
                     return $nombre !== '' ? $nombre : 'No asignada';
                 })
                 ->countBy()
                 ->toArray();
-   
+
             $estadisticas['por_grado'] = $inscripciones
-                ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
+              ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
                 ->countBy()
                 ->toArray();
 
-          $estadisticas['por_categoria'] = $inscripciones
-    ->groupBy(fn($i) => $i->evento->categoria->nombre ?? 'Entrenador / Asistente')
+            $estadisticas['por_categoria'] = $inscripciones
+               ->groupBy(fn($i) => $i->evento->categoria->nombre ?? 'Entrenador / Asistente')
     ->map(fn($grupo) => $grupo->count());
 
+           // obtener divisiones con fallback seguro
 $estadisticas['por_division'] = $inscripciones
     ->groupBy(fn($i) => $i->evento->division->nombre ?? 'Entrenador / Asistente')
     ->map(fn($grupo) => $grupo->count());
-    
+
             $estadisticas['por_academia'] = $inscripciones
                 ->map(fn($i) => $i->academia->nombre ?? ($i->academia_nombre ?? 'Sin academia'))
                 ->countBy()
                 ->toArray();
-
         } else {
-            // No hay inscripciones: se deja la estructura por defecto (0 y arrays vacíos)
             session()->flash('info', 'No hay inscripciones para el evento seleccionado');
         }
     }
 
+    return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
+}
+// ...existing code...
     public function index(Request $request)
     {
 
