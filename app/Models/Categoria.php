@@ -20,6 +20,6 @@ class Categoria extends Model
     {
         return $this->belongsTo(Division::class, 'id_division');
     }
-
+  
 
 }
