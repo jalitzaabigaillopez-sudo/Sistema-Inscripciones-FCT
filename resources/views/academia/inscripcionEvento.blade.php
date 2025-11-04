@@ -4,10 +4,6 @@
 
 @section('content')
 
-    {{-- <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
-        <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
-    </a> --}}
-
     <input type="hidden" id="modeView" value="{{ $bloquearSelectEventos }}">
 
     <div class="container">

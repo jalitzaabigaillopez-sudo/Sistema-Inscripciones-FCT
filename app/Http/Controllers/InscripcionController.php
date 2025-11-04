@@ -53,12 +53,11 @@ class InscripcionController extends Controller
 
             $atleta = $request->input('atleta');
 
-            // Obtener el evento
+            // Determinar tipo de inscripción (normal o tardía) =============================
             $evento = Evento::findOrFail($atleta['id_evento']);
 
             $hoy = Carbon::today();
 
-            // Determinar tipo de inscripción (normal o tardía)
             $tipoInscripcion = 'normal';
             if ($evento->fecha_final_inscripcion && $evento->fecha_final_inscripcion_tardia) {
                 $fechaFinalNormal = Carbon::parse($evento->fecha_final_inscripcion);
@@ -78,6 +77,7 @@ class InscripcionController extends Controller
                     'message' => 'El periodo de inscripción ha finalizado.'
                 ], 400);
             }
+            //===============================================================================
 
             $inscripcion = Inscripcion::create([
                 'id_academia' => $atleta['id_academia'],
@@ -428,8 +428,9 @@ class InscripcionController extends Controller
             'id_evento' => $atleta['id_evento'],
             'id_modalidad' => $atleta['id_modalidad'],
             'id_subModalidad' => $atleta['id_subModalidad'],
-            'id_categoria' => $atleta['id_categoria'],
-            'fecha_inscripcion' => date("Y-m-d H:i:s"),
+            'id_categoria' => ($atleta['id_categoria'] == 0) ? null : $atleta['id_categoria'],// en el caso de pommsae y freestyle llega en 0
+            'fecha_inscripcion' => now(),
+            'tipo_inscripcion' => 'normal', //????
             'estado' => 'activa',
             'peso' => $atleta['peso'],
             'codigo_equipo' => $atleta['grupo'],

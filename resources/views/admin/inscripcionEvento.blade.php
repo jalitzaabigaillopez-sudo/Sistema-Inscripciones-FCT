@@ -4,15 +4,15 @@
 
 @section('content')
 
-    <input type="hidden" id="modeView"  value="{{ $bloquearSelectEventos }}">
+    <input type="hidden" id="modeView" value="{{ $bloquearSelectEventos }}">
     <input type="hidden" id="idAcademia" value="{{ $id_academia }}">
-
-    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
-        <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
-    </a>
 
     <div class="container py-4">
         <h3 class="mb-4 text-black fw-bold">Inscripción de Academia a Evento</h3>
+
+        <h6 class="mb-4 text-black fw-bold">Academia: {{ $academia->nombre }} | Encargado:
+            {{ $academia->profesor_encargado }}
+        </h6>
 
         {{-- Sección: Evento --}}
         <div class="card mb-4 shadow-sm">
@@ -39,21 +39,21 @@
         </div>
 
         {{-- Sección: Academia --}}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header fw-semibold">
-                <i class="bi bi-building me-2"></i> Datos de la Academia
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Nombre de la Academia</label>
-                    <input type="text" class="form-control" placeholder="{{ $academia->nombre }}" readonly>
+        <!-- <div class="card mb-4 shadow-sm"> 
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-building me-2"></i> Datos de la Academia
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Encargado</label>
-                    <input type="text" class="form-control" placeholder="{{ $academia->profesor_encargado }}" readonly>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la Academia</label>
+                        <input type="text" class="form-control" placeholder="{{ $academia->nombre }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Encargado</label>
+                        <input type="text" class="form-control" placeholder="{{ $academia->profesor_encargado }}" readonly>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </div> -->
 
         {{-- Sección: Registro de Participantes --}}
         <div id="panelRegistro" class="card mb-4 shadow-sm baseCard" style="display: none;">
@@ -113,8 +113,8 @@
                         <select class="form-select categorias-select" required>
                             <option selected disabled>Categoria</option>
                             <!-- <option>Pareja A</option>
-                                                            <option>Equipo B</option>
-                                                            <option>-</option> -->
+                                                                <option>Equipo B</option>
+                                                                <option>-</option> -->
                         </select>
                     </div>
                 </div>
@@ -146,8 +146,9 @@
                                 <th>Tipo</th>
                                 <th>Modalidad</th>
                                 <th>SubModalidad</th>
-                                <th>Rango peso</th>
-                                <th>Grupo</th>
+                                <th>Categoria</th>
+                                <th style="display:none;">Grupo</th>
+                                <th>Equipo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>

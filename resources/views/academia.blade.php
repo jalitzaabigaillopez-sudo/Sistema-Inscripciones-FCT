@@ -152,8 +152,6 @@
             margin-left: 0 !important;
         }
 
-
-        /* @audit aqui css */
         /* Bloqueo visual */
         .bloqueado {
             position: relative;
