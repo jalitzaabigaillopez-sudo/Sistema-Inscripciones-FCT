@@ -114,6 +114,7 @@ class AcademiaController extends Controller
                 </div>';
 
                 $formattedData[] = [
+                    'imagen' => $a->imagen ? asset('storage/' . $a->imagen) : null,
                     'nombre' => e($a->nombre),
                     'profesor_encargado' => e($a->profesor_encargado),
                     'correo' => e($a->correo),
@@ -260,8 +261,8 @@ class AcademiaController extends Controller
         ]);
         -
 
-            // Verificar que exista el usuario
-            $id = $request['id_usuario'];
+        // Verificar que exista el usuario
+        $id = $request['id_usuario'];
         $usuario = Usuario::find($id);
         if (!$usuario) {
             return response()->json(['error' => 'Ha ocurrido un error con el proceso de registro'], 404);
@@ -313,7 +314,7 @@ class AcademiaController extends Controller
 
     public function edit(string $id)
     {
-        $academia = Academia::with('usuario','distrito.canton.provincia')->findOrFail($id);
+        $academia = Academia::with('usuario', 'distrito.canton.provincia')->findOrFail($id);
         return response()->json($academia);
     }
 

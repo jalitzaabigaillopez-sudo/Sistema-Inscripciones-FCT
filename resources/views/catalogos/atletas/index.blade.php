@@ -31,6 +31,75 @@
             </a>
         </div>
 
+        {{-- FILTROS --}}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 class="mb-0 fw-bold text-primary"> <i class="bi bi-funnel-fill me-2"></i>Filtros <span
+                            id="contadorFiltros" class="badge bg-success ms-2">0</span> </h5> <button id="btnLimpiarFiltros"
+                        class="btn btn-outline-danger btn-sm rounded-pill"> <i class="bi bi-arrow-counterclockwise"></i>
+                        Limpiar filtros </button>
+                </div>
+
+                <div class="row g-3 justify-content-center text-center">
+                    <!-- Tipo de identificación -->
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="filtroTipoIdentificacion" class="form-label fw-semibold">Tipo ID</label>
+                        <select id="filtroTipoIdentificacion" class="form-select form-select-sm text-center">
+                            <option value="">Todos</option>
+                            <option value="Nacional">Nacional</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="filtroSexo" class="form-label fw-semibold">Sexo</label>
+                        <select id="filtroSexo" class="form-select form-select-sm text-center">
+                            <option value="">Todos</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Masculino">Masculino</option>
+                        </select>
+                    </div>
+
+                    <!-- Grado -->
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="filtroGrado" class="form-label fw-semibold">Grado</label>
+                        <select id="filtroGrado" class="form-select form-select-sm text-center">
+                            <option value="">Todos</option>
+                            @foreach ($grados as $grado)
+                                <option value="{{ $grado->id_grado }}">{{ $grado->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Academia (solo para administrador) -->
+                    @if (isset($usuario) && $usuario->rol === 'administrador')
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="filtroAcademia" class="form-label fw-semibold">Academia</label>
+                            <select id="filtroAcademia" class="form-select form-select-sm text-center">
+                                <option value="">Todas</option>
+                                @foreach ($academias as $aca)
+                                    <option value="{{ $aca->id_academia }}">{{ $aca->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+                    <!-- Estado -->
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="filtroEstado" class="form-label fw-semibold">Estado</label>
+                        <select id="filtroEstado" class="form-select form-select-sm text-center">
+                            <option value="">Todos</option>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
@@ -410,7 +479,32 @@
     @section('scripts')
         <script>
             $(document).ready(function() {
+
+                // 1) Definir globalmente la función que el datatable.js espera
+                //    (datatable.js usaba: if (typeof extraAjaxData === 'function') extraAjaxData(d); )
+                window.extraAjaxData = function(d) {
+                    // agregar los parámetros de filtros al objeto d (DataTables)
+                    d.tipo_identificacion = $('#filtro_tipo_identificacion').val();
+                    d.sexo = $('#filtro_sexo').val();
+                    d.id_grado = $('#filtro_grado').val();
+                    // si el select de academia no existe en la vista, esto devolverá undefined (OK)
+                    d.id_academia = $('#filtro_academia').length ? $('#filtro_academia').val() : null;
+                };
+
+                // 2) Columnas: usar exactamente los nombres que tu controlador devuelve en $formattedData
                 let columnsConfig = [{
+                        data: "imagen",
+                        title: "Foto",
+                        orderable: false,
+                        render: function(data) {
+                            if (data) {
+                                return `<img src="${data}" alt="Foto" class="rounded-circle" width="45" height="45" style="object-fit:cover;">`;
+                            } else {
+                                return `<i class="bi bi-person-circle text-secondary" style="font-size: 2rem;"></i>`;
+                            }
+                        }
+                    },
+                    {
                         data: "tipo_identificacion",
                         title: "Tipo ID"
                     },
@@ -433,21 +527,19 @@
                     {
                         data: "grado",
                         title: "Grado",
-                        orderable: false,
+                        orderable: false
                     },
                     {
                         data: "academia",
                         title: "Academia",
-                        orderable: false,
+                        orderable: false
                     },
                     {
                         data: "estado",
                         title: "Estado",
                         render: function(data) {
-                            let badgeClass =
-                                data === 'activo' ? 'success' :
-                                data === 'inactivo' ? 'danger' :
-                                'secondary';
+                            let badgeClass = data === 'activo' ? 'success' : (data === 'inactivo' ? 'danger' :
+                                'secondary');
                             return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
                         }
                     },
@@ -455,37 +547,94 @@
                         data: "acciones",
                         title: "Acciones",
                         orderable: false,
+                        searchable: false,
                         render: function(data, type, row) {
                             return `
-                            <div class="d-flex justify-content-center gap-2">
-                                <button class="btn btn-sm btn-warning rounded-circle btn-edit"  name="editar"
-                                        data-id="${data}" title="Editar">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger rounded-circle" name="eliminar"
-                                        onclick="confirmarEliminacion(${data})" title="Eliminar">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                            `;
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn btn-sm btn-warning rounded-circle btn-edit" data-id="${data}" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger rounded-circle" onclick="confirmarEliminacion(${data})" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>`;
                         }
                     }
                 ];
 
-                // Pintar headers dinámicamente
+                // pintar headers dinámicos (si lo quieres mantener)
                 let headersRow = $('#tabla-headers');
                 headersRow.empty();
-                columnsConfig.forEach(col => {
-                    headersRow.append(`<th class="text-center">${col.title}</th>`);
-                });
+                columnsConfig.forEach(col => headersRow.append(`<th class="text-center">${col.title}</th>`));
 
-                // Inicializar DataTable con tu script genérico
-                initDataTable({
+                // 3) Inicializar DataTable con tu initDataTable (no cambiamos datatable.js)
+                //    Asegurate que initDataTable utiliza la lógica AJAX que invoca la función global extraAjaxData
+                const tabla = initDataTable({
                     ajaxUrl: "{{ route('atletas.index') }}",
                     columns: columnsConfig,
                 });
+
+                let filtros = {
+                    tipo_identificacion: '',
+                    sexo: '',
+                    id_grado: '',
+                    id_academia: '',
+                    estado: ''
+                };
+
+                // función para contar filtros activos
+                function actualizarContadorFiltros() {
+                    const activos = Object.values(filtros).filter(v => v !== '').length;
+                    $('#contadorFiltros').text(activos);
+                }
+
+                // manejar cambios en filtros
+                $('#filtroTipoIdentificacion, #filtroSexo, #filtroGrado, #filtroAcademia, #filtroEstado').on('change',
+                    function() {
+                        filtros.tipo_identificacion = $('#filtroTipoIdentificacion').val();
+                        filtros.sexo = $('#filtroSexo').val();
+                        filtros.id_grado = $('#filtroGrado').val();
+                        filtros.id_academia = $('#filtroAcademia').val();
+                        filtros.estado = $('#filtroEstado').val();
+
+                        actualizarContadorFiltros();
+                        $('#tabla').DataTable().ajax.reload();
+                    });
+
+                // botón para limpiar filtros
+                $('#btnLimpiarFiltros').on('click', function() {
+                    $('#filtroTipoIdentificacion, #filtroSexo, #filtroGrado, #filtroAcademia, #filtroEstado')
+                        .val('');
+                    filtros = {
+                        tipo_identificacion: '',
+                        sexo: '',
+                        id_grado: '',
+                        id_academia: '',
+                        estado: ''
+                    };
+                    actualizarContadorFiltros();
+                    $('#tabla').DataTable().ajax.reload();
+                });
+
+                // pasar los filtros al DataTable (sin tocar el archivo datatable.js)
+                $.fn.dataTable.ext.errMode = 'none';
+                $(document).on('preXhr.dt', function(e, settings, data) {
+                    Object.assign(data, filtros);
+                });
+
+
+                // 4) Listeners: al cambiar cualquiera de los selects, recarga la tabla (con los filtros actuales)
+                $(document).on('change', '#filtro_tipo_identificacion, #filtro_sexo, #filtro_grado, #filtro_academia',
+                    function() {
+                        // recargar (si la datatable ya está inicializada)
+                        if ($.fn.DataTable.isDataTable('#tabla')) {
+                            $('#tabla').DataTable().ajax.reload();
+                        }
+                    });
+
             });
         </script>
     @endsection
+
 
 @endsection

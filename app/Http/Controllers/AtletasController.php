@@ -55,12 +55,35 @@ class AtletasController extends Controller
         if ($request->ajax()) {
             $query = Atleta::with(['grados', 'academias']); // Cargar relaciones necesarias
 
+            // Si el rol es academia → solo sus atletas
             if ($rol === 'academia' && $academia) {
                 $query->where('id_academia', $academia->id_academia);
             }
 
+            // Si el rol es administrador → aplicar filtro de academia si se selecciona
+            if ($rol === 'administrador' && $request->filled('id_academia')) {
+                $query->where('id_academia', $request->id_academia);
+            }
+
+            // Filtros generales (disponibles para ambos roles)
+            if ($request->filled('tipo_identificacion')) {
+                $query->where('tipo_identificacion', $request->tipo_identificacion);
+            }
+
+            if ($request->filled('sexo')) {
+                $query->where('sexo', $request->sexo);
+            }
+
+            if ($request->filled('id_grado')) {
+                $query->where('id_grado', $request->id_grado);
+            }
+
+            if ($request->filled('estado')) {
+                $query->where('estado', $request->estado);
+            }
+
             // Orden por defecto (los más recientes primero)
-            $query->orderBy('id_atleta', 'desc');
+            // $query->orderBy('id_atleta', 'desc');
 
             // Aplicar búsqueda si existe
             if ($request->has('search') && !empty($request->search['value'])) {
@@ -84,19 +107,22 @@ class AtletasController extends Controller
                     });
             }
 
-            // Obtener el total de registros
-            $totalRecords = $query->count();
-
-            // Aplicar ordenamiento
+            // Ordenamiento
             if ($request->has('order') && count($request->order) > 0) {
                 $orderColumn = $request->columns[$request->order[0]['column']]['data'];
                 $orderDirection = $request->order[0]['dir'];
                 $query->orderBy($orderColumn, $orderDirection);
+            } else {
+                $query->orderBy('id_atleta', 'desc');
             }
+
+            // Obtener el total de registros
+            $totalRecords = $query->count();
 
             // Aplicar paginación
             $start = $request->input('start', 0);
             $length = $request->input('length', 10);
+
             $data = $query->skip($start)->take($length)->get();
 
             // Formatear datos para DataTables
@@ -106,7 +132,7 @@ class AtletasController extends Controller
                     'imagen' => $item->imagen ? asset('storage/' . $item->imagen) : null,
                     'tipo_identificacion' => $item->tipo_identificacion,
                     'identificacion' => $item->identificacion,
-                    'nombre' => $item->nombre . ' ' . $item->primer_apellido . ' ' . $item->segundo_apellido,
+                    'nombre' => trim("{$item->nombre} {$item->primer_apellido} {$item->segundo_apellido}"),
                     'sexo' => $item->sexo,
                     'fecha_nacimiento' => \Carbon\Carbon::parse($item->fecha_nacimiento)->format('d/m/Y'),
                     'grado' => $item->grados->nombre ?? '',
@@ -134,7 +160,7 @@ class AtletasController extends Controller
             ? 'academia.atletas.index'
             : 'catalogos.atletas.index';
 
-        return view($vista, compact('grados', 'categorias', 'academias', 'academia'));
+        return view($vista, compact('grados', 'categorias', 'academias', 'academia', 'usuario'));
     }
 
 

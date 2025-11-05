@@ -30,6 +30,7 @@
                     <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
                         <thead class="table-light">
                             <tr>
+                                <th class="text-center">Imagen</th>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Profesor a cargo</th>
                                 <th class="text-center">Usuario</th>
@@ -284,14 +285,14 @@
                                     </div>
                                 </div>
 
-                                 <div class="row">
+                                <div class="row">
                                     <div class="col-md-12 mb-3">
                                         <label for="usuarioAcademiaEditar" class="form-label">Usuario <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm"
                                             id="usuarioAcademiaEditar" name="usuario" readonly>
                                     </div>
-                                   
+
                                 </div>
 
                                 <div class="mb-3 mt-3">
@@ -396,6 +397,32 @@
     <script>
         $(document).ready(function() {
             let columnsConfig = [{
+                    data: "imagen",
+                    title: "Imagen",
+                    orderable: false,
+                    render: function(data) {
+                        const size = 45; // tamaño consistente
+                        if (data) {
+                            return `
+                                <div class="d-flex align-items-center justify-content-center"
+                                    style="width:${size}px; height:${size}px; margin:auto;">
+                                    <img src="${data}" 
+                                        alt="Foto" 
+                                        class="rounded-circle border shadow-sm" 
+                                        width="${size}" height="${size}" 
+                                        style="object-fit: cover;">
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="d-flex align-items-center justify-content-center rounded-circle border bg-light shadow-sm mx-auto"
+                                    style="width:${size}px; height:${size}px; color:#6c757d;">
+                                    <i class="bi bi-calendar-event" style="font-size:1.2rem;"></i>
+                                </div>
+                            `;
+                        }
+                    }
+                }, {
                     data: "nombre",
                     title: "Nombre"
                 },

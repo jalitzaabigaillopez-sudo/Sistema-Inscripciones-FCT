@@ -43,7 +43,7 @@
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="small">
                             {{-- @foreach ($data as $evento)
                                 <tr class="text-center">
                                     <td>{{ $evento->nombre }}</td>
@@ -467,7 +467,7 @@
                                 return `
                                 <div class="d-flex align-items-center justify-content-center rounded-circle border bg-light shadow-sm mx-auto"
                                     style="width:${size}px; height:${size}px; color:#6c757d;">
-                                    <i class="bi bi-calendar-event" style="font-size:1.6rem;"></i>
+                                    <i class="bi bi-calendar-event" style="font-size:1.2rem;"></i>
                                 </div>
                             `;
                             }

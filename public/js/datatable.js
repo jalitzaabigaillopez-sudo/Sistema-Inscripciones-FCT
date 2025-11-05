@@ -17,7 +17,12 @@ function initDataTable(config) {
 
         ajax: {
             url: config.ajaxUrl,
-            type: config.ajaxType || "GET"
+            type: config.ajaxType || "GET",
+            data: function (d) {
+                if (typeof extraAjaxData === 'function') {
+                    extraAjaxData(d);
+                }
+            }
         },
         columns: config.columns,
         language: {
