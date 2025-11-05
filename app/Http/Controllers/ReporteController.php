@@ -21,16 +21,66 @@ class ReporteController extends Controller
     }
 
     /** ======================================== ADMINISTRADOR ======================================== */
-    public function exportarAtletasExcel()
+    public function exportarAtletas(Request $request, $tipo)
     {
-        return Excel::download(new AtletasExport, 'atletas.xlsx');
+        $query = \App\Models\Atleta::with(['division', 'grado', 'academias']);
+
+        if ($request->filled('tipo_identificacion')) {
+            $query->where('tipo_identificacion', $request->tipo_identificacion);
+        }
+        if ($request->filled('sexo')) {
+            $query->where('sexo', $request->sexo);
+        }
+        if ($request->filled('id_grado')) {
+            $query->where('id_grado', $request->id_grado);
+        }
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+        if ($request->filled('id_academia')) {
+            $query->where('id_academia', $request->id_academia);
+        }
+
+        $atletas = $query->get();
+
+        $datos = $atletas->map(function ($a) {
+            return [
+                // 'ID' => $a->id_atleta,
+                'Tipo de ID' => $a->tipo_identificacion,
+                'Identificación' => $a->identificacion,
+                'Nombre completo' => trim("{$a->nombre} {$a->primer_apellido} {$a->segundo_apellido}"),
+                'Sexo' => $a->sexo,
+                'División' => $a->division->division ?? '',
+                'Grado' => $a->grado->nombre ?? '',
+                'Academia' => $a->academias->nombre ?? '',
+                // 'Estado' => $a->estado,
+            ];
+        });
+
+        if ($tipo === 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\ArrayExport($datos->toArray(), array_keys($datos->first() ?? [])),
+                'Registros_de_Atletas.xlsx'
+            );
+        }
+
+        if ($tipo === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.atletas', ['atletas' => $datos])
+                ->setPaper('a4', 'landscape');
+            return $pdf->download('Registros_de_Atletas.pdf');
+        }
+
+        abort(404);
     }
 
-    public function exportarAtletasPdf()
-    {
-        $export = new AtletasExport();
-        return $export->exportPdf();
-    }
+public function exportarAtletasExcel(Request $request)
+{
+    $filtros = $request->only(['tipo_identificacion', 'sexo', 'id_grado', 'estado', 'id_academia']);
+    return \Maatwebsite\Excel\Facades\Excel::download(
+        new \App\Exports\AtletasExport($filtros),
+        'atletas_filtrados.xlsx'
+    );
+}
 
     public function exportarInscripcionesExcel()
     {

@@ -21,12 +21,10 @@
         <hr>
 
         <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
-            <a href="{{ route('atletas.pdf') }}"
-                class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
+            <a id="btnExportarPdf" class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
                 <i class="bi bi-file-earmark-pdf me-1"></i> PDF
             </a>
-            <a href="{{ url('/atletas/exportar-excel') }}"
-                class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center">
+            <a id="btnExportarExcel" class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center">
                 <i class="bi bi-file-earmark-excel me-1"></i> Excel
             </a>
         </div>
@@ -632,6 +630,34 @@
                         }
                     });
 
+            });
+
+            function getFiltrosUrl() {
+                const params = new URLSearchParams();
+
+                const tipoIdentificacion = $('#filtroTipoIdentificacion').val();
+                const sexo = $('#filtroSexo').val();
+                const idGrado = $('#filtroGrado').val();
+                const idAcademia = $('#filtroAcademia').val();
+                const estado = $('#filtroEstado').val();
+
+                if (tipoIdentificacion) params.append('tipo_identificacion', tipoIdentificacion);
+                if (sexo) params.append('sexo', sexo);
+                if (idGrado) params.append('id_grado', idGrado);
+                if (idAcademia) params.append('id_academia', idAcademia);
+                if (estado) params.append('estado', estado);
+
+                return params.toString();
+            }
+
+            document.getElementById('btnExportarPdf').addEventListener('click', () => {
+                const query = getFiltrosUrl();
+                window.location.href = `/reportes/atletas/pdf?${query}`;
+            });
+
+            document.getElementById('btnExportarExcel').addEventListener('click', () => {
+                const query = getFiltrosUrl();
+                window.location.href = `/reportes/atletas/excel?${query}`;
             });
         </script>
     @endsection

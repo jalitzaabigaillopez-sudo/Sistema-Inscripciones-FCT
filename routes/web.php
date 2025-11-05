@@ -47,8 +47,9 @@ Route::post('/pre_registroAcademia', [AcademiaController::class, 'pre_registroAc
 /**
  * Reportes PDF y Excel
  */
-Route::get('/atletas/exportar-excel', [ReporteController::class, 'exportarAtletasExcel']);
-Route::get('/exportar-atletas-pdf', [ReporteController::class, 'exportarAtletasPdf'])->name('atletas.pdf');
+Route::get('/reportes/atletas/{tipo}', [ReporteController::class, 'exportarAtletas'])
+    ->where('tipo', 'excel|pdf')
+    ->name('reportes.atletas');
 
 Route::get('/inscripciones/exportar-excel', [ReporteController::class, 'exportarInscripcionesExcel']);
 Route::get('/exportar-inscripciones-pdf', [ReporteController::class, 'exportarInscripcionesPdf'])->name('inscripciones.pdf');
