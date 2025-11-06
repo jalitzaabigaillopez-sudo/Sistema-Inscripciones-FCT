@@ -97,7 +97,6 @@
     'por_submodalidad' => ['titulo' => 'Submodalidad', 'color' => 'primary'],
     'por_grado' => ['titulo' => 'Grado', 'color' => 'primary'],
     'cantidad_academias' => ['titulo' => 'Cantidad de Academias', 'color' => 'primary'],
-    'por_division' => ['titulo' => 'División', 'color' => 'primary'],
     'por_categoria' => ['titulo' => 'Categoría', 'color' => 'primary'],
      ] as $key => $grupo)
     @php
