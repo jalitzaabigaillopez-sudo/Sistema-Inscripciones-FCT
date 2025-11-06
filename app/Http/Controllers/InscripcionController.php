@@ -196,23 +196,22 @@ class InscripcionController extends Controller
             ->pluck('id_evento');
 
         $bloquearSelectEventos = false;
-        $hoy = Carbon::today();
+        $hoy = now()->toDateString();
 
-        $eventos = Evento::where('estado', 'activo')
-            ->where(function ($query) use ($hoy) {
-                // Eventos dentro del rango normal de inscripción
-                $query->where(function ($q) use ($hoy) {
-                    $q->whereNotNull('fecha_inicio_inscripcion')
-                        ->whereNotNull('fecha_final_inscripcion')
-                        ->where('fecha_inicio_inscripcion', '<=', $hoy)
-                        ->where('fecha_final_inscripcion', '>=', $hoy);
-                })
-                    // O eventos con inscripción tardía aún abierta
-                    ->orWhere(function ($q) use ($hoy) {
+        $eventos = Evento::where('estado', 'activo')->where(function ($query) use ($hoy) {
+            $query->where(function ($q) use ($hoy) {
+                // Eventos con inscripción normal abierta
+                $q->whereNotNull('fecha_inicio_inscripcion')
+                    ->whereNotNull('fecha_final_inscripcion')
+                    ->where('fecha_inicio_inscripcion', '<=', $hoy)
+                    ->where('fecha_final_inscripcion', '>=', $hoy);
+            })
+                ->orWhere(function ($q) use ($hoy) {
+                    // O eventos con inscripción tardía abierta
                     $q->whereNotNull('fecha_final_inscripcion_tardia')
                         ->where('fecha_final_inscripcion_tardia', '>=', $hoy);
                 });
-            })
+        })
             ->orderBy('fecha_inicio_inscripcion', 'asc')
             ->get();
 
