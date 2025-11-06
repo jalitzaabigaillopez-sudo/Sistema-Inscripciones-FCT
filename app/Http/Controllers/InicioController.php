@@ -22,12 +22,10 @@ class InicioController extends Controller
             redirect()->route('login')->send();
         }
     }
-// ...existing code...
-public function estadisticasEventos(Request $request)
+    public function estadisticasEventos(Request $request)
 {
     $eventos = Evento::orderBy('nombre')->get();
 
-    // Estructura por defecto
     $estadisticas = [
         'total_inscripciones' => 0,
         'total_atletas' => 0,
@@ -35,7 +33,6 @@ public function estadisticasEventos(Request $request)
         'por_modalidad' => [],
         'por_submodalidad' => [],
         'por_grado' => [],
-        'por_division' => [],
         'por_categoria' => [],
         'por_academia' => [],
         'por_edad' => [],
@@ -63,7 +60,7 @@ public function estadisticasEventos(Request $request)
                 'submodalidad',
                 'grado',
                 'evento.categoria',
-                'evento.division',
+                'evento.division.categoria',
             ])
             ->where('id_evento', $valor)
             ->get();
@@ -88,14 +85,24 @@ public function estadisticasEventos(Request $request)
                 ->countBy()
                 ->toArray();
 
-            // categoría / división usando fallback seguro
-            $estadisticas['por_categoria'] = $inscripciones
-                ->map(fn($i) => data_get($i, 'evento.categoria.nombre') ?? ($i->categoria_nombre ?? 'Sin categoría'))
-                ->countBy()
-                ->toArray();
+           $estadisticas['por_categoria'] = $inscripciones
+                ->map(function ($i) {
+                    // intentos en orden de prioridad; data_get gestiona nulls sin lanzar
+                    $eventoCat = data_get($i, 'evento.categoria.nombre');
+                    if (!empty($eventoCat)) return $eventoCat;
 
-            $estadisticas['por_division'] = $inscripciones
-                ->map(fn($i) => data_get($i, 'evento.division.nombre') ?? ($i->division_nombre ?? 'Sin división'))
+                    $divisionCat = data_get($i, 'evento.division.categoria.nombre');
+                    if (!empty($divisionCat)) return $divisionCat;
+
+                    $atletaCat = data_get($i, 'atleta.categoria.nombre');
+                    if (!empty($atletaCat)) return $atletaCat;
+
+                    // campos planos en la inscripción (si existen)
+                    if (!empty($i->categoria_nombre)) return $i->categoria_nombre;
+                    if (!empty($i->categoria_id)) return 'ID ' . $i->categoria_id;
+
+                    return 'Sin categoría';
+                })
                 ->countBy()
                 ->toArray();
 
@@ -104,7 +111,6 @@ public function estadisticasEventos(Request $request)
                 ->countBy()
                 ->toArray();
 
-            // edades en buckets
             $ageBuckets = [
                 '0-5'   => [0, 5],
                 '6-10'  => [6, 10],
@@ -137,56 +143,40 @@ public function estadisticasEventos(Request $request)
                 ->countBy()
                 ->toArray();
 
-            // año de nacimiento
             $estadisticas['por_nacimiento'] = $inscripciones
                 ->map(fn($i) => optional($i->atleta)->fecha_nacimiento ? date('Y', strtotime($i->atleta->fecha_nacimiento)) : 'Sin año')
                 ->countBy()
                 ->toArray();
 
-            // ---- Top-N strategy (para tablas con muchos registros) ----
-            $topN = 20;
-
-            // Categorías top N + "Otros"
-            $cats = $estadisticas['por_categoria'] ?? [];
-            arsort($cats);
-            $topCats = array_slice($cats, 0, $topN, true);
-            $otrosCats = array_sum(array_slice($cats, $topN, null, true));
-            if ($otrosCats > 0) $topCats['Otros'] = $otrosCats;
-            $estadisticas['por_categoria_top'] = $topCats;
-
-            // Años: ordenar desc y limitar (suelen ser pocos)
             $years = $estadisticas['por_nacimiento'] ?? [];
-            ksort($years); // años asc
-            // opcional: limitar si hay muchísimos años
-            if (count($years) > 100) {
-                $yearsTop = array_slice($years, -100, 100, true); // últimos 100 años
-            } else {
-                $yearsTop = $years;
-            }
-            $estadisticas['por_nacimiento_top'] = $yearsTop;
+            ksort($years);
+            $estadisticas['por_nacimiento_top'] = count($years) > 100
+                ? array_slice($years, -100, 100, true)
+                : $years;
+
+            $estadisticas['por_sexo'] = $inscripciones
+                ->map(function($i) {
+                    $raw = optional($i->atleta)->sexo ?? ($i->sexo ?? null);
+                    $val = is_string($raw) ? trim(mb_strtolower($raw)) : null;
+
+                    if (in_array($val, ['m', 'masculino', 'hombre'])) return 'Masculino';
+                    if (in_array($val, ['f', 'femenino', 'mujer'])) return 'Femenino';
+                    if (empty($val)) return 'Sin especificar';
+                    return mb_strtoupper($raw);
+                })
+                ->countBy()
+                ->toArray();
         } else {
             session()->flash('info', 'No hay inscripciones para el evento seleccionado');
         }
-
-        $estadisticas['por_sexo'] = $inscripciones
-    ->map(function($i) {
-        // intentar sexo desde atleta, luego desde la propia inscripción
-        $raw = optional($i->atleta)->sexo ?? ($i->sexo ?? null);
-        $val = is_string($raw) ? trim(mb_strtolower($raw)) : null;
-
-        if (in_array($val, ['m', 'masculino', 'hombre'])) return 'Masculino';
-        if (in_array($val, ['f', 'femenino', 'mujer'])) return 'Femenino';
-        if (empty($val)) return 'Sin especificar';
-        // normalizar otros valores (ej. 'NB', 'Otro')
-        return mb_strtoupper($raw);
-    })
-    ->countBy()
-    ->toArray();
     }
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
-// ...existing code...
+
+
+
+
     public function index(Request $request)
     {
 
