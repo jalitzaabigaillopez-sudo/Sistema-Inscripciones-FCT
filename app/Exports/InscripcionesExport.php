@@ -24,6 +24,12 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         $this->id_academia = $id_academia;
     }
 
+    public function startCell(): string
+    {
+        // Empezamos desde la segunda fila si hay academia (dejando la primera libre para el encabezado)
+        return $this->id_academia ? 'A2' : 'A1';
+    }
+
     /** ===================================================================== ADMINISTRADOR ============================================================================ */
     public function collection()
     {
@@ -41,7 +47,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         return new Collection($inscripciones->map(function ($i) {
             return [
                 'ID inscripción' => $i->id_inscripcion,
-                'Academia' => $i->academia->nombre ?? '—',
+                // 'Academia' => $i->academia->nombre ?? '—',
                 'Atleta' => $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido ?? '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
@@ -60,9 +66,8 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
     public function headings(): array
     {
-        return [
+        $encabezados = [
             'ID inscripción',
-            'Academia',
             'Atleta',
             'Evento',
             'Modalidad',
@@ -74,6 +79,17 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Código de equipo',
             'Rol'
         ];
+
+        // Si hay un filtro por academia, agregamos el nombre arriba
+        if ($this->id_academia) {
+            $academiaNombre = \App\Models\Academia::find($this->id_academia)->nombre ?? 'Academia desconocida';
+            // Esto crea una fila antes del encabezado con el nombre de la academia
+            return [
+                [$academiaNombre],
+                $encabezados
+            ];
+        }
+        return [$encabezados];
     }
 
     public function exportarInscripcionesEventoPdf($id_evento)
@@ -266,7 +282,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         $pdf = Pdf::loadView('pdf.inscripcionesEventos', ['inscripciones' => $datosAgrupados])
             ->setPaper('a4', 'landscape');
 
-        
+
         return $pdf->download('reporte_de_evento.pdf');
     }
 }
