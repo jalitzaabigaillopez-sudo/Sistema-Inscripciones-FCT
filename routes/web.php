@@ -51,6 +51,9 @@ Route::get('/reportes/atletas/{tipo}', [ReporteController::class, 'exportarAtlet
     ->where('tipo', 'excel|pdf')
     ->name('reportes.atletas');
 
+Route::get('/reportes/academias/pdf', [ReporteController::class, 'exportarAcademiasPdf'])->name('academias.pdf');
+Route::get('/reportes/academias/excel', [ReporteController::class, 'exportarAcademiasExcel'])->name('academias.excel');
+
 Route::get('/inscripciones/exportar-excel', [ReporteController::class, 'exportarInscripcionesExcel']);
 Route::get('/exportar-inscripciones-pdf', [ReporteController::class, 'exportarInscripcionesPdf'])->name('inscripciones.pdf');
 

@@ -53,33 +53,33 @@ class AtletasController extends Controller
 
         // Para solicitudes AJAX de DataTables (paginación del servidor)
         if ($request->ajax()) {
-            $query = Atleta::with(['grados', 'academias']); // Cargar relaciones necesarias
+            $base = Atleta::with(['grados', 'academias']); // Cargar relaciones necesarias
 
             // Si el rol es academia → solo sus atletas
             if ($rol === 'academia' && $academia) {
-                $query->where('id_academia', $academia->id_academia);
+                $base->where('id_academia', $academia->id_academia);
             }
 
             // Si el rol es administrador → aplicar filtro de academia si se selecciona
             if ($rol === 'administrador' && $request->filled('id_academia')) {
-                $query->where('id_academia', $request->id_academia);
+                $base->where('id_academia', $request->id_academia);
             }
 
             // Filtros generales (disponibles para ambos roles)
             if ($request->filled('tipo_identificacion')) {
-                $query->where('tipo_identificacion', $request->tipo_identificacion);
+                $base->where('tipo_identificacion', $request->tipo_identificacion);
             }
 
             if ($request->filled('sexo')) {
-                $query->where('sexo', $request->sexo);
+                $base->where('sexo', $request->sexo);
             }
 
             if ($request->filled('id_grado')) {
-                $query->where('id_grado', $request->id_grado);
+                $base->where('id_grado', $request->id_grado);
             }
 
             if ($request->filled('estado')) {
-                $query->where('estado', $request->estado);
+                $base->where('estado', $request->estado);
             }
 
             // Orden por defecto (los más recientes primero)
@@ -88,7 +88,7 @@ class AtletasController extends Controller
             // Aplicar búsqueda si existe
             if ($request->has('search') && !empty($request->search['value'])) {
                 $search = $request->search['value'];
-                $query->where(function ($q) use ($search) {
+                $base->where(function ($q) use ($search) {
                     $q->where('nombre', 'like', "%{$search}%")
                         ->orWhere('primer_apellido', 'like', "%{$search}%")
                         ->orWhere('identificacion', 'like', "%{$search}%")
@@ -108,22 +108,32 @@ class AtletasController extends Controller
             }
 
             // Ordenamiento
-            if ($request->has('order') && count($request->order) > 0) {
-                $orderColumn = $request->columns[$request->order[0]['column']]['data'];
-                $orderDirection = $request->order[0]['dir'];
-                $query->orderBy($orderColumn, $orderDirection);
-            } else {
-                $query->orderBy('id_atleta', 'desc');
-            }
+            // if ($request->has('order') && count($request->order) > 0) {
+            //     $orderColumn = $request->columns[$request->order[0]['column']]['data'];
+            //     $orderDirection = $request->order[0]['dir'];
+            //     $query->orderBy($orderColumn, $orderDirection);
+            // } else {
+            //     $query->orderBy('id_atleta', 'desc');
+            // }
 
             // Obtener el total de registros
-            $totalRecords = $query->count();
+    $totalRecords = (clone $base)->count();
 
-            // Aplicar paginación
-            $start = $request->input('start', 0);
-            $length = $request->input('length', 10);
+           // 📌 Orden servidor SIEMPRE: Academia ASC, Apellido ASC, Nombre ASC
+    //    Usamos subconsulta para ordenar por el nombre de la academia sin join.
+    $ordered = (clone $base)
+        ->orderBy(
+            Academia::select('nombre')
+                ->whereColumn('academias.id_academia', 'atletas.id_academia'),
+            'asc'
+        )
+        ->orderBy('nombre', 'asc')
+        ->orderBy('primer_apellido', 'asc');
 
-            $data = $query->skip($start)->take($length)->get();
+    // Paginación
+    $start  = $request->input('start', 0);
+    $length = $request->input('length', 10);
+    $data = $ordered->skip($start)->take($length)->get();
 
             // Formatear datos para DataTables
             $formattedData = [];

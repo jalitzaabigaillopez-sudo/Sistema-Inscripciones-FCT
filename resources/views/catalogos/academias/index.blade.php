@@ -23,6 +23,17 @@
         </div>
         <hr>
 
+        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
+            <a href="{{ route('academias.pdf') }}"
+                class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+            </a>
+            <a href="{{ route('academias.excel') }}"
+                class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-1"></i> Excel
+            </a>
+        </div>
+
         {{-- Tabla --}}
         <div class="card table-card shadow">
             <div class="card-body p-3">
