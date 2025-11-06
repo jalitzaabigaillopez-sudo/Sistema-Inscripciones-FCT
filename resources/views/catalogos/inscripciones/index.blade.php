@@ -108,7 +108,7 @@
                             <td>
                                 <span
                                     class="badge rounded-pill 
-                                                                                                                                                            {{ $item->estado == 'activa' ? 'bg-success' : ($item->estado == 'inactiva' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                                                                                                                                                                                                                    {{ $item->estado == 'activa' ? 'bg-success' : ($item->estado == 'inactiva' ? 'bg-warning text-dark' : 'bg-danger') }}">
                                     {{ ucfirst($item->estado) }}
                                 </span>
                             </td>
@@ -145,7 +145,7 @@
 
     <script>
         $(document).ready(function () {
-            // 1️⃣ Generar dinámicamente las opciones de Eventos y Academias desde la tabla
+            // Generar dinámicamente las opciones de Eventos y Academias desde la tabla
             let eventos = new Set();
             let academias = new Set();
 
@@ -154,7 +154,7 @@
                 academias.add($(this).find("td:nth-child(2)").text().trim());
             });
 
-            // 2️⃣ Insertar los items en los submenús
+            // Insertar los items en los submenús
             eventos.forEach(evento => {
                 $("#submenuEventos").append(`<li><a class="dropdown-item item-filtro" href="#" data-tipo="evento">${evento}</a></li>`);
             });
@@ -174,14 +174,14 @@
                     let $td = $(this).find(`td:nth-child(${tipo === "evento" ? 1 : 2})`);
                     if ($td.text().trim() === valor) {
                         idSeleccionado = $td.attr("value");
-                        return false; // salir del each
+                        return false;
                     }
                 });
 
                 // Guardar el ID y tipo en el botón del filtro
                 let $boton = $("#dropdownFiltro");
-                $boton.attr("data-filtro", tipo);
-                $boton.attr("val", idSeleccionado); // asigna el id al val del botón
+                $boton.data("filtro", tipo);
+                $boton.data("val", idSeleccionado);
                 console.log("Botón actualizado:", { tipo, id: idSeleccionado });
 
                 // Filtrado visual de la tabla
@@ -197,33 +197,41 @@
                 });
             });
 
-            // 4️⃣ Botón "Mostrar todo"
+            // Botón "Mostrar todo"
             $("#btnMostrarTodo").on("click", function (e) {
                 e.preventDefault();
-                $("#tipoFiltro").attr("data-filtro", "");
+
+                // Mostrar todas las filas
                 $("#tablaInscripciones tbody tr").show();
+
+                $("#dropdownFiltro").data("filtro", "").data("val", "").attr("data-filtro", "").attr("val", "");
             });
 
-            // 5️⃣ Habilitar los submenús manualmente (Bootstrap no los abre por defecto)
+            // Habilitar los submenús manualmente (Bootstrap no los abre por defecto)
             $('.dropdown-submenu > a').on("click", function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).next('.dropdown-menu').toggle();
             });
 
+            // Cerrar los submenús cuando se cierra o se reabre el dropdown principal
+            $('#dropdownFiltro').on('hide.bs.dropdown show.bs.dropdown', function () {
+                $('.dropdown-submenu .dropdown-menu').hide();
+            });
 
 
             $('#bPDF').on('click', function () {
-                let valorID = $('#dropdownFiltro').attr('val');
+                let valorID = $('#dropdownFiltro').data('val');
                 let tipoFiltro = $('#dropdownFiltro').data('filtro');
+
+                console.log("valorID: ", valorID, " | ", "tipoFiltro: ", tipoFiltro);
+
 
                 if (tipoFiltro === "academia") {
                     window.open('/reporteAdministradorInscripcionesAcademia/' + valorID, '_blank');
                 } else if (tipoFiltro === "evento") {
                     window.open('/reporteAdministradorInscripcionesEvento/' + valorID, '_blank');
                 } else {
-                    console.log("WWWWW");
-                    
                     window.open('/reporteAdministradorInscripciones/', '_blank');
                 }
             });
@@ -231,15 +239,18 @@
 
 
             $('#bExcel').on('click', function () {
-                let valorID = $('#dropdownFiltro').attr('val');
+                let valorID = $('#dropdownFiltro').data('val');
                 let tipoFiltro = $('#dropdownFiltro').data('filtro');
+
+                console.log("valorID: ", valorID, " | ", "tipoFiltro: ", tipoFiltro);
+
 
                 if (tipoFiltro === "academia") {
                     window.open('/reporteAdministradorInscripcionesAcademiaExcel/' + valorID, '_blank');
                 } else if (tipoFiltro === "evento") {
                     window.open('/reporteAdministradorInscripcionesEventoExcel/' + valorID, '_blank');
                 } else {
-
+                    window.open('/inscripciones/exportar-excel/', '_blank');
                 }
             });
 

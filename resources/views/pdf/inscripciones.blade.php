@@ -174,16 +174,14 @@
     </footer>
 
     <!-- ===================== CUERPO DEL DOCUMENTO ===================== -->
-    @php
-        $nombreAcademia = $inscripciones->keys()->first();
-    @endphp
+
 
     <main>
-        <div class="info">
-            <div class="academia-title">{{ $nombreAcademia }}</div>
-        </div>
-
         @foreach ($inscripciones as $academia => $grupo)
+            <div class="info">
+                <div class="academia-title">{{ $academia }}</div>
+            </div>
+
             <table>
                 <thead>
                     <tr>
@@ -210,6 +208,7 @@
             </table>
         @endforeach
     </main>
+
 
     <!-- ===================== NÚMERO DE PÁGINA ===================== -->
     <script type="text/php">
