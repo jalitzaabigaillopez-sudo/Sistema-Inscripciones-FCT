@@ -222,7 +222,9 @@
                 } else if (tipoFiltro === "evento") {
                     window.open('/reporteAdministradorInscripcionesEvento/' + valorID, '_blank');
                 } else {
-
+                    console.log("WWWWW");
+                    
+                    window.open('/reporteAdministradorInscripciones/', '_blank');
                 }
             });
 

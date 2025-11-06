@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
@@ -142,90 +141,81 @@
             font-size: 12px;
         }
     </style>
-    ```
-
 </head>
 
 <body>
-    <!-- ===================== ENCABEZADO ===================== -->
-    <header>
-        <table class="header-table">
-            <tr>
-                <td width="15%" align="left">
-                    <img src="{{ public_path('images/LogoFCT_transpa.png') }}" class="header-logo">
-                </td>
-                <td width="70%" class="header-center">
-                    <p class="header-title">Federación Costarricense de Taekwondo</p>
-                    <p class="header-subtitle">Reporte de Inscripciones totales</p>
-                </td>
-                <td width="15%" align="right" style="font-size:9px; color:#555;">
-                    Generado el:<br>
-                    <strong>{{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</strong>
-                </td>
-            </tr>
-        </table>
-    </header>
+    <div class="contenedor">
+        <!-- ===================== ENCABEZADO ===================== -->
+        <header>
+            <table class="header-table">
+                <tr>
+                    <td width="15%" align="left">
+                        <img src="{{ public_path('images/LogoFCT_transpa.png') }}" class="header-logo">
+                    </td>
+                    <td width="70%" class="header-center">
+                        <p class="header-title">Federación Costarricense de Taekwondo</p>
+                        <p class="header-subtitle">Reporte de Evento</p>
+                    </td>
+                    <td width="15%" align="right" style="font-size:9px; color:#555;">
+                        Generado el:<br>
+                        <strong>{{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</strong>
+                    </td>
+                </tr>
+            </table>
+        </header>
 
-    ```
-    <!-- ===================== PIE DE PÁGINA ===================== -->
-    <footer>
-        <span>© Federación Costarricense de Taekwondo</span><br>
-        <span class="page-number"></span>
-    </footer>
+        ```
+        <!-- ===================== PIE DE PÁGINA ===================== -->
+        <footer>
+            <span>© Federación Costarricense de Taekwondo</span><br>
+            <span class="page-number"></span>
+        </footer>
 
-    <!-- ===================== CUERPO DEL DOCUMENTO ===================== -->
-    @php
-        $nombreAcademia = $inscripciones->keys()->first();
-    @endphp
+        @php
+            $primer = $inscripciones->first()?->first();
+            $nombreEvento = $primer['Evento'] ?? 'Evento Desconocido';
+        @endphp
 
-    <main>
         <div class="info">
-            <div class="academia-title">{{ $nombreAcademia }}</div>
+            <div class="academia-title">{{ $nombreEvento }}</div>
         </div>
 
+        <!-- TABLAS POR ACADEMIA -->
         @foreach ($inscripciones as $academia => $grupo)
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
-                        @foreach (array_keys($grupo->first() ?? []) as $header)
-                            @if ($header !== 'Academia') {{-- Oculta la columna Academia --}}
-                                <th>{{ $header }}</th>
-                            @endif
-                        @endforeach
+                        <th>Atleta</th>
+                        <th>Modalidad</th>
+                        <th>Submodalidad</th>
+                        <th>Categoría</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Peso</th>
+                        <th>Código Equipo</th>
+                        <th>Fecha Inscripción</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($grupo as $inscripcion)
+                    @foreach ($grupo as $i => $dato)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            @foreach ($inscripcion as $campo => $valor)
-                                @if ($campo !== 'Academia') {{-- Oculta el valor correspondiente --}}
-                                    <td>{{ $valor }}</td>
-                                @endif
-                            @endforeach
+                            <td>{{ $dato['Atleta'] }}</td>
+                            <td>{{ $dato['Modalidad'] }}</td>
+                            <td>{{ $dato['Submodalidad'] }}</td>
+                            <td>{{ $dato['Categoría'] }}</td>
+                            <td>{{ $dato['Rol'] }}</td>
+                            <td>{{ $dato['Estado'] }}</td>
+                            <td>{{ $dato['Peso'] }}</td>
+                            <td>{{ $dato['Código de equipo'] }}</td>
+                            <td>{{ $dato['Fecha inscripción'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endforeach
-    </main>
-
-    <!-- ===================== NÚMERO DE PÁGINA ===================== -->
-    <script type="text/php">
-    if (isset($pdf)) {
-        $pdf->page_script('
-            $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "normal");
-            $size = 9;
-            $pageText = "Página " . $PAGE_NUM . " de " . $PAGE_COUNT;
-            $y = 825;
-            $x = 520;
-            $pdf->text($x, $y, $pageText, $font, $size);
-        ');
-    }
-</script>
-    ```
-
+    </div>
 </body>
 
 </html>

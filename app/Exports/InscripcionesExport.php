@@ -176,7 +176,8 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datosAgrupados = $datos->groupBy('Academia');
 
-        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados]);
+        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados])
+            ->setPaper('a4', 'landscape');
         return $pdf->download('inscripciones.pdf');
     }
 
@@ -192,7 +193,9 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             return [
                 'ID inscripción' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
-                'Atleta' => $i->atleta ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido : '—',
+                'Atleta' => $i->atleta
+                    ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido
+                    : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
@@ -209,9 +212,12 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datosAgrupados = $datos->groupBy('Academia');
 
-        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados]);
+        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados])
+            ->setPaper('a4', 'landscape');
+
         return $pdf->download('inscripciones.pdf');
     }
+
 
     public function exportEventoAcademiaPdf($id_evento)
     {
@@ -222,16 +228,15 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         $academia = $usuario->academia;
         $id_academia = $academia->id_academia ?? null;
 
-        // Construimos la consulta base
+        // consulta base
         $query = Inscripcion::with(['academia', 'atleta', 'evento', 'modalidad', 'subModalidad', 'categoria'])
             ->where('id_academia', $id_academia);
 
-        // Si se recibió un id_evento, filtramos también por él
+        // id_evento, filtramos por él
         if (!is_null($id_evento)) {
             $query->where('id_evento', $id_evento);
         }
 
-        // Ejecutamos la consulta
         $inscripciones = $query->get();
 
         // Transformamos los datos para el PDF
@@ -258,7 +263,10 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datosAgrupados = $datos->groupBy('Academia');
 
-        $pdf = Pdf::loadView('pdf.inscripciones', ['inscripciones' => $datosAgrupados]);
-        return $pdf->download('inscripciones.pdf');
+        $pdf = Pdf::loadView('pdf.inscripcionesEventos', ['inscripciones' => $datosAgrupados])
+            ->setPaper('a4', 'landscape');
+
+        
+        return $pdf->download('reporte_de_evento.pdf');
     }
 }

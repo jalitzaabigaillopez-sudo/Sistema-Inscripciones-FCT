@@ -52,7 +52,7 @@ Route::get('/reportes/atletas/{tipo}', [ReporteController::class, 'exportarAtlet
     ->name('reportes.atletas');
 
 Route::get('/inscripciones/exportar-excel', [ReporteController::class, 'exportarInscripcionesExcel']);
-Route::get('/exportar-inscripciones-pdf', [ReporteController::class, 'exportarInscripcionesPdf'])->name('inscripciones.pdf');
+Route::get('/reporteAdministradorInscripciones', [ReporteController::class, 'exportarInscripcionesPdf']);
 
 Route::get('/reporteAdministradorInscripcionesEvento/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoPdf']);
 Route::get('/reporteAdministradorInscripcionesAcademia/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaPdf']);

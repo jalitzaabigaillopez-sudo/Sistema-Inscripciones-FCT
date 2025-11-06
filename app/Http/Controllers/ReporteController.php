@@ -110,6 +110,7 @@ public function exportarAtletasExcel(Request $request)
     }
 
 
+    /** ======================================== ACADEMIA ======================================== */
     //PDF
     public function exportarInscripcionesEventoPdf($id_evento)
     {
@@ -123,14 +124,13 @@ public function exportarAtletasExcel(Request $request)
         return $export->exportarInscripcionesAcademiaPdf($id_academia);
     }
 
-    /** ======================================== ACADEMIA ======================================== */
     public function exportarAtletasAcadamiaPdf($id_academia)
     {
         $export = new AtletasExport();
         return $export->exportAcademiaPdf($id_academia);
     }
 
-    public function exportarInscripcionesAcademiasPdf($id_academia)
+    public function exportarInscripcionesAcademiasPdf($id_academia)//@audit aqui
     {
         $export = new InscripcionesExport();
         return $export->exportAcademiaPdf($id_academia);
