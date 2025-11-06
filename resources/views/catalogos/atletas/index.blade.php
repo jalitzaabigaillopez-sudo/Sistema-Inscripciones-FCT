@@ -530,7 +530,8 @@
                     {
                         data: "academia",
                         title: "Academia",
-                        orderable: false
+                        orderable: true,
+                        searchable: true
                     },
                     {
                         data: "estado",
