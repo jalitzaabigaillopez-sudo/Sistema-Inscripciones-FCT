@@ -83,6 +83,7 @@
 </div>
 
   {{-- ==================== EVENTOS Y SISTEMA ==================== --}}
+  <br>
   <div class="row g-4 mb-4">
     <!-- Próximos eventos -->
  <div class="col-12 col-lg-6">

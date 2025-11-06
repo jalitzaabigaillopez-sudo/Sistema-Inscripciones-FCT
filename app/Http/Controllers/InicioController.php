@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Models\Academia;
 use App\Models\Atleta;
-use App\Models\Categoria;
 use App\Models\Inscripcion;
 use App\Models\Evento;
 use Illuminate\Http\Request;
@@ -23,10 +22,10 @@ class InicioController extends Controller
             redirect()->route('login')->send();
         }
     }
-
-    public function estadisticasEventos(Request $request)
-    {
-        $eventos = Evento::orderBy('nombre')->get();
+// ...existing code...
+public function estadisticasEventos(Request $request)
+{
+    $eventos = Evento::orderBy('nombre')->get();
 
     // Estructura por defecto
     $estadisticas = [
@@ -39,10 +38,12 @@ class InicioController extends Controller
         'por_division' => [],
         'por_categoria' => [],
         'por_academia' => [],
+        'por_edad' => [],
+        'por_nacimiento' => [],
+        'por_sexo' => [],
     ];
 
     $eventoSeleccionado = null;
-    // aceptar ambos nombres por seguridad
     $eventoId = $request->input('id_evento', $request->input('evento_id'));
 
     if ($eventoId) {
@@ -55,7 +56,6 @@ class InicioController extends Controller
 
         $valor = $eventoSeleccionado->id_evento ?? $eventoId;
 
-        // Usar solo la columna real 'id_evento' (quitar orWhere sobre 'evento_id' que no existe)
         $inscripciones = Inscripcion::with([
                 'atleta',
                 'academia',
@@ -63,7 +63,7 @@ class InicioController extends Controller
                 'submodalidad',
                 'grado',
                 'evento.categoria',
-                'evento.division'
+                'evento.division',
             ])
             ->where('id_evento', $valor)
             ->get();
@@ -74,44 +74,114 @@ class InicioController extends Controller
             $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
 
             $estadisticas['por_modalidad'] = $inscripciones
-                ->map(function ($i) {
-                    $nombre = $i->modalidad->nombre ?? $i->modalidad_nombre ?? '';
-                    $nombre = is_string($nombre) ? trim($nombre) : '';
-                    return $nombre !== '' ? $nombre : 'No especificada';
-                })
+                ->map(fn($i) => $i->modalidad->nombre ?? ($i->modalidad_nombre ?? 'Sin modalidad'))
                 ->countBy()
                 ->toArray();
 
             $estadisticas['por_submodalidad'] = $inscripciones
-                ->map(function ($i) {
-                    $nombre = $i->submodalidad->nombre ?? $i->submodalidad_nombre ?? '';
-                    $nombre = is_string($nombre) ? trim($nombre) : '';
-                    return $nombre !== '' ? $nombre : 'No asignada';
-                })
+                ->map(fn($i) => $i->submodalidad->nombre ?? ($i->submodalidad_nombre ?? 'Sin submodalidad'))
                 ->countBy()
                 ->toArray();
 
             $estadisticas['por_grado'] = $inscripciones
-              ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
+                ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
                 ->countBy()
                 ->toArray();
 
+            // categoría / división usando fallback seguro
             $estadisticas['por_categoria'] = $inscripciones
-               ->groupBy(fn($i) => $i->evento->categoria->nombre ?? 'Entrenador / Asistente')
-    ->map(fn($grupo) => $grupo->count());
+                ->map(fn($i) => data_get($i, 'evento.categoria.nombre') ?? ($i->categoria_nombre ?? 'Sin categoría'))
+                ->countBy()
+                ->toArray();
 
-           // obtener divisiones con fallback seguro
-$estadisticas['por_division'] = $inscripciones
-    ->groupBy(fn($i) => $i->evento->division->nombre ?? 'Entrenador / Asistente')
-    ->map(fn($grupo) => $grupo->count());
+            $estadisticas['por_division'] = $inscripciones
+                ->map(fn($i) => data_get($i, 'evento.division.nombre') ?? ($i->division_nombre ?? 'Sin división'))
+                ->countBy()
+                ->toArray();
 
             $estadisticas['por_academia'] = $inscripciones
                 ->map(fn($i) => $i->academia->nombre ?? ($i->academia_nombre ?? 'Sin academia'))
                 ->countBy()
                 ->toArray();
+
+            // edades en buckets
+            $ageBuckets = [
+                '0-5'   => [0, 5],
+                '6-10'  => [6, 10],
+                '11-15' => [11, 15],
+                '16-20' => [16, 20],
+                '21-30' => [21, 30],
+                '31-40' => [31, 40],
+                '41-50' => [41, 50],
+                '51+'   => [51, 150],
+            ];
+
+            $estadisticas['por_edad'] = $inscripciones
+                ->map(function ($i) use ($ageBuckets) {
+                    $edad = null;
+                    if (!empty(optional($i->atleta)->edad)) {
+                        $edad = (int) optional($i->atleta)->edad;
+                    } elseif (!empty(optional($i->atleta)->fecha_nacimiento)) {
+                        try {
+                            $edad = \Carbon\Carbon::parse($i->atleta->fecha_nacimiento)->age;
+                        } catch (\Throwable $e) {
+                            $edad = null;
+                        }
+                    }
+                    if ($edad === null) return 'Sin edad';
+                    foreach ($ageBuckets as $label => [$min, $max]) {
+                        if ($edad >= $min && $edad <= $max) return $label;
+                    }
+                    return 'Desconocida';
+                })
+                ->countBy()
+                ->toArray();
+
+            // año de nacimiento
+            $estadisticas['por_nacimiento'] = $inscripciones
+                ->map(fn($i) => optional($i->atleta)->fecha_nacimiento ? date('Y', strtotime($i->atleta->fecha_nacimiento)) : 'Sin año')
+                ->countBy()
+                ->toArray();
+
+            // ---- Top-N strategy (para tablas con muchos registros) ----
+            $topN = 20;
+
+            // Categorías top N + "Otros"
+            $cats = $estadisticas['por_categoria'] ?? [];
+            arsort($cats);
+            $topCats = array_slice($cats, 0, $topN, true);
+            $otrosCats = array_sum(array_slice($cats, $topN, null, true));
+            if ($otrosCats > 0) $topCats['Otros'] = $otrosCats;
+            $estadisticas['por_categoria_top'] = $topCats;
+
+            // Años: ordenar desc y limitar (suelen ser pocos)
+            $years = $estadisticas['por_nacimiento'] ?? [];
+            ksort($years); // años asc
+            // opcional: limitar si hay muchísimos años
+            if (count($years) > 100) {
+                $yearsTop = array_slice($years, -100, 100, true); // últimos 100 años
+            } else {
+                $yearsTop = $years;
+            }
+            $estadisticas['por_nacimiento_top'] = $yearsTop;
         } else {
             session()->flash('info', 'No hay inscripciones para el evento seleccionado');
         }
+
+        $estadisticas['por_sexo'] = $inscripciones
+    ->map(function($i) {
+        // intentar sexo desde atleta, luego desde la propia inscripción
+        $raw = optional($i->atleta)->sexo ?? ($i->sexo ?? null);
+        $val = is_string($raw) ? trim(mb_strtolower($raw)) : null;
+
+        if (in_array($val, ['m', 'masculino', 'hombre'])) return 'Masculino';
+        if (in_array($val, ['f', 'femenino', 'mujer'])) return 'Femenino';
+        if (empty($val)) return 'Sin especificar';
+        // normalizar otros valores (ej. 'NB', 'Otro')
+        return mb_strtoupper($raw);
+    })
+    ->countBy()
+    ->toArray();
     }
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
@@ -176,7 +246,7 @@ $estadisticas['por_division'] = $inscripciones
                 'proximosEventos',
                 'meses',
                 'eventosPorMes',
-                'generoDistribucion'
+                'generoDistribucion',
             ));
         }
         // ================= ACADEMIA =================

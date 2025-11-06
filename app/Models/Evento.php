@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use mysqli;
 
 
@@ -46,6 +47,27 @@ public function categoria()
 public function division()
 {
     return $this->belongsTo(Division::class, 'id_division', 'id_division');
+}
+
+public function evento()
+{
+    return $this->belongsTo(Evento::class, 'id_evento', 'id_evento');
+}
+public function atleta()
+{
+    return $this->belongsTo(Atleta::class, 'id_atleta', 'id_atleta');
+}
+public function modalidad()
+{
+    return $this->belongsTo(Modalidad::class, 'id_modalidad', 'id_modalidad');
+}
+public function submodalidad()
+{
+    return $this->belongsTo(Submodalidad::class, 'id_submodalidad', 'id_submodalidad');
+}
+public function grado()
+{
+    return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
 }
 
 }

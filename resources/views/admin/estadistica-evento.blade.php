@@ -33,70 +33,133 @@
   {{-- Resultados --}}
   @if($eventoSeleccionado)
     <div class="card shadow-sm border-0 mb-4">
-      <div class="card-header bg-warning text-dark fw-bold">
+      <div class="card-header bg-primary text-white fw-bold">
         <i class="bi bi-clipboard-data me-2"></i> Estadísticas de: {{ $eventoSeleccionado->nombre }}
       </div>
       <div class="card-body">
-        @php $total = $estadisticas['total_inscripciones'] ?? 0; @endphp
+        @php $total = $estadisticas['total_inscripciones'] ?? 0;
+        $tarjetas_estadisticas = [
+    [
+        'label' => 'Inscripciones',
+        'valor' => $estadisticas['total_inscripciones'],
+        'icon' => 'bi-person-check',
+        'color' => 'primary',
+        'ruta' => route('inscripciones.index')
+    ],
+    [
+        'label' => 'Atletas únicos',
+        'valor' => $estadisticas['total_atletas'],
+        'icon' => 'bi-person',
+        'color' => 'success',
+        'ruta' => route('atletas.index')
+    ],
+    [
+        'label' => 'Academias',
+        'valor' => $estadisticas['total_academias'],
+        'icon' => 'bi-building',
+        'color' => 'info',
+        'ruta' => route('academias.index')
+    ]
+];
+
+        @endphp
 
         @if($total > 0)
           {{-- Totales en tarjetas responsivas --}}
           <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
-            @foreach([
-              ['label' => 'Inscripciones', 'valor' => $estadisticas['total_inscripciones'], 'icon' => 'bi-person-check', 'color' => 'primary'],
-              ['label' => 'Atletas únicos', 'valor' => $estadisticas['total_atletas'], 'icon' => 'bi-person', 'color' => 'success'],
-              ['label' => 'Academias', 'valor' => $estadisticas['total_academias'], 'icon' => 'bi-building', 'color' => 'info'],
-            ] as $item)
-              <div class="col">
-                <div class="card h-100 border-start border-4 border-{{ $item['color'] }} shadow-sm">
-                  <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 class="fw-semibold text-muted mb-1">{{ $item['label'] }}</h6>
-                      <h4 class="fw-bold text-{{ $item['color'] }}">{{ $item['valor'] }}</h4>
-                    </div>
-                    <i class="bi {{ $item['icon'] }} fs-2 text-{{ $item['color'] }}"></i>
-                  </div>
-                </div>
-              </div>
-            @endforeach
-          </div>
+          @foreach ($tarjetas_estadisticas as $tarjeta)
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm rounded-3 h-100 text-white"
+         style="background: linear-gradient(135deg,
+           {{ $tarjeta['color'] === 'primary' ? '#0D6EFD,#3B82F6' :
+              ($tarjeta['color'] === 'success' ? '#198754,#34D399' :
+              ($tarjeta['color'] === 'info' ? '#0dcaf0,#60A5FA' :
+              '#6c757d,#adb5bd') ) }});">
+      <a href="{{ $tarjeta['ruta'] }}" class="card-body text-center text-white text-decoration-none" role="button">
+        <i class="bi {{ $tarjeta['icon'] }} fs-1 mb-2"></i>
+        <h6 class="fw-semibold">{{ $tarjeta['label'] }}</h6>
+        <h3 class="fw-bold">{{ $tarjeta['valor'] }}</h3>
+        <small>Actualizado hoy</small>
+      </a>
+    </div>
+  </div>
+@endforeach
 
-          {{-- Distribuciones colapsables --}}
-          @foreach([
-            'por_modalidad' => 'Distribución por Modalidad',
-            'por_submodalidad' => 'Distribución por Submodalidad',
-            'por_grado' => 'Distribución por Grado',
-            'por_categoria' => 'Distribución por Categoría',
-            'por_division' => 'Distribución por División',
-            'por_academia' => 'Distribución por Academia'
-          ] as $key => $titulo)
-            @php $items = $estadisticas[$key] ?? []; @endphp
-            <div class="accordion mb-3" id="accordion-{{ $key }}">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-{{ $key }}">
-                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $key }}">
-                    {{ $titulo }}
-                  </button>
-                </h2>
-                <div id="collapse-{{ $key }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ $key }}">
-                  <div class="accordion-body">
-                    @if(count($items))
-                      <ul class="list-group list-group-sm">
-                        @foreach($items as $nombre => $cantidad)
-                          <li class="list-group-item d-flex justify-content-between">
-                            <span>{{ $nombre }}</span>
-                            <span class="badge bg-secondary">{{ $cantidad }}</span>
-                          </li>
-                        @endforeach
-                      </ul>
-                    @else
-                    <span>{{ $nombre ?: 'Sin nombre registrado' }}</span>
-                    @endif
-                  </div>
-                </div>
-              </div>
+          </div>
+          {{-- Tablas de distribución --}}
+        <div class="row g-4">
+  @foreach([
+    'por_sexo' => ['titulo' => 'Sexo', 'color' => 'primary'],
+    'por_edad' => ['titulo' => 'Edad', 'color' => 'primary'],
+    'por_nacimiento' => ['titulo' => 'Año de Nacimiento', 'color' => 'primary'],
+    'por_academia' => ['titulo' => 'Academia', 'color' => 'primary'],
+    'por_modalidad' => ['titulo' => 'Modalidad', 'color' => 'primary'],
+    'por_submodalidad' => ['titulo' => 'Submodalidad', 'color' => 'primary'],
+    'por_grado' => ['titulo' => 'Grado', 'color' => 'primary'],
+    'cantidad_academias' => ['titulo' => 'Cantidad de Academias', 'color' => 'primary'],
+    'por_division' => ['titulo' => 'División', 'color' => 'primary'],
+    'por_categoria' => ['titulo' => 'Categoría', 'color' => 'primary'],
+     ] as $key => $grupo)
+    @php
+      if ($key === 'cantidad_academias') {
+        $items = ['Total' => $estadisticas['total_academias'] ?? 0];
+      } else {
+        $items = $estadisticas[$key] ?? [];
+        // Convert collections/objects to arrays if necessary
+        if (is_object($items) && method_exists($items, 'toArray')) {
+          $items = $items->toArray();
+        }
+      }
+
+      $total = 0;
+      if (is_array($items)) {
+        foreach ($items as $nombre => $valor) {
+          if (is_array($valor) && isset($valor['cantidad'])) {
+            $total += (int) $valor['cantidad'];
+          } elseif (is_object($valor) && isset($valor->cantidad)) {
+            $total += (int) $valor->cantidad;
+          } elseif (is_numeric($valor)) {
+            $total += (int) $valor;
+          }
+        }
+      }
+    @endphp
+
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card border-start border-4 border-{{ $grupo['color'] }} shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="fw-semibold text-{{ $grupo['color'] }} mb-3">{{ $grupo['titulo'] }}</h6>
+
+          @if(count($items))
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered align-middle mb-2">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nombre</th>
+                    <th class="text-end">Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($items as $nombre => $cantidad)
+                    <tr>
+                      <td>{{ $nombre ?: 'Sin nombre' }}</td>
+                      <td class="text-end">{{ $cantidad }}</td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
             </div>
-          @endforeach
+            <div class="text-end text-muted small">
+              <strong>Total:</strong> {{ number_format($total) }}
+            </div>
+          @else
+            <div class="text-muted fst-italic">Sin datos disponibles</div>
+          @endif
+        </div>
+      </div>
+    </div>
+  @endforeach
+</div>
         @else
           <div class="alert alert-info">No hay inscripciones para este evento.</div>
         @endif
