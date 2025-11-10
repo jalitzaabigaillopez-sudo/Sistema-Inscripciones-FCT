@@ -22,10 +22,9 @@ class InicioController extends Controller
             redirect()->route('login')->send();
         }
     }
-    public function estadisticasEventos(Request $request)
+public function estadisticasEventos(Request $request)
 {
     $eventos = Evento::orderBy('nombre')->get();
-
     $estadisticas = [
         'total_inscripciones' => 0,
         'total_atletas' => 0,
@@ -37,145 +36,115 @@ class InicioController extends Controller
         'por_academia' => [],
         'por_edad' => [],
         'por_nacimiento' => [],
+        'por_nacimiento_top' => [],
         'por_sexo' => [],
     ];
 
-    $eventoSeleccionado = null;
-    $eventoId = $request->input('id_evento', $request->input('evento_id'));
+    $eventoId = $request->input('id_evento');
+    $eventoSeleccionado = $eventoId
+        ? Evento::where('id_evento', $eventoId)->first() ?? Evento::find($eventoId)
+        : null;
 
-    if ($eventoId) {
-        $eventoSeleccionado = Evento::where('id_evento', $eventoId)->first() ?? Evento::find($eventoId);
-
-        if (!$eventoSeleccionado) {
-            session()->flash('error', 'Evento no encontrado');
-            return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
-        }
-
-        $valor = $eventoSeleccionado->id_evento ?? $eventoId;
-
-        $inscripciones = Inscripcion::with([
-                'atleta',
-                'academia',
-                'modalidad',
-                'submodalidad',
-                'grado',
-                'evento.categoria',
-                'evento.division.categoria',
-            ])
-            ->where('id_evento', $valor)
-            ->get();
-
-        if ($inscripciones->isNotEmpty()) {
-            $estadisticas['total_inscripciones'] = $inscripciones->count();
-            $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
-            $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
-
-            $estadisticas['por_modalidad'] = $inscripciones
-                ->map(fn($i) => $i->modalidad->nombre ?? ($i->modalidad_nombre ?? 'Sin modalidad'))
-                ->countBy()
-                ->toArray();
-
-            $estadisticas['por_submodalidad'] = $inscripciones
-                ->map(fn($i) => $i->submodalidad->nombre ?? ($i->submodalidad_nombre ?? 'Sin submodalidad'))
-                ->countBy()
-                ->toArray();
-
-            $estadisticas['por_grado'] = $inscripciones
-                ->map(fn($i) => $i->grado->nombre ?? ($i->grado_nombre ?? 'Sin grado'))
-                ->countBy()
-                ->toArray();
-
-           $estadisticas['por_categoria'] = $inscripciones
-                ->map(function ($i) {
-                    // intentos en orden de prioridad; data_get gestiona nulls sin lanzar
-                    $eventoCat = data_get($i, 'evento.categoria.nombre');
-                    if (!empty($eventoCat)) return $eventoCat;
-
-                    $divisionCat = data_get($i, 'evento.division.categoria.nombre');
-                    if (!empty($divisionCat)) return $divisionCat;
-
-                    $atletaCat = data_get($i, 'atleta.categoria.nombre');
-                    if (!empty($atletaCat)) return $atletaCat;
-
-                    // campos planos en la inscripción (si existen)
-                    if (!empty($i->categoria_nombre)) return $i->categoria_nombre;
-                    if (!empty($i->categoria_id)) return 'ID ' . $i->categoria_id;
-
-                    return 'Sin categoría';
-                })
-                ->countBy()
-                ->toArray();
-
-            $estadisticas['por_academia'] = $inscripciones
-                ->map(fn($i) => $i->academia->nombre ?? ($i->academia_nombre ?? 'Sin academia'))
-                ->countBy()
-                ->toArray();
-
-            $ageBuckets = [
-                '0-5'   => [0, 5],
-                '6-10'  => [6, 10],
-                '11-15' => [11, 15],
-                '16-20' => [16, 20],
-                '21-30' => [21, 30],
-                '31-40' => [31, 40],
-                '41-50' => [41, 50],
-                '51+'   => [51, 150],
-            ];
-
-            $estadisticas['por_edad'] = $inscripciones
-                ->map(function ($i) use ($ageBuckets) {
-                    $edad = null;
-                    if (!empty(optional($i->atleta)->edad)) {
-                        $edad = (int) optional($i->atleta)->edad;
-                    } elseif (!empty(optional($i->atleta)->fecha_nacimiento)) {
-                        try {
-                            $edad = \Carbon\Carbon::parse($i->atleta->fecha_nacimiento)->age;
-                        } catch (\Throwable $e) {
-                            $edad = null;
-                        }
-                    }
-                    if ($edad === null) return 'Sin edad';
-                    foreach ($ageBuckets as $label => [$min, $max]) {
-                        if ($edad >= $min && $edad <= $max) return $label;
-                    }
-                    return 'Desconocida';
-                })
-                ->countBy()
-                ->toArray();
-
-            $estadisticas['por_nacimiento'] = $inscripciones
-                ->map(fn($i) => optional($i->atleta)->fecha_nacimiento ? date('Y', strtotime($i->atleta->fecha_nacimiento)) : 'Sin año')
-                ->countBy()
-                ->toArray();
-
-            $years = $estadisticas['por_nacimiento'] ?? [];
-            ksort($years);
-            $estadisticas['por_nacimiento_top'] = count($years) > 100
-                ? array_slice($years, -100, 100, true)
-                : $years;
-
-            $estadisticas['por_sexo'] = $inscripciones
-                ->map(function($i) {
-                    $raw = optional($i->atleta)->sexo ?? ($i->sexo ?? null);
-                    $val = is_string($raw) ? trim(mb_strtolower($raw)) : null;
-
-                    if (in_array($val, ['m', 'masculino', 'hombre'])) return 'Masculino';
-                    if (in_array($val, ['f', 'femenino', 'mujer'])) return 'Femenino';
-                    if (empty($val)) return 'Sin especificar';
-                    return mb_strtoupper($raw);
-                })
-                ->countBy()
-                ->toArray();
-        } else {
-            session()->flash('info', 'No hay inscripciones para el evento seleccionado');
-        }
+    if (! $eventoSeleccionado) {
+        if ($eventoId) session()->flash('error', 'Evento no encontrado');
+        return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
     }
+
+    $inscripciones = Inscripcion::with([
+        'atleta',
+        'academia',
+        'modalidad',
+        'submodalidad',
+        'grado',
+     
+         
+    ])->where('id_evento', $eventoSeleccionado->id_evento)->get();
+
+    if ($inscripciones->isEmpty()) {
+        session()->flash('info', 'No hay inscripciones para el evento seleccionado');
+        return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
+    }
+
+    // Normalizador
+    $normalize = fn($val) => $val ? mb_convert_case(trim((string) $val), MB_CASE_TITLE) : null;
+
+    // Resolutores
+    $resolveGrado = fn($i) => $normalize(optional($i->grado)->nombre) ?? $normalize($i->grado_nombre) ?? 'Sin grado';
+    $resolveAcademia = fn($i) => $normalize(optional($i->academia)->nombre) ?? $normalize($i->academia_nombre) ?? 'Sin academia';
+    $resolveModalidad = fn($i) => $normalize(optional($i->modalidad)->nombre) ?? $normalize($i->modalidad_nombre) ?? 'Sin modalidad';
+    $resolveSubmodalidad = fn($i) => $normalize(optional($i->submodalidad)->nombre) ?? $normalize($i->submodalidad_nombre) ?? 'Sin submodalidad';
+    $resolveCategoria = fn($i) => $normalize(optional($i->categoria)->nombre) ?? $normalize($i->categoria_nombre) ?? 'Sin categoría';
+    $resolveRol = fn($i) => $normalize($i->tipo) ?? 'Sin rol';
+    $resolveSexo = function ($i) {
+        $raw = optional($i->atleta)->sexo ?? $i->sexo;
+        if (! $raw) return 'Sin especificar';
+        $val = mb_strtolower(trim($raw));
+        return match(true) {
+            in_array($val, ['m', 'masculino', 'hombre']) => 'Masculino',
+            in_array($val, ['f', 'femenino', 'mujer']) => 'Femenino',
+            default => mb_convert_case($raw, MB_CASE_TITLE),
+        };
+    };
+$resolveCategoria = fn($i) =>
+    $normalize(optional($i->categoria)->nombre)
+    ?? $normalize(optional($i->atleta->categoria)->nombre)
+    ?? $normalize($i->categoria_nombre)
+    ?? 'Sin categoría';
+
+
+    $ageBuckets = [
+        '0-5' => [0,5], '6-10' => [6,10], '11-15' => [11,15],
+        '16-20' => [16,20], '21-30' => [21,30], '31-40' => [31,40],
+        '41-50' => [41,50], '51+' => [51,150],
+    ];
+
+    $resolveEdadBucket = function ($i) use ($ageBuckets) {
+        $edad = optional($i->atleta)->edad;
+        if (! $edad && optional($i->atleta)->fecha_nacimiento) {
+            try {
+                $edad = \Carbon\Carbon::parse($i->atleta->fecha_nacimiento)->age;
+            } catch (\Throwable $e) {}
+        }
+        if (! $edad) return 'Sin edad';
+        foreach ($ageBuckets as $label => [$min, $max]) {
+            if ($edad >= $min && $edad <= $max) return $label;
+        }
+        return 'Desconocida';
+    };
+
+    // Estadísticas base
+    $estadisticas['total_inscripciones'] = $inscripciones->count();
+    $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
+    $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
+
+    // Distribuciones
+    $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
+    $estadisticas['por_submodalidad'] = $inscripciones->map($resolveSubmodalidad)->countBy()->toArray();
+    $estadisticas['por_grado'] = $inscripciones->map($resolveGrado)->countBy()->toArray();
+    $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy()->toArray();
+    $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
+    $estadisticas['por_edad'] = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
+    $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
+$estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
+$estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy()->toArray();
+
+    $estadisticas['por_nacimiento'] = $inscripciones->map(function ($i) {
+        $fn = optional($i->atleta)->fecha_nacimiento;
+        if (! $fn) return 'Sin año';
+        try {
+            return \Carbon\Carbon::parse($fn)->format('Y');
+        } catch (\Throwable $e) {
+            return 'Sin año';
+        }
+    })->countBy()->toArray();
+
+    ksort($estadisticas['por_nacimiento']);
+    $estadisticas['por_nacimiento_top'] = count($estadisticas['por_nacimiento']) > 100
+        ? array_slice($estadisticas['por_nacimiento'], -100, 100, true)
+        : $estadisticas['por_nacimiento'];
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
-
-
-
 
     public function index(Request $request)
     {
@@ -291,7 +260,6 @@ class InicioController extends Controller
         $categorias = ['Infantil', 'Cadete', 'Junior', 'Adulto', 'Master'];
 
 
-
         $inscripciones = [
             Atleta::where('id_academia', $academia->id_academia)
                 ->whereRaw('TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) BETWEEN 0 AND 11')->count(), // Infantil
@@ -305,7 +273,6 @@ class InicioController extends Controller
                 ->whereRaw('TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) >= 30')->count(), // Master
         ];
 
-        // 2️⃣ Distribución de grados (usando la tabla grados)
         $grados = DB::table('grados')
             ->join('atletas', 'grados.id_grado', '=', 'atletas.id_grado')
             ->where('atletas.id_academia', $academia->id_academia)

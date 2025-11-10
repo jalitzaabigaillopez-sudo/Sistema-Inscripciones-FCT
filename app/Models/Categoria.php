@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Atleta;
+use App\Models\Division;
 
 class Categoria extends Model
 {
@@ -16,10 +18,12 @@ class Categoria extends Model
         return $this->hasMany(Atleta::class, 'id_categoria');
     }
 
-    public function division()
-    {
-        return $this->belongsTo(Division::class, 'id_division');
-    }
-  
+    
+    // Categoria.php
+public function division()
+{
+    return $this->belongsTo(Division::class, 'id_division');
+}
+
 
 }
