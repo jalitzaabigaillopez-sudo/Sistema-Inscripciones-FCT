@@ -63,6 +63,12 @@ Route::get('/reporteAdministradorInscripcionesAcademia/{id_academia}', [ReporteC
 Route::get('/reporteAdministradorInscripcionesEventoExcel/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoExcel']);
 Route::get('/reporteAdministradorInscripcionesAcademiaExcel/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaExcel']);
 
+/**
+ * Padron electoral
+ */
+Route::get('/vista-archivo', [PadronNacimientoController::class, 'index'])->name('vistaArchivo');
+Route::post('/subir-archivo', [PadronNacimientoController::class, 'subirArchivo'])->name('subirArchivo');
+
 
 //####################################### SOLO ACADEMIA #######################################################################################
 /**
