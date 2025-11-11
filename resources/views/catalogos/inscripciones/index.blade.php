@@ -51,43 +51,46 @@
         </div>
 
         {{-- EXPORTAR PDF O EXCEL --}}
-<div class="d-flex justify-content-start align-items-center mb-2 flex-wrap">
-  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with export and filter">
-    <div class="btn-group me-2" role="group" aria-label="Export buttons">
-      <a id="bPDF" href="#" class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
-        <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-      </a>
+        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with export and filter">
+                <div class="btn-group me-2" role="group" aria-label="Export buttons">
+                    <a id="bPDF" href="#" class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                    </a>
 
-      <a id="bExcel" href="#" class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center ms-2">
-        <i class="bi bi-file-earmark-excel me-1"></i> Excel
-      </a>
-    </div>
+                    <a id="bExcel" href="#"
+                        class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center ms-2">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Excel
+                    </a>
+                </div>
 
-    <div class="btn-group" role="group" aria-label="Filter dropdown">
-      <div class="dropdown">
-        <button class="btn btn-outline-primary dropdown-toggle btn-sm rounded-pill px-3 d-flex align-items-center"
-                type="button" id="dropdownFiltro" data-bs-toggle="dropdown" aria-expanded="false" val="" data-filtro="">
-          Filtrar por
-        </button>
+                <div class="btn-group" role="group" aria-label="Filter dropdown">
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle btn-sm rounded-pill px-3 d-flex align-items-center"
+                            type="button" id="dropdownFiltro" data-bs-toggle="dropdown" aria-expanded="false" val=""
+                            data-filtro="">
+                            Filtrar por
+                        </button>
 
-        <ul class="dropdown-menu" aria-labelledby="dropdownFiltro" id="menuFiltro">
-          <li class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="#">Eventos</a>
-            <ul class="dropdown-menu" id="submenuEventos"></ul>
-          </li>
-          <li class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="#">Academias</a>
-            <ul class="dropdown-menu" id="submenuAcademias"></ul>
-          </li>
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-          <li><a class="dropdown-item text-muted" href="#" id="btnMostrarTodo">Mostrar todo</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownFiltro" id="menuFiltro">
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">Eventos</a>
+                                <ul class="dropdown-menu" id="submenuEventos"></ul>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">Academias</a>
+                                <ul class="dropdown-menu" id="submenuAcademias"></ul>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-muted" href="#" id="btnMostrarTodo">Mostrar todo</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         {{-- Campo oculto para registrar el tipo de filtro --}}
         <input type="hidden" id="tipoFiltro" data-filtro="">
 
@@ -112,8 +115,18 @@
                             <td>
                                 <span
                                     class="badge rounded-pill 
-                                                                                                                                                                                                                    {{ $item->estado == 'activa' ? 'bg-success' : ($item->estado == 'inactiva' ? 'bg-warning text-dark' : 'bg-danger') }}">
-                                    {{ ucfirst($item->estado) }}
+                                {{ $item->estado == 'activa' ? 'bg-success' : ($item->estado == 'inactiva' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                                    @if($item->estado == 'activa')
+                                        {{ ucfirst("Enviado") }}
+                                    @elseif($item->estado == 'inactiva')
+                                        {{ ucfirst("Pendiente") }}
+                                    @elseif($item->estado == 'cancelada')
+                                        {{ ucfirst("Cancelada") }}
+                                    @else
+                                        Estado desconocido
+                                    @endif
+
+
                                 </span>
                             </td>
                             <td>
