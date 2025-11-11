@@ -17,7 +17,7 @@
                 {{-- Sección: Evento --}}
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header fw-semibold">
-                        <i class="bi bi-calendar-check me-2"></i> Selección de Evento
+                        <i class="bi bi-calendar-check me-2"></i> Selección de Evento <span id="lFechaEvento"></span>
                     </div>
                     <div class="card-body">
 

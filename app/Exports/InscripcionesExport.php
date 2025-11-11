@@ -14,7 +14,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
-
     protected $id_evento;
     protected $id_academia;
 
@@ -26,11 +25,10 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
     public function startCell(): string
     {
-        // Empezamos desde la segunda fila si hay academia (dejando la primera libre para el encabezado)
-        return $this->id_academia ? 'A2' : 'A1';
+        // Si hay academia o evento, dejamos la primera fila para los encabezados
+        return ($this->id_academia || $this->id_evento) ? 'A2' : 'A1';
     }
 
-    /** ===================================================================== ADMINISTRADOR ============================================================================ */
     public function collection()
     {
         $query = Inscripcion::with(['academia', 'atleta', 'evento', 'modalidad', 'subModalidad', 'categoria']);
@@ -44,32 +42,76 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $inscripciones = $query->get();
 
-        return new Collection($inscripciones->map(function ($i) {
-            return [
+        $prioridadTipo = [
+            'entrenador' => 1,
+            'asistente' => 2,
+            'atleta' => 3,
+        ];
+
+        $prioridadModalidad = [
+            'combate' => 1,
+            'poomsae' => 2,
+            'freestyle' => 3,
+        ];
+
+        $datos = $inscripciones->map(function ($i) {
+            $fila = [
                 'ID inscripción' => $i->id_inscripcion,
-                // 'Academia' => $i->academia->nombre ?? '—',
-                'Atleta' => $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido ?? '—',
-                'Evento' => $i->evento->nombre ?? '—',
-                'Modalidad' => $i->modalidad->nombre ?? '—',
-                'Submodalidad' => $i->subModalidad->nombre ?? '—',
+                'Atleta' => $i->atleta
+                    ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
+                    : '—',
+                'Modalidad' => ucfirst(strtolower($i->modalidad->nombre ?? '—')),
+                'Submodalidad' => ucfirst(strtolower($i->subModalidad->nombre ?? '—')),
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
-                    ? "Más de {$i->categoria->peso_min} kg & No excede {$i->categoria->peso_max} kg"
+                    ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
                     : '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
-                'Estado' => $i->estado,
+                'Estado' => ucfirst(strtolower($i->estado ?? '—')),
                 'Peso' => $i->peso ?? '—',
                 'Código de equipo' => $i->codigo_equipo ?? '—',
-                'Rol' => $i->rol ?? '—',
+                'Rol' => ucfirst(strtolower($i->rol ?? '—')),
             ];
-        }));
+
+            // Solo incluir "Evento" si no hay filtro de id_evento
+            if (!$this->id_evento) {
+                $fila = array_slice($fila, 0, 2, true)
+                    + ['Evento' => $i->evento->nombre ?? '—']
+                    + array_slice($fila, 2, null, true);
+            }
+
+            return $fila;
+        });
+
+        $datosOrdenados = $datos->sort(function ($a, $b) use ($prioridadTipo, $prioridadModalidad) {
+            $rolA = strtolower($a['Rol']);
+            $rolB = strtolower($b['Rol']);
+            $valorTipoA = $prioridadTipo[$rolA] ?? 999;
+            $valorTipoB = $prioridadTipo[$rolB] ?? 999;
+
+            if ($valorTipoA !== $valorTipoB) {
+                return $valorTipoA <=> $valorTipoB;
+            }
+
+            if ($rolA === 'atleta' && $rolB === 'atleta') {
+                $modA = strtolower($a['Modalidad']);
+                $modB = strtolower($b['Modalidad']);
+                $valorModA = $prioridadModalidad[$modA] ?? 999;
+                $valorModB = $prioridadModalidad[$modB] ?? 999;
+                return $valorModA <=> $valorModB;
+            }
+
+            return 0;
+        });
+
+        return new Collection($datosOrdenados->values());
     }
 
     public function headings(): array
     {
+        // Encabezados base
         $encabezados = [
             'ID inscripción',
             'Atleta',
-            'Evento',
             'Modalidad',
             'Submodalidad',
             'Categoría',
@@ -80,17 +122,33 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Rol'
         ];
 
-        // Si hay un filtro por academia, agregamos el nombre arriba
-        if ($this->id_academia) {
-            $academiaNombre = \App\Models\Academia::find($this->id_academia)->nombre ?? 'Academia desconocida';
-            // Esto crea una fila antes del encabezado con el nombre de la academia
-            return [
-                [$academiaNombre],
-                $encabezados
-            ];
+        // Solo agregar "Evento" si no se filtró por uno
+        if (!$this->id_evento) {
+            array_splice($encabezados, 2, 0, ['Evento']);
         }
-        return [$encabezados];
+
+        $encabezadoExtra = [];
+
+        // Si hay academia o evento, se agrega una fila superior
+        if ($this->id_academia) {
+            $nombreAcademia = \App\Models\Academia::find($this->id_academia)->nombre ?? 'Academia desconocida';
+            $encabezadoExtra[] = [$nombreAcademia];
+        }
+
+        if ($this->id_evento) {
+            $nombreEvento = \App\Models\Evento::find($this->id_evento)->nombre ?? 'Evento desconocido';
+            $encabezadoExtra[] = [$nombreEvento];
+        }
+
+        // Si hay encabezados extra, los agregamos antes de la fila principal
+        if (!empty($encabezadoExtra)) {
+            return array_merge($encabezadoExtra, [$encabezados]);
+        }
+
+        return $encabezados;
     }
+
+
 
     public function exportarInscripcionesEventoPdf($id_evento)
     {
