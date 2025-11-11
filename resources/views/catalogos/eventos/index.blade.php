@@ -312,7 +312,7 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-light border-end-0">₡</span>
                                             <input type="number" class="form-control form-control-sm border-start-0"
-                                                id="editCostoEvento" name="costo" min="0" step="0.01">
+                                                id="editCostoEvento" name="costo" min="0" step="0.01" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
                                         </div>
                                     </div>
                                     <div class="mb-3">
