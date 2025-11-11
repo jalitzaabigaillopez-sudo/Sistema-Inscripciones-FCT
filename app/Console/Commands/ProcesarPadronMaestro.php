@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\PadronNacimiento;
+use Carbon\Carbon;
 
 class ProcesarPadronMaestro extends Command
 {
@@ -11,7 +13,7 @@ class ProcesarPadronMaestro extends Command
 
     public function handle()
     {
-        $path = storage_path('app/private/archivos_txt/MAESTRO_NACIMIENTOS_PLANO_SEPTIEMBRE 2025.txt'); 
+        $path = storage_path('app/private/archivos_txt/MAESTRO_NACIMIENTOS_PLANO_SEPTIEMBRE 2025.txt');
 
         if (!file_exists($path)) {
             $this->error("El archivo no existe: $path");
@@ -34,17 +36,44 @@ class ProcesarPadronMaestro extends Command
                 continue;
             }
 
+            $line = mb_convert_encoding($line, 'UTF-8', 'Windows-1252');
+            $fechaNacimiento = null;
+
             $cedula = trim(substr($line, 0, 9));
-            $fechaNacimiento = trim(substr($line, 37, 8));
+            $fechaNacimientoRaw = trim(substr($line, 37, 8));
             $primerApellido = trim(substr($line, 68, 7));
             $segundoApellido = trim(substr($line, 94, 8));
-            $nombre = trim(substr($line, 120, 13));
+            $nombre = trim(substr($line, 120, 48));
+
+            // Convertir a minúsculas con soporte UTF-8
+            $primerApellido = mb_strtolower($primerApellido, 'UTF-8');
+            $segundoApellido = mb_strtolower($segundoApellido, 'UTF-8');
+            $nombre = mb_strtolower($nombre, 'UTF-8');
+
+            $primerApellido = preg_replace('/\s+/', ' ', trim($primerApellido));
+            $segundoApellido = preg_replace('/\s+/', ' ', trim($segundoApellido));
+            $nombre = preg_replace('/\s+/', ' ', trim($nombre));
+
+            try {
+                $fechaNacimiento = Carbon::createFromFormat('Ymd', $fechaNacimientoRaw)->format('Y-m-d');
+            } catch (\Exception $e) {
+                $fechaNacimiento = null; // o manejar el error como prefieras
+            }
 
             // toString
             $this->line("[$count] $cedula | $fechaNacimiento | $primerApellido | $segundoApellido | $nombre");
 
+            //Guardar en bd
+            PadronNacimiento::create([
+                'identificacion' => $cedula,
+                'primer_apellido' => $primerApellido,
+                'segundo_apellido' => $segundoApellido,
+                'nombre' => $nombre,
+                'fecha_nacimiento' => $fechaNacimiento,
+            ]);
+
             // Para pruebas, limitar líneas:
-            // if ($count >= 1000) break;
+            // if ($count >= 20) break;
         }
 
         fclose($handle);

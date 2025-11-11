@@ -45,6 +45,16 @@ $(document).ready(function () {
         }
 
         var id_evento = $(this).val();
+        var fechaFin = $(this).find('option:selected').data('fecha-fin');
+        var fechaTardia = $(this).find('option:selected').data('fecha-tardia');
+
+        let texto = 'Fecha límite de inscripción ordinaria: ' + fechaFin;
+
+        if (fechaTardia && fechaTardia.trim() !== "") {
+            texto += ' | Cierre de inscripciones tardías: ' + fechaTardia;
+        }
+
+        $('#lFechaEvento').text(texto);
 
         $.ajax({
             url: '/obtenerModalidades',
@@ -59,7 +69,6 @@ $(document).ready(function () {
                 select.empty();
 
                 select.append('<option value="">Seleccione una modalidad</option>');
-
                 res.forEach(function (item) {
                     select.append('<option value="' + item.id_modalidad + '" data-nombre="' + item.nombre + '">' + item.nombre + '</option>');
                 });
