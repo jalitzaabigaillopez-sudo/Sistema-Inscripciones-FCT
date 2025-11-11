@@ -64,7 +64,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Submodalidad' => ucfirst(strtolower($i->subModalidad->nombre ?? '—')),
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
                 'Estado' => ucfirst(strtolower($i->estado ?? '—')),
                 'Peso' => $i->peso ?? '—',
@@ -72,16 +72,32 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Rol' => ucfirst(strtolower($i->rol ?? '—')),
             ];
 
-            // Solo incluir "Evento" si no hay filtro de id_evento
-            if (!$this->id_evento) {
+            // Si no se filtró ni por evento ni por academia → agregar ambas columnas
+            if (!$this->id_evento && !$this->id_academia) {
+                $fila = array_slice($fila, 0, 2, true)
+                    + [
+                        'Evento' => $i->evento->nombre ?? '—',
+                        'Academia' => $i->academia->nombre ?? '—',
+                    ]
+                    + array_slice($fila, 2, null, true);
+            }
+            // Si solo no se filtró por evento → agregar evento
+            elseif (!$this->id_evento) {
                 $fila = array_slice($fila, 0, 2, true)
                     + ['Evento' => $i->evento->nombre ?? '—']
+                    + array_slice($fila, 2, null, true);
+            }
+            // Si solo no se filtró por academia → agregar academia
+            elseif (!$this->id_academia) {
+                $fila = array_slice($fila, 0, 2, true)
+                    + ['Academia' => $i->academia->nombre ?? '—']
                     + array_slice($fila, 2, null, true);
             }
 
             return $fila;
         });
 
+        // Ordenar según prioridad
         $datosOrdenados = $datos->sort(function ($a, $b) use ($prioridadTipo, $prioridadModalidad) {
             $rolA = strtolower($a['Rol']);
             $rolB = strtolower($b['Rol']);
@@ -108,7 +124,6 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
     public function headings(): array
     {
-        // Encabezados base
         $encabezados = [
             'ID inscripción',
             'Atleta',
@@ -122,14 +137,22 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Rol'
         ];
 
-        // Solo agregar "Evento" si no se filtró por uno
-        if (!$this->id_evento) {
+        // Mostrar todas las columnas si no hay filtros
+        if (!$this->id_evento && !$this->id_academia) {
+            array_splice($encabezados, 2, 0, ['Evento', 'Academia']);
+        }
+        // Mostrar solo evento si no se filtró por evento
+        elseif (!$this->id_evento) {
             array_splice($encabezados, 2, 0, ['Evento']);
+        }
+        // Mostrar solo academia si no se filtró por academia
+        elseif (!$this->id_academia) {
+            array_splice($encabezados, 2, 0, ['Academia']);
         }
 
         $encabezadoExtra = [];
 
-        // Si hay academia o evento, se agrega una fila superior
+        // Mostrar encabezado superior con nombres si aplica
         if ($this->id_academia) {
             $nombreAcademia = \App\Models\Academia::find($this->id_academia)->nombre ?? 'Academia desconocida';
             $encabezadoExtra[] = [$nombreAcademia];
@@ -140,13 +163,15 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             $encabezadoExtra[] = [$nombreEvento];
         }
 
-        // Si hay encabezados extra, los agregamos antes de la fila principal
         if (!empty($encabezadoExtra)) {
             return array_merge($encabezadoExtra, [$encabezados]);
         }
 
         return $encabezados;
     }
+
+
+
 
 
 
@@ -175,7 +200,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg & No excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
                 'Estado' => $i->estado,
                 'Peso' => $i->peso ?? '—',
@@ -272,7 +297,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'submodalidad' => ucfirst(strtolower($i->subModalidad->nombre ?? '—')),
                 'categoria' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'atleta' => $i->atleta
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
                     : '—',
@@ -339,7 +364,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
                 'Estado' => $i->estado,
                 'Peso' => $i->peso ?? '—',
@@ -428,7 +453,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg & No excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
                 'Estado' => $i->estado,
                 'Peso' => $i->peso ?? '—',
@@ -524,7 +549,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
-                    : '—',
+                    : $i->subModalidad->nombre ?? '—',
                 'Fecha inscripción' => $i->fecha_inscripcion,
                 'Estado' => $i->estado,
                 'Peso' => $i->peso ?? '—',
@@ -533,38 +558,42 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             ];
         });
 
+        // Prioridad de tipo (Rol)
         $prioridadTipo = [
             'ENTRENADOR' => 1,
-            'Asistente' => 2,
+            'ASISTENTE' => 2,
             'ATLETA' => 3,
-            'Atleta' => 3,
         ];
 
+        // Prioridad de modalidad (solo para atletas)
         $prioridadModalidad = [
             'COMBATE' => 1,
-            'Combate' => 1,
             'POOMSAE' => 2,
-            'Poomsae' => 2,
             'FREESTYLE' => 3,
-            'Freestyle' => 3,
         ];
 
+        // Ordena según la lógica JS (Rol → Modalidad)
         $datosOrdenados = $datos->sort(function ($a, $b) use ($prioridadTipo, $prioridadModalidad) {
-            $tipoA = strtoupper($a['Rol']);
-            $tipoB = strtoupper($b['Rol']);
-            $valorTipoA = $prioridadTipo[$tipoA] ?? 999;
-            $valorTipoB = $prioridadTipo[$tipoB] ?? 999;
+            $rolA = strtoupper($a['Rol']);
+            $rolB = strtoupper($b['Rol']);
 
-            if ($valorTipoA !== $valorTipoB) {
-                return $valorTipoA <=> $valorTipoB;
+            $valorRolA = $prioridadTipo[$rolA] ?? 999;
+            $valorRolB = $prioridadTipo[$rolB] ?? 999;
+
+            // Primero ordena por tipo
+            if ($valorRolA !== $valorRolB) {
+                return $valorRolA - $valorRolB;
             }
 
-            if (strtoupper($tipoA) === 'ATLETA' && strtoupper($tipoB) === 'ATLETA') {
+            // Si ambos son atletas, ordenar por modalidad
+            if ($rolA === 'ATLETA' && $rolB === 'ATLETA') {
                 $modA = strtoupper($a['Modalidad']);
                 $modB = strtoupper($b['Modalidad']);
+
                 $valorModA = $prioridadModalidad[$modA] ?? 999;
                 $valorModB = $prioridadModalidad[$modB] ?? 999;
-                return $valorModA <=> $valorModB;
+
+                return $valorModA - $valorModB;
             }
 
             return 0;

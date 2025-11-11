@@ -16,9 +16,12 @@
             <div class="col-sm-12">
                 {{-- Sección: Evento --}}
                 <div class="card mb-4 shadow-sm">
-                    <div class="card-header fw-semibold">
-                        <i class="bi bi-calendar-check me-2"></i> Selección de Evento <span id="lFechaEvento"></span>
+                    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-calendar-check me-2"></i> Selección de Evento
                     </div>
+                    <span id="lFechaEvento" class="text-end"></span>
+                </div>
                     <div class="card-body">
 
                         {{-- 🔔 Contenedor para mostrar el aviso solo en caso tardío --}}
