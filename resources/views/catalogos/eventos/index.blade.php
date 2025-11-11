@@ -33,6 +33,7 @@
                                 <th class="text-center">Descripción</th>
                                 <th class="text-center">Tipo evento</th>
                                 <th class="text-center"></th>
+                                <th class="text-center">Costo</th>
                                 <th class="text-center">Inicio Ins.</th>
                                 <th class="text-center">Fin Ins.</th>
                                 <th class="text-center">Ins. Tardía</th>
@@ -127,6 +128,20 @@
                                             <div class="text-danger small mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
+
+                                    {{-- Costo --}}
+                                    <div class="mb-3">
+                                        <label for="costoEvento" class="form-label">Costo (₡) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control form-control-sm" id="costoEvento" name="costo" required>
+                                        <div class="form-text text-muted">Ingrese el costo de inscripción
+                                            del evento.</div>
+                                        @error('costo')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                     <div class="mb-3">
                                         <label for="imagenEventoCrear" class="form-label">Imagen del Evento</label>
                                         <input class="form-control form-control-sm imagenEventoInput" type="file"
@@ -153,8 +168,8 @@
                                     <div class="mb-3">
                                         <label for="id_tipo_evento" class="form-label">Tipo de Evento <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select form-select-sm" id="id_tipo_evento" name="id_tipo_evento"
-                                            required>
+                                        <select class="form-select form-select-sm" id="id_tipo_evento"
+                                            name="id_tipo_evento" required>
                                             <option value="" selected disabled>Selecciona un tipo</option>
                                             @foreach ($tipoEvento as $tipo)
                                                 <option value="{{ $tipo->id_tipo_evento }}" @selected(old('id_tipo_evento') == $tipo->id_tipo_evento)>
@@ -288,6 +303,17 @@
                                     <div class="mb-3">
                                         <label for="editDescripcionEvento" class="form-label">Descripción</label>
                                         <textarea class="form-control form-control-sm" id="editDescripcionEvento" name="descripcion" rows="3"></textarea>
+                                    </div>
+
+                                    {{-- Costo --}}
+                                    <div class="mb-3">
+                                        <label for="editCostoEvento" class="form-label">Costo del Evento (₡) <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light border-end-0">₡</span>
+                                            <input type="number" class="form-control form-control-sm border-start-0"
+                                                id="editCostoEvento" name="costo" min="0" step="0.01">
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="imagenEventoEditar" class="form-label">Imagen del Evento</label>
@@ -475,7 +501,7 @@
                     },
                     {
                         data: "nombre",
-                        title: "Nombre del Evento"
+                        title: "Nombre"
                     },
                     {
                         data: "descripcion",
@@ -496,6 +522,11 @@
                         title: "Modalidades",
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                        data: "costo",
+                        title: "Costo",
+                        defaultContent: ""
                     },
                     {
                         data: "fecha_inicio_inscripcion",

@@ -1,5 +1,17 @@
 // CREAR
 document.addEventListener("DOMContentLoaded", function () {
+
+    // EVITAR FECHAS ANTERIORES A HOY
+    const hoy = new Date().toISOString().split("T")[0];
+    const dateInputs = document.querySelectorAll(
+        '#fechaInicio, #fechaFin, #fechaInicioInscripcion, #fechaFinInscripcion, #fechaFinInscripcionTardia'
+    );
+
+    dateInputs.forEach(input => {
+        if (input) input.setAttribute("min", hoy);
+    });
+
+
     // Setup modal and image preview
     const crearModal = document.getElementById("modalEvento");
     if (crearModal) {
@@ -20,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const endDate = new Date(document.getElementById('fechaFin').value);
             const regStartDate = new Date(document.getElementById('fechaInicioInscripcion').value);
             const regEndDate = new Date(document.getElementById('fechaFinInscripcion').value);
+            const FechaFinInsTardia = new Date(document.getElementById('fechaFinInscripcionTardia').value);
             const tipoEvento = document.getElementById('id_tipo_evento').value;
 
             let hasError = false;
@@ -34,10 +47,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorMessage += 'El tipo de evento es obligatorio. ';
                 hasError = true;
             }
-            if (!document.getElementById('fechaInicio').value || !document.getElementById(
-                'fechaFin').value ||
-                !document.getElementById('fechaInicioInscripcion').value || !document
-                    .getElementById('fechaFinInscripcion').value) {
+            if (!document.getElementById('fechaInicio').value || 
+                !document.getElementById('fechaFin').value ||
+                !document.getElementById('fechaInicioInscripcion').value || 
+                !document.getElementById('fechaFinInscripcion').value ) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -56,6 +69,15 @@ document.addEventListener("DOMContentLoaded", function () {
             if (regEndDate && startDate && regEndDate > startDate) {
                 errorMessage +=
                     'Las inscripciones deben finalizar antes de la fecha de inicio del evento. ';
+                hasError = true;
+            }
+
+             if (FechaFinInsTardia && regEndDate && FechaFinInsTardia < regEndDate) {
+                errorMessage += 'La fecha de inscripción tardía no puede ser anterior al fin de inscripción normal. ';
+                hasError = true;
+            }
+            if (FechaFinInsTardia && startDate && FechaFinInsTardia > startDate) {
+                errorMessage += 'La inscripción tardía no puede superar la fecha de inicio del evento. ';
                 hasError = true;
             }
 
@@ -158,6 +180,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // EDITAR
 document.addEventListener("DOMContentLoaded", function () {
+
+    // 🗓️ Evitar fechas anteriores a hoy (EDITAR)
+    const hoy = new Date().toISOString().split("T")[0];
+    const dateInputsEditar = document.querySelectorAll(
+        '#editFechaInicio, #editFechaFin, #editFechaInicioInscripcion, #editFechaFinInscripcion, #editFechaFinInscripcionTardia'
+    );
+
+    dateInputsEditar.forEach(input => {
+        if (input) input.setAttribute("min", hoy);
+    });
+
     // Configurar vista previa de la imagen para el modal de edición
     const editarModal = document.getElementById("modalEditarEvento");
     if (editarModal) {
@@ -181,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const regEndDate = new Date(document.getElementById('editFechaFinInscripcion').value);
             const regLateEndDate = new Date(document.getElementById('editFechaFinInscripcionTardia').value);
             const tipoEvento = document.getElementById('editIdTipoEvento').value;
+            const costoEvento = document.getElementById('editCostoEvento').value;
 
             // CAMBIO AQUÍ
             const estado = document.querySelector('input[name="estado"]:checked')?.value || '';
@@ -195,6 +229,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (!tipoEvento) {
                 errorMessage += 'El tipo de evento es obligatorio. ';
+                hasError = true;
+            }
+              if (!costoEvento) {
+                errorMessage += 'El costo del evento es obligatorio. ';
                 hasError = true;
             }
             if (!estado) {
@@ -349,17 +387,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.success) {
                     const evento = response.evento;
                     document.getElementById('editNombreEvento').value = evento.nombre;
-                    document.getElementById('editDescripcionEvento').value = evento
-                        .descripcion || '';
-                    document.getElementById('editFechaInicioInscripcion').value = evento
-                        .fecha_inicio_inscripcion;
-                    document.getElementById('editFechaFinInscripcion').value = evento
-                        .fecha_final_inscripcion;
-                    document.getElementById('editFechaFinInscripcionTardia').value =
-                        evento.fecha_final_inscripcion_tardia || '';
+                    document.getElementById('editDescripcionEvento').value = evento.descripcion || '';
+                    document.getElementById('editFechaInicioInscripcion').value = evento.fecha_inicio_inscripcion;
+                    document.getElementById('editFechaFinInscripcion').value = evento.fecha_final_inscripcion;
+                    document.getElementById('editFechaFinInscripcionTardia').value = evento.fecha_final_inscripcion_tardia || '';
                     document.getElementById('editFechaInicio').value = evento.fecha_inicio;
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;
+                    document.getElementById('editCostoEvento').value = evento.costo;
 
                     // Marcar modalidades asociadas
                     $('.editModalidadCheckbox').prop('checked', false); // Limpia selección previa
@@ -487,6 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById('formEditarEvento');
         const inputInicioIns = document.getElementById("editFechaInicioInscripcion");
         const inputFinIns = document.getElementById("editFechaFinInscripcion");
+        const inputTardiaIns = document.getElementById("editFechaFinInscripcionTardia");
         const inputInicioEvt = document.getElementById("editFechaInicio");
         const inputFinEvt = document.getElementById("editFechaFin");
 
@@ -502,7 +538,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // ---- Evento en curso ----
         if (fechaInicio <= hoy && fechaFin >= hoy) {
-            [inputInicioIns, inputFinIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
+            [inputInicioIns, inputFinIns, inputTardiaIns, inputInicioEvt, inputFinEvt].forEach(input => input.setAttribute('disabled', true));
             mostrarAvisoBloqueo("El evento está en curso. No se pueden modificar las fechas, pero puedes editar otros datos.");
             return;
         }
