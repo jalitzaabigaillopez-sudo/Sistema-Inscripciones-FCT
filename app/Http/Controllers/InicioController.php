@@ -212,6 +212,7 @@ $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy
         // Aquí tu código para academia, si lo quieres también puedo revisarlo
 
 
+
         // ACADEMIA
         $academia = $usuario->academia;
         $id_academia = $academia->id_academia ?? null;
@@ -297,8 +298,6 @@ $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy
             };
         }
 
-
-
         // =========================================================
 
         return view('academia/dashboard-academia', compact(
@@ -316,6 +315,17 @@ $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy
             'coloresGrados',
         ));
     }
+
+    public function editarInscripcion($id_evento)
+{
+    $evento = Evento::findOrFail($id_evento);
+
+    if ($evento->estado === 'Activo') {
+        return redirect()->route('dashboard.academia')->with('error', 'No se puede inscribir: el evento ya fue enviado.');
+    }
+
+    // Continuar con la lógica de inscripción...
+}
 
 }
 

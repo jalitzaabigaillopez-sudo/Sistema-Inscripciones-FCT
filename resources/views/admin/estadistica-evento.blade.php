@@ -37,7 +37,6 @@
             ['label' => 'Academias', 'valor' => $estadisticas['total_academias'], 'icon' => 'bi-building', 'color' => 'info'],
           ];
         @endphp
-
         @foreach($tarjetas as $t)
           <div class="col">
             <div class="card border-0 shadow-sm rounded-3 h-100 text-white"
@@ -60,60 +59,79 @@
 
     {{-- Cuadros estadísticos --}}
     @php
-      $grupos = [
-        'por_sexo' => 'Sexo',
-        'por_edad' => 'Rango de Edad',
-        'por_nacimiento_top' => 'Año de Nacimiento',
-        'por_academia' => 'Academia',
-        'por_modalidad' => 'Modalidad',
-        'por_submodalidad' => 'Submodalidad',
-        'por_grado' => 'Grado',
-      ];
-    @endphp
+  $grupos = [
+    'por_sexo' => 'Sexo',
+    'por_edad' => 'Rango de Edad',
+    'por_modalidad' => 'Modalidad',
+    'por_submodalidad' => 'Submodalidad',
+    'por_grado' => 'Grado',
+    'por_rol' => 'Rol',
+    'por_academia' => 'Academia',
+    'por_nacimiento_top' => 'Año de Nacimiento',
+  ];
+@endphp
 
-       <div class="row g-4">
-      @foreach($grupos as $key => $titulo)
-        @php
-          $items = $estadisticas[$key] ?? [];
-        @endphp
+<div class="row g-4">
+  @foreach($grupos as $key => $titulo)
+    @php
+  $items = $estadisticas[$key] ?? [];
+  $mostrarScroll = in_array($key, [ 'por_nacimiento_top']) && count($items) > 5;
+  $mostrarScroll = $mostrarScroll || (in_array($key, ['por_academia']) && count($items) > 10);
+@endphp
 
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card shadow-sm border-start border-4 border-primary h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <div>
-                <h6 class="fw-semibold text-primary mb-3">{{ $titulo }}</h6>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card shadow-sm border-start border-4 border-primary h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+           <h6 class="fw-semibold text-primary mb-3">{{ $titulo }}</h6>
 
-                @if(!empty($items))
-                  <div class="table-responsive mb-2">
-                    <table class="table table-sm table-hover table-bordered align-middle">
-                      <thead class="table-light">
-                        <tr>
-                          <th class="text-secondary">Nombre</th>
-                          <th class="text-end text-secondary">Cantidad</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($items as $nombre => $cantidad)
-                          <tr>
-                            <td class="text-wrap">{{ $nombre }}</td>
-                            <td class="text-end">{{ number_format($cantidad) }}</td>
-                          </tr>
-                        @endforeach
-                      </tbody>
-                    </table>
-                  </div>
-                @else
-                  <div class="text-muted fst-italic">Sin datos disponibles</div>
-                @endif
+            @if(!empty($items))
+           <div class="table-responsive mb-2 border rounded"
+     style="{{ $mostrarScroll ? 'max-height: 480px; overflow-y: auto;' : '' }}">
+  <table class="table table-sm table-bordered table-hover align-middle w-100">
+    <thead class="table-light">
+  <tr>
+    <th class="text-secondary">Nombre</th>
+    <th class="text-end text-secondary">Cantidad</th>
+    @if($key === 'por_academia')
+      <th class="text-end text-secondary">Monto</th>
+    @endif
+  </tr>
+</thead>
+
+                  <tbody>
+                    @foreach($items as $nombre => $dato)
+                      <tr>
+                        <td class="text-wrap">{{ $nombre }}</td>
+                        @if($key === 'por_academia' && is_array($dato))
+                          <td class="text-end">{{ number_format($dato['cantidad']) }}</td>
+                          <td class="text-end">₡{{ number_format($dato['monto'], 0) }}</td>
+                        @else
+                          <td class="text-end">{{ number_format($dato) }}</td>
+                        @endif
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
               </div>
+            @else
+              <div class="text-muted fst-italic">Sin datos disponibles</div>
+            @endif
+          </div>
 
-              <div class="text-end text-muted small mt-auto pt-2 border-top">
-                <strong>Total:</strong> {{ number_format(array_sum($items)) }}
-              </div>
-            </div>
+          <div class="text-end text-muted small mt-auto pt-2 border-top">
+            @if($key === 'por_academia')
+              <strong>Total monto:</strong> ₡{{ number_format(array_sum(array_column($items, 'monto')), 0) }}<br>
+              <strong>Total inscripciones:</strong> {{ number_format(array_sum(array_column($items, 'cantidad'))) }}
+            @else
+              <strong>Total:</strong> {{ number_format(array_sum($items)) }}
+            @endif
           </div>
         </div>
-      @endforeach
+      </div>
+    </div>
+  @endforeach
+</div>
     </div>
   @elseif(request('id_evento'))
     <div class="alert alert-danger mt-4">No se encontraron estadísticas para el evento seleccionado.</div>
