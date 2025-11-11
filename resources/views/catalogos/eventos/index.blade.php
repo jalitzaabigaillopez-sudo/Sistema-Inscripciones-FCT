@@ -133,7 +133,7 @@
                                     <div class="mb-3">
                                         <label for="costoEvento" class="form-label">Costo (₡) <span
                                                 class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" min="0"
+                                        <input type="number" step="0.01" min="0" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')"
                                             class="form-control form-control-sm" id="costoEvento" name="costo" required>
                                         <div class="form-text text-muted">Ingrese el costo de inscripción
                                             del evento.</div>
