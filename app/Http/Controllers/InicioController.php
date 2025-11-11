@@ -110,7 +110,8 @@ public function estadisticasEventos(Request $request)
     // Estadísticas base
     $estadisticas['total_inscripciones'] = $inscripciones->count();
     $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
-    $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
+    $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
+
 
     // Distribuciones
     $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
@@ -122,7 +123,14 @@ public function estadisticasEventos(Request $request)
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
-
+    $estadisticas['por_academia'] = $inscripciones->groupBy($resolveAcademia)->map(function ($grupo) {
+    return [
+        'cantidad' => $grupo->count(),
+        'monto' => $grupo->sum(fn($i) => $i->monto ?? 0),
+    ];
+})->toArray();
+    // Por año de nacimiento
+    
     $estadisticas['por_nacimiento'] = $inscripciones->map(function ($i) {
         $fn = optional($i->atleta)->fecha_nacimiento;
         if (! $fn) return 'Sin año';
@@ -137,6 +145,11 @@ public function estadisticasEventos(Request $request)
     $estadisticas['por_nacimiento_top'] = count($estadisticas['por_nacimiento']) > 100
         ? array_slice($estadisticas['por_nacimiento'], -100, 100, true)
         : $estadisticas['por_nacimiento'];
+
+    $mascarar = fn($valor) => in_array($valor, ['Sin grado', 'Sin modalidad', 'Sin submodalidad', 'Sin categoría', 'Sin academia'])
+    ? 'No especificado'
+    : $valor;
+
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
