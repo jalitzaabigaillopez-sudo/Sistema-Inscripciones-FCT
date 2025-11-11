@@ -73,10 +73,10 @@
 
 <div class="row g-4">
   @foreach($grupos as $key => $titulo)
-    @php
+@php
   $items = $estadisticas[$key] ?? [];
-  $mostrarScroll = in_array($key, [ 'por_nacimiento_top']) && count($items) > 5;
-  $mostrarScroll = $mostrarScroll || (in_array($key, ['por_academia']) && count($items) > 10);
+  // Mostrar scroll para academias y listas de año de nacimiento cuando haya más de 5 elementos
+  $mostrarScroll = in_array($key, ['por_academia', 'por_nacimiento_top']) && count($items) > 5;
 @endphp
 
     <div class="col-12 col-md-6 col-lg-4">
@@ -87,7 +87,7 @@
 
             @if(!empty($items))
            <div class="table-responsive mb-2 border rounded"
-     style="{{ $mostrarScroll ? 'max-height: 480px; overflow-y: auto;' : '' }}">
+  style="{{ $mostrarScroll ? 'max-height: 200px; overflow-y: auto;' : '' }}">
   <table class="table table-sm table-bordered table-hover align-middle w-100">
     <thead class="table-light">
   <tr>

@@ -19,7 +19,8 @@ class Inscripcion extends Model
     protected $primaryKey = 'id_inscripcion';
     public $timestamps = false;
     protected $fillable = ['id_academia', 'id_atleta', 'id_evento', 'id_modalidad', 'id_subModalidad', 'id_categoria', 'fecha_inscripcion', 'tipo_inscripcion', 'estado', 'peso', 'codigo_equipo', 'rol'];
-
+    protected $casts = ['rol' => 'string'];
+    
     public function atletas()
     {
         return $this->hasMany(Atleta::class, 'id_atleta', 'id_atleta');

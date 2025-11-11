@@ -56,7 +56,6 @@ public function estadisticasEventos(Request $request)
         'modalidad',
         'submodalidad',
         'grado',
-     
          
     ])->where('id_evento', $eventoSeleccionado->id_evento)->get();
 
@@ -74,7 +73,9 @@ public function estadisticasEventos(Request $request)
     $resolveModalidad = fn($i) => $normalize(optional($i->modalidad)->nombre) ?? $normalize($i->modalidad_nombre) ?? 'Sin modalidad';
     $resolveSubmodalidad = fn($i) => $normalize(optional($i->submodalidad)->nombre) ?? $normalize($i->submodalidad_nombre) ?? 'Sin submodalidad';
     $resolveCategoria = fn($i) => $normalize(optional($i->categoria)->nombre) ?? $normalize($i->categoria_nombre) ?? 'Sin categoría';
-    $resolveRol = fn($i) => $normalize($i->tipo) ?? 'Sin rol';
+    $resolveRol = fn($i) => $normalize($i->rol) ?? 'Sin rol';
+
+      
     $resolveSexo = function ($i) {
         $raw = optional($i->atleta)->sexo ?? $i->sexo;
         if (! $raw) return 'Sin especificar';
@@ -85,12 +86,6 @@ public function estadisticasEventos(Request $request)
             default => mb_convert_case($raw, MB_CASE_TITLE),
         };
     };
-$resolveCategoria = fn($i) =>
-    $normalize(optional($i->categoria)->nombre)
-    ?? $normalize(optional($i->atleta->categoria)->nombre)
-    ?? $normalize($i->categoria_nombre)
-    ?? 'Sin categoría';
-
 
     $ageBuckets = [
         '0-5' => [0,5], '6-10' => [6,10], '11-15' => [11,15],
@@ -125,8 +120,8 @@ $resolveCategoria = fn($i) =>
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
     $estadisticas['por_edad'] = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
-$estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
-$estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy()->toArray();
+    $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
+
 
     $estadisticas['por_nacimiento'] = $inscripciones->map(function ($i) {
         $fn = optional($i->atleta)->fecha_nacimiento;
@@ -315,17 +310,6 @@ $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy
             'coloresGrados',
         ));
     }
-
-    public function editarInscripcion($id_evento)
-{
-    $evento = Evento::findOrFail($id_evento);
-
-    if ($evento->estado === 'Activo') {
-        return redirect()->route('dashboard.academia')->with('error', 'No se puede inscribir: el evento ya fue enviado.');
-    }
-
-    // Continuar con la lógica de inscripción...
-}
 
 }
 
