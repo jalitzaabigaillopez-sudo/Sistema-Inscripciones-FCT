@@ -399,6 +399,10 @@
                     <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-bookmarks me-2"></i> Categorías
                     </a>
+
+                    <a href="{{ route('divisiones.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-border-outer me-2"></i> Divisiones
+                    </a>
                     <!-- Elementos adicionales para demostrar el scroll -->
                     {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-gear me-2"></i> Configuración

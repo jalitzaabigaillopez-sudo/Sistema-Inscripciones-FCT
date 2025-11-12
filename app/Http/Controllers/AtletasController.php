@@ -117,23 +117,23 @@ class AtletasController extends Controller
             // }
 
             // Obtener el total de registros
-    $totalRecords = (clone $base)->count();
+            $totalRecords = (clone $base)->count();
 
-           // 📌 Orden servidor SIEMPRE: Academia ASC, Apellido ASC, Nombre ASC
-    //    Usamos subconsulta para ordenar por el nombre de la academia sin join.
-    $ordered = (clone $base)
-        ->orderBy(
-            Academia::select('nombre')
-                ->whereColumn('academias.id_academia', 'atletas.id_academia'),
-            'asc'
-        )
-        ->orderBy('nombre', 'asc')
-        ->orderBy('primer_apellido', 'asc');
+            // 📌 Orden servidor SIEMPRE: Academia ASC, Apellido ASC, Nombre ASC
+            //    Usamos subconsulta para ordenar por el nombre de la academia sin join.
+            $ordered = (clone $base)
+                ->orderBy(
+                    Academia::select('nombre')
+                        ->whereColumn('academias.id_academia', 'atletas.id_academia'),
+                    'asc'
+                )
+                ->orderBy('nombre', 'asc')
+                ->orderBy('primer_apellido', 'asc');
 
-    // Paginación
-    $start  = $request->input('start', 0);
-    $length = $request->input('length', 10);
-    $data = $ordered->skip($start)->take($length)->get();
+            // Paginación
+            $start  = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $ordered->skip($start)->take($length)->get();
 
             // Formatear datos para DataTables
             $formattedData = [];
@@ -182,105 +182,105 @@ class AtletasController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-            $usuario = Usuario::find($request->session()->get('usuario'));
-            $rol = $usuario->rol ?? 'academia';
-            $academia = $usuario->academia;
+        public function store(Request $request)
+        {
+            try {
+                $usuario = Usuario::find($request->session()->get('usuario'));
+                $rol = $usuario->rol ?? 'academia';
+                $academia = $usuario->academia;
 
-            $validateData = $request->validate([
-                'tipo_identificacion' => 'required|string|in:Nacional,Otro',
-                'identificacion' => 'required|string|max:30',
-                'sexo' => 'required|string|in:Femenino,Masculino',
-                'id_grado' => 'required|integer',
-                'id_academia' => 'required|integer',
-                'nombre' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
-                'primer_apellido' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
-                'segundo_apellido' => 'nullable|string|max:255',
-                'fecha_nacimiento' => 'nullable|date|required_if:tipo_identificacion,Otro',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-            ]);
+                $validateData = $request->validate([
+                    'tipo_identificacion' => 'required|string|in:Nacional,Otro',
+                    'identificacion' => 'required|string|max:30',
+                    'sexo' => 'required|string|in:Femenino,Masculino',
+                    'id_grado' => 'required|integer',
+                    'id_academia' => 'required|integer',
+                    'nombre' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
+                    'primer_apellido' => 'nullable|string|max:255|required_if:tipo_identificacion,Otro',
+                    'segundo_apellido' => 'nullable|string|max:255',
+                    'fecha_nacimiento' => 'nullable|date|required_if:tipo_identificacion,Otro',
+                    'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+                ]);
 
-            // Forzar la academia si el rol es academia
-            if ($rol === 'academia' && $academia) {
-                $validated['id_academia'] = $academia->id_academia;
-            }
-
-            // Verificar que no exista ya registrado
-            $atleta = Atleta::where('identificacion', $validateData['identificacion'])->first();
-            if ($atleta) {
-                return response()->json(['error' => 'Este atleta ya se encuentra registrado'], 422);
-            }
-
-            // Variables comunes
-            $nombre = $validateData['nombre'] ?? null;
-            $primer_apellido = $validateData['primer_apellido'] ?? null;
-            $segundo_apellido = $validateData['segundo_apellido'] ?? null;
-            $fecha_nacimiento = $validateData['fecha_nacimiento'] ?? null;
-            $id_padron = 1; // Valor por defecto para id_padron_nacimiento
-
-            if ($validateData['tipo_identificacion'] === 'Nacional') {
-                // Buscar en padrón
-                $padronNacimiento = PadronNacimiento::where('identificacion', $validateData['identificacion'])->first();
-                if (!$padronNacimiento) {
-                    return response()->json(['error' => 'Este número de cédula no está registrado en el padrón'], 422);
+                // Forzar la academia si el rol es academia
+                if ($rol === 'academia' && $academia) {
+                    $validated['id_academia'] = $academia->id_academia;
                 }
 
-                // Sobrescribir datos con los del padrón
-                $nombre = $padronNacimiento->nombre;
-                $primer_apellido = $padronNacimiento->primer_apellido;
-                $segundo_apellido = $padronNacimiento->segundo_apellido;
-                $fecha_nacimiento = $padronNacimiento->fecha_nacimiento;
-                $id_padron = $padronNacimiento->id_padron_nacimiento;
+                // Verificar que no exista ya registrado
+                $atleta = Atleta::where('identificacion', $validateData['identificacion'])->first();
+                if ($atleta) {
+                    return response()->json(['error' => 'Este atleta ya se encuentra registrado'], 422);
+                }
+
+                // Variables comunes
+                $nombre = $validateData['nombre'] ?? null;
+                $primer_apellido = $validateData['primer_apellido'] ?? null;
+                $segundo_apellido = $validateData['segundo_apellido'] ?? null;
+                $fecha_nacimiento = $validateData['fecha_nacimiento'] ?? null;
+                $id_padron = 1; // Valor por defecto para id_padron_nacimiento
+
+                if ($validateData['tipo_identificacion'] === 'Nacional') {
+                    // Buscar en padrón
+                    $padronNacimiento = PadronNacimiento::where('identificacion', $validateData['identificacion'])->first();
+                    if (!$padronNacimiento) {
+                        return response()->json(['error' => 'Este número de cédula no está registrado en el padrón'], 422);
+                    }
+
+                    // Sobrescribir datos con los del padrón
+                    $nombre = $padronNacimiento->nombre;
+                    $primer_apellido = $padronNacimiento->primer_apellido;
+                    $segundo_apellido = $padronNacimiento->segundo_apellido;
+                    $fecha_nacimiento = $padronNacimiento->fecha_nacimiento;
+                    $id_padron = $padronNacimiento->id_padron_nacimiento;
+                }
+
+                // Validar fecha_nacimiento final
+                if (!$fecha_nacimiento || !strtotime($fecha_nacimiento)) {
+                    return response()->json(['error' => 'La fecha de nacimiento no es válida'], 422);
+                }
+
+                // Calcular división según el año de nacimiento
+                $anioNacimiento = date('Y', strtotime($fecha_nacimiento));
+                $division = DB::table('divisiones')
+                    ->where('year_inicio', '<=', $anioNacimiento)
+                    ->where('year_final', '>=', $anioNacimiento)
+                    ->first();
+
+                if (!$division) {
+                    return response()->json(['error' => 'No se encontró una división para el año de nacimiento'], 422);
+                }
+                $divisionId = $division->id_division;
+
+                // Crear atleta
+                $atleta = new Atleta();
+                $atleta->tipo_identificacion = $request->tipo_identificacion;
+                $atleta->identificacion = $request->identificacion;
+                $atleta->nombre = $nombre;
+                $atleta->primer_apellido = $primer_apellido;
+                $atleta->segundo_apellido = $segundo_apellido;
+                $atleta->sexo = $request->sexo;
+                $atleta->fecha_nacimiento = $fecha_nacimiento;
+                $atleta->estado = 'activo';
+                $atleta->id_padron_nacimiento = $id_padron;
+                $atleta->id_grado = $request->id_grado;
+                $atleta->id_academia = $request->id_academia;
+                $atleta->id_division = $divisionId;
+
+                // Guardar imagen si se proporcionó
+                if ($request->hasFile('imagen')) {
+                    $path = $request->file('imagen')->store('atletas', 'public');
+                    $atleta->imagen = $path;
+                }
+
+                $atleta->save();
+
+                return response()->json(['message' => 'Atleta registrado con éxito'], 201);
+            } catch (\Exception $e) {
+                Log::error('Error al registrar atleta: ' . $e->getMessage());
+                return response()->json(['error' => 'Error interno del servidor: ' . $e->getMessage()], 500);
             }
-
-            // Validar fecha_nacimiento final
-            if (!$fecha_nacimiento || !strtotime($fecha_nacimiento)) {
-                return response()->json(['error' => 'La fecha de nacimiento no es válida'], 422);
-            }
-
-            // Calcular división según el año de nacimiento
-            $anioNacimiento = date('Y', strtotime($fecha_nacimiento));
-            $division = DB::table('divisiones')
-                ->where('year_inicio', '<=', $anioNacimiento)
-                ->where('year_final', '>=', $anioNacimiento)
-                ->first();
-
-            if (!$division) {
-                return response()->json(['error' => 'No se encontró una división para el año de nacimiento'], 422);
-            }
-            $divisionId = $division->id_division;
-
-            // Crear atleta
-            $atleta = new Atleta();
-            $atleta->tipo_identificacion = $request->tipo_identificacion;
-            $atleta->identificacion = $request->identificacion;
-            $atleta->nombre = $nombre;
-            $atleta->primer_apellido = $primer_apellido;
-            $atleta->segundo_apellido = $segundo_apellido;
-            $atleta->sexo = $request->sexo;
-            $atleta->fecha_nacimiento = $fecha_nacimiento;
-            $atleta->estado = 'activo';
-            $atleta->id_padron_nacimiento = $id_padron;
-            $atleta->id_grado = $request->id_grado;
-            $atleta->id_academia = $request->id_academia;
-            $atleta->id_division = $divisionId;
-
-            // Guardar imagen si se proporcionó
-            if ($request->hasFile('imagen')) {
-                $path = $request->file('imagen')->store('atletas', 'public');
-                $atleta->imagen = $path;
-            }
-
-            $atleta->save();
-
-            return response()->json(['message' => 'Atleta registrado con éxito'], 201);
-        } catch (\Exception $e) {
-            Log::error('Error al registrar atleta: ' . $e->getMessage());
-            return response()->json(['error' => 'Error interno del servidor: ' . $e->getMessage()], 500);
         }
-    }
 
     public function buscarPadron($identificacion)
     {
@@ -299,19 +299,19 @@ class AtletasController extends Controller
         return response()->json(['found' => false]);
     }
 
-    public function calcularDivision($fecha)
-    {
-        $anio = date('Y', strtotime($fecha));
-        $division = DB::table('divisiones')
-            ->where('year_inicio', '<=', $anio)
-            ->where('year_final', '>=', $anio)
-            ->first();
+        public function calcularDivision($fecha)
+        {
+            $anio = date('Y', strtotime($fecha));
+            $division = DB::table('divisiones')
+                ->where('year_inicio', '<=', $anio)
+                ->where('year_final', '>=', $anio)
+                ->first();
 
-        if ($division) {
-            return response()->json(['division' => $division->division]);
+            if ($division) {
+                return response()->json(['division' => $division->division]);
+            }
+            return response()->json(['division' => null]);
         }
-        return response()->json(['division' => null]);
-    }
 
     public function insertarAtleta(Request $request)
     {
@@ -402,127 +402,127 @@ class AtletasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        try {
-            $usuario = Usuario::find($request->session()->get('usuario'));
-            if (!$usuario) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Usuario no encontrado o sesión inválida.'
-                ], 403);
-            }
-
-            $rol = strtolower($usuario->rol ?? 'academia');
-            $academiaUsuario = $usuario->academia; // relación si es academia
-
-            $atleta = Atleta::findOrFail($id);
-
-            // Seguridad: si es rol academia, verificar que el atleta sea suyo
-            if ($rol === 'academia' && $academiaUsuario) {
-                if ($atleta->id_academia !== $academiaUsuario->id_academia) {
+        public function update(Request $request, string $id)
+        {
+            try {
+                $usuario = Usuario::find($request->session()->get('usuario'));
+                if (!$usuario) {
                     return response()->json([
                         'success' => false,
-                        'error' => 'No tienes permiso para modificar este atleta.'
+                        'error' => 'Usuario no encontrado o sesión inválida.'
                     ], 403);
                 }
-            }
 
-            $messages = [
-                'tipo_identificacion.required' => 'El tipo de identificación es obligatorio.',
-                'identificacion.required' => 'La identificación es obligatoria.',
-                'identificacion.string' => 'La identificación debe ser una cadena de texto.',
-                'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
-                'identificacion.unique' => 'La identificación ya está en uso.',
-                'nombre.required' => 'El nombre es obligatorio.',
-                'primer_apellido.required' => 'El primer apellido es obligatorio.',
-                'sexo.required' => 'El sexo es obligatorio.',
-                'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
-                'estado.required' => 'El estado es obligatorio.',
-                'id_grado.required' => 'El grado es obligatorio.',
-                'imagen.image' => 'El archivo debe ser una imagen.',
-                'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-                'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
-            ];
+                $rol = strtolower($usuario->rol ?? 'academia');
+                $academiaUsuario = $usuario->academia; // relación si es academia
 
-            $rules = [
-                'tipo_identificacion' => 'required|string',
-                'identificacion' => [
-                    'required',
-                    'string',
-                    'max:30',
-                    Rule::unique('atletas', 'identificacion')->ignore($id, 'id_atleta'),
-                ],
-                'nombre' => 'required|string|max:255',
-                'primer_apellido' => 'required|string|max:255',
-                'segundo_apellido' => 'nullable|string|max:255',
-                'sexo' => 'required|string',
-                'fecha_nacimiento' => 'required|date',
-                'estado' => 'required|string|in:activo,inactivo',
-                'id_grado' => 'required|integer',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-                'remove_imagen' => 'nullable|in:0,1',
-            ];
+                $atleta = Atleta::findOrFail($id);
 
-            // Solo admin puede cambiar la academia
-            if ($rol === 'administrador') {
-                $rules['id_academia'] = 'required|integer';
-            }
+                // Seguridad: si es rol academia, verificar que el atleta sea suyo
+                if ($rol === 'academia' && $academiaUsuario) {
+                    if ($atleta->id_academia !== $academiaUsuario->id_academia) {
+                        return response()->json([
+                            'success' => false,
+                            'error' => 'No tienes permiso para modificar este atleta.'
+                        ], 403);
+                    }
+                }
 
-            $validator = Validator::make($request->all(), $rules, $messages);
+                $messages = [
+                    'tipo_identificacion.required' => 'El tipo de identificación es obligatorio.',
+                    'identificacion.required' => 'La identificación es obligatoria.',
+                    'identificacion.string' => 'La identificación debe ser una cadena de texto.',
+                    'identificacion.max' => 'La identificación no puede tener más de :max caracteres.',
+                    'identificacion.unique' => 'La identificación ya está en uso.',
+                    'nombre.required' => 'El nombre es obligatorio.',
+                    'primer_apellido.required' => 'El primer apellido es obligatorio.',
+                    'sexo.required' => 'El sexo es obligatorio.',
+                    'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+                    'estado.required' => 'El estado es obligatorio.',
+                    'id_grado.required' => 'El grado es obligatorio.',
+                    'imagen.image' => 'El archivo debe ser una imagen.',
+                    'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
+                    'imagen.max' => 'La imagen no puede pesar más de 10 MB.',
+                ];
 
-            if ($validator->fails()) {
+                $rules = [
+                    'tipo_identificacion' => 'required|string',
+                    'identificacion' => [
+                        'required',
+                        'string',
+                        'max:30',
+                        Rule::unique('atletas', 'identificacion')->ignore($id, 'id_atleta'),
+                    ],
+                    'nombre' => 'required|string|max:255',
+                    'primer_apellido' => 'required|string|max:255',
+                    'segundo_apellido' => 'nullable|string|max:255',
+                    'sexo' => 'required|string',
+                    'fecha_nacimiento' => 'required|date',
+                    'estado' => 'required|string|in:activo,inactivo',
+                    'id_grado' => 'required|integer',
+                    'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+                    'remove_imagen' => 'nullable|in:0,1',
+                ];
+
+                // Solo admin puede cambiar la academia
+                if ($rol === 'administrador') {
+                    $rules['id_academia'] = 'required|integer';
+                }
+
+                $validator = Validator::make($request->all(), $rules, $messages);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
+                // Si el rol es academia, forzar su propia academia
+                if ($rol === 'academia' && $academiaUsuario) {
+                    $atleta->id_academia = $academiaUsuario->id_academia;
+                } else {
+                    $atleta->id_academia = $request->id_academia;
+                }
+
+                // Manejo de imagen
+                if ($request->input('remove_imagen') === '1') {
+                    if ($atleta->imagen) {
+                        Storage::disk('public')->delete($atleta->imagen);
+                        $atleta->imagen = null;
+                    }
+                } elseif ($request->hasFile('imagen')) {
+                    if ($atleta->imagen) {
+                        Storage::disk('public')->delete($atleta->imagen);
+                    }
+                    $path = $request->file('imagen')->store('atletas', 'public');
+                    $atleta->imagen = $path;
+                }
+
+                // Actualizar campos
+                $atleta->tipo_identificacion = $request->tipo_identificacion;
+                $atleta->identificacion = $request->identificacion;
+                $atleta->nombre = $request->nombre;
+                $atleta->primer_apellido = $request->primer_apellido;
+                $atleta->segundo_apellido = $request->segundo_apellido;
+                $atleta->sexo = $request->sexo;
+                $atleta->fecha_nacimiento = $request->fecha_nacimiento;
+                $atleta->estado = $request->estado;
+                $atleta->id_grado = $request->id_grado;
+                $atleta->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Atleta actualizado correctamente.'
+                ], 200);
+            } catch (\Exception $e) {
+                Log::error('Error en update: ' . $e->getMessage());
                 return response()->json([
                     'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
+                    'error' => 'Error interno del servidor.'
+                ], 500);
             }
-
-            // Si el rol es academia, forzar su propia academia
-            if ($rol === 'academia' && $academiaUsuario) {
-                $atleta->id_academia = $academiaUsuario->id_academia;
-            } else {
-                $atleta->id_academia = $request->id_academia;
-            }
-
-            // Manejo de imagen
-            if ($request->input('remove_imagen') === '1') {
-                if ($atleta->imagen) {
-                    Storage::disk('public')->delete($atleta->imagen);
-                    $atleta->imagen = null;
-                }
-            } elseif ($request->hasFile('imagen')) {
-                if ($atleta->imagen) {
-                    Storage::disk('public')->delete($atleta->imagen);
-                }
-                $path = $request->file('imagen')->store('atletas', 'public');
-                $atleta->imagen = $path;
-            }
-
-            // Actualizar campos
-            $atleta->tipo_identificacion = $request->tipo_identificacion;
-            $atleta->identificacion = $request->identificacion;
-            $atleta->nombre = $request->nombre;
-            $atleta->primer_apellido = $request->primer_apellido;
-            $atleta->segundo_apellido = $request->segundo_apellido;
-            $atleta->sexo = $request->sexo;
-            $atleta->fecha_nacimiento = $request->fecha_nacimiento;
-            $atleta->estado = $request->estado;
-            $atleta->id_grado = $request->id_grado;
-            $atleta->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Atleta actualizado correctamente.'
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('Error en update: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Error interno del servidor.'
-            ], 500);
         }
-    }
 
     /**
      * Remove the specified resource from storage.

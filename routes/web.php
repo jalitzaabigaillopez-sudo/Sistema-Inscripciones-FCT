@@ -11,6 +11,7 @@ use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\SubModalidadController;
 use App\Http\Controllers\ModalidadController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DivisionesController;
 use App\Http\Controllers\EventosController;
 use App\Http\Controllers\GradosController;
 use App\Http\Controllers\InicioController;
@@ -224,6 +225,10 @@ Route::get('/grados/{id}/datos', [GradosController::class, 'edit']);
 
 Route::resource('/modalidades', ModalidadesController::class);
 Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
+
+Route::resource('/divisiones', DivisionesController::class);
+Route::get('/divisiones/{id}/datos', [DivisionesController::class, 'edit'])
+    ->name('divisiones.datos');
 
 
 Route::resource('/inscripciones', InscripcionController::class);
