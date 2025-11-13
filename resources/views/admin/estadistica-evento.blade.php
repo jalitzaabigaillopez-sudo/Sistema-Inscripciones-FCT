@@ -60,7 +60,7 @@
     {{-- Cuadros estadísticos --}}
     @php
   $grupos = [
-    'por_sexo' => 'Género',
+    'por_sexo' => 'Sexo',
     'por_edad' => 'Rango de Edad',
     'por_modalidad' => 'Modalidad',
     'por_submodalidad' => 'Submodalidad',
