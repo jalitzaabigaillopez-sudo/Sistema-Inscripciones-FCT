@@ -380,6 +380,9 @@
                     <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-calendar3 me-2"></i> Eventos
                     </a>
+                     <a href="{{ route('tiposEventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-list me-2"></i> Tipos de Eventos
+                    </a>
                     <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-columns-gap me-2"></i> Modalidades
                     </a>

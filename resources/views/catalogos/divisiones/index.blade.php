@@ -207,7 +207,7 @@
                 initDataTable({
                     ajaxUrl: "{{ route('divisiones.index') }}",
                     columns: columnsConfig,
-                    tableId: "tabla-divisiones"
+                    tableId: "tabla"
                 });
 
                 // ===========================================================
@@ -304,8 +304,8 @@
                             form.trigger('reset');
 
                             // Refrescar tabla inmediatamente
-                            if ($.fn.DataTable.isDataTable('#tabla-divisiones')) {
-                                $('#tabla-divisiones').DataTable().ajax.reload(null, false);
+                            if ($.fn.DataTable.isDataTable('#tabla')) {
+                                $('#tabla').DataTable().ajax.reload(null, false);
                             } else {
                                 location.reload(); // fallback
                             }

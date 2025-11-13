@@ -165,4 +165,10 @@ class GradosController extends Controller
 
         return back();
     }
+
+    public function obtenerGradosMenoresA()
+    {
+        $grados = Grado::all();
+        return response()->json($grados);
+    }
 }

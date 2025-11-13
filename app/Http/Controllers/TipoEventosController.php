@@ -19,21 +19,72 @@ class TipoEventosController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index()
+    public function index(Request $request)
     {
-        $data = TipoEvento::all();
-        return view('catalogos.tipos_eventos.index', compact('data'));
+        // Para DataTables (AJAX)
+        if ($request->ajax()) {
+            $query = TipoEvento::query();
+
+            // Búsqueda global
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            }
+
+            // Totales
+            $recordsFiltered = $query->count();
+            $totalRecords = TipoEvento::count();
+
+            // Ordenamiento
+            if ($request->has('order') && count($request->order) > 0) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+
+                if (in_array($orderColumnName, ['nombre', 'descripcion'])) {
+                    $query->orderBy($orderColumnName, $orderDirection);
+                }
+            }
+
+            // Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $query->skip($start)->take($length)->get();
+
+            // Formateo
+            $formattedData = $data->map(function ($item) {
+                return [
+                    'id_tipo_evento' => $item->id_tipo_evento,
+                    'nombre' => $item->nombre,
+                    'descripcion' => $item->descripcion,
+                    'acciones' => $item->id_tipo_evento,
+                ];
+            });
+
+            return response()->json([
+                'draw' => $request->input('draw', 1),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $formattedData,
+            ]);
+        }
+
+        // Carga inicial
+        return view('catalogos.tipos_eventos.index');
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      */
-   public function create()
-{
-    $tipos_eventos = TipoEvento::all(); // o lo que corresponda
-    return view('eventos.create', compact('tipos_eventos'));
-}
+    public function create()
+    {
+        $tipos_eventos = TipoEvento::all(); // o lo que corresponda
+        return view('eventos.create', compact('tipos_eventos'));
+    }
 
 
     /**
@@ -41,7 +92,7 @@ class TipoEventosController extends Controller
      */
     public function store(Request $request)
     {
-         $mensajes = [
+        $mensajes = [
             'nombre.unique' => 'Ya existe un tipo de evento con ese nombre.',
         ];
 
@@ -74,6 +125,17 @@ class TipoEventosController extends Controller
     public function edit(string $id)
     {
         $item = TipoEvento::find($id);
+        return response()->json($item);
+    }
+
+    public function datos($id)
+    {
+        $item = TipoEvento::find($id);
+
+        if (!$item) {
+            return response()->json(['error' => 'Tipo de evento no encontrado'], 404);
+        }
+
         return response()->json($item);
     }
 
@@ -115,5 +177,4 @@ class TipoEventosController extends Controller
 
         return back()->with('success', 'Tipo de evento eliminado correctamente.');
     }
-
 }

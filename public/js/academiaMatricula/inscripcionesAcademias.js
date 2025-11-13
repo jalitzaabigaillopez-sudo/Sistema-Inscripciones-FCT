@@ -13,6 +13,7 @@ $(document).ready(function () {
 
     // ================================== VARIABLES DE CONTROL ==================================
     let editMode = false;
+    let cleanCards = false;
 
     let btn_edit_code = "";
 
@@ -191,6 +192,9 @@ $(document).ready(function () {
         var fecha = selected.data('fecha_nacimiento') || '';
         var id_division = selected.data('id_division');
 
+        var id_grado = selected.data('id_grado');
+        var grado = selected.data('grado');
+
         // Calcular edad
         var edad = '';
         if (fecha) {
@@ -198,6 +202,21 @@ $(document).ready(function () {
             var currentYear = new Date().getFullYear();
             edad = currentYear - anio;
         }
+
+
+        // ===========================================================================
+        if (cleanCards === false) {
+            var select = panel.find('.grados-select');
+            select.empty();
+            select.append('<option value="' + id_grado + '">' + grado + '</option>');
+            select.append('<option value="">Actualizar Grado</option>');
+        } else if (cleanCards === true) {
+            let selectGrado = panel.find(".grados-select");
+            selectGrado.empty();
+            selectGrado.append('<option value="">Grado</option>');
+        }
+        cleanCards = false;
+        // ===========================================================================
 
         panel.find('.inputSexo').val(sexo);
         panel.find('.inputEdad').val(edad + " años");
@@ -232,6 +251,7 @@ $(document).ready(function () {
         }
 
     });
+
 
     //=========================== SELECT DE ROL ===========================
 
@@ -389,6 +409,10 @@ $(document).ready(function () {
         selectCategorias.append('<option value="">Seleccione una categoría</option>');
         selectCategorias.prop('disabled', false);
 
+        var selectGrados = nuevaCard.find('.grados-select');
+        selectGrados.empty();
+        selectGrados.append('<option value="">Grado</option>');
+
         nuevaCard.show();
         contenedor.append(nuevaCard);
 
@@ -435,6 +459,100 @@ $(document).ready(function () {
         }
     });
 
+    // ⬅️Delegación de eventos para los selects de grados
+    $(document).on('change', '.grados-select', function () { //@audit grados-select
+        const ultimaOpcion = $(this).find('option:last').val();
+        const seleccion = $(this).val();
+
+        if (seleccion === ultimaOpcion) {
+
+            // 1️⃣ Encontrar el panel correspondiente
+            const panel = $(this).closest('.baseCard, .clonEdit, #panelRegistro');
+            const atleta = panel.find(".atletas-select option:selected");
+
+            // 2️⃣ Guardar los datos del atleta
+            const datosAtleta = {
+                id: atleta.data('id'),
+                nombre: atleta.data('nombre'),
+                primer_apellido: atleta.data('primer_apellido'),
+                segundo_apellido: atleta.data('segundo_apellido'),
+                identificacion: atleta.data('identificacion'),
+            };
+
+            // 3️⃣ Mostrar el modal
+            const modal = $('#I_modalEditarAtleta');
+            modal.modal('show');
+
+            // 4️⃣ Al abrir el modal, llenar los campos dentro del mismo modal
+            modal.on('shown.bs.modal', function () {
+                modal.find('#e_identificacion').val(datosAtleta.identificacion);
+                modal.find('#e_nombre').val(datosAtleta.nombre);
+                modal.find('#e_apellido1').val(datosAtleta.primer_apellido);
+                modal.find('#e_apellido2').val(datosAtleta.segundo_apellido);
+
+                // 5️⃣ Llenar grados
+                $.ajax({
+                    url: '/obtenerGrados',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                    success: function (res) {
+                        const select = modal.find('#e_grado');
+                        select.empty();
+                        select.append('<option value="" disabled selected>Seleccione...</option>');
+                        if (res && res.length > 0) {
+                            res.forEach(item => {
+                                select.append(`<option value="${item.id_grado}">${item.nombre}</option>`);
+                            });
+                        } else {
+                            select.append('<option disabled>No hay grados disponibles</option>');
+                        }
+                    },
+                    error: function () {
+                        mostrarAlerta("Error al cargar los grados", "Aviso", "⚠️");
+                    }
+                });
+
+                // 6️⃣ Vincular botón de guardar (solo dentro de este modal)
+                modal.find('#I_bActualizarGrado').off('click').on('click', function () {
+                    const id_grado = modal.find('#e_grado').val();
+                    console.log(datosAtleta.id, "|", id_grado);
+
+
+                    $.ajax({
+                        url: '/actualizarGradoAtleta',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            id_atleta: datosAtleta.id,
+                            id_grado: id_grado,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (res) {
+                            mostrarAlerta(res.message, "Éxito", "✅");
+
+                            // ACTUALIZAR SELECT GRADOS
+                            let select = panel.find('.grados-select');
+                            select.empty();
+                            select.append('<option value="' + res.grado.id_grado + '">' + res.grado.nombre + '</option>');
+                            select.append('<option value="">Actualizar Grado</option>');
+
+                            // ACTUALIZAR SELECT ATLETAS
+                            let opcion = panel.find(".atletas-select option:selected");
+                            opcion.attr('data-grado', res.grado.nombre);
+                            opcion.attr('data-id_grado', res.grado.id_grado);
+
+                        },
+                        error: function () {
+                            mostrarAlerta("Error al actualizar el grado", "Aviso", "⚠️");
+                        }
+                    });
+                });
+            });
+        }
+    });
+
+
 
     //☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩☠️☠️☠️☠️☠️🚩🚩🚩🚩🚩 //@audit bInscribir
     //=========================== BOTON INSCRIBIRSE ===========================
@@ -459,6 +577,7 @@ $(document).ready(function () {
             let edad = $(this).find(".inputEdad").val();
             let peso = $(this).find(".inputPeso").val();
             let rol = $(this).find(".rol-select option:selected").val();
+            let grado = $(this).find(".grados-select option:selected").text();
             let modalidad = $(this).find(".modalidades-select option:selected").text();
             submodalidad = $(this).find(".submodalidades-select option:selected").text();
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
@@ -470,6 +589,7 @@ $(document).ready(function () {
             var id_evento = $("#evento-select option:selected").val();
             var id_atleta = $(this).find(".atletas-select option:selected").data("id");
             var id_division = $(this).find(".atletas-select option:selected").data("id_division");
+            var id_grado = $(this).find(".grados-select option:selected").data("id_grado");
             var id_modalidad = $(this).find(".modalidades-select option:selected").val();
             var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
             var id_categoria = $(this).find(".categorias-select option:selected").val();
@@ -521,6 +641,7 @@ $(document).ready(function () {
                         edad: edad,
                         rol: rol,
                         peso: peso,
+                        grado: grado,
                         modalidad: modalidad,
                         submodalidad: submodalidad,
                         categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -530,6 +651,7 @@ $(document).ready(function () {
                         id_evento: id_evento,
                         id_atleta: id_atleta,
                         id_division: id_division,
+                        id_grado: id_grado,
                         id_modalidad: id_modalidad,
                         id_subModalidad: id_subModalidad,
                         id_categoria: id_categoria,
@@ -551,6 +673,7 @@ $(document).ready(function () {
                         edad: edad,
                         rol: rol,
                         peso: '—',
+                        grado: '—',
                         modalidad: '—',
                         submodalidad: '—',
                         categoria: '—',
@@ -560,6 +683,7 @@ $(document).ready(function () {
                         id_evento: id_evento,
                         id_atleta: id_atleta,
                         id_division: null,
+                        id_grado: null,
                         id_modalidad: null,
                         id_subModalidad: null,
                         id_categoria: null,
@@ -575,6 +699,7 @@ $(document).ready(function () {
                         edad: edad,
                         rol: rol,
                         peso: '—',
+                        grado: '—',
                         modalidad: '—',
                         submodalidad: '—',
                         categoria: '—',
@@ -584,6 +709,7 @@ $(document).ready(function () {
                         id_evento: id_evento,
                         id_atleta: id_atleta,
                         id_division: null,
+                        id_grado: null,
                         id_modalidad: null,
                         id_subModalidad: null,
                         id_categoria: null,
@@ -638,14 +764,17 @@ $(document).ready(function () {
 
             if (proceder === true) {
                 $("#contenedor .baseCard").remove();
-                $("#panelRegistro").show();
+
 
                 $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
-
+                $("#panelRegistro").find('.grados-select').show();
                 $("#panelRegistro").find('.modalidades-select').show();
                 $("#panelRegistro").find('.submodalidades-select').show();
                 $("#panelRegistro").find('.categorias-select').show();
                 $("#panelRegistro").find('#pesoInput').show();
+
+                // selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
+                // selectGrado.append('<option value="">Actualizar Grado</option>');
 
                 $("#containerButton").html(`
             <button id="bInscribir" class="btn btn-outline-success w-100">
@@ -828,6 +957,7 @@ $(document).ready(function () {
 
     // RESET (Borra paneles clon y limpia selects y inputs) 
     function limpiarCards() {
+        cleanCards = true;
         let card = $("#panelRegistro");
         card.find("select").each(function () {
             this.selectedIndex = 0;
@@ -869,6 +999,7 @@ $(document).ready(function () {
             <td>${obj.sexo}</td>
             <td>${obj.edad}</td>
             <td>${obj.rol}</td>
+            <td>${obj.grado}</td>
             <td>${obj.modalidad}</td>
             <td>${obj.submodalidad}</td>
             <td>${obj.categoria}</td>
@@ -904,6 +1035,7 @@ $(document).ready(function () {
             <td>${obj.sexo}</td>
             <td>${obj.edad}</td>
             <td>${obj.rol}</td>
+            <td>${obj.grado}</td>
             <td>${obj.modalidad}</td>
             <td data-id-submodalidad="${obj.id_subModalidad}">${obj.submodalidad}</td>
             <td>${obj.categoria}</td>
@@ -945,10 +1077,11 @@ $(document).ready(function () {
         fila.find('td:eq(1)').text(obj.sexo);
         fila.find('td:eq(2)').text(obj.edad);
         fila.find('td:eq(3)').text(obj.rol);
-        fila.find('td:eq(4)').text(obj.modalidad);
-        fila.find('td:eq(5)').text(obj.submodalidad);
-        fila.find('td:eq(6)').text(obj.categoria);
-        fila.find('td:eq(7)').text(obj.grupo);
+        fila.find('td:eq(4)').text(obj.rol);
+        fila.find('td:eq(5)').text(obj.modalidad);
+        fila.find('td:eq(6)').text(obj.submodalidad);
+        fila.find('td:eq(7)').text(obj.categoria);
+        fila.find('td:eq(8)').text(obj.grupo);
 
         // Cambiar atributos al nuevo code y id
         fila.attr({
@@ -966,14 +1099,14 @@ $(document).ready(function () {
 
     function marcadorAmarillo() {
         $('#tabla-inscripcion tbody tr').each(function () {
-            let td7 = $(this).find('td:eq(7)');
             let td8 = $(this).find('td:eq(8)');
-            let texto = td7.text().trim();
+            let td9 = $(this).find('td:eq(9)');
+            let texto = td8.text().trim();
 
             if (texto.slice(-2) === "-p") {
-                td8.css('background-color', 'yellow');
+                td9.css('background-color', 'yellow');
             } else {
-                td8.css('background-color', 'white');
+                td9.css('background-color', 'white');
             }
         });
     }
@@ -1076,8 +1209,8 @@ $(document).ready(function () {
         let contador = 1;
 
         $("#tabla-inscripcion tr").each(function () {
-            let grupoTd = $(this).find("td").eq(7);
-            let equipoTd = $(this).find("td").eq(8);
+            let grupoTd = $(this).find("td").eq(8);
+            let equipoTd = $(this).find("td").eq(9);
 
             if (grupoTd.length === 0 || equipoTd.length === 0) return;
 
@@ -1137,8 +1270,8 @@ $(document).ready(function () {
 
             // Si ambos son atletas, ordenar por modalidad
             if (tipoA === 'ATLETA' && tipoB === 'ATLETA') {
-                let modalidadA = $(a).find('td').eq(4).text().trim().toUpperCase();
-                let modalidadB = $(b).find('td').eq(4).text().trim().toUpperCase();
+                let modalidadA = $(a).find('td').eq(5).text().trim().toUpperCase();
+                let modalidadB = $(b).find('td').eq(5).text().trim().toUpperCase();
 
                 let valorModA = prioridadModalidad[modalidadA] || 999;
                 let valorModB = prioridadModalidad[modalidadB] || 999;
@@ -1180,7 +1313,7 @@ $(document).ready(function () {
         let $fila = $(this).closest("tr");
         let id = $fila.data("id");
         let tr_code = $fila.data("code");
-        let grupo = $fila.find("td:eq(7)").text().trim();
+        let grupo = $fila.find("td:eq(8)").text().trim();
 
         atletasModificar = [];
 
@@ -1259,7 +1392,7 @@ $(document).ready(function () {
     $(document).on("click", ".bEditar", function () {//@audit bEditar
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code");
-        let grupo = $fila.find("td:eq(7)").text().trim();
+        let grupo = $fila.find("td:eq(8)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
         let cantidadMiembrosActuales = 0;
 
@@ -1320,6 +1453,11 @@ $(document).ready(function () {
 
 
                         if (atleta.rol === "atleta") {
+
+                            let selectGrado = nuevaCard.find(".grados-select");
+                            selectGrado.empty();
+                            selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
+                            selectGrado.append('<option value="">Actualizar Grado</option>');
 
 
                             // Llenar submodalidades y seleccionar la correcta
@@ -1401,9 +1539,9 @@ $(document).ready(function () {
                 // Ajustar visibilidad según rol
                 $('.clonEdit').each(function () {
                     if (trRol === 'entrenador' || trRol === 'asistente') {
-                        $(this).find('.modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
                     } else {
-                        $(this).find('.modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').show();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').show();
                     }
                 });
 
@@ -1447,6 +1585,7 @@ $(document).ready(function () {
 
                         // 🔹 Copiar selects del padre
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
+                        nuevaCard.find(".grados-select").html(panelOriginal.find(".grados-select").html()).prop("disabled", true);
                         let indicator = grupo.slice(-2);
                         if (indicator === "-p") {
                             nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
@@ -1469,6 +1608,7 @@ $(document).ready(function () {
 
                         // Seleccionar rol y modalidad
                         nuevaCard.find(".rol-select option").filter(function () { return $(this).val() == atleta.rol; }).prop("selected", true);
+                        nuevaCard.find(".grados-select option").filter(function () { return $(this).val() == atleta.grado; }).prop("selected", true);
                         nuevaCard.find(".modalidades-select option").filter(function () { return $(this).data("nombre") == atleta.modalidad; }).prop("selected", true);
 
                         // 🔹 Cargar submodalidades y seleccionar la correcta
@@ -1554,8 +1694,8 @@ $(document).ready(function () {
                         });
 
                         // 🔹 Copiar selects del padre
-                        // nuevaCard.find(".atletas-select").html(panelOriginal.find(".atletas-select").html());
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
+                        nuevaCard.find(".grados-select").html(panelOriginal.find(".grados-select").html()).prop("disabled", true);
                         nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
                         nuevaCard.find(".submodalidades-select").html(panelOriginal.find(".submodalidades-select").html()).prop("disabled", true);
                         nuevaCard.find(".categorias-select").html(panelOriginal.find(".categorias-select").html());
@@ -1573,6 +1713,9 @@ $(document).ready(function () {
 
                         nuevaCard.find(".rol-select option").filter(function () {
                             return $(this).val() == atletaReferencia.rol;
+                        }).prop("selected", true);
+                        nuevaCard.find(".grados-select option").filter(function () {
+                            return $(this).val() == atletaReferencia.grado;
                         }).prop("selected", true);
                         nuevaCard.find(".modalidades-select option").filter(function () {
                             return $(this).data("nombre") == atletaReferencia.modalidad;
@@ -1729,6 +1872,7 @@ $(document).ready(function () {
                 let edad = $(this).find(".inputEdad").val();
                 let peso = $(this).find(".inputPeso").val();
                 let rol = $(this).find(".rol-select option:selected").val();
+                let grado = $(this).find(".grados-select option:selected").text();
                 let modalidad = $(this).find(".modalidades-select option:selected").text();
 
                 submodalidad = $(this).find(".submodalidades-select option:selected").text();
@@ -1743,6 +1887,7 @@ $(document).ready(function () {
                 var id_evento = $("#evento-select option:selected").val();
                 var id_atleta = $(this).find(".atletas-select option:selected").data("id");
                 var id_division = $(this).find(".atletas-select option:selected").data("id_division");
+                var id_grado = $(this).find(".grados-select option:selected").data("id_grado");
                 var id_modalidad = $(this).find(".modalidades-select option:selected").val();
                 var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
                 var id_categoria = $(this).find(".categorias-select option:selected").val();
@@ -1765,6 +1910,7 @@ $(document).ready(function () {
                         edad: edad,
                         rol: rol,
                         peso: peso,
+                        grado: grado,
                         modalidad: modalidad,
                         submodalidad: submodalidad,
                         categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -1774,6 +1920,7 @@ $(document).ready(function () {
                         id_evento: id_evento,
                         id_atleta: id_atleta,
                         id_division: id_division,
+                        id_grado: id_grado,
                         id_modalidad: id_modalidad,
                         id_subModalidad: id_subModalidad,
                         id_categoria: id_categoria,
@@ -1808,6 +1955,7 @@ $(document).ready(function () {
                                     edad: edad,
                                     rol: rol,
                                     peso: peso,
+                                    grado, grado,
                                     modalidad: modalidad,
                                     submodalidad: submodalidad,
                                     categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -1817,6 +1965,7 @@ $(document).ready(function () {
                                     id_evento: id_evento,
                                     id_atleta: id_atleta,
                                     id_division: id_division,
+                                    id_grado: id_grado,
                                     id_modalidad: id_modalidad,
                                     id_subModalidad: id_subModalidad,
                                     id_categoria: id_categoria,
@@ -1829,6 +1978,7 @@ $(document).ready(function () {
                                     edad: edad,
                                     rol: rol,
                                     peso: '—',
+                                    grado: '—',
                                     modalidad: '—',
                                     submodalidad: '—',
                                     categoria: '—',
@@ -1838,6 +1988,7 @@ $(document).ready(function () {
                                     id_evento: id_evento,
                                     id_atleta: id_atleta,
                                     id_division: null,
+                                    id_grado: null,
                                     id_modalidad: null,
                                     id_subModalidad: null,
                                     id_categoria: null,
@@ -1864,6 +2015,7 @@ $(document).ready(function () {
                             edad: edad,
                             rol: rol,
                             peso: peso,
+                            grado: grado,
                             modalidad: modalidad,
                             submodalidad: submodalidad,
                             categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -1873,6 +2025,7 @@ $(document).ready(function () {
                             id_evento: id_evento,
                             id_atleta: id_atleta,
                             id_division: id_division,
+                            id_grado: id_grado,
                             id_modalidad: id_modalidad,
                             id_subModalidad: id_subModalidad,
                             id_categoria: id_categoria,
@@ -1978,11 +2131,11 @@ $(document).ready(function () {
         let modeView = $('#modeView').val();
 
         if (confirm("⚠️ Aviso! Desea enviar esta inscripcion? la informacion no puede cambiarse posterior al envio.")) {
-            console.log("a1");
+            // console.log("a1");
 
 
             if (validarEnvioInscripcion() === true) {
-                console.log("a2");
+                // console.log("a2");
 
 
                 let listaCompleta = listaAtletas.concat(gruposAtletas);
@@ -2062,6 +2215,9 @@ $(document).ready(function () {
         //distribuir
         const atletasPHP = window.inscripcionApp.atletasInscripcion;
 
+        console.log("LOS QUE VAN: ", atletasPHP);
+
+
         let obj = {};
 
         for (let atleta of atletasPHP) {
@@ -2084,6 +2240,7 @@ $(document).ready(function () {
                     edad: edad || '—',
                     rol: atleta.rol || '—',
                     peso: atleta.peso || '—',
+                    grado: atleta.grado?.nombre || '—',
                     modalidad: atleta.modalidad?.nombre || '—',
                     submodalidad: atleta.subModalidad?.nombre || '—',
                     categoria: atleta.categoria == null ? atleta.subModalidad.nombre : `${atleta.categoria.peso_min} - ${atleta.categoria.peso_max}`,
@@ -2093,6 +2250,7 @@ $(document).ready(function () {
                     id_evento: atleta.evento?.id_evento || null,
                     id_atleta: atleta.id_atleta || null,
                     id_division: atleta.id_division || null,
+                    id_grado: atleta.id_grado || null,
                     id_modalidad: atleta.modalidad?.id_modalidad || null,
                     id_subModalidad: atleta.subModalidad?.id_subModalidad || null,
                     id_categoria: atleta.categoria?.id_categoria || null,
@@ -2105,6 +2263,7 @@ $(document).ready(function () {
                     edad: edad || '—',
                     rol: atleta.rol || '—',
                     peso: '—',
+                    grado: '—',
                     modalidad: '—',
                     submodalidad: '—',
                     categoria: '—',
@@ -2114,6 +2273,7 @@ $(document).ready(function () {
                     id_evento: atleta.evento?.id_evento || null,
                     id_atleta: atleta.id_atleta || null,
                     id_division: null,
+                    id_grado: null,
                     id_modalidad: null,
                     id_subModalidad: null,
                     id_categoria: null,
@@ -2206,9 +2366,9 @@ $(document).ready(function () {
     $(document).on("click", ".bEditar2", function () {//@audit bEditar2
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code");
-        let grupo = $fila.find("td:eq(7)").text().trim();
+        let grupo = $fila.find("td:eq(8)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
-        let submodalidad = $fila.find("td:eq(5)").text().trim();
+        let submodalidad = $fila.find("td:eq(6)").text().trim();
         let cantidadMiembrosActuales = 0;
 
         if (btn_edit_code != tr_code) {
@@ -2623,16 +2783,6 @@ $(document).ready(function () {
             btn_edit_code = tr_code;
         }
     });
-
-
-
-
-
-
-
-
-
-
 
 
     /*
