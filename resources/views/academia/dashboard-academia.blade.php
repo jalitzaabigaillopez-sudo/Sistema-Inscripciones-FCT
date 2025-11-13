@@ -153,19 +153,32 @@
                   </span>
                 </td>
                 <td>
-                  @if($evento->estado === 'Activo')
-                    <button class="btn btn-sm btn-secondary" disabled title="Este evento ya fue enviado">
-                      <i class="bi bi-lock-fill me-1"></i> Enviado
-                    </button>
-                  @else
-                    <a href="{{ route('editar.inscripcion', ['id_evento' => $evento->id_evento]) }}"
-                       class="btn btn-sm btn-primary btn-inscribir"
-                       data-url="{{ route('editar.inscripcion', ['id_evento' => $evento->id_evento]) }}"
-                       data-id="{{ $evento->id_evento }}"
-                       title="Ver o editar inscripción">
-                      <i class="bi bi-pencil-square me-1"></i> Inscribir
-                    </a>
-                  @endif
+                @php
+  $inscripcion = $evento->inscripciones->firstWhere('id_usuario', auth()->id());
+@endphp
+
+@if($inscripcion && $inscripcion->estado === 'enviado')
+  <button class="btn btn-sm btn-secondary" disabled title="Este evento ya fue enviado">
+    <i class="bi bi-lock-fill me-1"></i> Enviado
+  </button>
+@elseif($inscripcion && $inscripcion->estado === 'pendiente')
+  <a href="{{ route('editar.inscripcion', ['id_inscripcion' => $inscripcion->id_inscripcion]) }}"
+     class="btn btn-sm btn-warning"
+     title="Continuar inscripción">
+    <i class="bi bi-pencil-square me-1"></i> Continuar
+  </a>
+@elseif($evento->fecha_inicio < now() )
+  <button class="btn btn-sm btn-outline-danger" disabled title="Periodo cerrado">
+    <i class="bi bi-calendar-x me-1"></i> Cerrado
+  </button>
+@else
+  <a href="{{ route('editar.inscripcion', ['id_evento' => $evento->id_evento]) }}"
+     class="btn btn-sm btn-primary"
+     title="Nueva inscripción">
+    <i class="bi bi-pencil-square me-1"></i> Inscribir
+  </a>
+@endif
+
                 </td>
               </tr>
             @endforeach

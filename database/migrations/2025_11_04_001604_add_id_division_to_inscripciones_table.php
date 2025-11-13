@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::table('inscripciones', function (Blueprint $table) {
             //
            $table->unsignedInteger('division_id')->nullable()->after('id_categoria');
+         
+    if (!Schema::hasColumn('inscripciones', 'monto')) {
+        $table->decimal('monto', 10, 2)->nullable()->after('id_academia');
+    }
+
         });
     }
 

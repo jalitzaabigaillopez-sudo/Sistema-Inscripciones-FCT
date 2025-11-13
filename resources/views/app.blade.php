@@ -380,6 +380,9 @@
                     <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-calendar3 me-2"></i> Eventos
                     </a>
+                     <a href="{{ route('tiposEventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-list me-2"></i> Tipos de Eventos
+                    </a>
                     <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-columns-gap me-2"></i> Modalidades
                     </a>
@@ -398,6 +401,10 @@
 
                     <a href="{{ route('categorias.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-bookmarks me-2"></i> Categorías
+                    </a>
+
+                    <a href="{{ route('divisiones.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                        <i class="bi bi-border-outer me-2"></i> Divisiones
                     </a>
                     <!-- Elementos adicionales para demostrar el scroll -->
                     {{-- <a href="#" onclick="handleSidebarClick(event)" class="text-white">

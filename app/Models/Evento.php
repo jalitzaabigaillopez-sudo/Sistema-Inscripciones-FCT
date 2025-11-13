@@ -70,5 +70,4 @@ public function grado()
     return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
 }
 
-
 }

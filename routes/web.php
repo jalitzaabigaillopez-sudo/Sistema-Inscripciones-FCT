@@ -11,6 +11,7 @@ use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\SubModalidadController;
 use App\Http\Controllers\ModalidadController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DivisionesController;
 use App\Http\Controllers\EventosController;
 use App\Http\Controllers\GradosController;
 use App\Http\Controllers\InicioController;
@@ -18,17 +19,19 @@ use App\Http\Controllers\ModalidadesController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\EstadisticaController;
+use App\Http\Controllers\TipoEventosController;
 use Illuminate\Types\Relations\Role;
 
 
 //####################################### SOLO ADMINISTRADOR ###########################################
+
 /**
  * Rutas de login
  */
 Route::get('/', function () {
     return view('sections/login');
 })->name('login');
-Route::post('/login-process', [AuthController::class, 'verificarUsuario'])->name('login.process');// verificar credenciales
+Route::post('/login-process', [AuthController::class, 'verificarUsuario'])->name('login.process'); // verificar credenciales
 Route::post('/logout-process', [AuthController::class, 'cerrarSesion'])->name('logout.process');// cerrar sesion
 
 
@@ -128,7 +131,7 @@ Route::get('/reporte/{id_evento}', [ReporteController::class, 'exportarInscripci
 
 // Ruta principal del dashboard
 //Route::get('/adminDash', function () {
-    //return view('admin.dashboard');
+//return view('admin.dashboard');
 //})->name('adminDash');
 
 
@@ -220,6 +223,9 @@ Route::get('/categorias/{id}/datos', [CategoriaController::class, 'edit']);
 
 Route::resource('/eventos', EventosController::class);
 
+Route::resource('/tiposEventos', TipoEventosController::class);
+Route::get('/tiposEventos/{id}/datos', [TipoEventosController::class, 'datos'])->name('tiposEventos.datos');
+
 Route::resource('/usuarios', UsuariosController::class);
 
 Route::resource('/grados', GradosController::class);
@@ -227,6 +233,10 @@ Route::get('/grados/{id}/datos', [GradosController::class, 'edit']);
 
 Route::resource('/modalidades', ModalidadesController::class);
 Route::get('/modalidades/{id}/datos', [ModalidadesController::class, 'edit']);
+
+Route::resource('/divisiones', DivisionesController::class);
+Route::get('/divisiones/{id}/datos', [DivisionesController::class, 'edit'])
+    ->name('divisiones.datos');
 
 
 Route::resource('/inscripciones', InscripcionController::class);
@@ -279,6 +289,4 @@ Route::get('/preregistro', function () {
  * Rutas API
  */
 
-Route::get('/events', [EventosController::class, 'api']);    
-
-
+Route::get('/events', [EventosController::class, 'api']);

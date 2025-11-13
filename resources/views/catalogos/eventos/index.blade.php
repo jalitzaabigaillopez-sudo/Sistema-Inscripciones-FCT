@@ -573,6 +573,7 @@
                             let badgeClass =
                                 data === 'activo' ? 'success' :
                                 data === 'inactivo' ? 'danger' :
+                                data === 'en curso' ? 'warning':
                                 'secondary';
                             return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
                         }

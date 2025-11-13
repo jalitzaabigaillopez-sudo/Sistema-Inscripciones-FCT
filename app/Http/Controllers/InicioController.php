@@ -107,9 +107,20 @@ public function estadisticasEventos(Request $request)
         return 'Desconocida';
     };
 
+
+    // Función para limpiar claves
+    $mascarar = fn($valor) => in_array($valor, [
+        'Sin grado', 'Sin modalidad', 'Sin submodalidad'
+    ]) ? 'No especificado' : $valor;
+
+    $mascararKeys = fn($array) => collect($array)
+        ->mapWithKeys(fn($valor, $clave) => [$mascarar($clave) => $valor])
+        ->toArray();
+
     // Estadísticas base
     $estadisticas['total_inscripciones'] = $inscripciones->count();
     $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
+    $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
 
 
@@ -117,13 +128,13 @@ public function estadisticasEventos(Request $request)
     $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
     $estadisticas['por_submodalidad'] = $inscripciones->map($resolveSubmodalidad)->countBy()->toArray();
     $estadisticas['por_grado'] = $inscripciones->map($resolveGrado)->countBy()->toArray();
-    $estadisticas['por_categoria'] = $inscripciones->map($resolveCategoria)->countBy()->toArray();
+
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
     $estadisticas['por_edad'] = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
-    $estadisticas['por_academia'] = $inscripciones->groupBy($resolveAcademia)->map(function ($grupo) {
+    $estadisticas['por_academia'] = $inscripciones->groupBy($resolveAcademia)->map(function ($grupo) use ($mascarar) {
     return [
         'cantidad' => $grupo->count(),
         'monto' => $grupo->sum(fn($i) => $i->monto ?? 0),
@@ -146,10 +157,9 @@ public function estadisticasEventos(Request $request)
         ? array_slice($estadisticas['por_nacimiento'], -100, 100, true)
         : $estadisticas['por_nacimiento'];
 
-    $mascarar = fn($valor) => in_array($valor, ['Sin grado', 'Sin modalidad', 'Sin submodalidad', 'Sin categoría', 'Sin academia'])
-    ? 'No especificado'
-    : $valor;
-
+     $estadisticas['por_modalidad'] = $mascararKeys($estadisticas['por_modalidad']);
+     $estadisticas['por_submodalidad'] = $mascararKeys($estadisticas['por_submodalidad']);
+     $estadisticas['por_grado'] = $mascararKeys($estadisticas['por_grado']);
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }

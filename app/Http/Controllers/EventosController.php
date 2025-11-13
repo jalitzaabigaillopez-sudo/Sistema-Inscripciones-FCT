@@ -26,10 +26,22 @@ class EventosController extends Controller
      */
     public function index(Request $request)
     {
-        //  Actualizar estado de eventos finalizados automáticamente
-        Evento::where('estado', 'activo')
+        //  Actualizar estados automáticamente
+        Evento::query()
+            ->where('fecha_inicio', '<=', now())
+            ->where('fecha_final', '>=', now())
+            ->where('estado', '!=', 'en curso')
+            ->update(['estado' => 'en curso']);
+
+        Evento::query()
             ->where('fecha_final', '<', now())
+            ->where('estado', '!=', 'finalizado')
             ->update(['estado' => 'finalizado']);
+
+        Evento::query()
+            ->where('fecha_inicio', '>', now())
+            ->whereNotIn('estado', ['activo', 'inactivo'])
+            ->update(['estado' => 'activo']);
 
         //  Si es una petición AJAX (DataTables)
         if ($request->ajax()) {
