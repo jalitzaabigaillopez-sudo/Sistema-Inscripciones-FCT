@@ -274,15 +274,22 @@ $(document).ready(function () {
             $('#e_fecha_nacimiento').val(data.fecha_nacimiento);
             $('#e_grado').val(data.id_grado);
 
-            if ($("#e_academia option[value='" + data.id_academia + "']").length === 0) {
+            let nombreAcademia = data.academias
+                ? data.academias.nombre
+                : "Sin academia";
+
+            let idAcademia = data.id_academia ?? "";
+
+            if ($("#e_academia option[value='" + idAcademia + "']").length === 0) {
                 $("#e_academia").append(
                     $("<option>", {
-                        value: data.id_academia,
-                        text: data.academias.nombre
+                        value: idAcademia,
+                        text: nombreAcademia
                     })
                 );
             }
-            $('#e_academia').val(data.id_academia);
+
+            $('#e_academia').val(idAcademia);
             $('input[name="estado"][value="' + data.estado + '"]').prop('checked', true);
 
             // Manejo de la imagen
@@ -432,8 +439,8 @@ $(document).ready(function () {
 
 function confirmarEliminacion(id) {
     Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esta acción!",
+        title: '¿Desvincular atleta?',
+        text: "¡No podrás revertir esta acción, el atleta será quitado de esta academia.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -453,8 +460,8 @@ function confirmarEliminacion(id) {
                 },
                 success: function (response) {
                     Swal.fire({
-                        title: '¡Eliminado!',
-                        text: 'El registro ha sido eliminado correctamente.',
+                        title: '¡Atleta desvinculado!',
+                        text: 'El atleta ha sido quitado de la academia correctamente.',
                         icon: 'success',
                         confirmButtonColor: '#3085d6',
                         confirmButtonText: 'Aceptar'
@@ -466,7 +473,7 @@ function confirmarEliminacion(id) {
                 error: function (xhr) {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Ocurrió un error al intentar eliminar el registro.',
+                        text: 'Ocurrió un error al intentar desvincular el atleta.',
                         icon: 'error',
                         confirmButtonText: 'Aceptar'
                     });

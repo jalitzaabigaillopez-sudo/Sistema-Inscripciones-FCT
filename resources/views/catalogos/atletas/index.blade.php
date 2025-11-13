@@ -91,6 +91,7 @@
                             <option value="">Todos</option>
                             <option value="activo">Activo</option>
                             <option value="inactivo">Inactivo</option>
+                            <option value="sin_academia">Sin academia</option>
                         </select>
                     </div>
                 </div>
