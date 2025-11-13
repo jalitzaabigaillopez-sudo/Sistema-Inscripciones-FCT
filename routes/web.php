@@ -97,6 +97,9 @@ Route::get('/editarInscripcion/{id_evento}', [InscripcionController::class, 'edi
 Route::post('/eliminarInscripcion', [InscripcionController::class, 'eliminarInscripcion']);
 Route::post('/procesarInscripcion', [InscripcionController::class, 'confirmarInscripcion']);
 
+Route::post('/obtenerGrados', [GradosController::class, 'obtenerGradosMenoresA']);
+Route::post('/actualizarGradoAtleta', [AtletasController::class, 'actualizarGradoAtleta'])->name('actualizarGradoAtleta');
+
 /**
  * =============================================================================================================================================
  */

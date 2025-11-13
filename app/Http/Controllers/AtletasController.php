@@ -117,23 +117,23 @@ class AtletasController extends Controller
             // }
 
             // Obtener el total de registros
-    $totalRecords = (clone $base)->count();
+            $totalRecords = (clone $base)->count();
 
-           // 📌 Orden servidor SIEMPRE: Academia ASC, Apellido ASC, Nombre ASC
-    //    Usamos subconsulta para ordenar por el nombre de la academia sin join.
-    $ordered = (clone $base)
-        ->orderBy(
-            Academia::select('nombre')
-                ->whereColumn('academias.id_academia', 'atletas.id_academia'),
-            'asc'
-        )
-        ->orderBy('nombre', 'asc')
-        ->orderBy('primer_apellido', 'asc');
+            // 📌 Orden servidor SIEMPRE: Academia ASC, Apellido ASC, Nombre ASC
+            //    Usamos subconsulta para ordenar por el nombre de la academia sin join.
+            $ordered = (clone $base)
+                ->orderBy(
+                    Academia::select('nombre')
+                        ->whereColumn('academias.id_academia', 'atletas.id_academia'),
+                    'asc'
+                )
+                ->orderBy('nombre', 'asc')
+                ->orderBy('primer_apellido', 'asc');
 
-    // Paginación
-    $start  = $request->input('start', 0);
-    $length = $request->input('length', 10);
-    $data = $ordered->skip($start)->take($length)->get();
+            // Paginación
+            $start = $request->input('start', 0);
+            $length = $request->input('length', 10);
+            $data = $ordered->skip($start)->take($length)->get();
 
             // Formatear datos para DataTables
             $formattedData = [];
@@ -177,7 +177,9 @@ class AtletasController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {}
+    public function create()
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -569,5 +571,29 @@ class AtletasController extends Controller
                 'error' => 'Ocurrió un error al intentar eliminar el atleta.'
             ], 500);
         }
+    }
+
+    public function actualizarGradoAtleta(Request $request)
+    {
+        $id_atleta = $request->input('id_atleta');
+        $id_grado = $request->input('id_grado');
+
+
+        $atleta = Atleta::find($id_atleta);
+
+        if (!$atleta) {
+            return response()->json(['error' => 'Atleta no encontrado'], 404);
+        }
+
+        $atleta->id_grado = $id_grado;
+        $atleta->save();
+
+        $grado = Grado::find($id_grado);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Grado actualizado correctamente',
+            'grado' => $grado
+        ]);
     }
 }

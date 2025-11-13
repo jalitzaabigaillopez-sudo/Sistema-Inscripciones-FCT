@@ -90,7 +90,17 @@
                                 <option data-id="{{ $atleta->id_atleta }}" data-sexo="{{ $atleta->sexo }}"
                                     data-id_atleta="{{ $atleta->id_atleta }}"
                                     data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
-                                    data-id_division="{{ $atleta->id_division }}">{{ $atleta->nombre }}
+                                    data-id_division="{{ $atleta->id_division }}"
+                                    data-id_grado="{{ $atleta->grado->id_grado }}"
+                                    data-grado="{{ $atleta->grado->nombre }}"
+                                    
+                                    
+                                    data-nombre="{{ $atleta->nombre }}"
+                                    data-primer_apellido="{{ $atleta->primer_apellido }}"
+                                    data-segundo_apellido="{{ $atleta->segundo_apellido }}"
+                                    data-identificacion="{{ $atleta->identificacion }}"
+                                    >
+                                    {{ $atleta->nombre }}
                                     {{ $atleta->primer_apellido }}
                                     {{ $atleta->segundo_apellido }} -
                                     {{ $atleta->identificacion }}
@@ -119,13 +129,19 @@
                 </div>
 
                 <div class="row g-3 mt-3">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
+                        <select class="form-select grados-select" required>
+                            <option selected disabled>Grado</option>
+
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <select class="form-select modalidades-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select submodalidades-select" required>
                             <option selected disabled>Submodalidad</option>
 
@@ -166,6 +182,7 @@
                                 <th>Sexo</th>
                                 <th>Edad</th>
                                 <th>Tipo</th>
+                                <th>Grado</th>
                                 <th>Modalidad</th>
                                 <th>SubModalidad</th>
                                 <th>Categoria</th>
@@ -182,7 +199,6 @@
             </div>
         </div>
 
-
         {{-- Botón final --}}
         <div class="text-end mt-4">
             <button id="bEnviar" class="btn btn-primary">
@@ -191,6 +207,77 @@
         </div>
 
     </div>
+
+    <!-- MODAL -->
+        <div class="modal fade" id="I_modalEditarAtleta" tabindex="-1" aria-labelledby="modalEditarAtletaLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content p-4 border-0 shadow-lg" style="background-color: #f8f9fa;">
+                    <div class="modal-header border-bottom-0 pb-2">
+                        <h5 class="modal-title text-center fw-bold text-primary w-100 mb-3" id="I_modalEditarAtletaLabel">
+                            Actualizar Grado del Atleta</h5>
+
+                        <button type="button" class="btn-close btn-close-secondary" data-bs-dismiss="modal" name="cerrar"
+                            aria-label="Cerrar"></button>
+                    </div>
+                    
+                        <div class="modal-body p-0">
+                            <div class="row g-4">
+                                <div class="col-md-6 border-end pe-md-4">
+                                    <h6 class="text-secondary mb-3">Información Personal</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label for="e_identificacion" class="form-label">Identificación</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_identificacion"
+                                            name="identificacion" required disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_nombre" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_nombre"
+                                            name="nombre" required disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_apellido1" class="form-label">Primer Apellido</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_apellido1"
+                                            name="primer_apellido" required disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="e_apellido2" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control form-control-sm" id="e_apellido2"
+                                            name="segundo_apellido" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ps-md-4">
+                                    <h6 class="text-secondary mb-3">Información Deportiva</h6>
+
+                                    <div class="row">
+
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="e_grado" class="form-label">Grado (Cinturón) <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select form-select-sm" id="e_grado" name="id_grado"
+                                                required>
+                                                <option value="" disabled selected>Seleccione...</option>
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill me-2" name="cancelar"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button id="I_bActualizarGrado" type="button" class="btn btn-success rounded-pill">Guardar cambios</button>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+     
 @endsection
 
 @push('scripts')
@@ -247,4 +334,34 @@
             academia: @json($academia ?? null)
         };
     </script>
+
+
+
+<!-- MODAL -->
+ <script>
+    // Esperar a que el DOM esté cargado
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('I_modalEditarAtleta');
+
+        modal.addEventListener('hidden.bs.modal', function () {
+            // Limpiar todos los inputs dentro del modal
+            modal.querySelectorAll('input, select').forEach(el => {
+                // Si es un input tipo texto
+                if (el.tagName === 'INPUT' && el.type === 'text') {
+                    el.value = '';
+                }
+
+                // Si es un select
+                if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0; // vuelve al "Seleccione..."
+                }
+            });
+
+            // Si deseas eliminar datos asociados, por ejemplo variables globales
+            // o contenido cargado dinámicamente, puedes hacerlo aquí
+            console.log('Modal cerrado: datos limpiados');
+        });
+    });
+</script>
+
 @endpush

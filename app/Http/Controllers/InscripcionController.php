@@ -216,8 +216,8 @@ class InscripcionController extends Controller
             ->get();
 
         $academia = $usuario->academia;
-        $atletas = $academia->atletas;
-        // dd($eventos);
+        $atletas = $academia->atletas()->with('grados')->get();
+        // dd($atletas);
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
     }
 
@@ -283,7 +283,7 @@ class InscripcionController extends Controller
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
 
-        $inscripciones = Inscripcion::with(['atleta', 'modalidad', 'subModalidad', 'categoria', 'evento'])
+        $inscripciones = Inscripcion::with(['atleta', 'grado', 'modalidad', 'subModalidad', 'categoria', 'evento'])
             ->where('id_evento', $id_evento)
             ->where('id_academia', $academia->id_academia)
             ->get();
@@ -296,6 +296,7 @@ class InscripcionController extends Controller
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
+            $atleta->grado = $inscripcion->grado;
             $atleta->modalidad = $inscripcion->modalidad;
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;
@@ -372,7 +373,7 @@ class InscripcionController extends Controller
         $academia = Academia::find($id_academia);
         $atletas = $academia->atletas;
 
-        $inscripciones = Inscripcion::with(['atleta', 'modalidad', 'subModalidad', 'categoria', 'evento'])
+        $inscripciones = Inscripcion::with(['atleta', 'grado', 'modalidad', 'subModalidad', 'categoria', 'evento'])
             ->where('id_evento', $id_evento)
             ->where('id_academia', $academia->id_academia)
             ->get();
@@ -385,6 +386,7 @@ class InscripcionController extends Controller
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
+            $atleta->grado = $inscripcion->grado;
             $atleta->modalidad = $inscripcion->modalidad;
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;
