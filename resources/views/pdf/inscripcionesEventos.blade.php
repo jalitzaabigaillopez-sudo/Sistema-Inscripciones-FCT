@@ -187,6 +187,7 @@
                     <tr>
                         <th>#</th>
                         <th>Atleta</th>
+                        <th>Atleta</th>
                         <th>Modalidad</th>
                         <th>Submodalidad</th>
                         <th>Categoría</th>
@@ -202,6 +203,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $dato['Atleta'] }}</td>
+                            <td>{{ $dato['Grado'] }}</td>
                             <td>{{ $dato['Modalidad'] }}</td>
                             <td>{{ $dato['Submodalidad'] }}</td>
                             <td>{{ $dato['Categoría'] }}</td>

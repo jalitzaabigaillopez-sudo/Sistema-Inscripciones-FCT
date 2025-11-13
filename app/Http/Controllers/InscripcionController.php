@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Academia;
+use App\Models\Atleta;
 use App\Models\Evento;
 use Illuminate\Http\Request;
 use App\Models\Inscripcion;
@@ -289,6 +290,10 @@ class InscripcionController extends Controller
             ->get();
 
         $atletasInscripcion = $inscripciones->map(function ($inscripcion) {
+
+            $atleta = Atleta::find($inscripcion->id_atleta);
+            $grado = $atleta->grado;
+
             $atleta = $inscripcion->atleta->replicate(); // crea una copia del atleta original
 
             $atleta->id_atleta = $inscripcion->id_atleta;
@@ -296,7 +301,7 @@ class InscripcionController extends Controller
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
-            $atleta->grado = $inscripcion->grado;
+            $atleta->grado = $grado;
             $atleta->modalidad = $inscripcion->modalidad;
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;

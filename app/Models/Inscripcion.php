@@ -57,12 +57,12 @@ class Inscripcion extends Model
 
     public function grado()
 {
-    return $this->belongsTo(Grado::class, 'id_grado'); // ajustá el nombre de la columna si es diferente
+    return $this->belongsTo(Grado::class, 'id_grado'); 
 }
 
     public function division()
 {
-    return $this->belongsTo(Division::class, 'id_division'); // ajustá el nombre de la columna si es diferente
+    return $this->belongsTo(Division::class, 'id_division');
 }
 
     public function categoria()

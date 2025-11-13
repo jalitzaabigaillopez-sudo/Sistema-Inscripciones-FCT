@@ -263,6 +263,7 @@ $(document).ready(function () {
             $('.submodalidades-select').prop("selectedIndex", 0);
 
             $('.baseCard, .clonEdit').each(function () {
+                $(this).find('.grados-select').hide();
                 $(this).find('.modalidades-select').hide();
                 $(this).find('.submodalidades-select').hide();
                 $(this).find('.categorias-select').hide();
@@ -277,6 +278,7 @@ $(document).ready(function () {
         } else {
             // Mostrar de nuevo si no es rol especial
             $('.baseCard, .clonEdit').each(function () {
+                $(this).find('.grados-select').show();
                 $(this).find('.modalidades-select').show();
                 $(this).find('.submodalidades-select').show();
                 $(this).find('.categorias-select').show();
@@ -542,6 +544,8 @@ $(document).ready(function () {
                             opcion.attr('data-grado', res.grado.nombre);
                             opcion.attr('data-id_grado', res.grado.id_grado);
 
+                            // ACTUALIZAR TABLA EN MEMORIA
+
                         },
                         error: function () {
                             mostrarAlerta("Error al actualizar el grado", "Aviso", "⚠️");
@@ -589,7 +593,7 @@ $(document).ready(function () {
             var id_evento = $("#evento-select option:selected").val();
             var id_atleta = $(this).find(".atletas-select option:selected").data("id");
             var id_division = $(this).find(".atletas-select option:selected").data("id_division");
-            var id_grado = $(this).find(".grados-select option:selected").data("id_grado");
+            var id_grado = $(this).find(".grados-select option:selected").val();
             var id_modalidad = $(this).find(".modalidades-select option:selected").val();
             var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
             var id_categoria = $(this).find(".categorias-select option:selected").val();
@@ -1077,7 +1081,7 @@ $(document).ready(function () {
         fila.find('td:eq(1)').text(obj.sexo);
         fila.find('td:eq(2)').text(obj.edad);
         fila.find('td:eq(3)').text(obj.rol);
-        fila.find('td:eq(4)').text(obj.rol);
+        fila.find('td:eq(4)').text(obj.grado);
         fila.find('td:eq(5)').text(obj.modalidad);
         fila.find('td:eq(6)').text(obj.submodalidad);
         fila.find('td:eq(7)').text(obj.categoria);
@@ -1585,7 +1589,6 @@ $(document).ready(function () {
 
                         // 🔹 Copiar selects del padre
                         nuevaCard.find(".rol-select").html(panelOriginal.find(".rol-select").html()).prop("disabled", true);
-                        nuevaCard.find(".grados-select").html(panelOriginal.find(".grados-select").html()).prop("disabled", true);
                         let indicator = grupo.slice(-2);
                         if (indicator === "-p") {
                             nuevaCard.find(".modalidades-select").html(panelOriginal.find(".modalidades-select").html()).prop("disabled", true);
@@ -1608,10 +1611,16 @@ $(document).ready(function () {
 
                         // Seleccionar rol y modalidad
                         nuevaCard.find(".rol-select option").filter(function () { return $(this).val() == atleta.rol; }).prop("selected", true);
-                        nuevaCard.find(".grados-select option").filter(function () { return $(this).val() == atleta.grado; }).prop("selected", true);
                         nuevaCard.find(".modalidades-select option").filter(function () { return $(this).data("nombre") == atleta.modalidad; }).prop("selected", true);
 
-                        // 🔹 Cargar submodalidades y seleccionar la correcta
+
+                        let selectGrado = nuevaCard.find(".grados-select");
+                        selectGrado.empty();
+                        selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
+                        selectGrado.append('<option value="">Actualizar Grado</option>');
+
+
+                        // Cargar submodalidades y seleccionar la correcta
                         let selectSub = nuevaCard.find('.submodalidades-select');
                         $.ajax({
                             url: '/obtenerSubModalidades',
@@ -1636,7 +1645,7 @@ $(document).ready(function () {
                             error: function () { mostrarAlerta("Error al cargar submodalidades.", "Aviso", "⚠️"); }
                         });
 
-                        // 🔹 Cargar categorías 
+                        // Cargar categorías 
                         if (atleta.id_categoria != 0) {//poomsae y freestyle tienen id = 0
 
                             let selectCat = nuevaCard.find('.categorias-select');
@@ -1887,7 +1896,7 @@ $(document).ready(function () {
                 var id_evento = $("#evento-select option:selected").val();
                 var id_atleta = $(this).find(".atletas-select option:selected").data("id");
                 var id_division = $(this).find(".atletas-select option:selected").data("id_division");
-                var id_grado = $(this).find(".grados-select option:selected").data("id_grado");
+                var id_grado = $(this).find(".grados-select option:selected").val();
                 var id_modalidad = $(this).find(".modalidades-select option:selected").val();
                 var id_subModalidad = $(this).find(".submodalidades-select option:selected").val();
                 var id_categoria = $(this).find(".categorias-select option:selected").val();
@@ -2060,6 +2069,7 @@ $(document).ready(function () {
 
                         modificarAtletaInscrito_p(atletasCambios[i].obj, tempx);
                         actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
+                        limpiarCards();
 
                     }
                     else {
@@ -2081,12 +2091,13 @@ $(document).ready(function () {
                             // modificarAtletaInscrito(atletasCambios[i].obj);
                             modificarAtletaInscrito_p(atletasCambios[i].obj, tempx);
                             actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
+                            limpiarCards();
                         }
                     }
                 } else {
-
                     modificarAtletaInscrito(atletasCambios[i].obj);
                     actualizarTrTablaInscripciones(atletasCambios[i].obj, atletasCambios[i].tr_code);
+                    limpiarCards();
                 }
             }
 
@@ -2215,7 +2226,7 @@ $(document).ready(function () {
         //distribuir
         const atletasPHP = window.inscripcionApp.atletasInscripcion;
 
-        console.log("LOS QUE VAN: ", atletasPHP);
+        // console.log("#", atletasPHP);
 
 
         let obj = {};
@@ -2429,6 +2440,10 @@ $(document).ready(function () {
 
                         if (atleta.rol === "atleta") {
 
+                            let selectGrado = nuevaCard.find(".grados-select");
+                            selectGrado.empty();
+                            selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
+                            selectGrado.append('<option value="">Actualizar Grado</option>');
 
                             // Llenar submodalidades y seleccionar la correcta
                             let selectSub = nuevaCard.find(".submodalidades-select");
@@ -2583,6 +2598,14 @@ $(document).ready(function () {
                         nuevaCard.find(".modalidades-select option").filter(function () {
                             return $(this).data("nombre") == atleta.modalidad;
                         }).prop("selected", true);
+
+
+                        let selectGrado = nuevaCard.find(".grados-select");
+                        selectGrado.empty();
+                        selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
+                        selectGrado.append('<option value="">Actualizar Grado</option>');
+
+
                         // Cargar submodalidades y seleccionar la correcta
                         let selectSub = nuevaCard.find('.submodalidades-select');
                         $.ajax({
