@@ -11,6 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (input) input.setAttribute("min", hoy);
     });
 
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('blur', function () {
+            if (this.value.trim() === '') {
+                this.value = 0;
+            }
+        });
+    });
 
     // Setup modal and image preview
     const crearModal = document.getElementById("modalEvento");
@@ -47,10 +54,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorMessage += 'El tipo de evento es obligatorio. ';
                 hasError = true;
             }
-            if (!document.getElementById('fechaInicio').value || 
+            if (!document.getElementById('fechaInicio').value ||
                 !document.getElementById('fechaFin').value ||
-                !document.getElementById('fechaInicioInscripcion').value || 
-                !document.getElementById('fechaFinInscripcion').value ) {
+                !document.getElementById('fechaInicioInscripcion').value ||
+                !document.getElementById('fechaFinInscripcion').value) {
                 errorMessage += 'Todos los campos de fecha son obligatorios. ';
                 hasError = true;
             }
@@ -72,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 hasError = true;
             }
 
-             if (FechaFinInsTardia && regEndDate && FechaFinInsTardia < regEndDate) {
+            if (FechaFinInsTardia && regEndDate && FechaFinInsTardia < regEndDate) {
                 errorMessage += 'La fecha de inscripción tardía no puede ser anterior al fin de inscripción normal. ';
                 hasError = true;
             }
@@ -181,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // EDITAR
 document.addEventListener("DOMContentLoaded", function () {
 
-    // 🗓️ Evitar fechas anteriores a hoy (EDITAR)
+    // Evitar fechas anteriores a hoy (EDITAR)
     const hoy = new Date().toISOString().split("T")[0];
     const dateInputsEditar = document.querySelectorAll(
         '#editFechaInicio, #editFechaFin, #editFechaInicioInscripcion, #editFechaFinInscripcion, #editFechaFinInscripcionTardia'
@@ -190,6 +197,15 @@ document.addEventListener("DOMContentLoaded", function () {
     dateInputsEditar.forEach(input => {
         if (input) input.setAttribute("min", hoy);
     });
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('blur', function () {
+            if (this.value.trim() === '') {
+                this.value = 0;
+            }
+        });
+    });
+
 
     // Configurar vista previa de la imagen para el modal de edición
     const editarModal = document.getElementById("modalEditarEvento");
@@ -214,7 +230,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const regEndDate = new Date(document.getElementById('editFechaFinInscripcion').value);
             const regLateEndDate = new Date(document.getElementById('editFechaFinInscripcionTardia').value);
             const tipoEvento = document.getElementById('editIdTipoEvento').value;
-            const costoEvento = document.getElementById('editCostoEvento').value;
+            // COSTOS (4 CAMPOS)
+            const costo_temprana_1 = document.getElementById('edit_costo_temprana_1').value;
+            const costo_temprana_2 = document.getElementById('edit_costo_temprana_2').value;
+            const costo_tardia_1 = document.getElementById('edit_costo_tardia_1').value;
+            const costo_tardia_2 = document.getElementById('edit_costo_tardia_2').value;
 
             // CAMBIO AQUÍ
             const estado = document.querySelector('input[name="estado"]:checked')?.value || '';
@@ -231,8 +251,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorMessage += 'El tipo de evento es obligatorio. ';
                 hasError = true;
             }
-              if (!costoEvento) {
-                errorMessage += 'El costo del evento es obligatorio. ';
+            if (!costo_temprana_1 || !costo_temprana_2 || !costo_tardia_1 || !costo_tardia_2) {
+                errorMessage += 'Todos los campos de costo son obligatorios. ';
                 hasError = true;
             }
             if (!estado) {
@@ -394,7 +414,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('editFechaInicio').value = evento.fecha_inicio;
                     document.getElementById('editFechaFin').value = evento.fecha_final;
                     document.getElementById('editIdTipoEvento').value = evento.id_tipo_evento;
-                    document.getElementById('editCostoEvento').value = evento.costo;
+                    document.getElementById('edit_costo_temprana_1').value = evento.costo_temprana_1 ?? '';
+                    document.getElementById('edit_costo_temprana_2').value = evento.costo_temprana_2 ?? '';
+                    document.getElementById('edit_costo_tardia_1').value = evento.costo_tardia_1 ?? '';
+                    document.getElementById('edit_costo_tardia_2').value = evento.costo_tardia_2 ?? '';
 
                     // Marcar modalidades asociadas
                     $('.editModalidadCheckbox').prop('checked', false); // Limpia selección previa
@@ -599,6 +622,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+// ============================================
+// EVITAR ESCRITURA DE LETRAS EN CAMPOS NUMÉRICOS
+// ============================================
+document.addEventListener("DOMContentLoaded", () => {
+    const inputsNumericos = document.querySelectorAll(`
+        #costo_temprana_1,
+        #costo_temprana_2,
+        #costo_tardia_1,
+        #costo_tardia_2,
+        #edit_costo_temprana_1,
+        #edit_costo_temprana_2,
+        #edit_costo_tardia_1,
+        #edit_costo_tardia_2
+    `);
+
+    inputsNumericos.forEach(input => {
+
+        // Evitar cualquier letra o símbolo raro
+        input.addEventListener("keydown", function (e) {
+
+            const teclasPermitidas = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+
+            // Permitir teclas especiales
+            if (teclasPermitidas.includes(e.key)) return;
+
+            // Permitir números
+            if (/^[0-9]$/.test(e.key)) return;
+
+            // Permitir un solo punto decimal
+            if (e.key === "." && !this.value.includes(".")) return;
+
+            // Todo lo demás → bloqueado
+            e.preventDefault();
+        });
+
+        // Bloquear pegar letras
+        input.addEventListener("paste", function (e) {
+            const pasted = (e.clipboardData || window.clipboardData).getData("text");
+            if (!/^[0-9.]*$/.test(pasted)) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+
 function confirmarEliminacion(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -641,3 +709,4 @@ function confirmarEliminacion(id) {
         }
     });
 }
+

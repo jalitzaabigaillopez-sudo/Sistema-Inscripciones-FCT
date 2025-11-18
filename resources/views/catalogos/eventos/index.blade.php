@@ -8,8 +8,6 @@
 
 @section('content')
 
-
-
     <div class="container py-4">
         <div class="d-flex align-items-center mb-4">
             <h4 class="fw-bold mb-0">Lista de Eventos</h4>
@@ -129,17 +127,47 @@
                                         @enderror
                                     </div>
 
-                                    {{-- Costo --}}
-                                    <div class="mb-3">
-                                        <label for="costoEvento" class="form-label">Costo (₡) <span
-                                                class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" min="0" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')"
-                                            class="form-control form-control-sm" id="costoEvento" name="costo" required>
-                                        <div class="form-text text-muted">Ingrese el costo de inscripción
-                                            del evento.</div>
-                                        @error('costo')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
+                                    <!-- COSTOS DE INSCRIPCIÓN -->
+                                    <h6 class="text-secondary fw-bold mt-3">Costos de Inscripción</h6>
+
+                                    <div class="row mt-2">
+                                        <!-- INSCRIPCIÓN TEMPRANA -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Inscripción Temprana</label>
+
+                                            <div class="mb-2">
+                                                <label class="form-label">1 Modalidad</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" placeholder="(₡)"
+                                                   id="costo_temprana_1" name="costo_temprana_1" required>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label class="form-label">2 Modalidades o Más</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" placeholder="(₡)"
+                                                   id="costo_temprana_2" name="costo_temprana_2" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- INSCRIPCIÓN TARDÍA -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Inscripción Tardía</label>
+
+                                            <div class="mb-2">
+                                                <label class="form-label">1 Modalidad</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" placeholder="(₡)"
+                                                   id="costo_tardia_1" name="costo_tardia_1" required>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label class="form-label">2 Modalidades o Más</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" placeholder="(₡)"
+                                                   id="costo_tardia_2" name="costo_tardia_2" required>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="mb-3">
@@ -305,16 +333,53 @@
                                         <textarea class="form-control form-control-sm" id="editDescripcionEvento" name="descripcion" rows="3"></textarea>
                                     </div>
 
-                                    {{-- Costo --}}
-                                    <div class="mb-3">
-                                        <label for="editCostoEvento" class="form-label">Costo del Evento (₡) <span
-                                                class="text-danger">*</span></label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-light border-end-0">₡</span>
-                                            <input type="number" class="form-control form-control-sm border-start-0"
-                                                id="editCostoEvento" name="costo" min="0" step="0.01" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
+                                    <!-- COSTOS DE INSCRIPCIÓN -->
+                                    <h6 class="text-secondary fw-bold mt-3">Costos de Inscripción</h6>
+
+                                    <div class="row mt-2">
+
+                                        <!-- TEMPRANA -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Inscripción Temprana</label>
+
+                                            <div class="mb-2">
+                                                <label class="form-label" style="font-weight: normal;">1 Modalidad</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" name="costo_temprana_1"
+                                                    id="edit_costo_temprana_1" placeholder="(₡)" required>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label class="form-label" style="font-weight: normal;">2 Modalidades o
+                                                    Más</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" name="costo_temprana_2"
+                                                    id="edit_costo_temprana_2" placeholder="(₡)" required>
+                                            </div>
                                         </div>
+
+                                        <!-- TARDÍA -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Inscripción Tardía</label>
+
+                                            <div class="mb-2">
+                                                <label class="form-label" style="font-weight: normal;">1 Modalidad</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" name="costo_tardia_1"
+                                                    id="edit_costo_tardia_1" placeholder="(₡)" required>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label class="form-label" style="font-weight: normal;">2 Modalidades o
+                                                    Más</label>
+                                                <input type="number" min="0" step="0.01"
+                                                    class="form-control form-control-sm" name="costo_tardia_2"
+                                                    id="edit_costo_tardia_2" placeholder="(₡)" required>
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="imagenEventoEditar" class="form-label">Imagen del Evento</label>
                                         <input class="form-control form-control-sm imagenEventoInputEditar" type="file"
@@ -525,7 +590,7 @@
                     },
                     {
                         data: "costo",
-                        title: "Costo",
+                        title: "Costos",
                         defaultContent: ""
                     },
                     {
@@ -573,7 +638,7 @@
                             let badgeClass =
                                 data === 'activo' ? 'success' :
                                 data === 'inactivo' ? 'danger' :
-                                data === 'en curso' ? 'warning':
+                                data === 'en curso' ? 'warning' :
                                 'secondary';
                             return `<span class="badge bg-${badgeClass} rounded-pill text-capitalize">${data}</span>`;
                         }

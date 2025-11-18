@@ -213,7 +213,24 @@ class AtletasController extends Controller
             // Verificar que no exista ya registrado
             $atleta = Atleta::where('identificacion', $validateData['identificacion'])->first();
             if ($atleta) {
-                return response()->json(['error' => 'Este atleta ya se encuentra registrado'], 422);
+                // Caso A: atleta no pertenece a ninguna academia → reasignar
+                if ($atleta->id_academia === null) {
+
+                    $atleta->id_academia = $request->id_academia; // nueva academia
+                    $atleta->estado = 'activo'; // vuelve a estar activo
+                    $atleta->save();
+
+                    return response()->json([
+                        'message' => 'Atleta asignado correctamente a su academia.',
+                        'reasignado' => true
+                    ], 200);
+                }
+
+                // Caso B: pertenece a otra academia → bloquear
+                return response()->json([
+                    'error' => 'Este atleta ya pertenece a otra academia.',
+                    'bloqueado' => true
+                ], 422);
             }
 
             // Variables comunes
