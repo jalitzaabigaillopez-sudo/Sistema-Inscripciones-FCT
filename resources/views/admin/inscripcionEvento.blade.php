@@ -15,26 +15,49 @@
         </h6>
 
         {{-- Sección: Evento --}}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header fw-semibold">
-                <i class="bi bi-calendar-check me-2"></i> Selección de Evento
-            </div>
-            <div class="card-body">
-                <select id="evento-select" class="form-select" required>
-                    <option selected disabled>Selecciona un evento</option>
-                    @foreach($eventos as $evento)
-                        @if ($bloquearSelectEventos == false)
-                            <option value="{{ $evento->id_evento }}" @if($eventosIds->contains($evento->id_evento)) disabled @endif>
-                                {{ $evento->nombre }}
-                            </option>
-                        @else
-                            <option value="{{ $evento->id_evento }}">
-                                {{ $evento->nombre }}
-                            </option>
-                        @endif
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-calendar-check me-2"></i> Selección de Evento
+                    </div>
+                    <span id="lFechaEvento" class="text-end"></span>
+                </div>
+                    <div class="card-body">
 
-                    @endforeach
-                </select>
+                        {{-- 🔔 Contenedor para mostrar el aviso solo en caso tardío --}}
+                        <div id="aviso-periodo" style="display: none;"></div>
+
+                        <select id="evento-select" class="form-select" required>
+                            <option selected disabled>Selecciona un evento</option>
+                            @foreach ($eventos as $evento)
+                                @php
+                                    $hoy = \Carbon\Carbon::today();
+                                    $fase = 'normal';
+                                    if (
+                                        $evento->fecha_final_inscripcion_tardia &&
+                                        $hoy->gt($evento->fecha_final_inscripcion)
+                                    ) {
+                                        $fase = 'tardía';
+                                    }
+                                @endphp
+
+                                <option value="{{ $evento->id_evento }}"
+                                    data-fecha-inicio="{{ $evento->fecha_inicio_inscripcion }}"
+                                    data-fecha-fin="{{ $evento->fecha_final_inscripcion }}"
+                                    data-fecha-tardia="{{ $evento->fecha_final_inscripcion_tardia }}"
+                                    data-modo="{{ $evento->tipoEvento->modo }}"
+                                    data-fase="{{ $fase }}" @if (!$bloquearSelectEventos && isset($eventosIds) && $eventosIds->contains($evento->id_evento)) disabled @endif>
+                                    {{ $evento->nombre }}
+                                    @if ($fase === 'tardía')
+                                        (Inscripción tardía)
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
