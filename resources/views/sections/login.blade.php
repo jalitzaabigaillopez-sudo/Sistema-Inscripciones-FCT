@@ -102,7 +102,7 @@
                         <form id="loginForm" action="{{ route('login.process') }}" method="POST">
                             @csrf
                             <div class="mb-3 p-1">
-                                <label for="email" class="form-label">Correo</label>
+                                <label for="correo" class="form-label">Correo</label>
                                 <input type="email" class="form-control" name="email" id="correo"
                                     placeholder="ej: usuario@gmail.com" aria-describedby="emailHelp">
                             </div>

@@ -87,7 +87,24 @@
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
-                    <small class="text-muted">Mínimo 8 caracteres, incluye mayúsculas, minúsculas y números.</small>
+                    {{-- <small class="text-muted">Mínimo 8 caracteres, incluye mayúsculas, minúsculas y números.</small> --}}
+                </div>
+
+                <!-- PANEL DE REQUISITOS -->
+                <div id="passwordRequirementsCrear" class="mt-2 p-3 rounded border"
+                    style="display:none; background:#f8fafc;">
+                    <small class="fw-bold d-block mb-2 text-primary">La contraseña debe cumplir con:</small>
+                    <ul class="list-unstyled ms-2 text-sm">
+                        <li id="reqLengthCrear"><i class="bi bi-x-circle text-danger"></i> Entre 8 y 11 caracteres</li>
+                        <li id="reqUpperCrear"><i class="bi bi-x-circle text-danger"></i> Al menos una letra mayúscula
+                        </li>
+                        <li id="reqLowerCrear"><i class="bi bi-x-circle text-danger"></i> Al menos una letra minúscula
+                        </li>
+                        <li id="reqNumberCrear"><i class="bi bi-x-circle text-danger"></i> Al menos un número</li>
+                        <li id="reqSpecialCrear"><i class="bi bi-x-circle text-danger"></i> Al menos un carácter
+                            especial</li>
+                        <li id="reqMatchCrear"><i class="bi bi-x-circle text-danger"></i> Las contraseñas coinciden</li>
+                    </ul>
                 </div>
 
                 <div class="mb-3">
@@ -120,11 +137,13 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // ==========================
             // Mostrar / ocultar contraseña
+            // ==========================
             document.querySelectorAll('.toggle-password').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Busca el input solo dentro del mismo input-group
                     const input = this.closest('.input-group').querySelector('input');
                     const icon = this.querySelector('i');
 
@@ -138,21 +157,136 @@
                 });
             });
 
-            // Verificar que las contraseñas coincidan
-            document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-                const password = document.getElementById('password').value;
-                const confirm = document.getElementById('password_confirmation').value;
-                if (password !== confirm) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Las contraseñas no coinciden',
-                        text: 'Por favor, asegúrese de que ambas contraseñas sean iguales.'
-                    });
+            // ==========================
+            // VALIDACIÓN DINÁMICA
+            // ==========================
+            const password = document.getElementById('password');
+            const confirm = document.getElementById('password_confirmation');
+            const panel = document.getElementById('passwordRequirementsCrear');
+
+            if (password && confirm && panel) {
+
+                const req = {
+                    length: document.getElementById('reqLengthCrear'),
+                    upper: document.getElementById('reqUpperCrear'),
+                    lower: document.getElementById('reqLowerCrear'),
+                    number: document.getElementById('reqNumberCrear'),
+                    special: document.getElementById('reqSpecialCrear'),
+                    match: document.getElementById('reqMatchCrear')
+                };
+
+                function setIcon(li, ok) {
+                    const i = li.querySelector('i');
+                    i.classList.toggle('bi-check-circle', ok);
+                    i.classList.toggle('text-success', ok);
+                    i.classList.toggle('bi-x-circle', !ok);
+                    i.classList.toggle('text-danger', !ok);
                 }
+
+                function update() {
+                    const p = password.value || "";
+                    const c = confirm.value || "";
+
+                    panel.style.display = (p || c) ? "block" : "none";
+
+                    setIcon(req.length, p.length >= 8 && p.length <= 11);
+                    setIcon(req.upper, /[A-Z]/.test(p));
+                    setIcon(req.lower, /[a-z]/.test(p));
+                    setIcon(req.number, /\d/.test(p));
+                    setIcon(req.special, /[^A-Za-z0-9]/.test(p));
+                    setIcon(req.match, p && c && p === c);
+                }
+
+                password.addEventListener("input", update);
+                confirm.addEventListener("input", update);
+            }
+
+            // ==========================
+            // SUBMIT UNIFICADO (validación + AJAX)
+            // ==========================
+            const form = document.getElementById("changePasswordForm");
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                const p = password.value || "";
+                const c = confirm.value || "";
+                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,11}$/;
+
+                // VALIDACIÓN CLIENTE
+                if (!regex.test(p)) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Contraseña no segura",
+                        text: "Debe incluir mayúsculas, minúsculas, número y carácter especial (8 a 11 caracteres).",
+                        confirmButtonColor: "#222A59"
+                    });
+                    return;
+                }
+
+                if (p !== c) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Las contraseñas no coinciden",
+                        text: "Ambas contraseñas deben ser iguales.",
+                        confirmButtonColor: "#222A59"
+                    });
+                    return;
+                }
+
+                // SI PASA VALIDACIÓN → ENVIAR VIA AJAX
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+                        },
+                        body: formData
+                    })
+                    .then(res => res.json().catch(() => {}))
+                    .then(data => {
+
+                        // Error del backend
+                        if (data?.status === "error" || data?.error) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: data.message || data.error,
+                                confirmButtonColor: "#222A59"
+                            });
+                            return;
+                        }
+
+                        // Éxito en backend
+                        if (data?.status === "success") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Éxito",
+                                text: data.message,
+                                confirmButtonColor: "#10B981"
+                            }).then(() => {
+                                window.location.href = "{{ route('login') }}";
+                            });
+                            return;
+                        }
+
+                        // Si no retorna JSON → redirección normal
+                        window.location.href = "{{ route('login') }}";
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error inesperado",
+                            text: "Ocurrió un problema. Inténtelo de nuevo.",
+                        });
+                    });
+
             });
+
         });
     </script>
+
 
 </body>
 

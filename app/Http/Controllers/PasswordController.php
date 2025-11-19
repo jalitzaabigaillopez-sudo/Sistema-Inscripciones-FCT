@@ -72,7 +72,7 @@ class PasswordController extends Controller
         $contraseñaTemporal->save();
 
         // url que llevara a la ventana de cambio de contraseña al usuario
-        $url = URL::signedRoute('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
+        $url = route('vista.cambiarContraseña', ['id' => $usuario->id_usuario]);
 
         // Enviar correo usando una clase Mailable
         Mail::to($usuario->email)->send(new PasswordMail($usuario, $contraseñaTemporal, $url));
@@ -112,33 +112,43 @@ class PasswordController extends Controller
         }
 
         // Verificar que exista la contraseña temporal
-        $contraseñaTemporal = ContraseñaTemporal::where('password_temporal', $validateData['temporaryPassword'])->where('id_usuario', $id)->first();
+        $contraseñaTemporal = ContraseñaTemporal::where('password_temporal', $validateData['temporaryPassword'])
+            ->where('id_usuario', $id)
+            ->where('vigente', 'si')
+            ->first();
         if (!$contraseñaTemporal) {
-            return response()->json(['error' => 'Ha ocurrido un error con el proceso de registro. Verifique la información proporcionada.'], 401);
+            return response()->json(['error' => 'La contraseña temporal no es válida o ya fue utilizada.'], 401);
         }
 
         // Verificar que la contraseña temporal sea igual a la proporcionada por el usuario
-        if ($validateData['temporaryPassword'] === $contraseñaTemporal->password_temporal) {
+        // if ($validateData['temporaryPassword'] === $contraseñaTemporal->password_temporal) {
 
-            // Verificar vigencia de contraseña temporal
-            if (!$contraseñaTemporal->fecha_expiracion > Carbon::now('America/Costa_Rica')) {
+        // Verificar vigencia de contraseña temporal
+        // Verificar vigencia por fecha
+        $now = Carbon::now('America/Costa_Rica');
+        $exp = Carbon::parse($contraseñaTemporal->fecha_expiracion, 'America/Costa_Rica');
 
-                $contraseñaTemporal->vigente = 'no';
-                $contraseñaTemporal->save();
-                return response()->json(['error' => 'Su contraseña temporal ha expirado.'], 401);
-            }
-            $usuario->password = $validateData['password'];
-            $usuario->save();
-
+        if ($now->greaterThanOrEqualTo($exp)) {
             $contraseñaTemporal->vigente = 'no';
             $contraseñaTemporal->save();
 
-            return redirect()->route('login');
-        } else {
-            return response()->json(['error' => 'Contraseña temporal no coincide'], 401);
+            return response()->json([
+                'error' => 'Su contraseña temporal ha expirado.'
+            ], 401);
         }
+        $usuario->password = $validateData['password'];
+        $usuario->save();
 
-        return redirect()->route('login');
+        $contraseñaTemporal->vigente = 'no';
+        $contraseñaTemporal->save();
+
+        // return redirect()->route('login');
+
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Su contraseña ha sido actualizada correctamente.'
+        ]);
     }
 
     /**

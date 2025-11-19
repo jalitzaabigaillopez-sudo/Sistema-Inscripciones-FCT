@@ -470,11 +470,36 @@
                     searchable: false
                 },
                 {
-                    data: "acciones",
+                    data: null,
                     title: "Acciones",
                     orderable: false,
                     searchable: false,
+                    render: function(row) {
+                        let botones = `
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-sm btn-warning rounded-pill btn-edit"
+                                data-id="${row.id_academia}"
+                                title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                    `;
+
+                        // Mostrar botón extra SOLO si la academia está inactiva
+                        if (row.estado_raw === "inactivo") {
+                            botones += `
+                        <button class="btn btn-sm btn-info rounded-pill"
+                            onclick="invalidarYReenviar(${row.id_academia})"
+                            title="Invalidar proceso y reenviar correo">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    `;
+                        }
+
+                        botones += `</div>`;
+                        return botones;
+                    }
                 }
+
             ];
 
             initDataTable({
@@ -482,6 +507,39 @@
                 columns: columnsConfig
             });
         });
+
+        function invalidarYReenviar(id) {
+            Swal.fire({
+                title: "¿Invalidar proceso actual?",
+                html: "Esto cancelará el proceso de activación actual<br>y enviará un nuevo correo con una nueva contraseña temporal.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, reiniciar proceso",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#d33"
+            }).then(result => {
+                if (!result.isConfirmed) return;
+
+                $.post(`/academias/${id}/invalidar-proceso`, {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    })
+                    .done(resp => {
+                        if (!resp.success) {
+                            Swal.fire("Aviso", resp.message, "warning");
+                            return;
+                        }
+
+                        Swal.fire("Proceso reiniciado", resp.message, "success");
+                        $('#tabla').DataTable().ajax.reload(null, false);
+                    })
+                    .fail(xhr => {
+                        Swal.fire("Error", "Error inesperado al reiniciar el proceso.", "error");
+
+                        // Errores reales sí se muestran
+                        console.error("Error inesperado:", xhr);
+                    });
+            });
+        }
     </script>
 @endsection
 
