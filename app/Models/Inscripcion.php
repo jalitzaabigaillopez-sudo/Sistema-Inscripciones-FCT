@@ -38,18 +38,14 @@ class Inscripcion extends Model
     {
         return $this->belongsTo(Evento::class, 'id_evento', 'id_evento');
     }
-
     public function modalidad()//bt_export
     {
         return $this->belongsTo(Modalidad::class, 'id_modalidad', 'id_modalidad');
     }
-
     public function subModalidad()//bt_export
     {
         return $this->belongsTo(SubModalidad::class, 'id_subModalidad', 'id_subModalidad');
     }
-
-
     public function modalidadEvento()
     {
         return $this->belongsTo(ModalidadEvento::class, 'id_modalidad_evento', 'id_modalidad_evento');
@@ -69,8 +65,6 @@ class Inscripcion extends Model
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
     }
-
-
 
 
 // ...existing code...

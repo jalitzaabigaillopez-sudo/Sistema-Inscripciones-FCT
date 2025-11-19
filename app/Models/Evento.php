@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 use mysqli;
 
@@ -85,4 +86,20 @@ class Evento extends Model
     {
         return $this->belongsTo(Grado::class, 'id_grado', 'id_grado');
     }
+
+    // Método para calcular el costo por atleta según modalidades y fechas
+    
+public function calcularCostoPorAtleta(int $modalidadesUnicas, bool $esTemprana): float
+{
+    if ($modalidadesUnicas <= 1) {
+        return $esTemprana
+            ? (float) ($this->costo_temprana_1 ?? 0)
+            : (float) ($this->costo_tardia_1 ?? 0);
+    }
+
+    return $esTemprana
+        ? (float) ($this->costo_temprana_2 ?? 0)
+        : (float) ($this->costo_tardia_2 ?? 0);
+}
+
 }
