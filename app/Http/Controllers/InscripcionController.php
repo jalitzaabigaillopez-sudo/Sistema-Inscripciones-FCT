@@ -218,7 +218,7 @@ class InscripcionController extends Controller
 
         $academia = $usuario->academia;
         $atletas = $academia->atletas()->with('grados')->get();
-        // dd($atletas);
+        // dd($eventos);
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
     }
 

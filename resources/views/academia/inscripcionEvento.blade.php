@@ -45,6 +45,7 @@
                                     data-fecha-inicio="{{ $evento->fecha_inicio_inscripcion }}"
                                     data-fecha-fin="{{ $evento->fecha_final_inscripcion }}"
                                     data-fecha-tardia="{{ $evento->fecha_final_inscripcion_tardia }}"
+                                    data-modo="{{ $evento->tipoEvento->modo }}"
                                     data-fase="{{ $fase }}" @if (!$bloquearSelectEventos && isset($eventosIds) && $eventosIds->contains($evento->id_evento)) disabled @endif>
                                     {{ $evento->nombre }}
                                     @if ($fase === 'tardía')
