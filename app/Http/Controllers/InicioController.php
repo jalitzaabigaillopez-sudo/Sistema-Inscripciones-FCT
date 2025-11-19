@@ -123,6 +123,7 @@ public function estadisticasEventos(Request $request)
     $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
 
+    
 
     // Distribuciones
     $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
@@ -134,12 +135,64 @@ public function estadisticasEventos(Request $request)
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
-    $estadisticas['por_academia'] = $inscripciones->groupBy($resolveAcademia)->map(function ($grupo) use ($mascarar) {
-    return [
-        'cantidad' => $grupo->count(),
-        'monto' => $grupo->sum(fn($i) => $i->monto ?? 0),
-    ];
-})->toArray();
+   
+ //$estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray(); 
+ $porAcademia = [];
+
+// Filtra atletas (excluye asistentes/entrenadores)
+$inscripcionesFiltradas = $inscripciones->filter(function ($i) {
+    $rol = mb_strtolower(trim($i->rol ?? ''));
+    return !in_array($rol, ['asistente', 'entrenador']);
+});
+
+// Agrupa por atleta
+$inscripcionesPorAtleta = $inscripcionesFiltradas->groupBy('id_atleta');
+
+foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
+    // Academia del atleta (toma la de la primera inscripción)
+    $academia = $resolveAcademia($inscripcionesAtleta->first());
+
+    // Modalidades únicas por atleta: combinación modalidad + submodalidad
+    $modalidadesUnicas = $inscripcionesAtleta
+        ->map(function ($i) {
+            $modId = $i->id_modalidad ?? optional($i->modalidad)->id_modalidad;
+            $subId = $i->id_submodalidad ?? optional($i->submodalidad)->id_submodalidad;
+            return $modId . '-' . ($subId ?? '0');
+        })
+        ->unique()
+        ->count();
+
+    // Determina si es temprana: todas las inscripciones del atleta dentro del plazo
+    $limite = $eventoSeleccionado->fecha_limite_temprana; // ajusta al campo real
+    $esTemprana = $limite
+        ? $inscripcionesAtleta->every(fn($i) => \Carbon\Carbon::parse($i->created_at)->lte($limite))
+        : true; // si no hay límite definido, considera temprana
+
+    // Calcula el monto para el atleta
+    $monto = $eventoSeleccionado->calcularCostoPorAtleta($modalidadesUnicas, $esTemprana);
+
+    // Acumula por academia
+    if (!isset($porAcademia[$academia])) {
+        $porAcademia[$academia] = ['cantidad' => 0, 'monto' => 0];
+    }
+    $porAcademia[$academia]['cantidad']++; // atletas
+    $porAcademia[$academia]['monto'] += $monto;
+}
+
+$estadisticas['por_academia'] = $porAcademia;
+
+
+
+$estadisticas['por_modalidad']   = $mascararKeys($inscripciones->map($resolveModalidad)->countBy()->toArray());
+$estadisticas['por_submodalidad']= $mascararKeys($inscripciones->map($resolveSubmodalidad)->countBy()->toArray());
+$estadisticas['por_grado']       = $mascararKeys($inscripciones->map($resolveGrado)->countBy()->toArray());
+$estadisticas['por_rol']         = $inscripciones->map($resolveRol)->countBy()->toArray();
+$estadisticas['por_edad']        = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
+$estadisticas['por_sexo']        = $inscripciones->map($resolveSexo)->countBy()->toArray();
+
+
+  
+
     // Por año de nacimiento
     
     $estadisticas['por_nacimiento'] = $inscripciones->map(function ($i) {
@@ -252,11 +305,11 @@ public function estadisticasEventos(Request $request)
         // Total de eventos disponibles (puedes filtrar por estado si lo deseas)
         $totalEventos = Evento::count(); // o Evento::where('estado', 'Activo')->count();
 
-        // Porcentaje de avance institucional
+         //Porcentaje de avance institucional
         $avanceEventos = $totalEventos > 0
             ? round(($eventosInscritos / $totalEventos) * 100)
             : 0;
-
+       
 
         // Próximos eventos
         $proximosEventos = Evento::where('estado', 'Activo')
