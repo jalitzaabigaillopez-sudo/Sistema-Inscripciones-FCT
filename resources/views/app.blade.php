@@ -40,8 +40,23 @@
             left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
             z-index: 1030;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 4px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+            white-space: nowrap !important;
+            /* Nada puede saltar de línea */
+            overflow: visible;
+            /* Si algo no cabe, se oculta */
+            height: 60px;
+            /* NAVBAR SIEMPRE MISMA ALTURA */
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .ms-auto {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            white-space: nowrap;
         }
 
         .navbar-full {
@@ -306,8 +321,42 @@
             }
         }
 
+        /* Ajustes extra para pantallas MUY pequeñas */
+        @media (max-width: 576px) {
+            .navbar {
+                height: auto;
+                /* Ya no obligada a 60px */
+                min-height: 56px;
+                /* Pero al menos algo razonable */
+                padding-top: 0.25rem;
+                padding-bottom: 0.25rem;
+                align-items: center;
+            }
+
+            /* Hacemos un pelín más pequeña la foto del usuario */
+            .navbar .user-avatar {
+                width: 30px !important;
+                height: 30px !important;
+            }
+
+            /* Apretamos un poco el espacio del lado derecho */
+            .navbar .ms-auto {
+                gap: 0.25rem;
+            }
+        }
+
+
         .breadcrumb-item+.breadcrumb-item::before {
             color: var(--text-light);
+        }
+
+        .breadcrumb {
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Se recorta con ... */
+            max-width: 40vw;
+            /* No usa toda la barra */
         }
 
         .dataTables_scrollHeadInner,
@@ -321,6 +370,36 @@
 
         #userDropdown::after {
             border-top-color: #fff !important;
+        }
+
+        /* Ocultar el nombre del usuario en pantallas pequeñas */
+
+        .user-name {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* se hace "..." solo en el nombre */
+            flex-shrink: 1;
+            /* permite que se haga pequeño */
+        }
+
+        @media (max-width: 992px) {
+            .user-name {
+                display: none !important;
+            }
+        }
+
+        .dropdown-menu {
+            padding: 0.2rem 0 !important;
+        }
+
+        .dropdown-menu .dropdown-item {
+            padding: 0.3rem 1rem !important;
+        }
+
+        .dropdown-menu li {
+            margin: 0 !important;
         }
     </style>
 </head>
@@ -362,8 +441,8 @@
                 <span>Inscripciones</span>
             </a>
             <a href="{{ route('estadisticas.eventos') }}">
-             <i class="bi bi-graph-up-arrow me-2"></i>
-             <span>Estadísticas por Evento</span>
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                <span>Estadísticas por Evento</span>
             </a>
 
 
@@ -380,7 +459,7 @@
                     <a href="{{ route('eventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-calendar3 me-2"></i> Eventos
                     </a>
-                     <a href="{{ route('tiposEventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
+                    <a href="{{ route('tiposEventos.index') }}" onclick="handleSidebarClick(event)" class="text-white">
                         <i class="bi bi-list me-2"></i> Tipos de Eventos
                     </a>
                     <a href="{{ route('modalidades.index') }}" onclick="handleSidebarClick(event)" class="text-white">
@@ -443,16 +522,18 @@
         <div class="container-fluid d-flex align-items-center">
             <i class="bi bi-list hamburger me-3" id="toggleSidebar"></i>
             <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item">
-                        <a class="text-white text-decoration-none" href="{{ route('dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
-                        @yield('breadcrumb-title', '')
-                    </li>
-                </ol>
-            </nav>
+            <div class="breadcrumb-container flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a class="text-white text-decoration-none" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">
+                            @yield('breadcrumb-title', '')
+                        </li>
+                    </ol>
+                </nav>
+            </div>
             @php
                 $usuario = session('usuario') ? \App\Models\Usuario::find(session('usuario')) : null;
             @endphp
@@ -460,7 +541,7 @@
             <div class="ms-auto d-flex align-items-center gap-2">
                 {{-- Nombre del usuario --}}
                 @if ($usuario)
-                    <span class="text-white fw-semibold">{{ $usuario->nombre_completo }}</span>
+                    <span class="text-white fw-semibold user-name">{{ $usuario->nombre_completo }}</span>
                 @endif
 
                 {{-- Dropdown usuario / logo --}}
@@ -469,18 +550,20 @@
                         data-bs-toggle="dropdown" aria-expanded="false"
                         style="border: none; background: transparent;">
 
-                         @if ($usuario && $usuario->imagen)
+                        @if ($usuario && $usuario->imagen)
                             <img src="{{ asset('storage/' . $usuario->imagen) }}" alt="Foto de perfil"
+                                class="user-avatar"
                                 style="height: 35px; width: 35px; border-radius: 50%; object-fit: cover;">
                         @elseif ($usuario && $usuario->rol === 'administrador')
-                            <img src="{{ asset('images/fct_logo.jpg') }}" alt="Logo Federación"
+                            <img src="{{ asset('images/fct_logo.jpg') }}" alt="Logo Federación" class="user-avatar"
                                 style="height: 35px; width: 35px; border-radius: 50%; object-fit: cover;">
                         @else
                             <i class="bi bi-person-circle user-icon" style="color: #f1f1f3; font-size: 1.7rem;"></i>
-                        @endif 
+                        @endif
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
                         <li>
                             <form action="{{ route('logout.process') }}" method="POST">
                                 @csrf
@@ -490,7 +573,6 @@
                     </ul>
                 </div>
             </div>
-
 
         </div>
     </nav>
@@ -673,7 +755,7 @@
             });
         });
     </script>
-    
+
 
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

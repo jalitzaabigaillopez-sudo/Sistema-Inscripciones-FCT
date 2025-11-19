@@ -715,7 +715,7 @@
                 }
 
                 $.ajax({
-                    url: `/usuarios/${idUsuario}`,
+                    url: `/usuarios${idUsuario}`,
                     method: "POST",
                     data: formData,
                     processData: false,

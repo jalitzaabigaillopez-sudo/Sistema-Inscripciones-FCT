@@ -139,7 +139,25 @@ class EventosController extends Controller
                     'fecha_final' => $item->fecha_final ? \Carbon\Carbon::parse($item->fecha_final)->format('Y/m/d') : '',
                     'estado' => $item->estado,
                     'tipo_evento' => $item->tipoEvento->nombre ?? 'N/A',
-                    'costo' => '₡' . number_format((float) $item->costo, 2, ',', '.'),
+                    'costo' => '
+                        <span 
+                            class="badge bg-primary text-white"
+                            style="cursor:pointer"
+                            data-bs-toggle="tooltip"
+                            data-bs-html="true"
+                            title="
+                                <b>Inscripción Temprana</b><br>
+                                • 1 modalidad: ₡' . number_format($item->costo_temprana_1, 0, ',', '.') . '<br>
+                                • 2 o más: ₡' . number_format($item->costo_temprana_2, 0, ',', '.') . '<br><br>
+
+                                <b>Inscripción Tardía</b><br>
+                                • 1 modalidad: ₡' . number_format($item->costo_tardia_1, 0, ',', '.') . '<br>
+                                • 2 o más: ₡' . number_format($item->costo_tardia_2, 0, ',', '.') . '
+                            "
+                        >
+                            Ver costos
+                        </span>
+                    ',
                     'modalidades' => $modalidadesList,
                     'acciones' => $item->id_evento,
                 ];
@@ -203,8 +221,11 @@ class EventosController extends Controller
                     'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
                     'modalidades' => 'required|array|min:1',
                     'modalidades.*' => 'exists:modalidades,id_modalidad',
-                    'costo' => 'required|numeric|min:0',
                     'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'costo_temprana_1' => 'required|numeric|min:0',
+                    'costo_temprana_2' => 'required|numeric|min:0',
+                    'costo_tardia_1'   => 'required|numeric|min:0',
+                    'costo_tardia_2'   => 'required|numeric|min:0',
                 ],
                 [
                     // Mensajes personalizados
@@ -223,9 +244,21 @@ class EventosController extends Controller
                     'imagen.image' => 'El archivo debe ser una imagen válida.',
                     'imagen.mimes' => 'La imagen debe tener un formato válido (jpeg, png, jpg, gif).',
                     'imagen.max' => 'La imagen no puede pesar más de 2 MB.',
-                    'costo.required' => 'El costo del evento es obligatorio.',
-                    'costo.numeric' => 'El costo debe ser un número válido.',
-                    'costo.min' => 'El costo no puede ser negativo.',
+                    'costo_temprana_1.required' => 'El costo de inscripción temprana 1 es obligatorio.',
+                    'costo_temprana_1.numeric'  => 'El costo de inscripción temprana 1 debe ser un número válido.',
+                    'costo_temprana_1.min'      => 'El costo de inscripción temprana 1 no puede ser negativo.',
+
+                    'costo_temprana_2.required' => 'El costo de inscripción temprana 2 o más es obligatorio.',
+                    'costo_temprana_2.numeric'  => 'El costo de inscripción temprana 2 o más debe ser un número válido.',
+                    'costo_temprana_2.min'      => 'El costo de inscripción temprana 2 o más no puede ser negativo.',
+
+                    'costo_tardia_1.required' => 'El costo de inscripción tardía 1 es obligatorio.',
+                    'costo_tardia_1.numeric'  => 'El costo de inscripción tardía 1 debe ser un número válido.',
+                    'costo_tardia_1.min'      => 'El costo de inscripción tardía 1 no puede ser negativo.',
+
+                    'costo_tardia_2.required' => 'El costo de inscripción tardía 2 o más es obligatorio.',
+                    'costo_tardia_2.numeric'  => 'El costo de inscripción tardía 2 o más debe ser un número válido.',
+                    'costo_tardia_2.min'      => 'El costo de inscripción tardía 2 o más no puede ser negativo.',
                 ]
             );
 
@@ -234,6 +267,20 @@ class EventosController extends Controller
                     'success' => false,
                     'errors' => $validator->errors()
                 ], 422);
+            }
+
+            // VALOR 0
+            $costos = [
+                'costo_temprana_1',
+                'costo_temprana_2',
+                'costo_tardia_1',
+                'costo_tardia_2'
+            ];
+
+            foreach ($costos as $campo) {
+                if (!$request->filled($campo) || $request->$campo === null || $request->$campo === '') {
+                    $request->merge([$campo => 0]);
+                }
             }
 
             // Create event
@@ -246,8 +293,11 @@ class EventosController extends Controller
             $evento->fecha_inicio = $request->fecha_inicio;
             $evento->fecha_final = $request->fecha_final;
             $evento->id_tipo_evento = $request->id_tipo_evento;
-            $evento->costo = $request->costo;
             $evento->estado = 'activo'; // Default 
+            $evento->costo_temprana_1 = $request->costo_temprana_1;
+            $evento->costo_temprana_2 = $request->costo_temprana_2;
+            $evento->costo_tardia_1   = $request->costo_tardia_1;
+            $evento->costo_tardia_2   = $request->costo_tardia_2;
 
             // Imagen
             if ($request->hasFile('imagen')) {
@@ -302,7 +352,10 @@ class EventosController extends Controller
                     'fecha_inicio' => $evento->fecha_inicio,
                     'fecha_final' => $evento->fecha_final,
                     'id_tipo_evento' => $evento->id_tipo_evento,
-                    'costo' => $evento->costo,
+                    'costo_temprana_1' => $evento->costo_temprana_1,
+                    'costo_temprana_2' => $evento->costo_temprana_2,
+                    'costo_tardia_1' => $evento->costo_tardia_1,
+                    'costo_tardia_2' => $evento->costo_tardia_2,
                     'estado' => $evento->estado,
                     'imagen' => $evento->imagen
                 ],
@@ -348,7 +401,10 @@ class EventosController extends Controller
                 'modalidades.*' => 'exists:modalidades,id_modalidad',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'eliminar_imagen' => 'nullable|boolean',
-                'costo' => 'required|numeric|min:0',
+                'costo_temprana_1' => 'required|numeric|min:0',
+                'costo_temprana_2' => 'required|numeric|min:0',
+                'costo_tardia_1'   => 'required|numeric|min:0',
+                'costo_tardia_2'   => 'required|numeric|min:0',
 
                 'fecha_final_inscripcion_tardia' => 'nullable|date|after_or_equal:fecha_final_inscripcion|before_or_equal:fecha_inicio',
             ];
@@ -365,9 +421,6 @@ class EventosController extends Controller
 
             $mensajes = [
                 'nombre.required' => 'El nombre del evento es obligatorio.',
-                'costo.required' => 'El costo del evento es obligatorio.',
-                'costo.numeric' => 'El costo debe ser un número válido.',
-                'costo.min' => 'El costo no puede ser negativo.',
                 'fecha_inicio_inscripcion.required' => 'La fecha de inicio de inscripción es obligatoria.',
                 'fecha_final_inscripcion.required' => 'La fecha final de inscripción es obligatoria.',
                 'fecha_final_inscripcion_tardia.after_or_equal' => 'La inscripción tardía debe ser posterior o igual a la fecha final de inscripción.',
@@ -383,18 +436,6 @@ class EventosController extends Controller
                 'imagen.max' => 'La imagen no puede pesar más de 2 MB.'
             ];
 
-            // 🔧 Normalizar valor del costo (punto decimal estándar)
-            if ($request->filled('costo')) {
-                $request->merge([
-                    'costo' => number_format(
-                        (float) str_replace(',', '.', $request->costo),
-                        2,
-                        '.',
-                        ''
-                    )
-                ]);
-            }
-
             $validator = Validator::make($request->all(), $reglas, $mensajes);
 
             if ($validator->fails()) {
@@ -402,6 +443,20 @@ class EventosController extends Controller
                     'success' => false,
                     'errors' => $validator->errors(),
                 ], 422);
+            }
+
+            // VALOR 0
+            $costos = [
+                'costo_temprana_1',
+                'costo_temprana_2',
+                'costo_tardia_1',
+                'costo_tardia_2'
+            ];
+
+            foreach ($costos as $campo) {
+                if (!$request->filled($campo) || $request->$campo === null || $request->$campo === '') {
+                    $request->merge([$campo => 0]);
+                }
             }
 
             // ===============================
@@ -461,7 +516,10 @@ class EventosController extends Controller
                 'fecha_final' => $request->fecha_final,
                 'id_tipo_evento' => $request->id_tipo_evento,
                 'estado' => $request->estado,
-                'costo' => $request->costo,
+                'costo_temprana_1' => $request->costo_temprana_1,
+                'costo_temprana_2' => $request->costo_temprana_2,
+                'costo_tardia_1' => $request->costo_tardia_1,
+                'costo_tardia_2' => $request->costo_tardia_2,
             ]);
 
             // ===============================
