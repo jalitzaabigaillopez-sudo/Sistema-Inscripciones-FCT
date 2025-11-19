@@ -318,24 +318,44 @@ class UsuariosController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $usuarioActualId = session('usuario');
+    // public function destroy(string $id)
+    // {
+    //     $usuarioActualId = session('usuario');
 
-        if ($id == $usuarioActualId) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No puedes eliminar tu propio usuario.'
-            ], 403);
-        }
+    //     if ($id == $usuarioActualId) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'No puedes eliminar tu propio usuario.'
+    //         ], 403);
+    //     }
 
-        $usuario = Usuario::find($id);
-        if (!$usuario) {
-            return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
-        }
+    //     $usuario = Usuario::find($id);
+    //     if (!$usuario) {
+    //         return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+    //     }
 
-        $usuario->delete();
+    //     $usuario->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'Usuario eliminado correctamente.']);
+    //     return response()->json(['status' => 'success', 'message' => 'Usuario eliminado correctamente.']);
+    // }
+
+    public function inactivar($id)
+{
+    try {
+        $usuario = Usuario::findOrFail($id);
+        $usuario->estado = 'inactivo';
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario inactivado correctamente.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al inactivar el usuario.'
+        ], 500);
     }
+}
+
 }

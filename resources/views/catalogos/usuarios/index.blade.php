@@ -406,9 +406,9 @@
                         </a>
                         <button class="btn btn-sm btn-danger rounded-pill d-flex align-items-center justify-content-center"
                                 title="Eliminar Usuario" 
-                                onclick="confirmarEliminacion(${row.id_usuario})"
+                                onclick="inactivarUsuario(${row.id_usuario})"
                             >
-                            <i class="bi bi-trash"></i>
+                            <i class="bi bi-person-fill-slash"></i>
                         </button>
                     </div>`;
                     }
@@ -715,7 +715,7 @@
                 }
 
                 $.ajax({
-                    url: `/usuarios${idUsuario}`,
+                    url: `/usuarios/${idUsuario}`,
                     method: "POST",
                     data: formData,
                     processData: false,
@@ -914,43 +914,43 @@
 
     });
 
-    // ELIMINAR
-    window.confirmarEliminacion = function(id) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Esta acción no se puede deshacer',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (!result.isConfirmed) return;
+    // INACTIVAR
+    window.inactivarUsuario = function(id) {
+    Swal.fire({
+        title: '¿Inactivar usuario?',
+        text: 'El usuario no podrá acceder, pero su academia y estadísticas se conservarán.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, inactivar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (!result.isConfirmed) return;
 
-            $.ajax({
-                url: `/usuarios/${id}`,
-                type: 'POST', // si tu ruta es DELETE puro, usa type: 'DELETE'
-                data: {
-                    _method: 'DELETE'
-                }, // method spoofing si tu server espera DELETE
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(resp) {
-                    Swal.fire('Eliminado', resp.message || 'Usuario eliminado.', 'success')
-                        .then(() => {
-                            // refresca sin perder página actual
-                            $('#tabla').DataTable().ajax.reload(null, false);
-                        });
-                },
-                error: function(xhr) {
-                    const msg = xhr.responseJSON?.message || 'No se pudo eliminar el usuario.';
-                    Swal.fire('Error', msg, 'error');
-                }
-            });
+        $.ajax({
+            url: `/usuarios/${id}/inactivar`,
+            type: 'POST',
+            data: {
+                _method: 'PUT'
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(resp) {
+                Swal.fire('Actualizado', resp.message, 'success')
+                    .then(() => {
+                        $('#tabla').DataTable().ajax.reload(null, false);
+                    });
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.message || 'No se pudo inactivar el usuario.';
+                Swal.fire('Error', msg, 'error');
+            }
         });
-    }
+    });
+};
+
 </script>
 
 

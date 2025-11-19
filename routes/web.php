@@ -196,6 +196,9 @@ Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 
 // Catálogos generales
 Route::resource('/academias', AcademiaController::class);
+Route::post('/academias/{id}/invalidar-proceso', 
+    [AcademiaController::class, 'invalidarProceso'])
+    ->name('academias.invalidar.proceso');
 
 Route::get('/cantones/{provinciaId}', [AcademiaController::class, 'getCantones'])->name('cantones.get');
 Route::get('/distritos/{cantonId}', [AcademiaController::class, 'getDistritos'])->name('distritos.get');
@@ -227,6 +230,7 @@ Route::resource('/tiposEventos', TipoEventosController::class);
 Route::get('/tiposEventos/{id}/datos', [TipoEventosController::class, 'datos'])->name('tiposEventos.datos');
 
 Route::resource('/usuarios', UsuariosController::class);
+Route::put('/usuarios/{id}/inactivar', [UsuariosController::class, 'inactivar']);
 
 Route::resource('/grados', GradosController::class);
 Route::get('/grados/{id}/datos', [GradosController::class, 'edit']);

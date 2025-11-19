@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Services\SessionService;
-
-
+use Exception;
 
 class AcademiaController extends Controller
 {
@@ -108,9 +107,7 @@ class AcademiaController extends Controller
                     <button class="btn btn-sm btn-warning rounded-pill btn-edit" data-id="' . $a->id_academia . '" title="Editar">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger rounded-pill" onclick="confirmarEliminacion(' . $a->id_academia . ')" title="Eliminar">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    
                 </div>';
 
                 $formattedData[] = [
@@ -123,7 +120,9 @@ class AcademiaController extends Controller
                     'ubicacion' => $ubicacion,
                     'direccion' => e($a->direccion),
                     'estado' => $estado,
-                    'acciones' => $acciones,
+                    'estado_raw' => $a->estado,
+                    'id_academia' => $a->id_academia, // <-- Para usar en botones
+                    // 'acciones' => $acciones,
                 ];
             }
 
@@ -306,10 +305,51 @@ class AcademiaController extends Controller
                 return response()->json(['error' => 'Este usuario ya no se encuentra en proceso de registro'], 401);
             }
         } else {
-            return response()->json(['error' => 'Email no coincide'], 401);
+            return response()->json(['error' => 'El correo electrónico no coincide'], 401);
         }
     }
 
+    public function invalidarProceso($id)
+    {
+        try {
+            $academia = Academia::findOrFail($id);
+            $usuario = $academia->usuario;
+
+            if ($usuario->estado === 'activo') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El usuario ya activó su cuenta. No se puede reiniciar el proceso.'
+                ], 200);
+            }
+
+            ContraseñaTemporal::where('id_usuario', $usuario->id_usuario)
+                ->update(['vigente' => 'no']);
+
+            $generator = new PasswordGenerator();
+            $temporalPass = $generator->generate(12);
+
+            $contraseñaTemporal = ContraseñaTemporal::create([
+                'id_usuario' => $usuario->id_usuario,
+                'password_temporal' => $temporalPass,
+                'fecha_creacion' => now('America/Costa_Rica'),
+                'fecha_expiracion' => now('America/Costa_Rica')->addHours(48),
+                'vigente' => 'si',
+            ]);
+
+            $usuario->password = $temporalPass;
+            $usuario->save();
+
+            $url = route('activar.cuenta', ['id' => $usuario->id_usuario]);
+            Mail::to($usuario->email)->send(new FCTMail($usuario, $contraseñaTemporal, $url));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se envió un nuevo correo de activación.'
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Error al reiniciar proceso'], 500);
+        }
+    }
 
 
     public function edit(string $id)
@@ -471,18 +511,20 @@ class AcademiaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $item = Academia::find($id);
 
-        if (!$item) {
-            return response()->json(['error' => 'Academia no encontrada.'], 404);
-        }
+    // ACADEMIAS NO SE ELIMINAN
+    // public function destroy(string $id)
+    // {
+    //     $item = Academia::find($id);
 
-        $item->delete();
+    //     if (!$item) {
+    //         return response()->json(['error' => 'Academia no encontrada.'], 404);
+    //     }
 
-        return response()->json(['message' => 'Academia eliminada correctamente.']);
-    }
+    //     $item->delete();
+
+    //     return response()->json(['message' => 'Academia eliminada correctamente.']);
+    // }
 
     public function getProfile()
     {
