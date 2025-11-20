@@ -58,8 +58,19 @@ $(document).ready(function () {
         $('#lFechaEvento').text(texto);
 
 
-        if (modo != 0) {// para tipos de eventos en modo "curso" = 0
+        if (modo === 1) {// para tipos de eventos en modo "curso" = 0
 
+            $("#contenedor .baseCard").remove();
+            // $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+            // limpiarCards();      
+
+            $('.baseCard, .clonEdit').each(function () {
+                $(this).find('.grados-select').show();
+                $(this).find('.modalidades-select').show();
+                $(this).find('.submodalidades-select').show();
+                $(this).find('.categorias-select').show();
+                $(this).find('#pesoInput').show();
+            });
 
             $.ajax({
                 url: '/obtenerModalidades',
@@ -83,6 +94,9 @@ $(document).ready(function () {
                 }
             });
         } else {
+            $("#contenedor .baseCard").remove();
+            // $('#panelRegistro').find('select.atletas-select').val('').trigger('change');
+            limpiarCards();
 
             $('.baseCard, .clonEdit').each(function () {
                 $(this).find('.grados-select').hide();
