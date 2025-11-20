@@ -94,7 +94,7 @@
     <th class="text-secondary">Nombre</th>
     <th class="text-end text-secondary">Cantidad</th>
     @if($key === 'por_academia')
-      <th class="text-end text-secondary">Monto</th>
+      <th class="text-end text-secondary">Total monto</th>
     @endif
   </tr>
 </thead>

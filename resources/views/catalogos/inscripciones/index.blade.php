@@ -102,6 +102,7 @@
                         <th>Evento</th>
                         <th>Academia</th>
                         <th>Número de atletas inscritos</th>
+                        <th>Totalidad de montos</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -112,6 +113,8 @@
                             <td value="{{ $item->evento->id_evento }}">{{ $item->evento->nombre }}</td>
                             <td value="{{ $item->academia->id_academia }}">{{ $item->academia->nombre }}</td>
                             <td>{{ $item->total_atletas }}</td>
+                        
+                            <td>₡{{ number_format((float)(data_get($item, 'total_montos') ?? data_get($item, 'total_monto') ?? data_get($item, 'total') ?? 0), 2) }}</td>
                             <td>
                                 <span
                                     class="badge rounded-pill 

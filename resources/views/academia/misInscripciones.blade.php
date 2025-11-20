@@ -24,6 +24,7 @@
                             <th>Academia</th>
                             <th>Encargado</th>
                             <th>Cantidad de inscritos</th>
+                            <th>Totalidad de montos</th>
                             <th>Estado</th>
                             <th>Inicio del evento</th>
                             <th>Tipo Inscripción</th>
@@ -38,6 +39,8 @@
                                 <td>{{ $academia->nombre }}</td>
                                 <td>{{ $academia->profesor_encargado }}</td>
                                 <td>{{ $ins->cantidad_inscritos }}</td>
+                                
+                                <td>{{ number_format((float)(data_get($ins, 'total_montos') ?? data_get($ins, 'total_monto') ?? data_get($ins, 'total') ?? 0), 2) }}</td>
                                 <td>
                                     @if($ins->estado == 'activa')
                                         Enviado
