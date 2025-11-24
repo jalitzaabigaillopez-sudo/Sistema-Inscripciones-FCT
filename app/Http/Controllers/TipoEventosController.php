@@ -99,12 +99,14 @@ class TipoEventosController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:200|unique:tipos_eventos,nombre',
             'descripcion' => 'nullable|string|max:255',
+            'modo' => 'required|in:0,1',
         ], $mensajes);
 
         $item = new TipoEvento();
 
         $item->nombre = $request->nombre;
         $item->descripcion = $request->descripcion;
+        $item->modo = $request->modo;
 
         $item->save();
 
@@ -157,10 +159,12 @@ class TipoEventosController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255|unique:tipos_eventos,nombre,' . $item->id_tipo_evento . ',id_tipo_evento',
             'descripcion' => 'nullable|string|max:255',
+            'modo' => 'required|in:0,1',
         ], $mensajes);
 
         $item->nombre = $request->nombre;
         $item->descripcion = $request->descripcion;
+        $item->modo = $request->modo;
         $item->save();
 
         return redirect()->back()->with('success', 'Tipo de evento actualizado correctamente.');

@@ -194,13 +194,16 @@
                                 <div class="col-sm-6">
                                     <h6 class="text-secondary fw-bold mb-3">Detalles del Evento</h6>
                                     <div class="mb-3">
+                                        
+                                        <input type="hidden" value="" name="modo">
+
                                         <label for="id_tipo_evento" class="form-label">Tipo de Evento <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-select form-select-sm" id="id_tipo_evento"
                                             name="id_tipo_evento" required>
                                             <option value="" selected disabled>Selecciona un tipo</option>
                                             @foreach ($tipoEvento as $tipo)
-                                                <option value="{{ $tipo->id_tipo_evento }}" @selected(old('id_tipo_evento') == $tipo->id_tipo_evento)>
+                                                <option value="{{ $tipo->id_tipo_evento }}" data-modo="{{ $tipo->modo }}" @selected(old('id_tipo_evento') == $tipo->id_tipo_evento)>
                                                     {{ $tipo->nombre }}</option>
                                             @endforeach
                                         </select>
@@ -693,7 +696,25 @@
                 });
 
 
+
+                $('#id_tipo_evento').on('change', function () {
+                
+                    var modo = $(this).find(':selected').data('modo');
+
+                    $('input[name="modo"]').val(modo);
+
+                    console.log("Modo seleccionado:", modo);
+                });
+
+                $('#id_tipo_evento').trigger('change');
             });
+        </script>
+
+
+        <script>
+        $(document).ready(function () {
+            
+        });
         </script>
     @endsection
 

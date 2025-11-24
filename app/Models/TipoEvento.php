@@ -10,6 +10,7 @@ class TipoEvento extends Model
     protected $primaryKey = 'id_tipo_evento';
     public $timestamps = false;
     protected $fillable = ['nombre', 'descripcion', 'modo'];
+    // protected $casts = ['modo' => 'boolean'];
 
     public function eventos()
     {

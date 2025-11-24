@@ -206,9 +206,12 @@ class EventosController extends Controller
                 ]);
             }
 
+            
+
             // Validate request data
             $validator = Validator::make(
                 $request->all(),
+
                 [
                     'nombre' => 'required|string|max:255',
                     'descripcion' => 'nullable|string',
@@ -219,7 +222,7 @@ class EventosController extends Controller
                     'fecha_inicio' => 'required|date|after_or_equal:fecha_final_inscripcion',
                     'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
                     'id_tipo_evento' => 'required|exists:tipos_eventos,id_tipo_evento',
-                    'modalidades' => 'required|array|min:1',
+                    'modalidades' => 'required_if:modo,1|array|min:1',
                     'modalidades.*' => 'exists:modalidades,id_modalidad',
                     'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                     'costo_temprana_1' => 'required|numeric|min:0',

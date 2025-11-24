@@ -643,6 +643,9 @@ $(document).ready(function () {
             contAlertas1++;
             sexos.push(sexo);
 
+            console.log("modoEvento: ", modoEvento);
+            
+
             if (modoEvento === 0) {
 
                 //HAY QUE HACER UNA VALIDACION UNICA PARA ESTE MODO DE INSCRIPCION
