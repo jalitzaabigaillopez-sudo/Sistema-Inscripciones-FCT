@@ -46,19 +46,29 @@ class UsuariosController extends Controller
             $recordsFiltered = $query->count();
             $totalRecords = Usuario::count(); // Total de registros sin filtros
 
-            // 2. Aplicar Ordenamiento
-            if ($request->has('order') && count($request->order) > 0) {
-                $orderColumnIndex = $request->order[0]['column'];
-                $orderDirection = $request->order[0]['dir'];
-                $orderColumnName = $request->columns[$orderColumnIndex]['data'];
+            // ======================
+            // 2. APLICAR ORDENAMIENTO
+            // ======================
+            $draw = (int) $request->input('draw', 1);
 
-                // Se puede ordenar directamente si el nombre de la columna coincide con el campo de la DB
-                if ($orderColumnName !== 'acciones') {
+            // PRIMERA CARGA: orden alfabético
+            if ($draw === 1) {
+                $query->orderBy('nombre_completo', 'asc');
+            } else if ($request->has('order') && count($request->order) > 0) {
+
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection   = $request->order[0]['dir'];
+                $orderColumnName  = $request->columns[$orderColumnIndex]['data'];
+
+                // EVITAR columnas que NO existen en BD
+                if (
+                    !in_array($orderColumnName, ['id_usuario', 'identificacion', 'nombre_completo', 'email', 'rol', 'estado'])
+                ) {
+                    // fallback seguro
+                    $query->orderBy('nombre_completo', 'asc');
+                } else {
                     $query->orderBy($orderColumnName, $orderDirection);
                 }
-            } else {
-                // Orden predeterminado
-                $query->orderBy('id_usuario', 'asc');
             }
 
             // 3. Aplicar Paginación
@@ -71,14 +81,16 @@ class UsuariosController extends Controller
             foreach ($data as $item) {
 
                 $formattedData[] = [
-                    // Asegúrarse de que estas claves coincidan con el 'data' del JS
+                    'imagen_url' => $item->imagen ? asset('storage/' . $item->imagen) : null,
+
+                    // Nombre del archivo para el modal
+                    'imagen'     => $item->imagen,
                     'id_usuario'      => $item->id_usuario,
                     'identificacion' => $item->identificacion,
                     'nombre_completo' => $item->nombre_completo,
                     'email' => $item->email,
                     'rol' => $item->rol,
                     'estado' => $item->estado,
-                    'imagen' => $item->imagen,
                     'usuario_actual'   => ($item->id_usuario == $usuarioActualId), // Se usa el ID para generar los botones
 
                     'academia' => $item->academia ? $item->academia->nombre : '—',
@@ -340,22 +352,21 @@ class UsuariosController extends Controller
     // }
 
     public function inactivar($id)
-{
-    try {
-        $usuario = Usuario::findOrFail($id);
-        $usuario->estado = 'inactivo';
-        $usuario->save();
+    {
+        try {
+            $usuario = Usuario::findOrFail($id);
+            $usuario->estado = 'inactivo';
+            $usuario->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario inactivado correctamente.'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error al inactivar el usuario.'
-        ], 500);
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario inactivado correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al inactivar el usuario.'
+            ], 500);
+        }
     }
-}
-
 }

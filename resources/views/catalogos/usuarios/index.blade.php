@@ -25,6 +25,7 @@
                     <table id="tabla" class="table table-striped table-hover table-bordered text-center border">
                         <thead class="table-light">
                             <tr>
+                                <th class="text-center">Foto</th>
                                 <th class="text-center">Identificación</th>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Correo</th>
@@ -345,6 +346,17 @@
     <script>
         $(document).ready(function() {
             let columnsConfig = [{
+                    data: "imagen_url",
+                    title: "Foto",
+                    orderable: false,
+                    render: function(data) {
+                        if (data) {
+                            return `<img src="${data}" class="rounded-circle" width="45" height="45" style="object-fit:cover;">`;
+                        } else {
+                            return `<i class="bi bi-person-circle text-secondary" style="font-size: 2rem;"></i>`;
+                        }
+                    }
+                }, {
                     data: "identificacion",
                     title: "ID"
                 },
@@ -358,7 +370,8 @@
                 },
                 {
                     data: "academia",
-                    title: "Academia asignada"
+                    title: "Academia asignada",
+                    orderable: false
                 },
                 {
                     data: "rol",
@@ -379,6 +392,7 @@
                     data: "acciones",
                     title: "Acciones",
                     orderable: false,
+                    searchable: false,
                     render: function(data, type, row) {
                         // Si es el usuario actual, mostrar el botón gris
                         if (row.usuario_actual) {
@@ -783,15 +797,19 @@
             const inputFile = modal.find('#fotoUsuarioEditar');
 
             previewText.text('Sin foto');
-            if (usuario.imagen && usuario.imagen !== '') {
-                previewImage.attr('src', '/storage/' + usuario.imagen).css('display', 'block');
-                previewText.css('display', 'none');
-                removeBtn.css('display', 'inline-block');
+            if (usuario.imagen) {
+                // Mostrar imagen desde storage (solo nombre de archivo)
+                previewImage.attr('src', '/storage/' + usuario.imagen).show();
+                previewText.hide();
+                removeBtn.show();
             } else {
-                previewImage.attr('src', '').css('display', 'none');
-                previewText.css('display', 'block');
-                removeBtn.css('display', 'none');
+                // No tiene imagen
+                previewImage.attr('src', '').hide();
+                previewText.show();
+                removeBtn.hide();
             }
+
+            // Limpiar input del file
             inputFile.val('');
         });
 
@@ -916,41 +934,40 @@
 
     // INACTIVAR
     window.inactivarUsuario = function(id) {
-    Swal.fire({
-        title: '¿Inactivar usuario?',
-        text: 'El usuario no podrá acceder, pero su academia y estadísticas se conservarán.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, inactivar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (!result.isConfirmed) return;
+        Swal.fire({
+            title: '¿Inactivar usuario?',
+            text: 'El usuario no podrá acceder, pero su academia y estadísticas se conservarán.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, inactivar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
 
-        $.ajax({
-            url: `/usuarios/${id}/inactivar`,
-            type: 'POST',
-            data: {
-                _method: 'PUT'
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(resp) {
-                Swal.fire('Actualizado', resp.message, 'success')
-                    .then(() => {
-                        $('#tabla').DataTable().ajax.reload(null, false);
-                    });
-            },
-            error: function(xhr) {
-                const msg = xhr.responseJSON?.message || 'No se pudo inactivar el usuario.';
-                Swal.fire('Error', msg, 'error');
-            }
+            $.ajax({
+                url: `/usuarios/${id}/inactivar`,
+                type: 'POST',
+                data: {
+                    _method: 'PUT'
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(resp) {
+                    Swal.fire('Actualizado', resp.message, 'success')
+                        .then(() => {
+                            $('#tabla').DataTable().ajax.reload(null, false);
+                        });
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.message || 'No se pudo inactivar el usuario.';
+                    Swal.fire('Error', msg, 'error');
+                }
+            });
         });
-    });
-};
-
+    };
 </script>
 
 

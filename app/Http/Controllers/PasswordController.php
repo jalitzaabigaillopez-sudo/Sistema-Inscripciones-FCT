@@ -11,7 +11,7 @@ use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 use App\Services\SessionService;
-
+use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends Controller
 {
@@ -175,20 +175,51 @@ class PasswordController extends Controller
         $id = $request['id_usuario'];
         $usuario = Usuario::where('id_usuario', $id)->first();
         if (!$usuario) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Usuario no encontrado'
+            ], 404);
         }
 
+        // Validar que coincidan
         if ($validateData['nuevaContraseña'] !== $validateData['confirmarNuevaContraseña']) {
-            return response()->json(['error' => 'Verifique su contraseña.'], 401);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Las contraseñas no coinciden'
+            ], 422);
         }
 
-        if ($usuario->password === $validateData['nuevaContraseña']) {
-            return response()->json(['error' => 'La contraseña no puede ser igual que la anterior.'], 401);
+        // ==============================
+        // VALIDAR SI ES IGUAL A LA ANTERIOR
+        // Funciona si está en TEXTO PLANO o HASH
+        // ==============================
+        $nueva   = $validateData['nuevaContraseña'];
+        $actual  = $usuario->password;
+
+        // ¿La de BD parece hash bcrypt ($2y$...)?
+        $esHash = str_starts_with($actual, '$2y$');
+
+        // Si es hash → Hash::check
+        // Si no es hash → comparar plano
+        $esIgual = $esHash
+            ? Hash::check($nueva, $actual)
+            : ($actual === $nueva);
+
+        if ($esIgual) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'La contraseña no puede ser igual que la anterior.'
+            ], 422);
         }
 
         $usuario->password = $validateData['nuevaContraseña'];
         $usuario->password_vencimiento = config('ConfiguracionFCT._vencimiento_contraseña');
         $usuario->save();
-        return redirect()->route('login');
+
+        // ÉXITO → JSON PARA SWEETALERT
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Contraseña actualizada correctamente.'
+        ]);
     }
 }
