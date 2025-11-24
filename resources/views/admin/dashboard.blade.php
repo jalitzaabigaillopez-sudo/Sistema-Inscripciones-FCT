@@ -10,12 +10,12 @@
   <div class="row mb-4 g-4">
     <div class="col-12 col-sm-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background:linear-gradient(135deg,#1E3A8A,#3B82F6);">
-        <a href="{{ route('usuarios.index') }}" class="card-body text-center text-white text-decoration-none" role="button">
+        <div class="card-body text-center">
           <i class="bi bi-person-badge fs-1 mb-2"></i>
           <h6 class="fw-semibold">Usuarios</h6>
           <h3 class="fw-bold">{{ $usersCount ?? 0 }}</h3>
           <small>Actualizado hoy</small>
-        </a>
+        </div>
       </div>
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
