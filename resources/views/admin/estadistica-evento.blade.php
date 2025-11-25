@@ -65,8 +65,8 @@
     'por_modalidad' => 'Modalidad',
     'por_submodalidad' => 'Submodalidad',
     'por_grado' => 'Grado',
-    'por_rol' => 'Rol',
-    'por_academia' => 'Academia',
+    'por_rol' => 'Roles',
+    'por_academia' => 'Inscripciones por Academia',
     'por_nacimiento_top' => 'Año de Nacimiento',
   ];
 @endphp

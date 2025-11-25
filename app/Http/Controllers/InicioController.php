@@ -146,26 +146,27 @@ public function estadisticasEventos(Request $request)
     // Distribuciones
     $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
     $estadisticas['por_submodalidad'] = $inscripciones->map($resolveSubmodalidad)->countBy()->toArray();
-  $estadisticas['por_grado'] = $mascararKeys(
-    $inscripciones->map($resolveGrado)->countBy()->toArray()
-);
+  $estadisticas['por_grado'] = $mascararKeys($inscripciones->map($resolveGrado)->countBy()->toArray());
 
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
     $estadisticas['por_edad'] = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
+
+
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
     
  $porAcademia = [];
 
-// Filtra atletas (excluye asistentes/entrenadores)
-$inscripcionesFiltradas = $inscripciones->filter(function ($i) {
+// Filtra inscripciones válidas para cálculo de montos
+$inscripcionesAtletas = $inscripciones->filter(function ($i) {
     $rol = mb_strtolower(trim($i->rol ?? ''));
     return !in_array($rol, ['asistente', 'entrenador']);
 });
 
+
 // Agrupa por atleta
-$inscripcionesPorAtleta = $inscripcionesFiltradas->groupBy('id_atleta');
+$inscripcionesPorAtleta = $inscripcionesAtletas->groupBy('id_atleta');
 
 foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
     // Academia del atleta (toma la de la primera inscripción)
@@ -198,21 +199,21 @@ foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
     $porAcademia[$academia]['monto'] += $monto;
 }
 
-$estadisticas['por_academia'] = $porAcademia;
+$estadisticas['por_academia'] = $inscripcionesAtletas->map($resolveAcademia)->countBy()->toArray();
+$estadisticas['por_modalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveModalidad)->countBy()->toArray());
+$estadisticas['por_submodalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveSubmodalidad)->countBy()->toArray());
+$estadisticas['por_grado'] = $mascararKeys($inscripcionesAtletas->map($resolveGrado)->countBy()->toArray());
+$estadisticas['por_categoria'] = $mascararKeys($inscripcionesAtletas->map($resolveCategoria)->countBy()->toArray());
+$estadisticas['por_edad'] = $inscripcionesAtletas->map($resolveEdadBucket)->countBy()->toArray();
+$estadisticas['por_sexo'] = $inscripcionesAtletas->map($resolveSexo)->countBy()->toArray();
 
-$estadisticas['por_modalidad']   = $mascararKeys($inscripciones->map($resolveModalidad)->countBy()->toArray());
-$estadisticas['por_submodalidad']= $mascararKeys($inscripciones->map($resolveSubmodalidad)->countBy()->toArray());
-$estadisticas['por_grado']       = $mascararKeys($inscripciones->map($resolveGrado)->countBy()->toArray());
-$estadisticas['por_rol']         = $inscripciones->map($resolveRol)->countBy()->toArray();
-$estadisticas['por_edad']        = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
-$estadisticas['por_sexo']        = $inscripciones->map($resolveSexo)->countBy()->toArray();
 
 
   
 
     // Por año de nacimiento
     
-    $estadisticas['por_nacimiento'] = $inscripciones->map(function ($i) {
+    $estadisticas['por_nacimiento'] = $inscripcionesAtletas->map(function ($i) {
         $fn = optional($i->atleta)->fecha_nacimiento;
         if (! $fn) return 'Sin año';
         try {
@@ -229,7 +230,7 @@ $estadisticas['por_sexo']        = $inscripciones->map($resolveSexo)->countBy()-
 
      $estadisticas['por_modalidad'] = $mascararKeys($estadisticas['por_modalidad']);
      $estadisticas['por_submodalidad'] = $mascararKeys($estadisticas['por_submodalidad']);
-   $estadisticas['por_grado'] = $inscripciones->map($resolveGrado)->countBy()->toArray();
+   $estadisticas['por_grado'] = $mascararKeys($inscripcionesAtletas->map($resolveGrado)->countBy()->toArray());
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
