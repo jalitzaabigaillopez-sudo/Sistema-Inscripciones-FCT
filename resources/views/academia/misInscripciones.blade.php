@@ -55,37 +55,28 @@
                                 <td>{{ $ins->evento->fecha_inicio }}</td>
                                 <td>tardiaaa ejemplo</td>
                                 <td class="text-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill"
-                                            type="button" data-bs-toggle="dropdown">
+                                    <div class="d-flex justify-content-center gap-2">
+    @if($ins->estado == 'activa')
+        <!-- Botones deshabilitados -->
+        <button type="button" class="btn btn-sm btn-warning rounded-pill" disabled>
+            <i class="bi bi-pencil-square"></i> 
+        </button>
+        <button type="button" class="btn btn-sm btn-danger rounded-pill" disabled>
+            <i class="bi bi-trash"></i>
+        </button>
+    @else
+        <!-- Botones habilitados -->
+        <a href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}"
+           class="btn btn-sm btn-warning rounded-pill">
+            <i class="bi bi-pencil-square"></i> 
+        </a>
+        <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                onclick="confirmarEliminacion({{ $ins->evento->id_evento }})">
+            <i class="bi bi-trash"></i> 
+        </button>
+    @endif
+</div>
 
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            @if($ins->estado == 'activa')
-                                                <a class="dropdown-item disabled" href="javascript:void(0)" tabindex="-1"
-                                                    aria-disabled="true">
-                                                    <i class="bi bi-pencil-square"></i>Ver/Editar
-                                                </a>
-
-                                                <li>
-                                                    <a class="dropdown-item disabled" href="javascript:void(0)">
-                                                        <i class="bi bi-trash"></i> Eliminar
-                                                    </a>
-                                                </li>
-                                            @else
-                                                <a class="dropdown-item btn-edit"
-                                                    href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}">
-                                                    <i class="bi bi-pencil-square"></i>Ver/Editar
-                                                </a>
-
-                                                <li>
-                                                    <a class="dropdown-item text-danger bEliminarMiInscripcion" href="#">
-                                                        <i class="bi bi-trash"></i> Eliminar
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </div>
                                 </td>
                             </tr>
                         @endforeach
