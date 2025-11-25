@@ -18,7 +18,7 @@ class Inscripcion extends Model
     protected $table = 'inscripciones';
     protected $primaryKey = 'id_inscripcion';
     public $timestamps = false;
-    protected $fillable = ['id_academia', 'id_atleta', 'id_evento', 'id_modalidad', 'id_subModalidad', 'id_categoria', 'fecha_inscripcion', 'tipo_inscripcion', 'estado', 'peso', 'codigo_equipo', 'rol'];
+       protected $fillable = ['id_academia', 'id_atleta', 'id_evento', 'id_modalidad', 'id_subModalidad', 'id_categoria', 'fecha_inscripcion', 'tipo_inscripcion', 'estado', 'peso', 'codigo_equipo', 'rol', 'id_modalidad_evento', 'id_grado', 'id_division'];
     protected $casts = ['rol' => 'string'];
     
     public function atletas()
@@ -52,15 +52,15 @@ class Inscripcion extends Model
     }
 
     public function grado()
-{
-    return $this->belongsTo(Grado::class, 'id_grado'); 
-}
+    {
+        return $this->belongsTo(Grado::class, 'id_grado');
+    }
 
     public function division()
-{
-    return $this->belongsTo(Division::class, 'id_division');
-}
-
+    {
+        return $this->belongsTo(Division::class, 'id_division');
+    }
+    
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');

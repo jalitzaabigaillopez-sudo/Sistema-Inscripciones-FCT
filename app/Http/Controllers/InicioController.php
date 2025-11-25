@@ -68,7 +68,13 @@ public function estadisticasEventos(Request $request)
     $normalize = fn($val) => $val ? mb_convert_case(trim((string) $val), MB_CASE_TITLE) : null;
 
     // Resolutores
-    $resolveGrado = fn($i) => $normalize(optional($i->grado)->nombre) ?? $normalize($i->grado_nombre) ?? 'Sin grado';
+   $resolveGrado = function ($i) use ($normalize) {
+    $grado = optional($i->grado);
+    $nombre = $normalize($grado?->nombre ?? $i->grado_nombre);
+
+    return $nombre ?? 'Sin grado';
+};
+
     $resolveAcademia = fn($i) => $normalize(optional($i->academia)->nombre) ?? $normalize($i->academia_nombre) ?? 'Sin academia';
     $resolveModalidad = fn($i) => $normalize(optional($i->modalidad)->nombre) ?? $normalize($i->modalidad_nombre) ?? 'Sin modalidad';
     $resolveSubmodalidad = fn($i) => $normalize(optional($i->submodalidad)->nombre) ?? $normalize($i->submodalidad_nombre) ?? 'Sin submodalidad';
@@ -108,7 +114,7 @@ public function estadisticasEventos(Request $request)
     };
 
 
-    // Función para limpiar claves
+      // Función para limpiar claves
     $mascarar = fn($valor) => in_array($valor, [
         'Sin grado', 'Sin modalidad', 'Sin submodalidad'
     ]) ? 'No especificado' : $valor;
@@ -117,26 +123,39 @@ public function estadisticasEventos(Request $request)
         ->mapWithKeys(fn($valor, $clave) => [$mascarar($clave) => $valor])
         ->toArray();
 
+   // Normaliza y agrupa claves de un arreglo asociativo, acumulando valores cuando las claves normalizadas coinciden
+   $mascararKeys = function(array $arr) use ($mascarar) {
+       $result = [];
+       foreach ($arr as $key => $value) {
+           $k = $mascarar($key);
+           if (isset($result[$k])) {
+               $result[$k] += $value;
+           } else {
+               $result[$k] = $value;
+           }
+       }
+       return $result;
+   };
+
     // Estadísticas base
     $estadisticas['total_inscripciones'] = $inscripciones->count();
     $estadisticas['total_atletas'] = $inscripciones->pluck('id_atleta')->filter()->unique()->count();
     $estadisticas['total_academias'] = $inscripciones->pluck('id_academia')->filter()->unique()->count();
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
 
-    
-
     // Distribuciones
     $estadisticas['por_modalidad'] = $inscripciones->map($resolveModalidad)->countBy()->toArray();
     $estadisticas['por_submodalidad'] = $inscripciones->map($resolveSubmodalidad)->countBy()->toArray();
-    $estadisticas['por_grado'] = $inscripciones->map($resolveGrado)->countBy()->toArray();
+  $estadisticas['por_grado'] = $mascararKeys(
+    $inscripciones->map($resolveGrado)->countBy()->toArray()
+);
 
     $estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray();
     $estadisticas['por_edad'] = $inscripciones->map($resolveEdadBucket)->countBy()->toArray();
     $estadisticas['por_sexo'] = $inscripciones->map($resolveSexo)->countBy()->toArray();
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
-   
- //$estadisticas['por_academia'] = $inscripciones->map($resolveAcademia)->countBy()->toArray(); 
+    
  $porAcademia = [];
 
 // Filtra atletas (excluye asistentes/entrenadores)
@@ -181,8 +200,6 @@ foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
 
 $estadisticas['por_academia'] = $porAcademia;
 
-
-
 $estadisticas['por_modalidad']   = $mascararKeys($inscripciones->map($resolveModalidad)->countBy()->toArray());
 $estadisticas['por_submodalidad']= $mascararKeys($inscripciones->map($resolveSubmodalidad)->countBy()->toArray());
 $estadisticas['por_grado']       = $mascararKeys($inscripciones->map($resolveGrado)->countBy()->toArray());
@@ -212,7 +229,7 @@ $estadisticas['por_sexo']        = $inscripciones->map($resolveSexo)->countBy()-
 
      $estadisticas['por_modalidad'] = $mascararKeys($estadisticas['por_modalidad']);
      $estadisticas['por_submodalidad'] = $mascararKeys($estadisticas['por_submodalidad']);
-     $estadisticas['por_grado'] = $mascararKeys($estadisticas['por_grado']);
+   $estadisticas['por_grado'] = $inscripciones->map($resolveGrado)->countBy()->toArray();
 
     return view('admin.estadistica-evento', compact('eventos', 'eventoSeleccionado', 'estadisticas'));
 }
