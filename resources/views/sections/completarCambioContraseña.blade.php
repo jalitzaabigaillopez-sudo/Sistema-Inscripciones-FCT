@@ -90,7 +90,19 @@
                     {{-- <small class="text-muted">Mínimo 8 caracteres, incluye mayúsculas, minúsculas y números.</small> --}}
                 </div>
 
-                <!-- PANEL DE REQUISITOS -->
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
+                    <div class="input-group input-group-sm">
+                        <input type="password" class="form-control" name="password_confirmation"
+                            id="password_confirmation" required minlength="8" autocomplete="new-password">
+                        <button class="btn btn-outline-primary toggle-password" type="button"
+                            data-target="#password_confirmation">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                 <!-- PANEL DE REQUISITOS -->
                 <div id="passwordRequirementsCrear" class="mt-2 p-3 rounded border"
                     style="display:none; background:#f8fafc;">
                     <small class="fw-bold d-block mb-2 text-primary">La contraseña debe cumplir con:</small>
@@ -105,18 +117,6 @@
                             especial</li>
                         <li id="reqMatchCrear"><i class="bi bi-x-circle text-danger"></i> Las contraseñas coinciden</li>
                     </ul>
-                </div>
-
-                <div class="mb-3">
-                    <label for="password_confirmation" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
-                    <div class="input-group input-group-sm">
-                        <input type="password" class="form-control" name="password_confirmation"
-                            id="password_confirmation" required minlength="8" autocomplete="new-password">
-                        <button class="btn btn-outline-primary toggle-password" type="button"
-                            data-target="#password_confirmation">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
                 </div>
 
                 <div class="d-grid gap-2 d-md-block text-center">
