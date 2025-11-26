@@ -78,7 +78,6 @@ Route::post('/subir-archivo', [PadronNacimientoController::class, 'subirArchivo'
  * =============================================================================================================================================
  * Rutas Perfil
  */
-// Route::get('/getProfile', [AcademiaController::class, 'getProfile']);
 
 
 /**
@@ -149,16 +148,16 @@ Route::put('/perfil/{id}', [AuthController::class, 'actualizarPerfil'])->name('p
 
 
 // Ruta para estadísticas
-Route::get('/estadisticas', function () {
-    return view('estadisticas');
-})->name('estadisticas');
+// Route::get('/estadisticas', function () {
+//     return view('estadisticas');
+// })->name('estadisticas');
 
 
 
 // Ruta para ranking nacional
-Route::get('/ranking', function () {
-    return view('ranking');
-})->name('ranking');
+// Route::get('/ranking', function () {
+//     return view('ranking');
+// })->name('ranking');
 
 
 
@@ -171,28 +170,14 @@ Route::view('/perfil-academia', 'academia.perfilAcademia')->name('academia.perfi
 //mis inscripciones
 Route::view('/mis-inscripciones', 'academia.misInscripciones')->name('academia.misInscripciones');
 
-// Rutas para registro de atletas (similar a atletas)
-
-
-// Route::get('/mostrarAtletas', [AtletasController::class, 'indexAcademia'])->name('mostrar.atletas.index');
-// Route::get('/indexAtletas', [AtletasController::class, 'indexAtletas'])->name('indexAtletas');
-// Route::post('/registroAtletas', [AtletasController::class, 'storeAtletas'])->name('storeAtletas');
-// Route::get('/registro-atletas/{id}/edit', [AtletasController::class, 'editAcademia'])->name('registro-atletas.edit');
-// Route::put('/registro-atletas/{id}', [AtletasController::class, 'updateAcademia'])->name('registro-atletas.update');
-// Route::delete('/registro-atletas/{id}', [AtletasController::class, 'destroyAcademia'])->name('registro-atletas.destroy');
-
 
 //preregistro academia
 Route::post('/preregistro-academia', [AcademiaController::class, 'pre_registroAcademia'])->name('academia.preregistro.process');
 
 //####################################### SOLO ADMINISTRADOR ###########################################
 // Dashboard principal
-Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
+// Route::view('/adminDash', 'admin.dashboard')->name('adminDash');
 
-//Editar perfil
-// Route::get('/perfil', function () {
-//     return view('admin.perfil-admin');
-// })->name('perfil');
 
 // Catálogos generales
 Route::resource('/academias', AcademiaController::class);

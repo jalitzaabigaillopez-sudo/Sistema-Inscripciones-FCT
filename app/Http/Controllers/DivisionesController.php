@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Division;
@@ -15,6 +16,8 @@ class DivisionesController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+        RoleGate::requireAdmin();
     }
 
     public function index(Request $request)

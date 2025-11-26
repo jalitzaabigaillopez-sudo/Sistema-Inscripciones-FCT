@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Models\Academia;
 use App\Models\Atleta;
 use App\Models\Evento;
@@ -50,6 +51,9 @@ class InscripcionController extends Controller
 
     public function inscribirAtleta(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         try {
 
             $atleta = $request->input('atleta');
@@ -113,6 +117,9 @@ class InscripcionController extends Controller
 
     public function modificarInscripcionAtleta(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         $atletasModificar = $request->input('atletasModificar', []);
         $datosNuevos = $request->input('datosNuevos', []); // Datos nuevos para actualizar
 
@@ -155,6 +162,9 @@ class InscripcionController extends Controller
 
     public function eliminarInscripcionAtleta(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         $response = false;
         $atletasModificar = $request->input('atletasModificar', []);
 
@@ -187,6 +197,9 @@ class InscripcionController extends Controller
      */
     public function vistaInscripcionesAcademia(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;
@@ -229,6 +242,9 @@ class InscripcionController extends Controller
      */
     public function vistaMisInscripcionesAcademia(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;
@@ -270,6 +286,9 @@ class InscripcionController extends Controller
      */
     public function editarInscripcion(Request $request, $id_evento)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;
@@ -372,6 +391,9 @@ class InscripcionController extends Controller
 
     public function administradorEditarInscripcion(Request $request, $id_evento, $id_academia)
     {
+         // Solo admin
+        RoleGate::requireAdmin();
+        
         $eventos = Evento::where('id_evento', $id_evento)->get();
         $bloquearSelectEventos = true;
 
@@ -412,6 +434,9 @@ class InscripcionController extends Controller
 
     public function administradorEliminarInscripcion($id_academia, $id_evento)
     {
+         // Solo admin
+        RoleGate::requireAdmin();
+
         $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
 
         if ($inscripcion) {
@@ -425,6 +450,8 @@ class InscripcionController extends Controller
 
     public function AdministradorInscribirAtleta(Request $request)
     {
+        // Solo admin
+        RoleGate::requireAdmin();
 
         $atleta = $request->input('atleta');
 

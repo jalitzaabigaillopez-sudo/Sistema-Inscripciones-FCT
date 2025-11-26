@@ -2,6 +2,8 @@
 
 @section('title', 'Estadísticas por Evento')
 
+@section('breadcrumb-title', 'Estadísticas por Evento')
+
 @section('content')
 <div class="container py-4">
   <div class="d-flex align-items-center mb-4">

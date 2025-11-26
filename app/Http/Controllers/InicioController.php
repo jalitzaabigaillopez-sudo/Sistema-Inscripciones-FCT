@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Models\Academia;
@@ -24,6 +25,9 @@ class InicioController extends Controller
     }
 public function estadisticasEventos(Request $request)
 {
+    // Proteger ruta de admin
+    RoleGate::requireAdmin();
+
     $eventos = Evento::orderBy('nombre')->get();
     $estadisticas = [
         'total_inscripciones' => 0,

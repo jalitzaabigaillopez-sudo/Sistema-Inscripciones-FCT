@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Models\Categoria;
 use App\Models\Division;
 use Illuminate\Http\Request;
@@ -15,6 +16,8 @@ class CategoriaController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+        RoleGate::requireAdmin();
     }
 
     public function index(Request $request)

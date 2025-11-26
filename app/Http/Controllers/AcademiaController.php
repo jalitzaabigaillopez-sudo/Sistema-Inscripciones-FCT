@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Academia;
@@ -30,6 +31,7 @@ class AcademiaController extends Controller
             'activar',
         ];
 
+        // Permitir las rutas exentas SIN validar sesión ni rol
         foreach ($rutasExentas as $ruta) {
             if ($request->is($ruta)) {
                 return; // no redirige al login
@@ -40,6 +42,9 @@ class AcademiaController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+        // Validar el rol (solo admins)
+        RoleGate::requireAdmin();
     }
 
     public function index(Request $request)

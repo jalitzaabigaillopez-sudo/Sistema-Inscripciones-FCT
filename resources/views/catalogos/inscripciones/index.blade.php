@@ -4,7 +4,7 @@
     Inscripciones a Eventos
 @endsection
 
-@section('breadcrumb-title', 'Lista de Eventos')
+@section('breadcrumb-title', 'Lista de Inscripciones')
 
 @section('content')
 

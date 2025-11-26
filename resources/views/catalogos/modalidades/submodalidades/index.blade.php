@@ -1,9 +1,12 @@
 @extends('app')
 
+@section('breadcrumb-title', 'Lista de SubModalidades')
+
+
 @section('content')
     <div class="container py-4">
         <div class="d-flex align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Lista de Submodalidades</h4>
+            <h4 class="fw-bold mb-0">Lista de SubModalidades</h4>
             <button type="button" class="btn btn-success btn-md rounded-pill ms-auto" data-bs-toggle="modal"
                 data-bs-target="#modalCrearSubModalidad">
                 <i class="bi bi-plus-circle me-1"></i> Nueva Submodalidad

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use Illuminate\Http\Request;
 use App\Models\Evento;
 use App\Services\SessionService;
@@ -13,6 +14,8 @@ class ModalidadController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+         RoleGate::requireAdmin();
     }
     public function obtenerModalidades(Request $request)
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Http\Controllers\Controller;
 use App\Models\Evento;
 use App\Models\Modalidad;
@@ -20,6 +21,8 @@ class EventosController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+        RoleGate::requireAdmin();
     }
     /**
      * Display a listing of the resource.
@@ -206,7 +209,7 @@ class EventosController extends Controller
                 ]);
             }
 
-            
+
 
             // Validate request data
             $validator = Validator::make(

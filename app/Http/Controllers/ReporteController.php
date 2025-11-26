@@ -11,6 +11,7 @@ use App\Services\SessionService;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AtletasExport;
 use App\Exports\InscripcionesExport;
+use App\Helpers\RoleGate;
 use App\Models\Academia;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -192,6 +193,9 @@ class ReporteController extends Controller
 
     public function vistaReportesGeneralesAcademia(Request $request)
     {
+        // Solo academias
+        RoleGate::requireAcademia();
+        
         $usuarioId = $request->session()->get('usuario');
         $usuario = Usuario::find($usuarioId);
         $academia = $usuario->academia;

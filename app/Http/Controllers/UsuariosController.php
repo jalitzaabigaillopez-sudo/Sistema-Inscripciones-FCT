@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,8 @@ class UsuariosController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
+
+         RoleGate::requireAdmin();
     }
 
     public function index(Request $request)
