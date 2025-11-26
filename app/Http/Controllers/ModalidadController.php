@@ -14,8 +14,6 @@ class ModalidadController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
-
-        //  RoleGate::requireAdmin();
     }
     public function obtenerModalidades(Request $request)
     {

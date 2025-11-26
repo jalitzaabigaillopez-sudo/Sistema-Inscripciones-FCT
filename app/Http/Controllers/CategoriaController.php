@@ -16,12 +16,12 @@ class CategoriaController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
-
-        // RoleGate::requireAdmin();
     }
 
     public function index(Request $request)
     {
+        RoleGate::requireAdmin();
+
         if ($request->ajax()) {
             $query = Categoria::with('division'); // si tienes relación con Division
 
@@ -97,6 +97,7 @@ class CategoriaController extends Controller
 
     public function store(Request $request)
     {
+        RoleGate::requireAdmin();
 
         // Validar los datos del formulario
         $validatedData = $request->validate([
@@ -136,6 +137,8 @@ class CategoriaController extends Controller
 
     public function edit(string $id)
     {
+        RoleGate::requireAdmin();
+
         $item = Categoria::find($id);
         return response()->json($item);
     }
@@ -145,6 +148,9 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        RoleGate::requireAdmin();
+
         $item = Categoria::findOrFail($id);
 
         $validated = $request->validate([
@@ -171,6 +177,8 @@ class CategoriaController extends Controller
      */
     public function destroy(string $id)
     {
+        RoleGate::requireAdmin();
+
         $item = Categoria::find($id);
 
         $item->delete();

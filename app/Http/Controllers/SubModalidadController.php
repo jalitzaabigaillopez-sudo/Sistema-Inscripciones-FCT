@@ -15,8 +15,6 @@ class SubModalidadController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
-
-        //  RoleGate::requireAdmin();
     }
     public function obtenerSubModalidades(Request $request)
     {
@@ -30,6 +28,8 @@ class SubModalidadController extends Controller
 
     public function index(Request $request)
     {
+        RoleGate::requireAdmin();
+
         // Si la petición es AJAX (para DataTables)
         if ($request->ajax()) {
             $query = SubModalidad::query();
@@ -105,6 +105,7 @@ class SubModalidadController extends Controller
 
     public function store(Request $request)
     {
+        RoleGate::requireAdmin();
 
         $mensajes = [
             'nombre.unique' => 'Ya existe una submodalidad con ese nombre.',
@@ -132,6 +133,8 @@ class SubModalidadController extends Controller
 
     public function edit($id)
     {
+        RoleGate::requireAdmin();
+
         $sub = SubModalidad::find($id);
         if (!$sub) {
             return response()->json(['error' => 'No encontrada'], 404);
@@ -141,6 +144,8 @@ class SubModalidadController extends Controller
 
     public function update(Request $request, $id)
     {
+        RoleGate::requireAdmin();
+
         $item = SubModalidad::findOrFail($id);
 
         $mensajes = [
@@ -169,6 +174,8 @@ class SubModalidadController extends Controller
 
     public function destroy($id)
     {
+        RoleGate::requireAdmin();
+
         SubModalidad::findOrFail($id)->delete();
         return response()->json(['success' => true]);
     }

@@ -15,14 +15,14 @@ class GradosController extends Controller
         if (!SessionService::checkSession($request)) {
             redirect()->route('login')->send();
         }
-
-        // RoleGate::requireAdmin();
     }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        RoleGate::requireAdmin();
+
         // Para solicitudes AJAX de DataTables
         if ($request->ajax()) {
             $query = Grado::query();
@@ -94,6 +94,8 @@ class GradosController extends Controller
      */
     public function store(Request $request)
     {
+        RoleGate::requireAdmin();
+
         $mensajes = [
             'nombre.unique' => 'Ya existe un grado con ese nombre.',
         ];
@@ -126,6 +128,8 @@ class GradosController extends Controller
      */
     public function edit(string $id)
     {
+        RoleGate::requireAdmin();
+
         $item = Grado::find($id);
         return response()->json($item);
     }
@@ -135,6 +139,8 @@ class GradosController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        RoleGate::requireAdmin();
+
         $item = Grado::find($id);
 
         if (!$item) {
@@ -162,6 +168,8 @@ class GradosController extends Controller
      */
     public function destroy(string $id)
     {
+        RoleGate::requireAdmin();
+
         $item = Grado::find($id);
 
         $item->delete();
