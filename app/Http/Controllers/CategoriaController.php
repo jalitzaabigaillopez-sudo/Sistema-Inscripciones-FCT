@@ -17,7 +17,7 @@ class CategoriaController extends Controller
             redirect()->route('login')->send();
         }
 
-        RoleGate::requireAdmin();
+        // RoleGate::requireAdmin();
     }
 
     public function index(Request $request)

@@ -271,6 +271,7 @@ class InscripcionController extends Controller
                 'evento' => $primera->evento,
                 'cantidad_inscritos' => $cantidad_inscritos,
                 'estado' => $primera->estado,
+                'tipo_inscripcion' => $primera->tipo_inscripcion,
             ];
         }
 

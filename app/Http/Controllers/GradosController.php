@@ -16,7 +16,7 @@ class GradosController extends Controller
             redirect()->route('login')->send();
         }
 
-        RoleGate::requireAdmin();
+        // RoleGate::requireAdmin();
     }
     /**
      * Display a listing of the resource.

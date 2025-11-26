@@ -53,7 +53,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $ins->evento->fecha_inicio }}</td>
-                                <td>tardiaaa ejemplo</td>
+                                <td>{{ $ins->tipo_inscripcion }}</td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
     @if($ins->estado == 'activa')

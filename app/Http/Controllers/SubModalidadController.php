@@ -16,7 +16,7 @@ class SubModalidadController extends Controller
             redirect()->route('login')->send();
         }
 
-         RoleGate::requireAdmin();
+        //  RoleGate::requireAdmin();
     }
     public function obtenerSubModalidades(Request $request)
     {

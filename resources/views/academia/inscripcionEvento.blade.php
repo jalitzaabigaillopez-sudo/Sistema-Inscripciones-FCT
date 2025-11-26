@@ -206,7 +206,6 @@
                 <i class="bi bi-send-check"></i> Enviar Inscripción
             </button>
         </div>
-
     </div>
 
     <!-- MODAL -->
