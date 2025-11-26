@@ -61,6 +61,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
                     : '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => ucfirst(strtolower($i->modalidad->nombre ?? '—')),
                 'Submodalidad' => ucfirst(strtolower($i->subModalidad->nombre ?? '—')),
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
@@ -129,6 +130,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'ID inscripción',
             'Atleta',
             'Grado',
+            'Division',
             'Modalidad',
             'Submodalidad',
             'Categoría',
@@ -199,6 +201,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
@@ -297,6 +300,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Academia' => $i->academia->nombre ?? '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => ucfirst(strtolower($i->modalidad->nombre ?? '—')),
                 'Submodalidad' => ucfirst(strtolower($i->subModalidad->nombre ?? '—')),
                 'Categoria' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
@@ -365,6 +369,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
@@ -455,6 +460,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
@@ -552,6 +558,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
+                'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => $i->modalidad->nombre ?? '—',
                 'Submodalidad' => $i->subModalidad->nombre ?? '—',
                 'Categoría' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)

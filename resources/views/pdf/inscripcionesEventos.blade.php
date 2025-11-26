@@ -180,6 +180,12 @@
             <div class="academia-title">{{ $nombreEvento }}</div>
         </div>
 
+        @php
+            // Mapa global para toda la vista
+            $equipoMap = [];
+            $contadorEquipos = 1;
+        @endphp
+
         <!-- TABLAS POR ACADEMIA -->
         @foreach ($inscripciones as $academia => $grupo)
             <table>
@@ -187,14 +193,15 @@
                     <tr>
                         <th>#</th>
                         <th>Atleta</th>
-                        <th>Atleta</th>
+                        <th>Grado</th>
+                        <th>Division</th>
                         <th>Modalidad</th>
                         <th>Submodalidad</th>
                         <th>Categoría</th>
                         <th>Rol</th>
                         <th>Estado</th>
                         <th>Peso</th>
-                        <th>Código Equipo</th>
+                        <th>Equipo</th>
                         <th>Fecha Inscripción</th>
                     </tr>
                 </thead>
@@ -204,13 +211,31 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $dato['Atleta'] }}</td>
                             <td>{{ $dato['Grado'] }}</td>
+                            <td>{{ $dato['Division'] }}</td>
                             <td>{{ $dato['Modalidad'] }}</td>
                             <td>{{ $dato['Submodalidad'] }}</td>
                             <td>{{ $dato['Categoría'] }}</td>
                             <td>{{ $dato['Rol'] }}</td>
                             <td>{{ $dato['Estado'] }}</td>
                             <td>{{ $dato['Peso'] }}</td>
-                            <td>{{ $dato['Código de equipo'] }}</td>
+                            <td>
+                                @php
+                                    $codigo = trim($dato['Código de equipo']);
+
+                                    // Si el código es una raya '—', se muestra sin cambiar
+                                    if ($codigo === '—') {
+                                        echo '—';
+                                    } else {
+                                        // Si no existe en el mapa, se crea uno
+                                        if (!isset($equipoMap[$codigo])) {
+                                            $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
+                                            $contadorEquipos++;
+                                        }
+
+                                        echo $equipoMap[$codigo];
+                                    }
+                                @endphp
+                            </td>
                             <td>{{ $dato['Fecha inscripción'] }}</td>
                         </tr>
                     @endforeach

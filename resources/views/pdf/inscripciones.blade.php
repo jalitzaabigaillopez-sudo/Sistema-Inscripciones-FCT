@@ -177,6 +177,13 @@
 
 
     <main>
+
+        {{-- Mapa global para convertir códigos a "Equipo N" --}}
+        @php
+            $equipoMap = [];
+            $contadorEquipos = 1;
+        @endphp
+
         @foreach ($inscripciones as $academia => $grupo)
             <div class="info">
                 <div class="academia-title">{{ $academia }}</div>
@@ -197,17 +204,40 @@
                     @foreach ($grupo as $inscripcion)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+
                             @foreach ($inscripcion as $campo => $valor)
                                 @if ($campo !== 'Academia') {{-- Oculta el valor correspondiente --}}
-                                    <td>{{ $valor }}</td>
+                                    @if ($campo === 'Código de equipo')
+                                        @php
+                                            // Normalizar valor
+                                            $codigo = trim((string) $valor);
+
+                                            if ($codigo === '—') {
+                                                // Si es exactamente la raya, mostrarla tal cual
+                                                $mostrar = '—';
+                                            } else {
+                                                // Si no existe en el mapa, crear alias "Equipo N"
+                                                if (!isset($equipoMap[$codigo])) {
+                                                    $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
+                                                    $contadorEquipos++;
+                                                }
+                                                $mostrar = $equipoMap[$codigo];
+                                            }
+                                        @endphp
+                                        <td>{{ $mostrar }}</td>
+                                    @else
+                                        <td>{{ $valor }}</td>
+                                    @endif
                                 @endif
                             @endforeach
+
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endforeach
     </main>
+
 
 
     <!-- ===================== NÚMERO DE PÁGINA ===================== -->

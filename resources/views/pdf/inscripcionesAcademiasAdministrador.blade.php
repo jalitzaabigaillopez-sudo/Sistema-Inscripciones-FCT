@@ -182,6 +182,13 @@
 
 
     <main>
+
+        {{-- Mapa global para los alias de equipos --}}
+        @php
+            $equipoMap = [];
+            $contadorEquipos = 1;
+        @endphp
+
         @foreach ($inscripciones as $academia => $grupo)
             <div class="info">
                 <div class="academia-title">{{ $academia }}</div>
@@ -198,13 +205,39 @@
                         @endforeach
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach ($grupo as $inscripcion)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+
                             @foreach ($inscripcion as $campo => $valor)
-                                @if ($campo !== 'Academia') {{-- Oculta el valor correspondiente --}}
-                                    <td>{{ $valor }}</td>
+                                @if ($campo !== 'Academia')
+
+                                    @if ($campo === 'Código de equipo')
+                                        @php
+                                            // Normalizar
+                                            $codigo = trim((string) $valor);
+
+                                            if ($codigo === '—') {
+                                                // Si es el guion largo exacto, se deja tal cual
+                                                $mostrar = '—';
+                                            } else {
+                                                // Si no existe en el mapa, generar Equipo N
+                                                if (!isset($equipoMap[$codigo])) {
+                                                    $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
+                                                    $contadorEquipos++;
+                                                }
+                                                $mostrar = $equipoMap[$codigo];
+                                            }
+                                        @endphp
+
+                                        <td>{{ $mostrar }}</td>
+
+                                    @else
+                                        <td>{{ $valor }}</td>
+                                    @endif
+
                                 @endif
                             @endforeach
                         </tr>
@@ -212,7 +245,9 @@
                 </tbody>
             </table>
         @endforeach
+
     </main>
+
 
 
     <!-- ===================== NÚMERO DE PÁGINA ===================== -->

@@ -6,7 +6,7 @@
 
     <input type="hidden" id="modeView" value="{{ $bloquearSelectEventos }}">
 
-    <div class="container">
+    <div class="container-fluid">
         <h3 class="mb-4 text-black fw-bold">Inscripción de Academia a Evento</h3>
 
         <h6 class="mb-4 text-black fw-bold">Academia: {{ $academia->nombre }} | Encargado:
@@ -94,6 +94,7 @@
                                     data-id_division="{{ $atleta->id_division }}"
                                     data-id_grado="{{ $atleta->grado->id_grado }}"
                                     data-grado="{{ $atleta->grado->nombre }}"
+                                    data-division="{{ $atleta->division->division }}"
                                     
                                     
                                     data-nombre="{{ $atleta->nombre }}"
@@ -120,10 +121,13 @@
                     <div class="col-md-2">
                         <input type="text" class="form-control inputSexo" placeholder="Sexo" readonly>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <input type="text" class="form-control inputEdad" placeholder="Edad" readonly>
                     </div>
                     <div class="col-md-2">
+                        <input id="inputDivision" type="text" class="form-control inputDivision" placeholder="Division" readonly>
+                    </div>
+                    <div class="col-md-1">
                         <input id="pesoInput" type="number" class="form-control inputPeso" placeholder="Peso (kg)"
                             required>
                     </div>
@@ -184,6 +188,7 @@
                                 <th>Edad</th>
                                 <th>Tipo</th>
                                 <th>Grado</th>
+                                <th>Division</th>
                                 <th>Modalidad</th>
                                 <th>SubModalidad</th>
                                 <th>Categoria</th>

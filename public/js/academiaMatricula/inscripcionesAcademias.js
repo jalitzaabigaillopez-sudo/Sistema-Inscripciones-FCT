@@ -70,6 +70,7 @@ $(document).ready(function () {
                 $(this).find('.submodalidades-select').show();
                 $(this).find('.categorias-select').show();
                 $(this).find('#pesoInput').show();
+                $(this).find('#inputDivision').show();
             });
 
             $.ajax({
@@ -104,6 +105,7 @@ $(document).ready(function () {
                 $(this).find('.submodalidades-select').hide();
                 $(this).find('.categorias-select').hide();
                 $(this).find('#pesoInput').hide();
+                $(this).find('#inputDivision').hide();
             });
         }
     });
@@ -213,8 +215,6 @@ $(document).ready(function () {
     $(document).on('change', '.atletas-select', function () {
         var selected = $(this).find('option:selected');
         var panel = $(this).closest('.card-body');
-        let totalCardsBaseCard = $(".baseCard").length;
-        let totalCardsClonEdit = $(".clonEdit").length;
 
         var sexo = selected.data('sexo') || '';
         var fecha = selected.data('fecha_nacimiento') || '';
@@ -230,6 +230,8 @@ $(document).ready(function () {
             var currentYear = new Date().getFullYear();
             edad = currentYear - anio;
         }
+
+        var division = selected.data('division') || '';
 
 
         // ===========================================================================
@@ -248,6 +250,7 @@ $(document).ready(function () {
 
         panel.find('.inputSexo').val(sexo);
         panel.find('.inputEdad').val(edad + " años");
+        panel.find('#inputDivision').val(division);
 
         let modalidad = panel.find(".modalidades-select option:selected").text().trim().toLowerCase();
 
@@ -277,7 +280,6 @@ $(document).ready(function () {
                 }
             });
         }
-
     });
 
 
@@ -304,6 +306,7 @@ $(document).ready(function () {
                     $(this).find('.submodalidades-select').hide();
                     $(this).find('.categorias-select').hide();
                     $(this).find('#pesoInput').hide();
+                    $(this).find('#inputDivision').hide();
                 });
 
                 // 🔹 Eliminar paneles clones 👁️SOLO panelRegistro
@@ -319,6 +322,7 @@ $(document).ready(function () {
                     $(this).find('.submodalidades-select').show();
                     $(this).find('.categorias-select').show();
                     $(this).find('#pesoInput').show();
+                    $(this).find('#inputDivision').show();
                 });
             }
         }
@@ -622,6 +626,7 @@ $(document).ready(function () {
             let peso = $(this).find(".inputPeso").val();
             let rol = $(this).find(".rol-select option:selected").val();
             let grado = $(this).find(".grados-select option:selected").text();
+            let division = $(this).find(".inputDivision").val();
             let modalidad = $(this).find(".modalidades-select option:selected").text();
             submodalidad = $(this).find(".submodalidades-select option:selected").text();
             let pesoMin = $(this).find(".categorias-select option:selected").data('min');
@@ -654,6 +659,7 @@ $(document).ready(function () {
                     rol: rol,
                     peso: '—',
                     grado: '—',
+                    division: '—',
                     modalidad: '—',
                     submodalidad: '—',
                     categoria: '—',
@@ -716,6 +722,7 @@ $(document).ready(function () {
                             rol: rol,
                             peso: peso,
                             grado: grado,
+                            division: division,
                             modalidad: modalidad,
                             submodalidad: submodalidad,
                             categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -748,6 +755,7 @@ $(document).ready(function () {
                             rol: rol,
                             peso: '—',
                             grado: '—',
+                            division: '—',
                             modalidad: '—',
                             submodalidad: '—',
                             categoria: '—',
@@ -774,6 +782,7 @@ $(document).ready(function () {
                             rol: rol,
                             peso: '—',
                             grado: '—',
+                            division: '—',
                             modalidad: '—',
                             submodalidad: '—',
                             categoria: '—',
@@ -853,6 +862,7 @@ $(document).ready(function () {
                     $("#panelRegistro").find('.submodalidades-select').show();
                     $("#panelRegistro").find('.categorias-select').show();
                     $("#panelRegistro").find('#pesoInput').show();
+                    $("#panelRegistro").find('#inputDivision').show();
                 }
 
                 // selectGrado.append('<option value="' + atleta.id_grado + '">' + atleta.grado + '</option>');
@@ -1081,8 +1091,9 @@ $(document).ready(function () {
             <td>${obj.edad}</td>
             <td>${obj.rol}</td>
             <td>${obj.grado}</td>
+            <td>${obj.division}</td>
             <td>${obj.modalidad}</td>
-            <td>${obj.submodalidad}</td>
+            <td data-id-submodalidad="${obj.id_subModalidad}">${obj.submodalidad}</td>
             <td>${obj.categoria}</td>
             <td style="display:none;">${obj.grupo}</td>
             <td></td>
@@ -1117,6 +1128,7 @@ $(document).ready(function () {
             <td>${obj.edad}</td>
             <td>${obj.rol}</td>
             <td>${obj.grado}</td>
+            <td>${obj.division}</td>
             <td>${obj.modalidad}</td>
             <td data-id-submodalidad="${obj.id_subModalidad}">${obj.submodalidad}</td>
             <td>${obj.categoria}</td>
@@ -1159,10 +1171,11 @@ $(document).ready(function () {
         fila.find('td:eq(2)').text(obj.edad);
         fila.find('td:eq(3)').text(obj.rol);
         fila.find('td:eq(4)').text(obj.grado);
-        fila.find('td:eq(5)').text(obj.modalidad);
-        fila.find('td:eq(6)').text(obj.submodalidad);
-        fila.find('td:eq(7)').text(obj.categoria);
-        fila.find('td:eq(8)').text(obj.grupo);
+        fila.find('td:eq(5)').text(obj.division);
+        fila.find('td:eq(6)').text(obj.modalidad);
+        fila.find('td:eq(7)').text(obj.submodalidad);
+        fila.find('td:eq(8)').text(obj.categoria);
+        fila.find('td:eq(9)').text(obj.grupo);
 
         // Cambiar atributos al nuevo code y id
         fila.attr({
@@ -1180,14 +1193,14 @@ $(document).ready(function () {
 
     function marcadorAmarillo() {
         $('#tabla-inscripcion tbody tr').each(function () {
-            let td8 = $(this).find('td:eq(8)');
             let td9 = $(this).find('td:eq(9)');
-            let texto = td8.text().trim();
+            let td10 = $(this).find('td:eq(10)');
+            let texto = td9.text().trim();
 
             if (texto.slice(-2) === "-p") {
-                td9.css('background-color', 'yellow');
+                td10.css('background-color', 'yellow');
             } else {
-                td9.css('background-color', 'white');
+                td10.css('background-color', 'white');
             }
         });
     }
@@ -1290,8 +1303,8 @@ $(document).ready(function () {
         let contador = 1;
 
         $("#tabla-inscripcion tr").each(function () {
-            let grupoTd = $(this).find("td").eq(8);
-            let equipoTd = $(this).find("td").eq(9);
+            let grupoTd = $(this).find("td").eq(9);
+            let equipoTd = $(this).find("td").eq(10);
 
             if (grupoTd.length === 0 || equipoTd.length === 0) return;
 
@@ -1351,8 +1364,8 @@ $(document).ready(function () {
 
             // Si ambos son atletas, ordenar por modalidad
             if (tipoA === 'ATLETA' && tipoB === 'ATLETA') {
-                let modalidadA = $(a).find('td').eq(5).text().trim().toUpperCase();
-                let modalidadB = $(b).find('td').eq(5).text().trim().toUpperCase();
+                let modalidadA = $(a).find('td').eq(6).text().trim().toUpperCase();
+                let modalidadB = $(b).find('td').eq(6).text().trim().toUpperCase();
 
                 let valorModA = prioridadModalidad[modalidadA] || 999;
                 let valorModB = prioridadModalidad[modalidadB] || 999;
@@ -1394,7 +1407,7 @@ $(document).ready(function () {
         let $fila = $(this).closest("tr");
         let id = $fila.data("id");
         let tr_code = $fila.data("code");
-        let grupo = $fila.find("td:eq(8)").text().trim();
+        let grupo = $fila.find("td:eq(9)").text().trim();
 
         atletasModificar = [];
 
@@ -1473,7 +1486,7 @@ $(document).ready(function () {
     $(document).on("click", ".bEditar", function () {//@audit bEditar
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code");
-        let grupo = $fila.find("td:eq(8)").text().trim();
+        let grupo = $fila.find("td:eq(9)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
         let cantidadMiembrosActuales = 0;
 
@@ -1614,6 +1627,7 @@ $(document).ready(function () {
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
+                        nuevaCard.find(".inputDivision").val(atleta.division);
 
                         // Mostrar clon
                         nuevaCard.show();
@@ -1624,9 +1638,9 @@ $(document).ready(function () {
                 // Ajustar visibilidad según rol
                 $('.clonEdit').each(function () {
                     if (trRol === 'entrenador' || trRol === 'asistente' || modoEvento === 0) {
-                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput, #inputDivision').hide();
                     } else {
-                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').show();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput, #inputDivision').show();
                     }
                 });
 
@@ -1754,6 +1768,7 @@ $(document).ready(function () {
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
+                        nuevaCard.find(".inputDivision").val(atleta.division);
 
                         // Mostrar clon
                         nuevaCard.show();
@@ -1766,7 +1781,6 @@ $(document).ready(function () {
                 //================================== COMPROBADOR DE FALTANTES =========================================\\
                 let indicator = grupo.slice(-2);
                 if (indicator === "-p") {
-                    console.log("EENTRA");
 
                     edicionGrupo_modo_p = true;
 
@@ -1842,7 +1856,7 @@ $(document).ready(function () {
                                 error: function () { mostrarAlerta("Error al cargar categorías.", "Aviso", "⚠️"); }
                             });
                         } else {
-                            console.log("atletaReferencia: ", atletaReferencia);
+                            // console.log("atletaReferencia: ", atletaReferencia);
 
                             let selectCat = nuevaCard.find('.categorias-select');
                             selectCat.empty();
@@ -1866,6 +1880,7 @@ $(document).ready(function () {
                         $(this).find('.submodalidades-select').hide();
                         $(this).find('.categorias-select').hide();
                         $(this).find('#pesoInput').hide();
+                        $(this).find('#inputDivision').hide();
                     });
                 } else {
                     // Mostrar de nuevo si no es rol especial
@@ -1874,6 +1889,7 @@ $(document).ready(function () {
                         $(this).find('.submodalidades-select').show();
                         $(this).find('.categorias-select').show();
                         $(this).find('#pesoInput').show();
+                        $(this).find('#inputDivision').show();
                     });
                 }
             }
@@ -1910,6 +1926,8 @@ $(document).ready(function () {
         //_______________________________________
         let eventoSelect = $('#evento-select option:selected');
         let modoEvento = eventoSelect.data('modo');
+
+        let id_zz;
 
         if (modoEvento === 1) {
             // console.log("1");
@@ -1971,6 +1989,7 @@ $(document).ready(function () {
                 let sexo = $(this).find(".atletas-select option:selected").data("sexo");
                 let edad = $(this).find(".inputEdad").val();
                 let peso = $(this).find(".inputPeso").val();
+                let division = $(this).find(".inputDivision").val();
                 let rol = $(this).find(".rol-select option:selected").val();
                 let grado = $(this).find(".grados-select option:selected").text();
                 let modalidad = $(this).find(".modalidades-select option:selected").text();
@@ -2018,6 +2037,7 @@ $(document).ready(function () {
                         rol: rol,
                         peso: peso,
                         grado: grado,
+                        division: division,
                         modalidad: modalidad,
                         submodalidad: submodalidad,
                         categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -2057,6 +2077,7 @@ $(document).ready(function () {
                                     rol: rol,
                                     peso: '—',
                                     grado: '—',
+                                    division: '—',
                                     modalidad: '—',
                                     submodalidad: '—',
                                     categoria: '—',
@@ -2080,7 +2101,8 @@ $(document).ready(function () {
 
                                     if (grupo.includes("#") && cantidad_atletas_subModalidad === 1) {
                                         grupo = '—';
-                                        modoDesintegrarGrupo = true;
+                                        // id_zz = id_categoria;
+                                        modoDesintegrarGrupo = true; 
                                     }
 
                                     obj = {
@@ -2090,6 +2112,7 @@ $(document).ready(function () {
                                         rol: rol,
                                         peso: peso,
                                         grado, grado,
+                                        division: division,
                                         modalidad: modalidad,
                                         submodalidad: submodalidad,
                                         categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -2113,6 +2136,7 @@ $(document).ready(function () {
                                         rol: rol,
                                         peso: '—',
                                         grado: '—',
+                                        division: '—',
                                         modalidad: '—',
                                         submodalidad: '—',
                                         categoria: '—',
@@ -2152,6 +2176,7 @@ $(document).ready(function () {
                             rol: rol,
                             peso: peso,
                             grado: grado,
+                            division: division,
                             modalidad: modalidad,
                             submodalidad: submodalidad,
                             categoria: id_categoria == 0 ? submodalidad : pesoMin + " - " + pesoMax,
@@ -2179,9 +2204,16 @@ $(document).ready(function () {
                 }
             });
 
+            console.log("atletasCambios: ", atletasCambios);
+            console.log("listaCompleta: ", listaCompleta);
+            
+            
+
             for (let i = 0; i < atletasCambios.length; i++) {
                 if (modoDesintegrarGrupo === true) {
                     if (atletasCambios[i].obj.grupo.includes('—')) {
+
+                        // atletasCambios[i].obj.id_division = id_division;
 
                         id = atletasCambios[i].obj.id_atleta;
 
@@ -2246,6 +2278,7 @@ $(document).ready(function () {
                     $("#panelRegistro").find('.submodalidades-select').show();
                     $("#panelRegistro").find('.categorias-select').show();
                     $("#panelRegistro").find('#pesoInput').show();
+                    $("#panelRegistro").find('#inputDivision').show();
                 }
 
                 $("#containerButton").html(`
@@ -2388,6 +2421,7 @@ $(document).ready(function () {
                         rol: atleta.rol || '—',
                         peso: atleta.peso || '—',
                         grado: atleta.grado?.nombre || '—',
+                        division: atleta.division?.division || '—',
                         modalidad: atleta.modalidad?.nombre || '—',
                         submodalidad: atleta.subModalidad?.nombre || '—',
                         categoria: atleta.categoria == null ? atleta.subModalidad?.nombre : `${atleta.categoria.peso_min} - ${atleta.categoria.peso_max}`,
@@ -2411,6 +2445,7 @@ $(document).ready(function () {
                         rol: atleta.rol || '—',
                         peso: '—',
                         grado: '—',
+                        division: '—',
                         modalidad: '—',
                         submodalidad: '—',
                         categoria: '—',
@@ -2430,7 +2465,7 @@ $(document).ready(function () {
             } else {
                 //Ajustar panelRegistro
                 var panelOriginal = $('#panelRegistro');
-                panelOriginal.find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
+                panelOriginal.find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput, #inputDivision').hide();
 
                 obj = {
                     atleta: `${atleta.nombre || '—'} ${atleta.primer_apellido || '—'} ${atleta.segundo_apellido || '—'}`,
@@ -2439,6 +2474,7 @@ $(document).ready(function () {
                     rol: atleta.rol || '—',
                     peso: '—',
                     grado: '—',
+                    division: '—',
                     modalidad: '—',
                     submodalidad: '—',
                     categoria: '—',
@@ -2541,9 +2577,9 @@ $(document).ready(function () {
     $(document).on("click", ".bEditar2", function () {//@audit bEditar2
         let $fila = $(this).closest("tr");
         let tr_code = $fila.attr("data-code");
-        let grupo = $fila.find("td:eq(8)").text().trim();
+        let grupo = $fila.find("td:eq(9)").text().trim();
         let trRol = $fila.find("td:eq(3)").text().trim();
-        let submodalidad = $fila.find("td:eq(6)").text().trim();
+        let submodalidad = $fila.find("td:eq(7)").text().trim();
         let cantidadMiembrosActuales = 0;
 
         //_______________________________________
@@ -2683,6 +2719,7 @@ $(document).ready(function () {
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
+                        nuevaCard.find(".inputDivision").val(atleta.division);
 
                         // Mostrar clon
                         nuevaCard.show();
@@ -2693,9 +2730,9 @@ $(document).ready(function () {
                 // Ajustar visibilidad según rol
                 $('.clonEdit').each(function () {
                     if (trRol === 'entrenador' || trRol === 'asistente' || modoEvento === 0) {
-                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').hide();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput, #inputDivision').hide();
                     } else {
-                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput').show();
+                        $(this).find('.grados-select, .modalidades-select, .submodalidades-select, .categorias-select, #pesoInput, #inputDivision').show();
                     }
                 });
 
@@ -2831,6 +2868,7 @@ $(document).ready(function () {
                         nuevaCard.find(".inputSexo").val(atleta.sexo);
                         nuevaCard.find(".inputEdad").val(atleta.edad);
                         nuevaCard.find(".inputPeso").val(atleta.peso);
+                        nuevaCard.find(".inputDivision").val(atleta.division);
 
                         // Mostrar clon
                         nuevaCard.show();
@@ -2987,6 +3025,7 @@ $(document).ready(function () {
                         $(this).find('.submodalidades-select').hide();
                         $(this).find('.categorias-select').hide();
                         $(this).find('#pesoInput').hide();
+                        $(this).find('#inputDivision').hide();
                     });
                 } else {
                     // Mostrar de nuevo si no es rol especial
@@ -2994,7 +3033,7 @@ $(document).ready(function () {
                         $(this).find('.modalidades-select').show();
                         $(this).find('.submodalidades-select').show();
                         $(this).find('.categorias-select').show();
-                        $(this).find('#pesoInput').show();
+                        // $(this).find('#inputDivision').show();
                     });
                 }
             }

@@ -230,7 +230,7 @@ class InscripcionController extends Controller
             ->get();
 
         $academia = $usuario->academia;
-        $atletas = $academia->atletas()->with('grados')->get();
+        $atletas = $academia->atletas()->with(['grados', 'division'])->get();
         // dd($eventos);
         return view('academia/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'eventosIds', 'bloquearSelectEventos'));
     }
@@ -304,7 +304,7 @@ class InscripcionController extends Controller
         $academia = $usuario->academia;
         $atletas = $academia->atletas;
 
-        $inscripciones = Inscripcion::with(['atleta', 'grado', 'modalidad', 'subModalidad', 'categoria', 'evento'])
+        $inscripciones = Inscripcion::with(['atleta', 'grado', 'division', 'modalidad', 'subModalidad', 'categoria', 'evento'])
             ->where('id_evento', $id_evento)
             ->where('id_academia', $academia->id_academia)
             ->get();
@@ -313,6 +313,7 @@ class InscripcionController extends Controller
 
             $atleta = Atleta::find($inscripcion->id_atleta);
             $grado = $atleta->grado;
+            $division = $atleta->division;
 
             $atleta = $inscripcion->atleta->replicate(); // crea una copia del atleta original
 
@@ -322,6 +323,7 @@ class InscripcionController extends Controller
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
             $atleta->grado = $grado;
+            $atleta->division = $division;
             $atleta->modalidad = $inscripcion->modalidad;
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;

@@ -160,7 +160,7 @@
                         $primer = $inscripciones->first()?->first();
                         $nombreEvento = $primer['Evento'] ?? 'Evento Desconocido';
                     @endphp
-                    
+
                     <p class="header-title">Federación Costarricense de Taekwondo</p>
                     <p class="header-subtitle">Reporte de Inscripciones - {{ $nombreEvento }}</p>
                 </td>
@@ -183,6 +183,13 @@
 
 
     <main>
+
+        {{-- Mapa global para los alias de equipos --}}
+        @php
+            $equipoMap = [];
+            $contadorEquipos = 1;
+        @endphp
+
         @foreach ($inscripciones as $academia => $grupo)
             <div class="info">
                 <div class="academia-title">{{ $academia }}</div>
@@ -203,17 +210,40 @@
                     @foreach ($grupo as $inscripcion)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+
                             @foreach ($inscripcion as $campo => $valor)
                                 @if ($campo !== 'Academia') {{-- Oculta el valor correspondiente --}}
-                                    <td>{{ $valor }}</td>
+
+                                    @if ($campo === 'Código de equipo')
+                                        @php
+                                            $codigo = trim((string) $valor);
+
+                                            if ($codigo === '—') {
+                                                $mostrar = '—';
+                                            } else {
+                                                if (!isset($equipoMap[$codigo])) {
+                                                    $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
+                                                    $contadorEquipos++;
+                                                }
+                                                $mostrar = $equipoMap[$codigo];
+                                            }
+                                        @endphp
+
+                                        <td>{{ $mostrar }}</td>
+                                    @else
+                                        <td>{{ $valor }}</td>
+                                    @endif
+
                                 @endif
                             @endforeach
+
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endforeach
     </main>
+
 
 
     <!-- ===================== NÚMERO DE PÁGINA ===================== -->
