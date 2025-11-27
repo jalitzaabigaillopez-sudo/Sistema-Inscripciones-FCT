@@ -309,9 +309,11 @@ $estadisticas['por_sexo'] = $inscripcionesAtletas->map($resolveSexo)->countBy()-
         // ACADEMIA
         $academia = $usuario->academia;
         $id_academia = $academia->id_academia ?? null;
-        $nombre_academia = $academia->nombre ?? null;
+        //$nombre_academia = $academia->nombre?? null;
 
-
+    // Nombre único para usar en navbar y bienvenida
+    $nombre_academia = $academia?->nombre ?? ($usuario?->nombre_completo ?? 'tu Academia');
+        
         //$eventosInscritos = Inscripcion::where('id_academia', $academia->id_academia)->count();
         $totalAtletas = Atleta::where('id_academia', $academia->id_academia)->count();
 
@@ -406,6 +408,7 @@ $estadisticas['por_sexo'] = $inscripcionesAtletas->map($resolveSexo)->countBy()-
             'gradosLabels',
             'gradosCount',
             'coloresGrados',
+            'nombre_academia'
         ));
     }
 
