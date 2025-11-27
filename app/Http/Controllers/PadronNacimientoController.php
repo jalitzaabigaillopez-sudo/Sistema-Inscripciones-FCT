@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RoleGate;
 use Illuminate\Http\Request;
 use App\Models\PadronNacimiento;
 use App\Models\Categoria;
@@ -18,7 +19,8 @@ class PadronNacimientoController extends Controller
 
     public function index()
     {
-        return view('admin/padronNacimientos');
+        RoleGate::requireAdmin();
+        return view('admin.padron.padronNacimientos');
     }
 
     public function subirArchivo(Request $request)
@@ -49,7 +51,7 @@ class PadronNacimientoController extends Controller
 
     function procesarPadron()
     {
-        $path = storage_path('app/private/archivos_txt/MAESTRO_NACIMIENTOS_PLANO_SEPTIEMBRE 2025.txt'); 
+        $path = storage_path('app/private/archivos_txt/MAESTRO_NACIMIENTOS_PLANO_SEPTIEMBRE 2025.txt');
 
         if (!file_exists($path)) {
             throw new \Exception("El archivo no existe: $path");
@@ -131,5 +133,65 @@ class PadronNacimientoController extends Controller
         }
 
         return "";
+    }
+
+    public function buscarGeneral(Request $request)
+    {
+        RoleGate::requireAdmin();
+        
+        try {
+            $query = PadronNacimiento::select(
+                'identificacion',
+                'nombre',
+                'primer_apellido',
+                'segundo_apellido',
+                'fecha_nacimiento'
+            );
+
+            // Búsqueda por cédula (instantánea)
+            if ($request->identificacion) {
+                return response()->json(
+                    PadronNacimiento::where('identificacion', $request->identificacion)
+                        ->limit(1)
+                        ->get()
+                );
+            }
+
+            // Evitar búsquedas enormes por una sola letra
+            if ($request->nombre && strlen($request->nombre) < 2) {
+                return response()->json([]);
+            }
+            if ($request->primer_apellido && strlen($request->primer_apellido) < 2) {
+                return response()->json([]);
+            }
+            if ($request->segundo_apellido && strlen($request->segundo_apellido) < 2) {
+                return response()->json([]);
+            }
+
+            // Filtros usando índices (texto%)
+            if ($request->nombre) {
+                $query->where('nombre', 'LIKE', $request->nombre . '%');
+            }
+
+            if ($request->primer_apellido) {
+                $query->where('primer_apellido', 'LIKE', $request->primer_apellido . '%');
+            }
+
+            if ($request->segundo_apellido) {
+                $query->where('segundo_apellido', 'LIKE', $request->segundo_apellido . '%');
+            }
+
+            // Siempre limitar para no saturar memoria
+            $query->orderBy('identificacion');
+
+            return response()->json($query->limit(50)->get());
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine()
+            ], 500);
+        }
     }
 }

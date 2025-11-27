@@ -440,6 +440,10 @@
                 <i class="bi bi-ui-checks me-2"></i>
                 <span>Inscripciones</span>
             </a>
+             <a href="{{ route('padron.index') }}" onclick="handleSidebarClick(event)">
+                <i class="bi bi-journal-arrow-up me-2"></i>
+                <span>Padrón</span>
+            </a>
             <a href="{{ route('estadisticas.eventos') }}">
                 <i class="bi bi-graph-up-arrow me-2"></i>
                 <span>Estadísticas por Evento</span>

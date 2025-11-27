@@ -126,38 +126,9 @@ Route::get('/reportes-generales', [ReporteController::class, 'vistaReportesGener
 Route::get('/reporte/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoAcademiasPdf']);
 
 
-//prueba frontend
-
-// Ruta principal del dashboard
-//Route::get('/adminDash', function () {
-//return view('admin.dashboard');
-//})->name('adminDash');
-
-
-
-// Ruta para perfil
-// Route::get('/perfil', function () {
-//     return view('admin.perfil');
-// })->name('perfil');
 
 Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
 Route::put('/perfil/{id}', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
-
-// Route::get('/perfilAcademia', [AuthController::class, 'perfilAcademia'])->name('perfilAcademia');
-// Route::put('/perfilAcademia/{id}', [AuthController::class, 'actualizarPerfil'])->name('perfil.update');
-
-
-// Ruta para estadísticas
-// Route::get('/estadisticas', function () {
-//     return view('estadisticas');
-// })->name('estadisticas');
-
-
-
-// Ruta para ranking nacional
-// Route::get('/ranking', function () {
-//     return view('ranking');
-// })->name('ranking');
 
 
 
@@ -229,6 +200,17 @@ Route::get('/divisiones/{id}/datos', [DivisionesController::class, 'edit'])
 
 
 Route::resource('/inscripciones', InscripcionController::class);
+
+
+// =============== PADRÓN NACIMIENTOS ==================
+Route::get('/padron', [PadronNacimientoController::class, 'index'])
+    ->name('padron.index');
+
+Route::post('/padron/subir', [PadronNacimientoController::class, 'subirArchivo'])
+    ->name('subirArchivo');
+
+Route::get('/padron/buscar', [PadronNacimientoController::class, 'buscarGeneral'])
+    ->name('padron.buscar');
 
 // Estadísticas de eventos
 Route::get('/estadisticas-eventos', [InicioController::class, 'estadisticasEventos'])->name('estadisticas.eventos');
