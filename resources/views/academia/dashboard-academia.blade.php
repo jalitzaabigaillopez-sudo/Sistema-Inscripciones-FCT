@@ -5,7 +5,15 @@
 @section('content')
 <div class="container mt-4">
   <div class="mb-4">
-  <h2 class="fw-bold text-dark">¡Bienvenida, {{ $nombre_academia }}!</h2>
+    <h2 class="fw-bold text-dark">
+      ¡Bienvenida{{ isset($academia->nombre) ? ',' : '' }}
+      @if(isset($academia->nombre))
+        {{ $academia->nombre }}
+      @else
+        a tu Academia
+      @endif
+      !
+    </h2>
     <p class="text-muted">Este es tu panel de control para gestionar la academia.</p>
   </div>
 

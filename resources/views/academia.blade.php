@@ -483,7 +483,7 @@
                     @if ($usuario->rol === 'administrador')
                         <span class="text-white fw-semibold">Federación Costarricense de Taekwondo</span>
                  @elseif ($usuario->rol === 'academia' && $usuario->academia)
-                <span class="text-white fw-semibold">{{ $nombre_academia }}</span>
+                  <span class="text-white fw-semibold">{{ $usuario->academia->nombre}}</span>
                     @else
                         <span class="text-white fw-semibold">{{ $usuario->nombre_completo }}</span>
                     @endif
