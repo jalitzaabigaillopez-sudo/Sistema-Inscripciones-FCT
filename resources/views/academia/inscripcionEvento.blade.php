@@ -2,6 +2,8 @@
 
 @section('title', 'Inscripción a Evento')
 
+@section('breadcrumb-title', 'Inscripción a Evento')
+
 @section('content')
 
     <input type="hidden" id="modeView" value="{{ $bloquearSelectEventos }}">
