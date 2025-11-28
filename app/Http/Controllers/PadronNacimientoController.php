@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\PadronNacimiento;
 use App\Models\Categoria;
 use App\Services\SessionService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PadronNacimientoController extends Controller
 {
@@ -31,60 +34,146 @@ class PadronNacimientoController extends Controller
 
         $archivo = $request->file('archivo');
 
-        // Carpeta simulando un servidor FTP
-        $rutaDestino = public_path('ftp_uploads');
+        // Ruta dentro de storage/app
+        $rutaDestino = storage_path('app/private/archivos_txt');
 
         if (!file_exists($rutaDestino)) {
             mkdir($rutaDestino, 0777, true);
         }
 
-        // Mover el archivo (sin usar move() si es grande)
-        $stream = fopen($archivo->getRealPath(), 'r+');
-        $destino = fopen($rutaDestino . '/' . $archivo->getClientOriginalName(), 'w+');
+        $nuevoNombre = 'padron_semanal' . '.txt';
+
+        // Streams para copiar archivos muy grandes
+        $stream = fopen($archivo->getRealPath(), 'r');
+        $destino = fopen($rutaDestino . '/' . $nuevoNombre, 'w');
 
         stream_copy_to_stream($stream, $destino);
+
         fclose($stream);
         fclose($destino);
 
-        return "Archivo cargado exitosamente (simulación FTP)";
+        $this->procesarPadron();
+
+        return "La lectura de este archivo se ha realizado correctamente. Se creo una copia en storage/private/archivos_txt como: $nuevoNombre";
     }
 
-    function procesarPadron()
-    {
-        $path = storage_path('app/private/archivos_txt/MAESTRO_NACIMIENTOS_PLANO_SEPTIEMBRE 2025.txt');
 
-        if (!file_exists($path)) {
-            throw new \Exception("El archivo no existe: $path");
+    public function procesarPadron()
+    {
+        $ruta = storage_path('app/private/archivos_txt/padron_semanal.txt');
+
+        if (!file_exists($ruta)) {
+            $msg = "El archivo no existe: {$ruta}";
+            Log::error($msg);
+            if (app()->runningInConsole())
+                echo $msg . PHP_EOL;
+            return ["error" => $msg];
         }
 
-        $handle = fopen($path, 'r');
+        $handle = fopen($ruta, 'r');
 
         if (!$handle) {
-            throw new \Exception("No se pudo abrir el archivo.");
+            $msg = "No se pudo abrir el archivo: {$ruta}";
+            Log::error($msg);
+            if (app()->runningInConsole())
+                echo $msg . PHP_EOL;
+            return ["error" => $msg];
         }
 
+        // Archivo de errores 
+        $errorFile = 'private/errores_padron_' . date('Ymd_His') . '.log';
+
+        $registros = [];
         $lineNumber = 0;
 
         while (($line = fgets($handle)) !== false) {
             $lineNumber++;
 
-            // Asegura longitud mínima
-            if (strlen($line) < 9) {
+            if (strlen($line) < 133) {
                 continue;
             }
 
-            // Extrae los primeros 9 caracteres (cédula)
-            $cedula = substr($line, 0, 9);
+            // Convertir encoding (por si viene en Windows-1252)
+            $line = mb_convert_encoding($line, 'UTF-8', 'Windows-1252');
 
-            // TODO
+            try {
+                $cedula = trim(substr($line, 0, 9));
+                $fechaRaw = trim(substr($line, 37, 8));
+                $primerApellido = trim(substr($line, 57, 25));
+                $segundoApellido = trim(substr($line, 83, 25));
+                $nombre = trim(substr($line, 109, 49));
 
+                // Limpieza de espacios extra y normalizar
+                $primerApellido = preg_replace('/\s+/', ' ', mb_strtolower($primerApellido, 'UTF-8'));
+                $segundoApellido = preg_replace('/\s+/', ' ', mb_strtolower($segundoApellido, 'UTF-8'));
+                $nombre = preg_replace('/\s+/', ' ', mb_strtolower($nombre, 'UTF-8'));
 
-            // LOG
-            echo "Línea {$lineNumber}: {$cedula}\n";
+                // Convertir fecha YYYYMMDD -> YYYY-MM-DD
+                $fechaNacimiento = null;
+                if (preg_match('/^\d{8}$/', $fechaRaw)) {
+                    $fechaNacimiento = Carbon::createFromFormat('Ymd', $fechaRaw)->format('Y-m-d');
+                }
+
+                // Guardar en BD 
+                PadronNacimiento::create([
+                    'identificacion' => $cedula,
+                    'primer_apellido' => $primerApellido,
+                    'segundo_apellido' => $segundoApellido,
+                    'nombre' => $nombre,
+                    'fecha_nacimiento' => $fechaNacimiento,
+                ]);
+
+                // Imprimir línea procesada en consola (opcional)
+                if (app()->runningInConsole()) {
+                    echo "OK  [{$lineNumber}] {$cedula} | {$fechaNacimiento} | {$primerApellido} {$segundoApellido} {$nombre}" . PHP_EOL;
+                }
+
+            } catch (\Throwable $e) {
+                // Preparar información del error
+                $err = [
+                    'linea' => $lineNumber,
+                    'cedula' => isset($cedula) ? $cedula : null,
+                    'fecha_raw' => isset($fechaRaw) ? $fechaRaw : null,
+                    'primer_apellido' => isset($primerApellido) ? $primerApellido : null,
+                    'segundo_apellido' => isset($segundoApellido) ? $segundoApellido : null,
+                    'nombre' => isset($nombre) ? $nombre : null,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ];
+
+                // Guardar en array (por si querés devolverlo)
+                $registros[] = $err;
+
+                // Loguear
+                Log::error('Error procesando padrón', $err);
+
+              
+                try {
+                    $lineToWrite = json_encode($err, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+                    Storage::append($errorFile, trim($lineToWrite));
+                } catch (\Throwable $ee) {
+                  
+                    Log::error('No se pudo escribir el archivo de errores: ' . $ee->getMessage());
+                }
+
+                if (app()->runningInConsole()) {
+                    echo "ERROR [Linea {$lineNumber}] " . $e->getMessage() . PHP_EOL;
+                }
+
+                continue;
+            }
         }
 
         fclose($handle);
+
+        if (app()->runningInConsole()) {
+            echo "Proceso finalizado. Errores detectados: " . count($registros) . PHP_EOL;
+            echo "Archivo de errores guardado en: storage/app/{$errorFile}" . PHP_EOL;
+        }
+
+        return $registros;
     }
+
 
 
     public function buscarPersona(Request $request)
@@ -138,7 +227,7 @@ class PadronNacimientoController extends Controller
     public function buscarGeneral(Request $request)
     {
         RoleGate::requireAdmin();
-        
+
         try {
             $query = PadronNacimiento::select(
                 'identificacion',
