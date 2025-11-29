@@ -21,11 +21,12 @@ class UsuariosController extends Controller
             redirect()->route('login')->send();
         }
 
-         RoleGate::requireAdmin();
     }
 
     public function index(Request $request)
     {
+        RoleGate::requireAdmin();
+
         // Si es una solicitud AJAX, procesamos los datos para DataTables
         if ($request->ajax()) {
             $query = Usuario::with('academia'); // Inicia la consulta del modelo

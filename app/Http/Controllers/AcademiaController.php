@@ -44,11 +44,13 @@ class AcademiaController extends Controller
         }
 
         // Validar el rol (solo admins)
-        RoleGate::requireAdmin();
+        // RoleGate::requireAdmin();
     }
 
     public function index(Request $request)
     {
+        // RoleGate::requireAdmin();
+
         // Si la petición viene desde DataTables (AJAX)
         if ($request->ajax()) {
             $query = Academia::with(['usuario', 'distrito.canton.provincia']);
