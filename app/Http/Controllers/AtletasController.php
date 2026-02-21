@@ -90,26 +90,26 @@ class AtletasController extends Controller
 
             // Aplicar búsqueda si existe
             if ($request->has('search') && !empty($request->search['value'])) {
+
                 $search = $request->search['value'];
+
                 $base->where(function ($q) use ($search) {
+
                     $q->where('nombre', 'like', "%{$search}%")
                         ->orWhere('primer_apellido', 'like', "%{$search}%")
                         ->orWhere('identificacion', 'like', "%{$search}%")
                         ->orWhere('sexo', 'like', "%{$search}%")
                         ->orWhere('fecha_nacimiento', 'like', "%{$search}%")
                         ->orWhere('estado', 'like', "%{$search}%")
-                        ->orWhere('tipo_identificacion', 'like', "%{$search}%");
-                })
-                    // Búsqueda en la relación Grado
-                    ->orWhereHas('grados', function ($q) use ($search) {
-                        $q->where('nombre', 'like', "%{$search}%");
-                    })
-                    // Búsqueda en la relación Academia
-                    ->orWhereHas('academias', function ($q) use ($search) {
-                        $q->where('nombre', 'like', "%{$search}%");
-                    });
+                        ->orWhere('tipo_identificacion', 'like', "%{$search}%")
+                        ->orWhereHas('grados', function ($q2) use ($search) {
+                            $q2->where('nombre', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('academias', function ($q3) use ($search) {
+                            $q3->where('nombre', 'like', "%{$search}%");
+                        });
+                });
             }
-
             // Ordenamiento
             // if ($request->has('order') && count($request->order) > 0) {
             //     $orderColumn = $request->columns[$request->order[0]['column']]['data'];
