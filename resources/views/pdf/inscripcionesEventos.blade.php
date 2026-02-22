@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Reporte de Inscripciones</title>
+    <title>Reporte de Inscripciones por Evento</title>
     <style>
         /* ================== CONFIGURACIÓN GLOBAL ================== */
         @page {
@@ -154,7 +154,7 @@
                     </td>
                     <td width="70%" class="header-center">
                         <p class="header-title">Federación Costarricense de Taekwondo</p>
-                        <p class="header-subtitle">Reporte de Evento</p>
+                        <p class="header-subtitle">Reporte de Inscripciones del Evento</p>
                     </td>
                     <td width="15%" align="right" style="font-size:9px; color:#555;">
                         Generado el:<br>
@@ -194,7 +194,7 @@
                         <th>#</th>
                         <th>Atleta</th>
                         <th>Grado</th>
-                        <th>Division</th>
+                        <th>División</th>
                         <th>Modalidad</th>
                         <th>Submodalidad</th>
                         <th>Categoría</th>

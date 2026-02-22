@@ -19,6 +19,8 @@
                     <input type="text" id="buscador" class="form-control form-control-sm" style="max-width: 220px;"
                         placeholder="Buscar inscripción...">
                 </div>
+                <span>Descargar <a href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}">PDF <i class="bi bi-file-earmark-pdf"></i></a> </span>
+
                 <table id="tablaMisInscripciones" class="table table-striped table-hover table-bordered text-center border">
                     <thead class="table-light">
                         <tr>
@@ -43,7 +45,7 @@
                                 <td>{{ $academia->profesor_encargado }}</td>
                                 <td>{{ $ins->cantidad_inscritos }}</td>
                                 
-                                <td>{{ number_format((float)(data_get($ins, 'total_montos') ?? data_get($ins, 'total_monto') ?? data_get($ins, 'total') ?? 0), 2) }}</td>
+                                <td>₡{{ number_format((float)($ins->total_monto ?? 0), 2) }}</td>
                                 <td>
                                     @if($ins->estado == 'activa')
                                         Enviado
@@ -85,7 +87,6 @@
                         @endforeach
                     </tbody>
                 </table>
-                <span>Descargar <a href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}">PDF</a></span>
             </div>
             <!-- ...tu tabla aquí... -->
         </div>

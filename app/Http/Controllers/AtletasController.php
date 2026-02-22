@@ -345,7 +345,7 @@ class AtletasController extends Controller
             // 'rol' => 'required|string|in:entrenador,asistente. atleta',
             'sexo' => 'required|string|in:Femenino,Masculino',
             // 'fecha_nacimiento' => 'required|date',
-            'estado' => 'require|string|in:activo,inactivo',
+            'estado' => 'require|string|in:activo,inactivo,sin_academia',
 
             //'id_categoria' => 'required|integer',// 
             'id_grado' => 'required|integer',
@@ -478,7 +478,7 @@ class AtletasController extends Controller
                 'segundo_apellido' => 'nullable|string|max:255',
                 'sexo' => 'required|string',
                 'fecha_nacimiento' => 'required|date',
-                'estado' => 'required|string|in:activo,inactivo',
+                'estado' => 'required|string|in:activo,inactivo,sin_academia',
                 'id_grado' => 'required|integer',
                 'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
                 'remove_imagen' => 'nullable|in:0,1',

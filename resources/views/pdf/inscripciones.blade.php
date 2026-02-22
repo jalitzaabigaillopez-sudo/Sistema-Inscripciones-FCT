@@ -193,44 +193,51 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        @foreach (array_keys($grupo->first() ?? []) as $header)
-                            @if ($header !== 'Academia') {{-- Oculta la columna Academia --}}
-                                <th>{{ $header }}</th>
-                            @endif
-                        @endforeach
+                        <th>Atleta</th>
+                        <th>Grado</th>
+                        <th>Division</th>
+                        <th>Modalidad</th>
+                        <th>Submodalidad</th>
+                        <th>Categoría</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Peso</th>
+                        <th>Equipo</th>
+                        <th>Fecha Inscripción</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($grupo as $inscripcion)
+                    @foreach ($grupo as $i => $dato)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
+                            <td>{{ $dato['Atleta'] }}</td>
+                            <td>{{ $dato['Grado'] }}</td>
+                            <td>{{ $dato['Division'] }}</td>
+                            <td>{{ $dato['Modalidad'] }}</td>
+                            <td>{{ $dato['Submodalidad'] }}</td>
+                            <td>{{ $dato['Categoría'] }}</td>
+                            <td>{{ $dato['Rol'] }}</td>
+                            <td>{{ $dato['Estado'] }}</td>
+                            <td>{{ $dato['Peso'] }}</td>
+                            <td>
+                                @php
+                                    $codigo = trim($dato['Código de equipo']);
 
-                            @foreach ($inscripcion as $campo => $valor)
-                                @if ($campo !== 'Academia') {{-- Oculta el valor correspondiente --}}
-                                    @if ($campo === 'Código de equipo')
-                                        @php
-                                            // Normalizar valor
-                                            $codigo = trim((string) $valor);
+                                    // Si el código es una raya '—', se muestra sin cambiar
+                                    if ($codigo === '—') {
+                                        echo '—';
+                                    } else {
+                                        // Si no existe en el mapa, se crea uno
+                                        if (!isset($equipoMap[$codigo])) {
+                                            $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
+                                            $contadorEquipos++;
+                                        }
 
-                                            if ($codigo === '—') {
-                                                // Si es exactamente la raya, mostrarla tal cual
-                                                $mostrar = '—';
-                                            } else {
-                                                // Si no existe en el mapa, crear alias "Equipo N"
-                                                if (!isset($equipoMap[$codigo])) {
-                                                    $equipoMap[$codigo] = 'Equipo ' . $contadorEquipos;
-                                                    $contadorEquipos++;
-                                                }
-                                                $mostrar = $equipoMap[$codigo];
-                                            }
-                                        @endphp
-                                        <td>{{ $mostrar }}</td>
-                                    @else
-                                        <td>{{ $valor }}</td>
-                                    @endif
-                                @endif
-                            @endforeach
-
+                                        echo $equipoMap[$codigo];
+                                    }
+                                @endphp
+                            </td>
+                            <td>{{ $dato['Fecha inscripción'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
