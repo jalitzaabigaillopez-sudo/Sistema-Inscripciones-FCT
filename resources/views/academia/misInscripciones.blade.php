@@ -75,8 +75,7 @@
            class="btn btn-sm btn-warning rounded-pill">
             <i class="bi bi-pencil-square"></i> 
         </a>
-        <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                onclick="confirmarEliminacion({{ $ins->evento->id_evento }})">
+        <button type="button" class="btn btn-sm btn-danger rounded-pill bEliminarMiInscripcion">
             <i class="bi bi-trash"></i> 
         </button>
     @endif

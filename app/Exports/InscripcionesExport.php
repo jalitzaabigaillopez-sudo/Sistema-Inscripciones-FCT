@@ -54,9 +54,10 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'freestyle' => 3,
         ];
 
+
         $datos = $inscripciones->map(function ($i) {
             $fila = [
-                'ID inscripción' => $i->id_inscripcion,
+                '#' => null,
                 'Atleta' => $i->atleta
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
                     : '—',
@@ -101,33 +102,44 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         // Ordenar según prioridad
         $datosOrdenados = $datos->sort(function ($a, $b) use ($prioridadTipo, $prioridadModalidad) {
-            $rolA = strtolower($a['Rol']);
-            $rolB = strtolower($b['Rol']);
-            $valorTipoA = $prioridadTipo[$rolA] ?? 999;
-            $valorTipoB = $prioridadTipo[$rolB] ?? 999;
+        $acadA = strtolower($a['Academia'] ?? '');
+        $acadB = strtolower($b['Academia'] ?? '');
 
-            if ($valorTipoA !== $valorTipoB) {
-                return $valorTipoA <=> $valorTipoB;
-            }
+        if ($acadA !== $acadB) return $acadA <=> $acadB;
 
-            if ($rolA === 'atleta' && $rolB === 'atleta') {
-                $modA = strtolower($a['Modalidad']);
-                $modB = strtolower($b['Modalidad']);
-                $valorModA = $prioridadModalidad[$modA] ?? 999;
-                $valorModB = $prioridadModalidad[$modB] ?? 999;
-                return $valorModA <=> $valorModB;
-            }
+        $rolA = strtolower($a['Rol'] ?? '—');
+        $rolB = strtolower($b['Rol'] ?? '—');
 
-            return 0;
-        });
+        $valorTipoA = $prioridadTipo[$rolA] ?? 999;
+        $valorTipoB = $prioridadTipo[$rolB] ?? 999;
 
-        return new Collection($datosOrdenados->values());
+        if ($valorTipoA !== $valorTipoB) return $valorTipoA <=> $valorTipoB;
+
+        if ($rolA === 'atleta' && $rolB === 'atleta') {
+            $modA = strtolower($a['Modalidad'] ?? '—');
+            $modB = strtolower($b['Modalidad'] ?? '—');
+
+            $valorModA = $prioridadModalidad[$modA] ?? 999;
+            $valorModB = $prioridadModalidad[$modB] ?? 999;
+
+            return $valorModA <=> $valorModB;
+        }
+
+        return 0;
+    });
+
+    $datosOrdenados = $datosOrdenados->values()->map(function ($fila, $index) {
+    $fila['#'] = $index + 1;
+    return $fila;
+    });
+
+        return new Collection($datosOrdenados);
     }
 
     public function headings(): array
     {
         $encabezados = [
-            'ID inscripción',
+            '#',
             'Atleta',
             'Grado',
             'Division',
@@ -194,7 +206,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datos = $inscripciones->map(function ($i) {
             return [
-                'ID inscripción' => $i->id_inscripcion,
+                // 'ID inscripción' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
                 'Atleta' => $i->atleta
                     ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido
@@ -262,7 +274,10 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'inscripciones' => $datosAgrupados
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream('inscripciones-evento.pdf');
+        $nombreEvento = $inscripciones->first()?->evento->nombre ?? 'evento';
+        $nombreEvento = str_replace(' ', '_', $nombreEvento);
+
+        return $pdf->download("inscripciones_evento_{$nombreEvento}.pdf");
     }
 
 
@@ -296,8 +311,11 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         // Mapear datos
         $datos = $inscripciones->map(function ($i) {
             return [
-                'ID_inscripcion' => $i->id_inscripcion,
+                // 'ID_inscripcion' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
+                'Atleta' => $i->atleta
+                    ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
+                    : '—',
                 'Evento' => $i->evento->nombre ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
                 'Division' => $i->atleta->division->division ?? '—',
@@ -306,9 +324,6 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Categoria' => ($i->categoria?->peso_min !== null && $i->categoria?->peso_max !== null)
                     ? "Más de {$i->categoria->peso_min} kg y no excede {$i->categoria->peso_max} kg"
                     : $i->subModalidad->nombre ?? '—',
-                'Atleta' => $i->atleta
-                    ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
-                    : '—',
                 'Fecha_inscripcion' => $i->fecha_inscripcion,
                 'Estado' => ucfirst(strtolower($i->estado ?? '—')),
                 'Peso' => $i->peso ?? '—',
@@ -319,8 +334,8 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         // Ordenar según prioridad de rol y modalidad 
         $datosOrdenados = $datos->sort(function ($a, $b) use ($prioridadTipo, $prioridadModalidad) {
-            $rolA = strtolower($a['rol']);
-            $rolB = strtolower($b['rol']);
+            $rolA = strtolower($a['Rol']);
+            $rolB = strtolower($b['Rol']);
 
             $valorTipoA = $prioridadTipo[$rolA] ?? 999;
             $valorTipoB = $prioridadTipo[$rolB] ?? 999;
@@ -332,8 +347,8 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
             // Si ambos son atletas, comparar por modalidad
             if ($rolA === 'atleta' && $rolB === 'atleta') {
-                $modA = strtolower($a['modalidad']);
-                $modB = strtolower($b['modalidad']);
+                $modA = strtolower($a['Modalidad']);
+                $modB = strtolower($b['Modalidad']);
 
                 $valorModA = $prioridadModalidad[$modA] ?? 999;
                 $valorModB = $prioridadModalidad[$modB] ?? 999;
@@ -345,12 +360,15 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             return 0;
         });
 
-        $datosAgrupados = $datosOrdenados->groupBy('academia');
+        $datosAgrupados = $datosOrdenados->groupBy('Academia');
 
         $pdf = Pdf::loadView('pdf.inscripcionesAcademiasAdministrador', ['inscripciones' => $datosAgrupados])
             ->setPaper('a4', 'landscape');
 
-        return $pdf->download('inscripciones-academia.pdf');
+        $nombreAcademia = $inscripciones->first()?->academia->nombre ?? 'academia';
+        $nombreAcademia = str_replace(' ', '_', $nombreAcademia);
+
+        return $pdf->download("inscripciones_academia_{$nombreAcademia}.pdf");
     }
 
 
@@ -362,7 +380,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datos = $inscripciones->map(function ($i) {
             return [
-                'ID inscripción' => $i->id_inscripcion,
+                // 'ID inscripción' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
                 'Atleta' => $i->atleta
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
@@ -453,7 +471,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datos = $inscripciones->map(function ($i) {
             return [
-                'ID inscripción' => $i->id_inscripcion,
+                // 'ID inscripción' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
                 'Atleta' => $i->atleta
                     ? $i->atleta->nombre . " " . $i->atleta->primer_apellido . " " . $i->atleta->segundo_apellido
@@ -551,7 +569,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         $datos = $inscripciones->map(function ($i) {
             return [
-                'ID inscripción' => $i->id_inscripcion,
+                // 'ID inscripción' => $i->id_inscripcion,
                 'Academia' => $i->academia->nombre ?? '—',
                 'Atleta' => $i->atleta
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"

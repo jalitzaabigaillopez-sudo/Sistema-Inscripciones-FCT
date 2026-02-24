@@ -158,7 +158,7 @@
 
                     @php
                         $primer = $inscripciones->first()?->first();
-                        $nombreAcademia = $primer['academia'] ?? 'Academia Desconocido';
+                        $nombreAcademia = $primer['Academia'] ?? 'Academia Desconocida';
                     @endphp
                     <p class="header-title">Federación Costarricense de Taekwondo</p>
                     <p class="header-subtitle">Reporte de Inscripciones - {{$nombreAcademia}}</p>

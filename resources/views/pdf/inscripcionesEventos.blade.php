@@ -23,7 +23,7 @@
             margin-top: 0;
         }
 
-        ```
+        
 
         /* ================== ENCABEZADO Y PIE ================== */
         header {
@@ -164,7 +164,7 @@
             </table>
         </header>
 
-        ```
+    
         <!-- ===================== PIE DE PÁGINA ===================== -->
         <footer>
             <span>© Federación Costarricense de Taekwondo</span><br>
@@ -209,15 +209,15 @@
                     @foreach ($grupo as $i => $dato)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $dato['Atleta'] }}</td>
-                            <td>{{ $dato['Grado'] }}</td>
-                            <td>{{ $dato['Division'] }}</td>
-                            <td>{{ $dato['Modalidad'] }}</td>
-                            <td>{{ $dato['Submodalidad'] }}</td>
-                            <td>{{ $dato['Categoría'] }}</td>
-                            <td>{{ $dato['Rol'] }}</td>
-                            <td>{{ $dato['Estado'] }}</td>
-                            <td>{{ $dato['Peso'] }}</td>
+                            <td>{{ $dato['Atleta'] ?? '—' }}</td>
+                            <td>{{ $dato['Grado'] ?? '—' }}</td>
+                            <td>{{ $dato['Division'] ?? $dato['División'] ?? '—' }}</td>
+                            <td>{{ $dato['Modalidad'] ?? '—' }}</td>
+                            <td>{{ $dato['Submodalidad'] ?? '—' }}</td>
+                            <td>{{ $dato['Categoría'] ?? $dato['Categoria'] ?? '—' }}</td>
+                            <td>{{ $dato['Rol'] ?? $dato['rol'] ?? '—' }}</td>
+                            <td>{{ $dato['Estado'] ?? '—' }}</td>
+                            <td>{{ $dato['Peso'] ?? '—' }}</td>
                             <td>
                                 @php
                                     $codigo = trim($dato['Código de equipo']);
@@ -236,7 +236,7 @@
                                     }
                                 @endphp
                             </td>
-                            <td>{{ $dato['Fecha inscripción'] }}</td>
+                            <td>{{ $dato['Fecha inscripción'] ?? $dato['Fecha_inscripcion'] ?? '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -14,6 +14,7 @@ use App\Exports\InscripcionesExport;
 use App\Helpers\RoleGate;
 use App\Models\Academia;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class ReporteController extends Controller
 {
@@ -150,12 +151,30 @@ class ReporteController extends Controller
     //EXCEL
     public function exportarInscripcionesEventoExcel($id_evento)
     {
-        return Excel::download(new InscripcionesExport($id_evento, null), "inscripciones_eventos_{$id_evento}.xlsx");
+        $evento = Evento::find($id_evento);
+        $nombreEvento = $evento?->nombre ?? 'evento';
+
+        // Limpiar nombre (importante)
+        $nombreEvento = Str::slug($nombreEvento);
+
+        return Excel::download(
+            new InscripcionesExport($id_evento, null),
+            "inscripciones_evento_{$nombreEvento}.xlsx"
+        );
     }
 
     public function exportarInscripcionesAcademiaExcel($id_academia)
     {
-        return Excel::download(new InscripcionesExport(null, $id_academia), "inscripciones_academia_{$id_academia}.xlsx");
+       $academia = Academia::find($id_academia);
+        $nombreAcademia = $academia?->nombre ?? 'academia';
+
+        // Limpiar nombre
+        $nombreAcademia = Str::slug($nombreAcademia);
+
+        return Excel::download(
+            new InscripcionesExport(null, $id_academia),
+            "inscripciones_academia_{$nombreAcademia}.xlsx"
+        );
     }
 
 
