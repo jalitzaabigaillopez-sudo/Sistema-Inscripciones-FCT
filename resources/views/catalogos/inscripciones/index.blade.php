@@ -114,7 +114,7 @@
                             <td value="{{ $item->academia->id_academia }}">{{ $item->academia->nombre }}</td>
                             <td>{{ $item->total_atletas }}</td>
                         
-                            <td>₡{{ number_format((float)(data_get($item, 'total_montos') ?? data_get($item, 'total_monto') ?? data_get($item, 'total') ?? 0), 2) }}</td>
+                            <td>₡{{ number_format((float)($item->total_monto ?? 0), 2) }}</td>
                             <td>
                                 <span
                                     class="badge rounded-pill 

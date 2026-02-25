@@ -26,20 +26,71 @@ class InscripcionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $eventos = Evento::all();
-        $academias = Academia::all();
+  public function index(Request $request)
+{
+    $eventos = Evento::all()->keyBy('id_evento');
+    $academias = Academia::all()->keyBy('id_academia');
 
-        $inscripciones = Inscripcion::with(['evento', 'academia'])
-            ->select('id_evento', 'id_academia', 'estado')
-            ->selectRaw('COUNT(id_inscripcion) as total_atletas')
-            ->groupBy('id_evento', 'id_academia', 'estado')
-            ->get();
+    // 1) resumen por atleta (1 fila por atleta-evento-academia-estado)
+    $resumenAtletas = Inscripcion::query()
+        ->where('rol', 'atleta')
+        ->whereNotNull('id_modalidad')
+        ->select('id_evento', 'id_academia', 'id_atleta', 'estado')
+        ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
+        ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+        ->groupBy('id_evento', 'id_academia', 'id_atleta', 'estado')
+        ->get();
 
-        // dd($inscripciones);
-        return view('catalogos.inscripciones.index', compact('inscripciones', 'eventos', 'academias'));
-    }
+    // 2) agrupar por evento + academia + estado (para tabla admin)
+    $inscripciones = $resumenAtletas
+        ->groupBy(fn ($r) => $r->id_evento . '-' . $r->id_academia . '-' . $r->estado)
+        ->map(function ($grupo) use ($eventos, $academias) {
+
+            $first = $grupo->first();
+            $evento = $eventos->get($first->id_evento);
+            $academia = $academias->get($first->id_academia);
+
+            $totalMonto = 0.0;
+
+            foreach ($grupo as $row) {
+                $esDosOMas = (int)$row->modalidades >= 2;
+                $esTardia = (int)$row->es_tardia === 1; // por atleta (no por hoy)
+
+                if ($esTardia) {
+                    $totalMonto += $esDosOMas
+                        ? (float)($evento->costo_tardia_2 ?? 0)
+                        : (float)($evento->costo_tardia_1 ?? 0);
+                } else {
+                    $totalMonto += $esDosOMas
+                        ? (float)($evento->costo_temprana_2 ?? 0)
+                        : (float)($evento->costo_temprana_1 ?? 0);
+                }
+            }
+
+            return (object)[
+                'id_evento' => $first->id_evento,
+                'id_academia' => $first->id_academia,
+                'estado' => $first->estado,
+
+                // atletas únicos en ese evento + academia + estado
+                'total_atletas' => $grupo->count(),
+
+                // monto total por atleta (1 vez), segun modalidad(es) y tipo (temprana/tardia) del atleta
+                'total_monto' => $totalMonto,
+
+                'evento' => $evento,
+                'academia' => $academia,
+            ];
+        })
+        ->values();
+
+    return view('catalogos.inscripciones.index', [
+        'inscripciones' => $inscripciones,
+        'academias' => $academias->values(),
+        'eventos' => $eventos->values(),
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -242,41 +293,66 @@ class InscripcionController extends Controller
      */
     public function vistaMisInscripcionesAcademia(Request $request)
     {
-        // Solo academias
-        RoleGate::requireAcademia();
+            // Solo academias
+            RoleGate::requireAcademia();
 
-        $usuarioId = $request->session()->get('usuario');
-        $usuario = Usuario::find($usuarioId);
-        $academia = $usuario->academia;
+            $usuarioId = $request->session()->get('usuario');
+            $usuario = Usuario::find($usuarioId);
+            $academia = $usuario->academia;
 
-        // Obtener todas las inscripciones de la academia con relaciones
-        $inscripciones = Inscripcion::with(['evento', 'atletas'])
-            ->where('id_academia', $academia->id_academia)->get()
-            ->groupBy(function ($ins) {
+            // Agrupar por evento
+            $inscripcionesPorEvento = Inscripcion::with(['evento'])
+                ->where('id_academia', $academia->id_academia)
+                ->get()
+                ->groupBy('id_evento');
 
-                return $ins->id_evento;// agrupar por id_evento
-            });
+            $inscripcionesAgrupadas = [];
 
-        $inscripcionesAgrupadas = [];
+            foreach ($inscripcionesPorEvento as $id_evento => $grupo) {
 
-        foreach ($inscripciones as $id_evento => $grupo) {
+                $primera = $grupo->first();
+                $evento  = $primera->evento;
 
-            $primera = $grupo->first();// Tomamar la primera inscripción del grupo para datos comunes
+                // Resumen por atleta (modalidades + si fue tardía)
+                $resumenAtletas = Inscripcion::query()
+                    ->where('id_academia', $academia->id_academia)
+                    ->where('id_evento', $id_evento)
+                    ->where('rol', 'atleta')
+                    ->whereNotNull('id_modalidad')
+                    ->select('id_atleta')
+                    ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
+                    ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+                    ->groupBy('id_atleta')
+                    ->get();
 
-            $atletas = $grupo->pluck('atletas')->flatten();// Todos los atletas del grupo
+                $cantidad_inscritos = $resumenAtletas->count(); // atletas únicos
+                $totalMonto = 0.0;
 
-            $cantidad_inscritos = $atletas->count();
+                foreach ($resumenAtletas as $row) {
+                    $esDosOMas = (int)$row->modalidades >= 2;
+                    $esTardia  = (int)$row->es_tardia === 1;
 
-            $inscripcionesAgrupadas[] = (object) [
-                'evento' => $primera->evento,
-                'cantidad_inscritos' => $cantidad_inscritos,
-                'estado' => $primera->estado,
-                'tipo_inscripcion' => $primera->tipo_inscripcion,
-            ];
-        }
+                    if ($esTardia) {
+                        $totalMonto += $esDosOMas
+                            ? (float)($evento->costo_tardia_2 ?? 0)
+                            : (float)($evento->costo_tardia_1 ?? 0);
+                    } else {
+                        $totalMonto += $esDosOMas
+                            ? (float)($evento->costo_temprana_2 ?? 0)
+                            : (float)($evento->costo_temprana_1 ?? 0);
+                    }
+                }
 
-        // dd($inscripcionesAgrupadas);
-        return view('academia/misInscripciones', compact('inscripcionesAgrupadas', 'academia'));
+                $inscripcionesAgrupadas[] = (object)[
+                    'evento' => $evento,
+                    'cantidad_inscritos' => $cantidad_inscritos,
+                    'total_monto' => $totalMonto,
+                    'estado' => $primera->estado,
+                    'tipo_inscripcion' => $primera->tipo_inscripcion, // si quieres "mixto" te lo ajusto
+                ];
+            }
+
+            return view('academia/misInscripciones', compact('inscripcionesAgrupadas', 'academia'));
     }
 
     /**
