@@ -106,7 +106,7 @@
                       <tr>
                         <td class="text-wrap">{{ $nombre }}</td>
                         @if($key === 'por_academia' && is_array($dato))
-                          <td class="text-end">{{ number_format($dato['cantidad']) }}</td>
+                          <td class="text-end">{{ number_format($dato['inscripciones']) }}</td>
                           <td class="text-end">₡{{ number_format($dato['monto'], 0) }}</td>
                         @else
                           <td class="text-end">{{ number_format($dato) }}</td>

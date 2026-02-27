@@ -59,10 +59,14 @@ class EventosController extends Controller
                 'fecha_inicio_inscripcion',
                 'fecha_final_inscripcion',
                 'fecha_final_inscripcion_tardia',
-                'costo',
                 'fecha_inicio',
                 'fecha_final',
-                'estado'
+                'estado',
+                // columnas reales de costos:
+                'costo_temprana_1',
+                'costo_temprana_2',
+                'costo_tardia_1',
+                'costo_tardia_2',
             ];
 
             //  Búsqueda global
@@ -86,8 +90,8 @@ class EventosController extends Controller
             }
 
             //  Totales
-            $recordsFiltered = $query->count();
             $totalRecords = Evento::count();
+            $recordsFiltered = (clone $query)->count();
 
             //  Ordenamiento dinámico
             if ($request->has('order') && count($request->order) > 0) {
@@ -98,9 +102,11 @@ class EventosController extends Controller
                 if (in_array($orderColumnName, $allowedColumns)) {
                     $query->orderBy($orderColumnName, $orderDirection);
                 } elseif ($orderColumnName === 'tipo_evento') {
-                    $query->join('tipo_eventos', 'eventos.id_tipo_evento', '=', 'tipo_eventos.id_tipo_evento')
-                        ->orderBy('tipo_eventos.nombre', $orderDirection)
-                        ->select('eventos.*');
+                    $query->orderBy(
+                        TipoEvento::select('nombre')
+                            ->whereColumn('tipos_eventos.id_tipo_evento', 'eventos.id_tipo_evento'),
+                        $orderDirection
+                    );
                 }
             }
 

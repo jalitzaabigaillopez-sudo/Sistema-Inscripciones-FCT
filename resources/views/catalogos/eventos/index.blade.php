@@ -594,7 +594,9 @@
                     {
                         data: "costo",
                         title: "Costos",
-                        defaultContent: ""
+                        defaultContent: "",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "fecha_inicio_inscripcion",

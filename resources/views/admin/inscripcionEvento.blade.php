@@ -136,13 +136,13 @@
 
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select modalidades-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select submodalidades-select" required>
                             <option selected disabled>Submodalidad</option>
 

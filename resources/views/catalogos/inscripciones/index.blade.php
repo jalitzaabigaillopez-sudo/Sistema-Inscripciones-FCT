@@ -143,10 +143,15 @@
                                                 <i class="bi bi-pencil-square"></i> Ver/Editar
                                             </a>
                                             <li>
-                                                <a class="dropdown-item text-danger"
-                                                    href="{{ route('admin.eliminar.inscripcion', ['id_evento' => $item->evento->id_evento, 'id_academia' => $item->academia->id_academia]) }}">
-                                                    <i class="bi bi-trash"></i> Eliminar
-                                                </a>
+                                               <form method="POST" action="{{ route('admin.eliminar.inscripcion', ['id_evento' => $item->evento->id_evento, 'id_academia' => $item->academia->id_academia]) }}"
+                                                    onsubmit="return confirm('¿Seguro que desea eliminar esta inscripción?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="dropdown-item text-danger" type="submit">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </button>
+                                                </form>
+
                                             </li>
                                         </ul>
                                     </div>

@@ -55,11 +55,12 @@ public function estadisticasEventos(Request $request)
     }
 
     $inscripciones = Inscripcion::with([
-        'atleta',
+        'atleta.grado',
         'academia',
         'modalidad',
         'submodalidad',
         'grado',
+        'categoria',
          
     ])->where('id_evento', $eventoSeleccionado->id_evento)->get();
 
@@ -72,18 +73,28 @@ public function estadisticasEventos(Request $request)
     $normalize = fn($val) => $val ? mb_convert_case(trim((string) $val), MB_CASE_TITLE) : null;
 
     // Resolutores
-   $resolveGrado = function ($i) use ($normalize) {
-    $grado = optional($i->grado);
-    $nombre = $normalize($grado?->nombre ?? $i->grado_nombre);
+ $resolveGrado = function ($i) use ($normalize) {
+    // 1) si la inscripción tiene relación grado
+    $nombre = $normalize(optional($i->grado)->nombre);
+
+    // 2) si no, intenta por el atleta
+    if (!$nombre) {
+        $nombre = $normalize(optional(optional($i->atleta)->grado)->nombre);
+    }
+
+    // 3) fallback si viene un campo suelto
+    if (!$nombre) {
+        $nombre = $normalize($i->grado_nombre ?? null);
+    }
 
     return $nombre ?? 'Sin grado';
 };
 
-    $resolveAcademia = fn($i) => $normalize(optional($i->academia)->nombre) ?? $normalize($i->academia_nombre) ?? 'Sin academia';
-    $resolveModalidad = fn($i) => $normalize(optional($i->modalidad)->nombre) ?? $normalize($i->modalidad_nombre) ?? 'Sin modalidad';
-    $resolveSubmodalidad = fn($i) => $normalize(optional($i->submodalidad)->nombre) ?? $normalize($i->submodalidad_nombre) ?? 'Sin submodalidad';
-    $resolveCategoria = fn($i) => $normalize(optional($i->categoria)->nombre) ?? $normalize($i->categoria_nombre) ?? 'Sin categoría';
-    $resolveRol = fn($i) => $normalize($i->rol) ?? 'Sin rol';
+    $resolveAcademia = fn($i) => $normalize(optional($i->academia)->nombre) ?? $normalize($i->academia_nombre ?? null) ?? 'Sin academia';
+    $resolveModalidad = fn($i) => $normalize(optional($i->modalidad)->nombre) ?? $normalize($i->modalidad_nombre ?? null) ?? 'Sin modalidad';
+    $resolveSubmodalidad = fn($i) => $normalize(optional($i->submodalidad)->nombre) ?? $normalize($i->submodalidad_nombre ?? null) ?? 'Sin submodalidad';
+    $resolveCategoria = fn($i) => $normalize(optional($i->categoria)->nombre) ?? $normalize($i->categoria_nombre ?? null) ?? 'Sin categoría';
+    $resolveRol = fn($i) => $normalize($i->rol ?? null) ?? 'Sin rol';
 
       
     $resolveSexo = function ($i) {
@@ -119,27 +130,18 @@ public function estadisticasEventos(Request $request)
 
 
       // Función para limpiar claves
-    $mascarar = fn($valor) => in_array($valor, [
-        'Sin grado', 'Sin modalidad', 'Sin submodalidad'
-    ]) ? 'No especificado' : $valor;
+    $mascarar = fn($valor) => in_array($valor, ['Sin grado', 'Sin modalidad', 'Sin submodalidad'])
+    ? 'No especificado'
+    : $valor;
 
-    $mascararKeys = fn($array) => collect($array)
-        ->mapWithKeys(fn($valor, $clave) => [$mascarar($clave) => $valor])
-        ->toArray();
-
-   // Normaliza y agrupa claves de un arreglo asociativo, acumulando valores cuando las claves normalizadas coinciden
-   $mascararKeys = function(array $arr) use ($mascarar) {
-       $result = [];
-       foreach ($arr as $key => $value) {
-           $k = $mascarar($key);
-           if (isset($result[$k])) {
-               $result[$k] += $value;
-           } else {
-               $result[$k] = $value;
-           }
-       }
-       return $result;
-   };
+    $mascararKeys = function(array $arr) use ($mascarar) {
+        $result = [];
+        foreach ($arr as $key => $value) {
+            $k = $mascarar($key);
+            $result[$k] = ($result[$k] ?? 0) + $value;
+        }
+        return $result;
+    };
 
     // Estadísticas base
     $estadisticas['total_inscripciones'] = $inscripciones->count();
@@ -160,7 +162,6 @@ public function estadisticasEventos(Request $request)
     $estadisticas['por_rol'] = $inscripciones->map($resolveRol)->countBy()->toArray();
 
     
- $porAcademia = [];
 
 // Filtra inscripciones válidas para cálculo de montos
 $inscripcionesAtletas = $inscripciones->filter(function ($i) {
@@ -169,41 +170,70 @@ $inscripcionesAtletas = $inscripciones->filter(function ($i) {
 });
 
 
-// Agrupa por atleta
-$inscripcionesPorAtleta = $inscripcionesAtletas->groupBy('id_atleta');
+// =======================
+// POR ACADEMIA (MISMA LÓGICA QUE catalogos.inscripciones.index)
+// - Cuenta por atleta (1 vez)
+// - Modalidades: COUNT DISTINCT id_modalidad (igual que tu método)
+// - Tardía: MAX(tipo_inscripcion='tardia') por atleta
+// - Monto: según costos del evento (temprana/tardía y 1 vs 2+)
+// - Estructura compatible con Blade: ['inscripciones','cantidad','monto']
+// =======================
 
-foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
-    // Academia del atleta (toma la de la primera inscripción)
-    $academia = $resolveAcademia($inscripcionesAtleta->first());
+$resumenAtletas = Inscripcion::query()
+    ->where('id_evento', $eventoSeleccionado->id_evento)
+    ->where('rol', 'atleta')
+    ->whereNotNull('id_modalidad')
+    ->select('id_evento', 'id_academia', 'id_atleta', 'estado')
+    ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
+    ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+    ->selectRaw('COUNT(*) as inscripciones_atleta')
+    ->groupBy('id_evento', 'id_academia', 'id_atleta', 'estado')
+    ->get();
 
-    // Modalidades únicas por atleta: combinación modalidad + submodalidad
-    $modalidadesUnicas = $inscripcionesAtleta
-        ->map(function ($i) {
-            $modId = $i->id_modalidad ?? optional($i->modalidad)->id_modalidad;
-            $subId = $i->id_submodalidad ?? optional($i->submodalidad)->id_submodalidad;
-            return $modId . '-' . ($subId ?? '0');
-        })
-        ->unique()
-        ->count();
+$porAcademia = [];
 
-    // Determina si es temprana: todas las inscripciones del atleta dentro del plazo
-    $limite = $eventoSeleccionado->fecha_limite_temprana; // ajusta al campo real
-    $esTemprana = $limite
-        ? $inscripcionesAtleta->every(fn($i) => \Carbon\Carbon::parse($i->created_at)->lte($limite))
-        : true; // si no hay límite definido, considera temprana
+foreach ($resumenAtletas as $row) {
 
-    // Calcula el monto para el atleta
-    $monto = $eventoSeleccionado->calcularCostoPorAtleta($modalidadesUnicas, $esTemprana);
+    // Nombre academia (si tiene relación, usar; si no, cae al id)
+    $academiaNombre = $normalize(optional($row->academia)->nombre)
+        ?? ($row->id_academia ? ("Academia #".$row->id_academia) : 'Sin academia');
 
-    // Acumula por academia
-    if (!isset($porAcademia[$academia])) {
-        $porAcademia[$academia] = ['cantidad' => 0, 'monto' => 0];
+    $esDosOMas = (int)$row->modalidades >= 2;
+    $esTardia = (int)$row->es_tardia === 1;
+
+    $monto = 0.0;
+    if ($esTardia) {
+        $monto = $esDosOMas
+            ? (float)($eventoSeleccionado->costo_tardia_2 ?? 0)
+            : (float)($eventoSeleccionado->costo_tardia_1 ?? 0);
+    } else {
+        $monto = $esDosOMas
+            ? (float)($eventoSeleccionado->costo_temprana_2 ?? 0)
+            : (float)($eventoSeleccionado->costo_temprana_1 ?? 0);
     }
-    $porAcademia[$academia]['cantidad']++; // atletas
-    $porAcademia[$academia]['monto'] += $monto;
+
+    if (!isset($porAcademia[$academiaNombre])) {
+        $porAcademia[$academiaNombre] = [
+            'inscripciones' => 0, // filas reales (inscripciones)
+            'cantidad'      => 0, // Blade suma esto en el footer
+            'monto'         => 0.0
+        ];
+    }
+
+    // inscripciones reales (contar filas)
+    $porAcademia[$academiaNombre]['inscripciones'] += (int)$row->inscripciones_atleta;
+
+    // Blade usa 'cantidad' en el total; lo dejamos igual que inscripciones para que cuadre footer
+    $porAcademia[$academiaNombre]['cantidad'] += (int)$row->inscripciones_atleta;
+
+    // monto por atleta (1 vez por atleta)
+    $porAcademia[$academiaNombre]['monto'] += $monto;
 }
 
-$estadisticas['por_academia'] = $inscripcionesAtletas->map($resolveAcademia)->countBy()->toArray();
+//  Esto es lo que Blade usa para "Inscripciones por Academia"
+$estadisticas['por_academia'] = $porAcademia;
+
+// $estadisticas['por_academia'] = $inscripcionesAtletas->map($resolveAcademia)->countBy()->toArray();
 $estadisticas['por_modalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveModalidad)->countBy()->toArray());
 $estadisticas['por_submodalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveSubmodalidad)->countBy()->toArray());
 $estadisticas['por_grado'] = $mascararKeys($inscripcionesAtletas->map($resolveGrado)->countBy()->toArray());

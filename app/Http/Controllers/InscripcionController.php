@@ -38,6 +38,7 @@ class InscripcionController extends Controller
         ->select('id_evento', 'id_academia', 'id_atleta', 'estado')
         ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
         ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+        ->selectRaw('COUNT(*) as inscripciones_atleta')
         ->groupBy('id_evento', 'id_academia', 'id_atleta', 'estado')
         ->get();
 
@@ -73,7 +74,7 @@ class InscripcionController extends Controller
                 'estado' => $first->estado,
 
                 // atletas únicos en ese evento + academia + estado
-                'total_atletas' => $grupo->count(),
+                'total_atletas' => $grupo->sum('inscripciones_atleta'),
 
                 // monto total por atleta (1 vez), segun modalidad(es) y tipo (temprana/tardia) del atleta
                 'total_monto' => $totalMonto,
@@ -169,7 +170,7 @@ class InscripcionController extends Controller
     public function modificarInscripcionAtleta(Request $request)
     {
         // Solo academias
-        RoleGate::requireAcademia();
+        RoleGate::requireAdminOrAcademia();
 
         $atletasModificar = $request->input('atletasModificar', []);
         $datosNuevos = $request->input('datosNuevos', []); // Datos nuevos para actualizar
@@ -214,7 +215,7 @@ class InscripcionController extends Controller
     public function eliminarInscripcionAtleta(Request $request)
     {
         // Solo academias
-        RoleGate::requireAcademia();
+        RoleGate::requireAdminOrAcademia();
 
         $response = false;
         $atletasModificar = $request->input('atletasModificar', []);
@@ -322,10 +323,19 @@ class InscripcionController extends Controller
                     ->select('id_atleta')
                     ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
                     ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+                    ->selectRaw('COUNT(*) as inscripciones_atleta')
                     ->groupBy('id_atleta')
                     ->get();
 
-                $cantidad_inscritos = $resumenAtletas->count(); // atletas únicos
+                // CONTAR UN ATLETA AUNQUE ESTE INSCRITO EN VARIAS MODALIDADES
+                $total_atletas = $resumenAtletas->count(); // atletas únicos
+                
+                $cantidad_inscritos = Inscripcion::where('id_academia', $academia->id_academia)
+                ->where('id_evento', $id_evento)
+                ->where('rol', 'atleta')
+                ->whereNotNull('id_modalidad')
+                ->count();
+
                 $totalMonto = 0.0;
 
                 foreach ($resumenAtletas as $row) {
@@ -477,9 +487,9 @@ class InscripcionController extends Controller
         $bloquearSelectEventos = true;
 
         $academia = Academia::find($id_academia);
-        $atletas = $academia->atletas;
+        $atletas = $academia->atletas()->with('grado')->get();
 
-        $inscripciones = Inscripcion::with(['atleta', 'grado', 'modalidad', 'subModalidad', 'categoria', 'evento'])
+        $inscripciones = Inscripcion::with(['atleta.grado', 'modalidad', 'subModalidad', 'categoria', 'evento'])
             ->where('id_evento', $id_evento)
             ->where('id_academia', $academia->id_academia)
             ->get();
@@ -492,7 +502,11 @@ class InscripcionController extends Controller
             $atleta->rol = $inscripcion->rol;
             $atleta->grupo = $inscripcion->codigo_equipo;
             $atleta->peso = $inscripcion->peso;
-            $atleta->grado = $inscripcion->grado;
+            
+            //  grado REAL del atleta (puede ser null, y JS ya lo maneja)
+            $atleta->id_grado = $inscripcion->atleta->id_grado;
+            $atleta->grado = $inscripcion->atleta->grado;
+            
             $atleta->modalidad = $inscripcion->modalidad;
             $atleta->subModalidad = $inscripcion->subModalidad;
             $atleta->categoria = $inscripcion->categoria;
@@ -511,20 +525,22 @@ class InscripcionController extends Controller
         return view('admin/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos', 'id_academia'));
     }
 
-    public function administradorEliminarInscripcion($id_academia, $id_evento)
+    public function administradorEliminarInscripcion($id_evento, $id_academia)
     {
          // Solo admin
         RoleGate::requireAdmin();
 
-        $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
+        $inscripcion = Inscripcion::where('id_evento', $id_evento)
+        ->where('id_academia', $id_academia);
 
         if ($inscripcion) {
             $inscripcion->delete();
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Inscripción eliminada.');
         }
 
         return response()->json(['success' => true, 'msg' => 'No se pudo eliminar esta inscripcion']);
     }
+
 
 
     public function AdministradorInscribirAtleta(Request $request)
