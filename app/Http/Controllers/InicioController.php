@@ -203,9 +203,7 @@ foreach ($inscripcionesPorAtleta as $idAtleta => $inscripcionesAtleta) {
     $porAcademia[$academia]['monto'] += $monto;
 }
 
-$estadisticas['por_academia'] = $porAcademia;
-
-// $estadisticas['por_academia'] = $inscripcionesAtletas->map($resolveAcademia)->countBy()->toArray();
+$estadisticas['por_academia'] = $inscripcionesAtletas->map($resolveAcademia)->countBy()->toArray();
 $estadisticas['por_modalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveModalidad)->countBy()->toArray());
 $estadisticas['por_submodalidad'] = $mascararKeys($inscripcionesAtletas->map($resolveSubmodalidad)->countBy()->toArray());
 $estadisticas['por_grado'] = $mascararKeys($inscripcionesAtletas->map($resolveGrado)->countBy()->toArray());

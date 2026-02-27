@@ -172,7 +172,7 @@ Route::resource('/submodalidades', SubModalidadController::class);
  * INSCRIPCIONES
  */
 Route::get('/adminEditarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEditarInscripcion'])->name('admin.editar.inscripcion');
-Route::delete('/adminEliminarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEliminarInscripcion'])->name('admin.eliminar.inscripcion');
+Route::get('/adminEliminarInscripcion/{id_evento}/{id_academia}', [InscripcionController::class, 'administradorEliminarInscripcion'])->name('admin.eliminar.inscripcion');
 Route::post('/adminInscripcionAtleta', [InscripcionController::class, 'AdministradorInscribirAtleta']);
 
 

@@ -1166,7 +1166,7 @@ $(document).ready(function () {
         $('#tabla-inscripcion tbody tr').each(function () {
             let td8 = $(this).find('td:eq(8)');
             let td9 = $(this).find('td:eq(9)');
-            let texto = td8.text().trim();
+            let texto = td7.text().trim();
 
             if (texto.slice(-2) === "-p") {
                 td8.css('background-color', 'yellow');
@@ -1365,82 +1365,82 @@ $(document).ready(function () {
     */
 
     // ☑️ Delegación
-  $(document).on("click", ".bEliminar", function (e) {
-    e.preventDefault();
+    $(document).on("click", ".bEliminar", function () {
+        let $fila = $(this).closest("tr");
+        let id = $fila.data("id");
+        let tr_code = $fila.data("code");
+        let grupo = $fila.find("td:eq(8)").text().trim();
 
-    let $fila = $(this).closest("tr");
-    let id = $fila.data("id");
-    let tr_code = $fila.data("code");
+        $("#contenedor .clonEdit").remove();
+        $("#contenedor .baseCard").remove();
+        $("#panelRegistro").show();
 
-    // OJO: en tu tabla el grupo oculto era td:eq(9). Ajusta si cambió.
-    let grupo = $fila.find("td:eq(9)").text().trim();
+        $("#containerButton").html(`
+            <button id="bInscribir" class="btn btn-outline-success w-100">
+                    <i class="bi bi-plus-circle"></i> Inscribir
+            </button>
+        `);
 
-    //  importante: reiniciar siempre
-    atletasModificar = [];
+        //Eliminar inscripcion
+        let listaCompleta = listaAtletas.concat(gruposAtletas);
 
-    // Armar lista a modificar
-    let listaCompleta = listaAtletas.concat(gruposAtletas);
+        for (let atleta of listaCompleta) {
+            if (!grupo.includes("#")) {
+                if (atleta.id_atleta === id) {
+                    atletasModificar.push(atleta);
+                }
+            }
+            else {
+                if (atleta.grupo === grupo) {
+                    atletasModificar.push(atleta);
 
-    for (let atleta of listaCompleta) {
-        if (!grupo.includes("#")) {
-            if (atleta.id_atleta === id) atletasModificar.push(atleta);
-        } else {
-            if (atleta.grupo === grupo) atletasModificar.push(atleta);
+                }
+            }
         }
-    }
 
-    //  Confirmar ANTES de eliminar
-    let ok = false;
+        eliminarAtletaInscrito(atletasModificar);
 
-    if (grupo.includes("#")) {
-        ok = confirm("⚠️ Aviso! Este atleta está en grupo, si lo elimina eliminará a los atletas de ese grupo. ¿Desea continuar?");
-    } else {
-        ok = confirm("⚠️ Aviso! ¿Está seguro que quieres eliminar este atleta?");
-    }
+        listaCompleta = listaCompleta.filter(a =>
+            !atletasModificar.some(b =>
+                b.id_atleta === a.id_atleta && b.grupo === a.grupo
+            )
+        );
 
-    if (!ok) return; // ← CLAVE
+        actualizarListas(listaCompleta);
 
-    // (opcional) limpiar panel luego de confirmar
-    $("#contenedor .clonEdit").remove();
-    $("#contenedor .baseCard").remove();
-    $("#panelRegistro").show();
+        if (grupo.includes("#")) {// tiene grupo
+            if (confirm("⚠️ Aviso! Este atleta esta en grupo, si lo elimina eliminara a los atletas de ese grupo. ¿Desea continuar?")) {
+                gruposAtletas = gruposAtletas.filter(atleta => atleta.grupo !== grupo);
+                $("#tabla-inscripcion tbody tr[data-grupo='" + grupo + "']").remove();
+            } else {
 
-    $("#containerButton").html(`
-        <button id="bInscribir" class="btn btn-outline-success w-100">
-            <i class="bi bi-plus-circle"></i> Inscribir
-        </button>
-    `);
+            }
 
-    // ✅ Backend
-    eliminarAtletaInscrito(atletasModificar);
+        } else {// no tiene grupo
+            if (confirm("⚠️ Aviso! ¿Esta seguro que quieres eliminar este atleta?")) {
+                listaAtletas = listaAtletas.filter(atleta => atleta.tr_code !== tr_code);
+                $fila.remove();
+            } else {
 
-    // ✅ Actualizar arrays/UI
-    listaCompleta = listaCompleta.filter(a =>
-        !atletasModificar.some(b =>
-            b.id_atleta === a.id_atleta && b.grupo === a.grupo
-        )
-    );
+            }
+        }
 
-    actualizarListas(listaCompleta);
+        let panelOriginal = $("#panelRegistro");
 
-    if (grupo.includes("#")) {
-        gruposAtletas = gruposAtletas.filter(atleta => atleta.grupo !== grupo);
-        $("#tabla-inscripcion tbody tr[data-grupo='" + grupo + "']").remove();
-    } else {
-        listaAtletas = listaAtletas.filter(atleta => atleta.tr_code !== tr_code);
-        $fila.remove();
-    }
+        // Verificar si Select2 ya está inicializado antes de destruirlo                     
+        const select = panelOriginal.find('.atletas-select');
+        if (select.data('select2')) {
+            select.select2('destroy');
+        }
 
-    // ✅ select2
-    let panelOriginal = $("#panelRegistro");
-    const select = panelOriginal.find('.atletas-select');
-    if (select.data('select2')) select.select2('destroy');
+        var newSelect = panelOriginal.find('.atletas-select');
 
-    panelOriginal.find('.atletas-select').select2({
-        placeholder: "Selecciona un atleta",
-        width: '100%'
+        // Inicializar Select2
+        newSelect.select2({
+            placeholder: "Selecciona un atleta",
+            width: '100%'
+        });
     });
-});
 
     // ☑️ Delegación
 
@@ -2044,7 +2044,7 @@ $(document).ready(function () {
                     if (item.tr_code === tr_code) {
 
                         let atleta = item;
-                        atletasModificar.push(atleta);
+                        atletasModificar.push(datos);
 
                         let panelOriginal = $("#panelRegistro");
                         let contenedor = $("#contenedor");

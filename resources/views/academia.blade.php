@@ -770,7 +770,7 @@
 
     @stack('scripts')
     <!-- <script src="{{ asset('js/academiaMatricula/inscripcionesAcademiasOED.js') }}"></script> -->
-    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/academiaMatricula/inscripcionesAcademias.js') }}"></script>
     <script src="{{ asset('js/reportesAcademias.js') }}"></script>
 </body>
 

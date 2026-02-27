@@ -34,24 +34,4 @@ class RoleGate
     {
         self::requireRole('academia');
     }
-
-    public static function requireAnyRole(array $roles)
-{
-    $userId = session('usuario');
-
-    if (!$userId) abort(403, 'Sesión no válida');
-
-    $usuario = Usuario::find($userId);
-
-    if (!$usuario) abort(403, 'Usuario no encontrado');
-
-    if (!in_array($usuario->rol, $roles, true)) {
-        abort(403, 'Acceso no autorizado.');
-    }
-}
-
-public static function requireAdminOrAcademia()
-{
-    self::requireAnyRole(['administrador', 'academia']);
-}
 }
