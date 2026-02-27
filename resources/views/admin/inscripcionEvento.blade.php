@@ -124,6 +124,9 @@
                     <div class="col-md-2">
                         <input type="text" class="form-control inputEdad" placeholder="Edad" readonly>
                     </div>
+                    {{-- <div class="col-md-1">
+                        <input id="inputDivision" type="text" class="form-control inputDivision" placeholder="Division" readonly>
+                    </div> --}}
                     <div class="col-md-2">
                         <input id="pesoInput" type="number" class="form-control inputPeso" placeholder="Peso (kg)" required>
                     </div>
@@ -136,13 +139,13 @@
 
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select modalidades-select" required>
                             <option selected disabled>Modalidad</option>
 
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select submodalidades-select" required>
                             <option selected disabled>Submodalidad</option>
 

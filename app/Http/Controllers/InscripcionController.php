@@ -169,7 +169,7 @@ class InscripcionController extends Controller
     public function modificarInscripcionAtleta(Request $request)
     {
         // Solo academias
-        RoleGate::requireAcademia();
+        RoleGate::requireAdminOrAcademia();
 
         $atletasModificar = $request->input('atletasModificar', []);
         $datosNuevos = $request->input('datosNuevos', []); // Datos nuevos para actualizar
@@ -214,7 +214,7 @@ class InscripcionController extends Controller
     public function eliminarInscripcionAtleta(Request $request)
     {
         // Solo academias
-        RoleGate::requireAcademia();
+        RoleGate::requireAdminOrAcademia();
 
         $response = false;
         $atletasModificar = $request->input('atletasModificar', []);
@@ -511,16 +511,17 @@ class InscripcionController extends Controller
         return view('admin/inscripcionEvento', compact('eventos', 'academia', 'atletas', 'modalidades', 'atletasInscripcion', 'bloquearSelectEventos', 'id_academia'));
     }
 
-    public function administradorEliminarInscripcion($id_academia, $id_evento)
+    public function administradorEliminarInscripcion($id_evento, $id_academia)
     {
          // Solo admin
         RoleGate::requireAdmin();
 
-        $inscripcion = Inscripcion::where('id_evento', $id_evento)->where('id_academia', $id_academia);
+        $inscripcion = Inscripcion::where('id_evento', $id_evento)
+        ->where('id_academia', $id_academia);
 
         if ($inscripcion) {
             $inscripcion->delete();
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Inscripción eliminada.');
         }
 
         return response()->json(['success' => true, 'msg' => 'No se pudo eliminar esta inscripcion']);
