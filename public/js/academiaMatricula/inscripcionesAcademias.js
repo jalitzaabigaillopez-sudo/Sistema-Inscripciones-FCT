@@ -1410,77 +1410,94 @@ $(document).ready(function () {
     */
 
     // ☑️ Delegación
-   $(document).on("click", ".bEliminar", function () {
+    $(document).on("click", ".bEliminar", function (e) {
+    e.preventDefault();
+
     let $fila = $(this).closest("tr");
     let id = $fila.data("id");
-    let tr_code = $fila.data("code");
-    let grupo = $fila.find("td:eq(9)").text().trim();
+    let grupo = $fila.find("td:eq(9)").text().trim(); // ✅ Grupo hidden
+
+    // ✅ Datos de la fila para identificar EXACTAMENTE la inscripción
+    let modalidad = $fila.find("td:eq(6)").text().trim();
+    let idSubFila = $fila.find("td:eq(7)").data("id-submodalidad"); // ✅ Submodalidad id
+    let categoria = $fila.find("td:eq(8)").text().trim(); // opcional
 
     atletasModificar = [];
 
-    //Eliminar inscripcion
+    // Armar lista a modificar
     let listaCompleta = listaAtletas.concat(gruposAtletas);
 
     for (let atleta of listaCompleta) {
+
         if (!grupo.includes("#")) {
-            if (atleta.id_atleta === id) atletasModificar.push(atleta);
+        // ✅ Individual: solo esa modalidad/submodalidad
+        const mismaPersona = String(atleta.id_atleta) === String(id);
+        const mismaModalidad = String(atleta.modalidad).trim().toUpperCase() === String(modalidad).trim().toUpperCase();
+        const mismaSub = String(atleta.id_subModalidad) === String(idSubFila);
+
+        if (mismaPersona && mismaModalidad && mismaSub) {
+            atletasModificar.push(atleta);
+        }
+
         } else {
-            if (atleta.grupo === grupo) atletasModificar.push(atleta);
+        // ✅ Grupo: todo el grupo
+        if (String(atleta.grupo) === String(grupo)) {
+            atletasModificar.push(atleta);
+        }
         }
     }
 
-    // ✅ 1) Confirmar ANTES de eliminar
-    let ok = false;
-
-    if (grupo.includes("#")) {
-        ok = confirm("⚠️ Aviso! Este atleta está en grupo, si lo elimina eliminará a los atletas de ese grupo. ¿Desea continuar?");
-    } else {
-        ok = confirm("⚠️ Aviso! ¿Está seguro que quieres eliminar este atleta?");
+    // ✅ Si no encontró coincidencia exacta, no hagás nada
+    if (!atletasModificar.length) {
+        mostrarAlerta("No se encontró la inscripción exacta para eliminar.", "Aviso", "⚠️");
+        return;
     }
 
-    if (!ok) return; // ← CLAVE: si cancela, no hace absolutamente nada
+    // Confirmar ANTES de eliminar
+    let ok = grupo.includes("#")
+        ? confirm("⚠️ Aviso! Este atleta está en grupo, si lo elimina eliminará a los atletas de ese grupo. ¿Desea continuar?")
+        : confirm("⚠️ Aviso! ¿Está seguro que quieres eliminar este atleta en ESTA modalidad?");
 
-    // ✅ 2) Ahora sí, limpiar panel/ UI si quieres
-    $("#contenedor .clonEdit").remove();
-    $("#contenedor .baseCard").remove();
-    $("#panelRegistro").show();
+    if (!ok) return;
 
-    $("#containerButton").html(`
-        <button id="bInscribir" class="btn btn-outline-success w-100">
-            <i class="bi bi-plus-circle"></i> Inscribir
-        </button>
-    `);
-
-    // ✅ 3) Eliminar backend (solo si confirmó)
+    // Backend
     eliminarAtletaInscrito(atletasModificar);
 
-    // ✅ 4) Actualizar arrays/UI (solo si confirmó)
-    listaCompleta = listaCompleta.filter(a =>
+    // ✅ Actualizar arrays/UI (igual que admin pero correcto)
+    if (!grupo.includes("#")) {
+        // individual: quitar SOLO esa modalidad
+        listaCompleta = listaCompleta.filter(a =>
         !atletasModificar.some(b =>
-            b.id_atleta === a.id_atleta && b.grupo === a.grupo
+            String(b.id_atleta) === String(a.id_atleta) &&
+            String(b.id_modalidad) === String(a.id_modalidad) &&
+            String(b.id_subModalidad) === String(a.id_subModalidad) &&
+            String(b.rol) === String(a.rol)
         )
-    );
+        );
+    } else {
+        // grupo: quitar el grupo completo
+        listaCompleta = listaCompleta.filter(a =>
+        !atletasModificar.some(b => String(b.grupo) === String(a.grupo))
+        );
+    }
 
     actualizarListas(listaCompleta);
 
+    // UI: quitar fila(s) del DOM
     if (grupo.includes("#")) {
-        gruposAtletas = gruposAtletas.filter(atleta => atleta.grupo !== grupo);
         $("#tabla-inscripcion tbody tr[data-grupo='" + grupo + "']").remove();
     } else {
-        listaAtletas = listaAtletas.filter(atleta => atleta.tr_code !== tr_code);
         $fila.remove();
     }
 
-    // ✅ 5) select2
+    // (opcional) reset select2/panel si tu flujo lo requiere en academia
     let panelOriginal = $("#panelRegistro");
-    const select = panelOriginal.find('.atletas-select');
-    if (select.data('select2')) select.select2('destroy');
-
-    panelOriginal.find('.atletas-select').select2({
-        placeholder: "Selecciona un atleta",
-        width: '100%'
+    const select = panelOriginal.find(".atletas-select");
+    if (select.length) {
+        if (select.data("select2")) select.select2("destroy");
+        select.select2({ placeholder: "Selecciona un atleta", width: "100%" });
+    }
     });
-});
 
 
     // ☑️ Delegación

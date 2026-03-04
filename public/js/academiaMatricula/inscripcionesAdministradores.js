@@ -695,7 +695,7 @@ $(document).ready(function () {
                             // Evita que la alerta se dispare el numero de cards en ese momento
                             if (totalCards > 1) {
                                 if (contAlertas1 === totalCards) {
-                                    mostrarAlerta("VUno o mas atletas estan repetidos en su formulario.", "Aviso", "⚠️");
+                                    mostrarAlerta("Uno o más atletas están repetidos en su formulario.", "Aviso", "⚠️");
                                 }
                             }
                             return;
@@ -1091,7 +1091,7 @@ $(document).ready(function () {
             <td>${obj.rol}</td>
             <td>${obj.grado}</td>
             <td>${obj.modalidad}</td>
-            <td>${obj.submodalidad}</td>
+            <td data-id-submodalidad="${obj.id_subModalidad}">${obj.submodalidad}</td>
             <td>${obj.categoria}</td>
             <td style="display:none;">${obj.grupo}</td>
             <td></td>
@@ -1390,82 +1390,116 @@ $(document).ready(function () {
     */
 
     // ☑️ Delegación
-  $(document).on("click", ".bEliminar", function (e) {
-    e.preventDefault();
+    $(document).on("click", ".bEliminar", function (e) {
+        e.preventDefault();
 
-    let $fila = $(this).closest("tr");
-    let id = $fila.data("id");
-    let tr_code = $fila.data("code");
+        let $fila = $(this).closest("tr");
+        let id = $fila.data("id");
+        let tr_code = $fila.data("code");
 
-    // OJO: en tu tabla el grupo oculto era td:eq(9). Ajusta si cambió.
-    let grupo = $fila.find("td:eq(9)").text().trim();
+        // OJO: tabla el grupo oculto era td:eq(9). Ajustar si cambió.
+        let grupo = $fila.find("td:eq(8)").text().trim();
 
-    //  importante: reiniciar siempre
-    atletasModificar = [];
+        let modalidad = $fila.find("td:eq(5)").text().trim();      // COMBATE/POOMSAE/FREESTYLE
+        let submodalidad = $fila.find("td:eq(6)").text().trim();   // nombre visible
+        let categoria = $fila.find("td:eq(7)").text().trim();      // texto visible (opcional)
 
-    // Armar lista a modificar
-    let listaCompleta = listaAtletas.concat(gruposAtletas);
+        let idSubFila = $fila.find("td:eq(6)").data("id-submodalidad");
 
-    for (let atleta of listaCompleta) {
+        //  importante: reiniciar siempre
+        atletasModificar = [];
+
+        // Armar lista a modificar
+        let listaCompleta = listaAtletas.concat(gruposAtletas);
+
+        for (let atleta of listaCompleta) {
+
         if (!grupo.includes("#")) {
-            if (atleta.id_atleta === id) atletasModificar.push(atleta);
+            // ✅ Individual: borrar SOLO la fila (misma modalidad/submodalidad/categoría)
+            const mismaPersona = String(atleta.id_atleta) === String(id);
+
+            const mismaModalidad = String(atleta.modalidad).trim().toUpperCase() === String(modalidad).trim().toUpperCase();
+            const mismaSub = String(atleta.id_subModalidad) === String(idSubFila);
+
+            // categoría puede variar: a veces es texto "min - max" o submodalidad, por eso lo hago opcional
+            const mismaCategoria = String(atleta.categoria).trim().toUpperCase() === String(categoria).trim().toUpperCase();
+
+            // ✅ si tu "categoria" a veces no calza por formato, quitá mismaCategoria del filtro
+            if (mismaPersona && mismaModalidad && mismaSub) {
+                // si querés ser más estricto:
+                // if (mismaPersona && mismaModalidad && mismaSub && mismaCategoria) {
+                atletasModificar.push(atleta);
+            }
+
         } else {
+            // ✅ Grupo: se elimina el grupo completo (igual que antes)
             if (atleta.grupo === grupo) atletasModificar.push(atleta);
         }
-    }
+        }
 
-    //  Confirmar ANTES de eliminar
-    let ok = false;
+        //  Confirmar ANTES de eliminar
+        let ok = false;
 
-    if (grupo.includes("#")) {
-        ok = confirm("⚠️ Aviso! Este atleta está en grupo, si lo elimina eliminará a los atletas de ese grupo. ¿Desea continuar?");
-    } else {
-        ok = confirm("⚠️ Aviso! ¿Está seguro que quieres eliminar este atleta?");
-    }
+        if (grupo.includes("#")) {
+            ok = confirm("⚠️ Aviso! Este atleta está en grupo, si lo elimina eliminará a los atletas de ese grupo. ¿Desea continuar?");
+        } else {
+            ok = confirm("⚠️ Aviso! ¿Está seguro que quieres eliminar este atleta?");
+        }
 
-    if (!ok) return; // ← CLAVE
+        if (!ok) return; // ← CLAVE
 
-    // (opcional) limpiar panel luego de confirmar
-    $("#contenedor .clonEdit").remove();
-    $("#contenedor .baseCard").remove();
-    $("#panelRegistro").show();
+        // (opcional) limpiar panel luego de confirmar
+        $("#contenedor .clonEdit").remove();
+        $("#contenedor .baseCard").remove();
+        $("#panelRegistro").show();
 
-    $("#containerButton").html(`
-        <button id="bInscribir" class="btn btn-outline-success w-100">
-            <i class="bi bi-plus-circle"></i> Inscribir
-        </button>
-    `);
+        $("#containerButton").html(`
+            <button id="bInscribir" class="btn btn-outline-success w-100">
+                <i class="bi bi-plus-circle"></i> Inscribir
+            </button>
+        `);
 
-    // ✅ Backend
-    eliminarAtletaInscrito(atletasModificar);
+        // ✅ Backend
+        eliminarAtletaInscrito(atletasModificar);
 
-    // ✅ Actualizar arrays/UI
-    listaCompleta = listaCompleta.filter(a =>
-        !atletasModificar.some(b =>
-            b.id_atleta === a.id_atleta && b.grupo === a.grupo
-        )
-    );
+        // ✅ Actualizar arrays/UI
+        if (!grupo.includes("#")) {
+        // individual: quitar SOLO esa modalidad
+        listaCompleta = listaCompleta.filter(a =>
+            !atletasModificar.some(b =>
+            String(b.id_atleta) === String(a.id_atleta) &&
+            String(b.id_modalidad) === String(a.id_modalidad) &&
+            String(b.id_subModalidad) === String(a.id_subModalidad) &&
+            String(b.rol) === String(a.rol)
+            )
+        );
+        } else {
+        // grupo: quitar el grupo completo (igual que antes)
+        listaCompleta = listaCompleta.filter(a =>
+            !atletasModificar.some(b =>
+            String(b.grupo) === String(a.grupo)
+            )
+        );
+        }
 
-    actualizarListas(listaCompleta);
+        actualizarListas(listaCompleta);
 
-    if (grupo.includes("#")) {
-        gruposAtletas = gruposAtletas.filter(atleta => atleta.grupo !== grupo);
+        if (grupo.includes("#")) {
         $("#tabla-inscripcion tbody tr[data-grupo='" + grupo + "']").remove();
-    } else {
-        listaAtletas = listaAtletas.filter(atleta => atleta.tr_code !== tr_code);
-        $fila.remove();
-    }
+        } else {
+            $fila.remove();
+        }
 
-    // ✅ select2
-    let panelOriginal = $("#panelRegistro");
-    const select = panelOriginal.find('.atletas-select');
-    if (select.data('select2')) select.select2('destroy');
+        // ✅ select2
+        let panelOriginal = $("#panelRegistro");
+        const select = panelOriginal.find('.atletas-select');
+        if (select.data('select2')) select.select2('destroy');
 
-    panelOriginal.find('.atletas-select').select2({
-        placeholder: "Selecciona un atleta",
-        width: '100%'
+        panelOriginal.find('.atletas-select').select2({
+            placeholder: "Selecciona un atleta",
+            width: '100%'
+        });
     });
-});
 
 
     // ☑️ Delegación

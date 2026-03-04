@@ -303,6 +303,7 @@ class InscripcionController extends Controller
                 ->where('id_subModalidad', $atleta['id_subModalidad'])
                 // ->where('id_categoria', $atleta['id_categoria'])
                 ->where('codigo_equipo', $atleta['grupo'])
+                ->where('rol', $atleta['rol'])
                 ->first();
 
             if ($inscripcion) {
@@ -525,6 +526,26 @@ class InscripcionController extends Controller
             ->pluck('id_evento');
 
         $eventos = Evento::where('id_evento', $id_evento)->get();
+
+        $evento = Evento::where('id_evento', $id_evento)->firstOrFail();
+
+        $hoy = \Carbon\Carbon::today();
+
+        // cerrado por fecha (si ya pasó tardía, o normal si no hay tardía)
+        $cerrado = false;
+        if ($evento->fecha_final_inscripcion_tardia) {
+            $finTardia = \Carbon\Carbon::parse($evento->fecha_final_inscripcion_tardia)->startOfDay();
+            $cerrado = $hoy->gt($finTardia);
+        } elseif ($evento->fecha_final_inscripcion) {
+            $finNormal = \Carbon\Carbon::parse($evento->fecha_final_inscripcion)->startOfDay();
+            $cerrado = $hoy->gt($finNormal);
+        }
+
+        if ($cerrado) {
+            abort(403, 'El evento está vencido. No se permite editar la inscripción.');
+        }
+
+        $eventos = collect([$evento]);
         $bloquearSelectEventos = true;
 
         $academia = $usuario->academia;

@@ -119,37 +119,42 @@
 
                             {{-- ✅ ACCIONES --}}
                             <td class="text-center">
-                            <div class="d-flex justify-content-center gap-2">
+                                <div class="d-flex justify-content-center gap-2">
 
-                                @if(!empty($ins->can_edit) && $ins->can_edit)
-                                <a href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}"
-                                    class="btn btn-sm btn-warning rounded-pill"
-                                    title="Editar" data-bs-toggle="tooltip">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-
-                                <button type="button"
-                                        class="btn btn-sm btn-danger rounded-pill bEliminarMiInscripcion"
-                                        title="Eliminar" data-bs-toggle="tooltip">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                @else
-                                <button type="button"
+                                    {{-- EDITAR: bloquea si cerrado --}}
+                                    @if(!empty($ins->can_edit) && $ins->can_edit && empty($ins->cerrado))
+                                    <a href="{{ route('editar.inscripcion', ['id_evento' => $ins->evento->id_evento]) }}"
                                         class="btn btn-sm btn-warning rounded-pill"
-                                        disabled
-                                        title="No editable en este momento" data-bs-toggle="tooltip">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
+                                        title="Editar" data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    @else
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning rounded-pill"
+                                            disabled
+                                            title="{{ !empty($ins->cerrado) && $ins->cerrado ? 'Evento vencido' : 'No editable en este momento' }}"
+                                            data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    @endif
 
-                                <button type="button"
-                                        class="btn btn-sm btn-danger rounded-pill"
-                                        disabled
-                                        title="No disponible" data-bs-toggle="tooltip">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                @endif
+                                    {{-- ELIMINAR: lo dejas como estaba (solo depende de can_edit si así lo querés) --}}
+                                    @if(!empty($ins->can_edit) && $ins->can_edit)
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger rounded-pill bEliminarMiInscripcion"
+                                            title="Eliminar" data-bs-toggle="tooltip">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    @else
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger rounded-pill"
+                                            disabled
+                                            title="No disponible" data-bs-toggle="tooltip">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    @endif
 
-                            </div>
+                                </div>
                             </td>
                             </tr>
                         @endforeach
