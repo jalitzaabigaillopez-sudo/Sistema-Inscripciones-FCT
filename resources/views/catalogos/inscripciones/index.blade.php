@@ -104,6 +104,8 @@
                         <th>Número de atletas inscritos</th>
                         <th>Totalidad de montos</th>
                         <th>Estado</th>
+                        <th>Tipo</th>
+                        <th>Avisos</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -132,31 +134,84 @@
 
                                 </span>
                             </td>
+
+                            {{-- TIPO --}}
                             <td>
+                            @php $tipo = strtolower($item->tipo_inscripcion ?? 'normal'); @endphp
+                            @if($tipo === 'mixto')
+                                <span class="badge bg-info text-dark" title="Tiene inscripciones en periodo normal y tardío." data-bs-toggle="tooltip">Mixto</span>
+                            @elseif($tipo === 'tardia')
+                                <span class="badge bg-warning text-dark">Tardía</span>
+                            @else
+                                <span class="badge bg-primary">Normal</span>
+                            @endif
+                            </td>
+
+                            {{-- AVISOS --}}
+                            <td class="text-center">
+                            @if(!empty($item->cerrado) && $item->cerrado)
+                                <span class="badge bg-dark" title="Periodo finalizado" data-bs-toggle="tooltip">
+                                <i class="bi bi-lock-fill"></i>
+                                </span>
+                            @elseif(!empty($item->en_tardia) && $item->en_tardia)
+                                <span class="badge bg-warning text-dark" title="Evento en período tardío" data-bs-toggle="tooltip">
+                                <i class="bi bi-clock-history"></i>
+                                </span>
+
                                 @if($item->estado === 'activa')
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button"
-                                            data-bs-toggle="dropdown"></button>
-                                        <ul class="dropdown-menu">
+                                <span class="badge bg-light text-dark border ms-1"
+                                        title="Edición habilitada por tardía" data-bs-toggle="tooltip">
+                                    <i class="bi bi-unlock-fill"></i>
+                                </span>
+                                @endif
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                            </td>
+
+                           {{-- ACCIONES --}}
+                          <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle rounded-pill" type="button"
+                                    data-bs-toggle="dropdown"></button>
+
+                                <ul class="dropdown-menu">
+
+                                    {{-- Ver/Editar: SOLO si NO está cerrado --}}
+                                    @if(empty($item->cerrado) || !$item->cerrado)
+                                        <li>
                                             <a class="dropdown-item btn-edit"
                                                 href="{{ route('admin.editar.inscripcion', ['id_evento' => $item->evento->id_evento, 'id_academia' => $item->academia->id_academia]) }}">
                                                 <i class="bi bi-pencil-square"></i> Ver/Editar
                                             </a>
-                                            <li>
-                                               <form method="POST" action="{{ route('admin.eliminar.inscripcion', ['id_evento' => $item->evento->id_evento, 'id_academia' => $item->academia->id_academia]) }}"
-                                                    onsubmit="return confirm('¿Seguro que desea eliminar esta inscripción?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="dropdown-item text-danger" type="submit">
-                                                        <i class="bi bi-trash"></i> Eliminar
-                                                    </button>
-                                                </form>
+                                        </li>
+                                    @else
+                                        {{-- opcional: mostrarlo deshabilitado en vez de ocultarlo --}}
+                                        
+                                        <li>
+                                            <span class="dropdown-item text-muted">
+                                                <i class="bi bi-lock-fill me-1"></i> Ver/Editar (evento finalizado)
+                                            </span>
+                                        </li>
+                                       
+                                    @endif
 
-                                            </li>
-                                        </ul>
-                                    </div>
-                                @endif
-                            </td>
+                                    {{-- Eliminar: SIEMPRE (o con condición actual) --}}
+                                    <li>
+                                        <form method="POST"
+                                            action="{{ route('admin.eliminar.inscripcion', ['id_evento' => $item->evento->id_evento, 'id_academia' => $item->academia->id_academia]) }}"
+                                            onsubmit="return confirm('¿Seguro que desea eliminar esta inscripción?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="dropdown-item text-danger" type="submit">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -281,6 +336,16 @@
 
         });
     </script>
+
+    {{-- MENSAJE DE AVISOS --}}
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (el) { new bootstrap.Tooltip(el); });
+    });
+    </script>
+    @endpush
 
     <style>
         /* Submenús del dropdown */

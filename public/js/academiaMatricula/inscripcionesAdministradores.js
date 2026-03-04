@@ -687,7 +687,7 @@ $(document).ready(function () {
                     if (rol === 'atleta') {
 
                         // Validar que el usuario no este en la misma modalida y submodalidad dos veces
-                        if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
+                       if (verificarInscripcionRepetidaPorId(id_atleta, id_modalidad, id_subModalidad, rol, atletasGrupoTemporal)) {
                             mostrarAlerta("Un atleta no puede matricularse en una submodalidad dos veces.", "Aviso", "⚠️");
                             return;
                         }
@@ -733,7 +733,7 @@ $(document).ready(function () {
                         if (validarCantidadRol(rol) === false) {// Validacion para cantidad maxima segun el rol (1 entrenador, 2 asistentes x cada 10 atletas)
                             return;
                         }
-                        if (verificarInscripcionRepetida(recortarNombre(atleta), modalidad, submodalidad, rol) === true) {
+                        if (verificarInscripcionRepetidaPorId(id_atleta, null, null, rol, atletasGrupoTemporal)) {
                             mostrarAlerta("Al parecer este asistente ya se encuentra en lista.", "Aviso", "⚠️");
                             return;
                         }
@@ -1003,23 +1003,48 @@ $(document).ready(function () {
      * @param {*} rol 
      * @returns true si un atleta ya esta en una submodalidad de modalidad
      */
-    function verificarInscripcionRepetida(nombre, modalidad, submodalidad, rol) {
-        let salida = false
-        let atletas = listaAtletas.concat(gruposAtletas);
+    // function verificarInscripcionRepetida(nombre, modalidad, submodalidad, rol) {
+    //     let salida = false
+    //     let atletas = listaAtletas.concat(gruposAtletas);
+
+    //     if (rol === 'atleta') {
+    //         for (let atleta of atletas) {
+    //             if (atleta.atleta === nombre) {
+    //                 if (atleta.modalidad === modalidad) {
+    //                     if (atleta.submodalidad === submodalidad) {
+    //                         salida = true;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return salida;
+    // }
+
+    function verificarInscripcionRepetidaPorId(id_atleta, id_modalidad, id_subModalidad, rol, extra = []) {
+    const norm = (s) => (s ?? '').toString().trim().toLowerCase();
+    rol = norm(rol);
+
+    const all = (listaAtletas || []).concat(gruposAtletas || []).concat(extra || []);
+
+    return all.some(a => {
+        const aRol = norm(a.rol);
 
         if (rol === 'atleta') {
-            for (let atleta of atletas) {
-                if (atleta.atleta === nombre) {
-                    if (atleta.modalidad === modalidad) {
-                        if (atleta.submodalidad === submodalidad) {
-                            salida = true;
-                        }
-                    }
-                }
-            }
+            return aRol === 'atleta'
+                && String(a.id_atleta) === String(id_atleta)
+                && String(a.id_modalidad) === String(id_modalidad)
+                && String(a.id_subModalidad) === String(id_subModalidad);
         }
-        return salida;
-    }
+
+        if (rol === 'asistente') {
+            return aRol === 'asistente'
+                && String(a.id_atleta) === String(id_atleta);
+        }
+
+        return false;
+    });
+}
 
     // RESET (Borra paneles clon y limpia selects y inputs) 
     function limpiarCards() {
@@ -1220,7 +1245,7 @@ $(document).ready(function () {
     }
 
     /**
-     * Valida: 1 entrenador y 2 asistentes x cada 10 atletas en una inscripcion.
+     * Valida: 1 entrenador y 1 asistente x cada 5 atletas en una inscripcion.
      * @param {*} rol Rol del atleta "asistente, atleta o entrenador".
      * @returns false cuando no se cumple la condicion.
      */
@@ -1246,7 +1271,7 @@ $(document).ready(function () {
             }
 
             // De 1–10 atletas = 1 asistente, 11–20 = 2, ...
-            let maxAsistentes = Math.floor((atletas - 1) / 10) + 1;
+            let maxAsistentes = Math.floor((atletas - 1) / 5) + 1;
 
             if (asistentes >= maxAsistentes) {
                 mostrarAlerta("Solo se permite " + maxAsistentes + " asistente(s) para " + atletas + " atleta(s).", "Aviso", "⚠️");

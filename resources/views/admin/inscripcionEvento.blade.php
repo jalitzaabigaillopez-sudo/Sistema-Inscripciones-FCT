@@ -93,8 +93,8 @@
                                     data-id_atleta="{{ $atleta->id_atleta }}"
                                     data-fecha_nacimiento="{{ $atleta->fecha_nacimiento }}"
                                     data-id_division="{{ $atleta->id_division }}"
-                                    data-id_grado="{{ $atleta->grado->id_grado }}"
-                                    data-grado="{{ $atleta->grado->nombre }}"
+                                    data-id_grado="{{ optional($atleta->grado)->id_grado }}"
+                                    data-grado="{{ optional($atleta->grado)->nombre }}"
                                     
                                     
                                     data-nombre="{{ $atleta->nombre }}"
