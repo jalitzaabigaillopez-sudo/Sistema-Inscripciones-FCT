@@ -332,6 +332,13 @@
                     avisoDiv.style.display = "block";
                 }
             });
+
+            // FORZAR EJECUCIÓN AL CARGAR (cuando vienes del dashboard)
+            setTimeout(() => {
+                if (selectEvento.selectedIndex > 0) {
+                    selectEvento.dispatchEvent(new Event('change'));
+                }
+            }, 100);
         });
 
         window.inscripcionApp = {
