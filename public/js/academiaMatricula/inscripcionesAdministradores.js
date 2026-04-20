@@ -644,6 +644,11 @@ $(document).ready(function () {
 
             if (modoEvento === 0) {
 
+                 if (!id_atleta || !rol) {
+                    mostrarAlerta("Verifique que no hayan campos vacíos en su formulario.", "Aviso", "⚠️");
+                    return;
+                }
+
                 //HAY QUE HACER UNA VALIDACION UNICA PARA ESTE MODO DE INSCRIPCION
                 obj = {
                     atleta: recortarNombre(atleta),

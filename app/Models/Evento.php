@@ -23,7 +23,7 @@ class Evento extends Model
         'fecha_final',
         'imagen',
         'estado',
-        'id_tipo_evento ',
+        'id_tipo_evento',
         'costo_temprana_1',
         'costo_temprana_2',
         'costo_tardia_1',

@@ -96,13 +96,13 @@
                             <div class="mb-3">
                                 <label for="pesoMinimo" class="form-label">Peso Mínimo <span
                                         class="text-danger">*</span></label>
-                                <input type="number" class="form-control form-control-sm" id="peso_min" name="peso_min"
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="peso_min" name="peso_min"
                                     required>
                             </div>
                             <div class="mb-3">
                                 <label for="pesoMaximo" class="form-label">Peso Máximo <span
                                         class="text-danger">*</span></label>
-                                <input type="number" class="form-control form-control-sm" id="peso_max" name="peso_max"
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="peso_max" name="peso_max"
                                     required>
                             </div>
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">
@@ -153,13 +153,13 @@
                             <div class="mb-3">
                                 <label for="editPesoMinimo" class="form-label">Peso Mínimo <span
                                         class="text-danger">*</span></label>
-                                <input type="number" class="form-control form-control-sm" id="editPesoMinimo"
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="editPesoMinimo"
                                     name="peso_min" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editPesoMaximo" class="form-label">Peso Máximo <span
                                         class="text-danger">*</span></label>
-                                <input type="number" class="form-control form-control-sm" id="editPesoMaximo"
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="editPesoMaximo"
                                     name="peso_max" required>
                             </div>
                             <div class="modal-footer bg-light rounded-bottom d-flex justify-content-end pt-3">

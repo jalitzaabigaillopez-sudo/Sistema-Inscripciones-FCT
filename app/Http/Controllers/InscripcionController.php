@@ -34,7 +34,7 @@ class InscripcionController extends Controller
     // 1) resumen por atleta (1 fila por atleta-evento-academia-estado)
     $resumenAtletas = Inscripcion::query()
         ->where('rol', 'atleta')
-        ->whereNotNull('id_modalidad')
+        // ->whereNotNull('id_modalidad')
         ->select('id_evento', 'id_academia', 'id_atleta', 'estado')
         ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
         ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
@@ -54,8 +54,10 @@ class InscripcionController extends Controller
             $totalMonto = 0.0;
 
             foreach ($grupo as $row) {
-                $esDosOMas = (int)$row->modalidades >= 2;
-                $esTardia = (int)$row->es_tardia === 1; // por atleta (no por hoy)
+                // si no tiene modalidades (caso tipo evento 0), lo tratamos como 1 inscripción normal
+                $cantidadModalidades = (int) $row->modalidades;
+                 $esDosOMas = $cantidadModalidades >= 2;
+                $esTardia = (int) $row->es_tardia === 1;
 
                 if ($esTardia) {
                     $totalMonto += $esDosOMas
@@ -93,7 +95,7 @@ class InscripcionController extends Controller
                 ->where('id_evento', $first->id_evento)
                 ->where('id_academia', $first->id_academia)
                 ->where('rol', 'atleta')
-                ->whereNotNull('id_modalidad')
+                // ->whereNotNull('id_modalidad')
                 ->distinct()
                 ->pluck('tipo_inscripcion')
                 ->map(fn($t) => strtolower(trim($t)))
@@ -418,6 +420,46 @@ class InscripcionController extends Controller
                 // ===========================================================
 
                 // ✅ tipo del grupo: normal / tardia / mixto
+                if ((int)($evento->tipo_evento ?? 0) === 0) {
+
+                    // CURSO / SEMINARIO (sin modalidad)
+                    $tipos = Inscripcion::where('id_academia', $academia->id_academia)
+                        ->where('id_evento', $id_evento)
+                        ->where('rol', 'atleta')
+                        ->distinct()
+                        ->pluck('tipo_inscripcion')
+                        ->map(fn($t) => strtolower(trim($t)))
+                        ->unique()
+                        ->values();
+
+                    $tieneNormal = $tipos->contains('normal');
+                    $tieneTardia = $tipos->contains('tardia');
+
+                    $tipoGrupo = ($tieneNormal && $tieneTardia)
+                        ? 'mixto'
+                        : ($tieneTardia ? 'tardia' : 'normal');
+
+                    $resumenAtletas = Inscripcion::query()
+                        ->where('id_academia', $academia->id_academia)
+                        ->where('id_evento', $id_evento)
+                        ->where('rol', 'atleta')
+                        ->select('id_atleta')
+                        ->selectRaw('COUNT(*) as inscripciones_atleta')
+                        ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+                        ->groupBy('id_atleta')
+                        ->get();
+
+                    $total_atletas = $resumenAtletas->count();
+
+                    $cantidad_inscritos = Inscripcion::where('id_academia', $academia->id_academia)
+                        ->where('id_evento', $id_evento)
+                        ->where('rol', 'atleta')
+                        ->distinct('id_atleta')
+                        ->count('id_atleta');
+
+                } else {
+
+                    // EVENTO NORMAL (con modalidad)
                     $tipos = Inscripcion::where('id_academia', $academia->id_academia)
                         ->where('id_evento', $id_evento)
                         ->where('rol', 'atleta')
@@ -435,45 +477,49 @@ class InscripcionController extends Controller
                         ? 'mixto'
                         : ($tieneTardia ? 'tardia' : 'normal');
 
+                    $resumenAtletas = Inscripcion::query()
+                        ->where('id_academia', $academia->id_academia)
+                        ->where('id_evento', $id_evento)
+                        ->where('rol', 'atleta')
+                        ->whereNotNull('id_modalidad')
+                        ->select('id_atleta')
+                        ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
+                        ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
+                        ->selectRaw('COUNT(*) as inscripciones_atleta')
+                        ->groupBy('id_atleta')
+                        ->get();
 
-                // Resumen por atleta (modalidades + si fue tardía)
-                $resumenAtletas = Inscripcion::query()
-                    ->where('id_academia', $academia->id_academia)
-                    ->where('id_evento', $id_evento)
-                    ->where('rol', 'atleta')
-                    ->whereNotNull('id_modalidad')
-                    ->select('id_atleta')
-                    ->selectRaw('COUNT(DISTINCT id_modalidad) as modalidades')
-                    ->selectRaw("MAX(CASE WHEN tipo_inscripcion = 'tardia' THEN 1 ELSE 0 END) as es_tardia")
-                    ->selectRaw('COUNT(*) as inscripciones_atleta')
-                    ->groupBy('id_atleta')
-                    ->get();
+                    $total_atletas = $resumenAtletas->count();
 
-                // CONTAR UN ATLETA AUNQUE ESTE INSCRITO EN VARIAS MODALIDADES
-                $total_atletas = $resumenAtletas->count(); // atletas únicos
-                
-                $cantidad_inscritos = Inscripcion::where('id_academia', $academia->id_academia)
-                ->where('id_evento', $id_evento)
-                ->where('rol', 'atleta')
-                ->whereNotNull('id_modalidad')
-                ->count();
+                    $cantidad_inscritos = Inscripcion::where('id_academia', $academia->id_academia)
+                        ->where('id_evento', $id_evento)
+                        ->where('rol', 'atleta')
+                        ->whereNotNull('id_modalidad')
+                        ->count();
+                }
 
                 $totalMonto = 0.0;
 
                 foreach ($resumenAtletas as $row) {
-                    $esDosOMas = (int)$row->modalidades >= 2;
-                    $esTardia  = (int)$row->es_tardia === 1;
 
-                    if ($esTardia) {
-                        $totalMonto += $esDosOMas
-                            ? (float)($evento->costo_tardia_2 ?? 0)
-                            : (float)($evento->costo_tardia_1 ?? 0);
-                    } else {
-                        $totalMonto += $esDosOMas
-                            ? (float)($evento->costo_temprana_2 ?? 0)
-                            : (float)($evento->costo_temprana_1 ?? 0);
-                    }
+                $esTardia = (int)$row->es_tardia === 1;
+
+                if ((int)($evento->tipo_evento ?? 0) === 0) {
+                    $esDosOMas = false;
+                } else {
+                    $esDosOMas = (int)($row->modalidades ?? 0) >= 2;
                 }
+
+                if ($esTardia) {
+                    $totalMonto += $esDosOMas
+                        ? (float)($evento->costo_tardia_2 ?? 0)
+                        : (float)($evento->costo_tardia_1 ?? 0);
+                } else {
+                    $totalMonto += $esDosOMas
+                        ? (float)($evento->costo_temprana_2 ?? 0)
+                        : (float)($evento->costo_temprana_1 ?? 0);
+                }
+            }
 
                  // ================== Regla de edición ==================
                 $canEdit = false;

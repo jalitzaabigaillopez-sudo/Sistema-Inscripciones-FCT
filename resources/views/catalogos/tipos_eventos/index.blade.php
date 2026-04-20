@@ -217,16 +217,31 @@
                 });
 
                 // Editar (abrir modal)
-                $(document).on('click', '.btn-edit', function () {
-                    const id = $(this).data('id');
-                    $.get(`/tiposEventos/${id}/datos`, function (data) {
-                        $('#editNombreTipoEvento').val(data.nombre);
-                        $('#editDescripcionTipoEvento').val(data.descripcion);
-                        $('#formEditarTipoEvento').attr('action', `/tiposEventos/${id}`);
-                        new bootstrap.Modal('#modalEditarTipoEvento').show();
-                    });
-                });
+               $(document).on('click', '.btn-edit', function () {
+                const id = $(this).data('id');
 
+                $.get(`/tiposEventos/${id}/datos`, function (data) {
+                    $('#editNombreTipoEvento').val(data.nombre);
+                    $('#editDescripcionTipoEvento').val(data.descripcion);
+                    $('#formEditarTipoEvento').attr('action', `/tiposEventos/${id}`);
+
+                    const checkboxModo = $('#formEditarTipoEvento input[type="checkbox"][name="modo"]');
+                    checkboxModo.prop('checked', Number(data.modo) === 0);
+
+                    new bootstrap.Modal('#modalEditarTipoEvento').show();
+                });
+            });
+
+            $('#modalEditarTipoEvento').on('hidden.bs.modal', function () {
+                const form = $('#formEditarTipoEvento');
+
+                form[0].reset();
+                form.attr('action', '');
+
+                // asegurar estado inicial correcto
+                form.find('input[type="checkbox"][name="modo"]').prop('checked', false);
+            });
+            
                 // Guardar edición
                 $('#formEditarTipoEvento').on('submit', function (e) {
                     e.preventDefault();

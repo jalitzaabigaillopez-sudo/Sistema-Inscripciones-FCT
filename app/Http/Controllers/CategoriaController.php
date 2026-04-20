@@ -107,8 +107,8 @@ class CategoriaController extends Controller
                 'exists:divisiones,id_division'
             ],
             'sexo' => 'required|string|max:255',
-            'peso_min' => 'required|numeric',
-            'peso_max' => 'required|numeric',
+            'peso_min' => 'required|numeric|min:0',
+            'peso_max' => 'required|numeric|gt:peso_min',
         ]);
 
         // Validar si la combinación de campos ya existe
@@ -156,8 +156,8 @@ class CategoriaController extends Controller
         $validated = $request->validate([
             'id_division' => 'required|numeric|exists:divisiones,id_division',
             'sexo' => 'required|string|max:255',
-            'peso_min' => 'required|numeric',
-            'peso_max' => 'required|numeric',
+            'peso_min' => 'required|numeric|min:0',
+            'peso_max' => 'required|numeric|gt:peso_min',
         ]);
 
         $item->id_division = $validated['id_division'];
