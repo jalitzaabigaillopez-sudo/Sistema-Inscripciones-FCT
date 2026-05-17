@@ -52,6 +52,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'combate' => 1,
             'poomsae' => 2,
             'freestyle' => 3,
+            'kyopa' => 4,
         ];
 
 
@@ -238,6 +239,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'COMBATE' => 1,
             'POOMSAE' => 2,
             'FREESTYLE' => 3,
+            'KYOPA' => 4,
         ];
 
         // Orden personalizado
@@ -306,6 +308,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'combate' => 1,
             'poomsae' => 2,
             'freestyle' => 3,
+            'kyopa'=> 4,
         ];
 
         // Mapear datos
@@ -418,6 +421,8 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Poomsae' => 2,
             'FREESTYLE' => 3,
             'Freestyle' => 3,
+            'KYOPA' => 4,
+            'kyopa' => 4,
         ];
 
         // Ordenar según el mismo criterio JS
@@ -504,6 +509,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'COMBATE' => 1,
             'POOMSAE' => 2,
             'FREESTYLE' => 3,
+            'KYOPA' => 4,
         ];
 
         // Ordena según la lógica JS (Rol → Modalidad)
@@ -602,6 +608,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'COMBATE' => 1,
             'POOMSAE' => 2,
             'FREESTYLE' => 3,
+            'KYOPA' => 4,
         ];
 
         // Ordena según la lógica JS (Rol → Modalidad)

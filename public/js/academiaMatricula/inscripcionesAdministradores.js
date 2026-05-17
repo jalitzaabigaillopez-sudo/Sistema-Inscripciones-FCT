@@ -379,7 +379,7 @@ $(document).ready(function () {
         let modalidad = card.find(".modalidades-select option:selected").text().trim().toLowerCase();
         let submodalidad = card.find(".submodalidades-select option:selected").text();
 
-        if (modalidad === "poomsae" || modalidad === "freestyle") {
+        if (modalidad === "poomsae" || modalidad === "freestyle" || modalidad === "kyopa") {
             var selectsCategorias = card.find('.categorias-select');
 
             selectsCategorias.each(function () {
@@ -463,7 +463,7 @@ $(document).ready(function () {
         let modalidad = nuevaCard.find(".modalidades-select option:selected").text().trim().toLowerCase();
         let submodalidad = nuevaCard.find(".submodalidades-select option:selected").text();
 
-        if (modalidad === "poomsae" || modalidad === "freestyle") {
+        if (modalidad === "poomsae" || modalidad === "freestyle" || modalidad === "kyopa") {
             var selectsCategorias = nuevaCard.find('.categorias-select');
 
             selectsCategorias.each(function () {
@@ -1339,7 +1339,8 @@ $(document).ready(function () {
         let prioridadModalidad = {
             'COMBATE': 1,
             'POOMSAE': 2,
-            'FREESTYLE': 3
+            'FREESTYLE': 3,
+            'KYOPA': 4
         };
 
         filas.sort(function (a, b) {
