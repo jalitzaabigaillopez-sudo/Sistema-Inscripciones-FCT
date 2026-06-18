@@ -59,9 +59,11 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         $datos = $inscripciones->map(function ($i) {
             $fila = [
                 '#' => null,
+                'Identificación' => $i->atleta->identificacion ?? '—',
                 'Atleta' => $i->atleta
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
                     : '—',
+                'Sexo' => $i->atleta->sexo ?? '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
                 'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => ucfirst(strtolower($i->modalidad->nombre ?? '—')),
@@ -74,28 +76,30 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 'Peso' => $i->peso ?? '—',
                 'Código de equipo' => $i->codigo_equipo ?? '—',
                 'Rol' => ucfirst(strtolower($i->rol ?? '—')),
+                // EVENTO AL FINAL
+                'Evento' => $i->evento->nombre ?? '—',
             ];
 
             // Si no se filtró ni por evento ni por academia → agregar ambas columnas
             if (!$this->id_evento && !$this->id_academia) {
-                $fila = array_slice($fila, 0, 2, true)
+                $fila = array_slice($fila, 0, 4, true)
                     + [
-                        'Evento' => $i->evento->nombre ?? '—',
+                        // 'Evento' => $i->evento->nombre ?? '—',
                         'Academia' => $i->academia->nombre ?? '—',
                     ]
-                    + array_slice($fila, 2, null, true);
+                    + array_slice($fila, 4, null, true);
             }
             // Si solo no se filtró por evento → agregar evento
-            elseif (!$this->id_evento) {
-                $fila = array_slice($fila, 0, 2, true)
-                    + ['Evento' => $i->evento->nombre ?? '—']
-                    + array_slice($fila, 2, null, true);
-            }
+            // elseif (!$this->id_evento) {
+            //     $fila = array_slice($fila, 0, 2, true)
+            //         + ['Evento' => $i->evento->nombre ?? '—']
+            //         + array_slice($fila, 2, null, true);
+            // }
             // Si solo no se filtró por academia → agregar academia
             elseif (!$this->id_academia) {
-                $fila = array_slice($fila, 0, 2, true)
+                $fila = array_slice($fila, 0, 4, true)
                     + ['Academia' => $i->academia->nombre ?? '—']
-                    + array_slice($fila, 2, null, true);
+                    + array_slice($fila, 4, null, true);
             }
 
             return $fila;
@@ -141,7 +145,9 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
     {
         $encabezados = [
             '#',
+            'Identificación',
             'Atleta',
+            'Sexo',
             'Grado',
             'Division',
             'Modalidad',
@@ -151,20 +157,21 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Estado',
             'Peso',
             'Código de equipo',
-            'Rol'
+            'Rol',
+            'Evento',
         ];
 
         // Mostrar todas las columnas si no hay filtros
         if (!$this->id_evento && !$this->id_academia) {
-            array_splice($encabezados, 2, 0, ['Evento', 'Academia']);
+            array_splice($encabezados, 4, 0, ['Academia']);
         }
         // Mostrar solo evento si no se filtró por evento
-        elseif (!$this->id_evento) {
-            array_splice($encabezados, 2, 0, ['Evento']);
-        }
+        // elseif (!$this->id_evento) {
+        //     array_splice($encabezados, 2, 0, ['Evento']);
+        // }
         // Mostrar solo academia si no se filtró por academia
         elseif (!$this->id_academia) {
-            array_splice($encabezados, 2, 0, ['Academia']);
+            array_splice($encabezados, 4, 0, ['Academia']);
         }
 
         $encabezadoExtra = [];
