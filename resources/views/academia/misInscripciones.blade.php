@@ -4,6 +4,31 @@
 
 @section('breadcrumb-title', 'Mis inscripciones')
 
+<style>
+    #menuFiltro {
+        min-width: 240px;
+        border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+
+        #dropdownFiltro {
+            white-space: nowrap;
+        }
+
+        #menuFiltro {
+            min-width: 220px;
+        }
+
+    }
+    #menuFiltro {
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 250px;
+    border-radius: 12px;
+    }
+</style>
+
 @section('content')
     <a href="{{ route('dashboard') }}" class="btn btn-outline-primary float-end">
         <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
@@ -14,14 +39,62 @@
 
     <div class="card table-card shadow">
         <div class="card-body p-3">
-            <div class="table-responsive" style="overflow-x: auto;">
-                <div class="mb-4 d-flex justify-content-end">
-                    <input type="text" id="buscador" class="form-control form-control-sm" style="max-width: 220px;"
-                        placeholder="Buscar inscripción...">
-                </div>
-                <span>Descargar <a href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}">PDF <i class="bi bi-file-earmark-pdf"></i></a> </span>
+            
+            {{-- EXPORTAR PDF O EXCEL - FILTRO SOLO POR EVENTO --}}
+            <div class="row g-2 align-items-center mb-3">
 
-                @php
+                {{-- BOTONES --}}
+                <div class="col-12 col-lg-8">
+                    <div class="d-flex flex-wrap gap-2">
+
+                        <a id="bPDF" href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}"
+                            class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>
+                            PDF
+                        </a>
+
+                        <a id="bExcel" href="#" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                            <i class="bi bi-file-earmark-excel me-1"></i>
+                            Excel
+                        </a>
+
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill dropdown-toggle px-3" type="button"
+                                id="dropdownFiltro" data-bs-toggle="dropdown" aria-expanded="false" data-val="">
+                                <i class="bi bi-funnel me-1"></i>
+                                Filtrar por evento
+                            </button>
+
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownFiltro" id="menuFiltro">
+
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        Eventos
+                                    </h6>
+                                </li>
+
+                                <li id="submenuEventos"></li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item text-muted" href="#" id="btnMostrarTodo">
+                                        <i class="bi bi-arrow-repeat me-2"></i>
+                                        Limpiar filtro
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            @php
                 $hayTardia = collect($inscripcionesAgrupadas)->contains(fn($x) => !empty($x->en_tardia) && $x->en_tardia);
                 @endphp
 
@@ -33,6 +106,14 @@
                     </div>
                 </div>
                 @endif
+
+
+            <div class="table-responsive" style="overflow-x: auto;">
+                <div class="mb-4 d-flex justify-content-end">
+                    <input type="text" id="buscador" class="form-control form-control-sm" style="max-width: 220px;"
+                        placeholder="Buscar inscripción...">
+                </div>
+                {{-- <span>Descargar <a href="{{ route('inscripciones.academia.pdf', $academia->id_academia) }}">PDF <i class="bi bi-file-earmark-pdf"></i></a> </span> --}}
 
                 <table id="tablaMisInscripciones" class="table table-striped table-hover table-bordered text-center border">
                     <thead class="table-light">
@@ -54,7 +135,7 @@
                         @foreach($inscripcionesAgrupadas as $index => $ins)
                             <tr>
                                 <td data-id-evento="{{ $ins->evento->id_evento }}">{{ $index + 1 }}</td>
-                                <td>{{ $ins->evento->nombre }}</td>
+                                <td data-id-evento="{{ $ins->evento->id_evento }}">{{ $ins->evento->nombre }}</td>
                                 <td>{{ $academia->nombre }}</td>
                                 <td>{{ $academia->profesor_encargado }}</td>
                                 <td>{{ $ins->cantidad_inscritos }}</td>
@@ -185,10 +266,6 @@
         </nav> -->
     </div>
     
-    </div>
-    </div>
-    </div>
-    </div>
     <!-- Buscador JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -200,6 +277,98 @@
         new bootstrap.Tooltip(el);
     });
     });
+
+    $(document).ready(function() {
+
+                let eventos = new Map();
+
+                $("#tablaMisInscripciones tbody tr").each(function() {
+                    let $tdEvento = $(this).find("td:nth-child(2)");
+                    let nombreEvento = $tdEvento.text().trim();
+                    let idEvento = $tdEvento.data("id-evento");
+
+                    if (nombreEvento && idEvento) {
+                        eventos.set(idEvento, nombreEvento);
+                    }
+                });
+
+                eventos.forEach(function(nombreEvento, idEvento) {
+                    $("#submenuEventos").append(`
+                        <li>
+                            <a class="dropdown-item item-evento"
+                            href="#"
+                            data-id="${idEvento}"
+                            data-nombre="${nombreEvento}">
+                                ${nombreEvento}
+                            </a>
+                        </li>
+                    `);
+                });
+
+                $(document).on("click", ".item-evento", function(e) {
+                    e.preventDefault();
+
+                    let idEvento = $(this).data("id");
+                    let nombreEvento = $(this).data("nombre");
+
+                    $("#dropdownFiltro")
+                        .data("val", idEvento)
+                        .attr("data-val", idEvento)
+                        .html(`<i class="bi bi-funnel me-1"></i> ${nombreEvento}`);
+
+                    $("#tablaMisInscripciones tbody tr").each(function() {
+                        let idFilaEvento = $(this).find("td:nth-child(2)").data("id-evento");
+                        $(this).toggle(idFilaEvento == idEvento);
+                    });
+                });
+
+                $("#btnMostrarTodo").on("click", function(e) {
+                    e.preventDefault();
+
+                    $("#tablaMisInscripciones tbody tr").show();
+
+                    $("#dropdownFiltro")
+                        .data("val", "")
+                        .attr("data-val", "")
+                        .html(`<i class="bi bi-funnel me-1"></i> Filtrar por evento`);
+                });
+
+                $("#bPDF").on("click", function(e) {
+                    e.preventDefault();
+
+                    let idEvento = $("#dropdownFiltro").data("val");
+
+                    if (idEvento) {
+                        let url =
+                            "{{ route('inscripciones.academia.evento.pdf', ['id_evento' => '__EVENTO__']) }}";
+                        url = url.replace("__EVENTO__", idEvento);
+
+                        window.open(url, "_blank");
+                    } else {
+                        window.open("{{ route('inscripciones.academia.pdf', $academia->id_academia) }}",
+                            "_blank");
+                    }
+                });
+
+                $("#bExcel").on("click", function(e) {
+                    e.preventDefault();
+
+                    let idEvento = $("#dropdownFiltro").data("val");
+
+                    if (idEvento) {
+                        let url =
+                            "{{ route('inscripciones.academia.evento.excel', ['id_evento' => '__EVENTO__']) }}";
+                        url = url.replace("__EVENTO__", idEvento);
+
+                        window.open(url, "_blank");
+                    } else {
+                        window.open("{{ route('inscripciones.academia.excel', $academia->id_academia) }}",
+                            "_blank");
+                    }
+                });
+
+            });
+
     </script>
     @endpush
 

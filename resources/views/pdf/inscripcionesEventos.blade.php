@@ -7,7 +7,7 @@
     <style>
         /* ================== CONFIGURACIÓN GLOBAL ================== */
         @page {
-            margin: 10px 15px;
+            margin: 115px 15px 55px 15px;
             /* Márgenes del documento (arriba/izq/der/abajo) */
         }
 
@@ -32,7 +32,7 @@
             left: 0;
             right: 0;
             height: 95px;
-            border-bottom: 2px solid #222A59;
+            /* border-bottom: 2px solid #222A59; */
         }
 
         footer {
@@ -171,6 +171,8 @@
             <span class="page-number"></span>
         </footer>
 
+        <main>
+
         @php
             $primer = $inscripciones->first()?->first();
             $nombreEvento = $primer['Evento'] ?? 'Evento Desconocido';
@@ -242,6 +244,8 @@
                 </tbody>
             </table>
         @endforeach
+
+        </main>
     </div>
 </body>
 

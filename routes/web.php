@@ -20,6 +20,7 @@ use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\TipoEventosController;
+use FontLib\Table\Type\name;
 use Illuminate\Types\Relations\Role;
 
 
@@ -64,7 +65,7 @@ Route::get('/reporteAdministradorInscripcionesEvento/{id_evento}', [ReporteContr
 Route::get('/reporteAdministradorInscripcionesAcademia/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaPdf']);
 
 Route::get('/reporteAdministradorInscripcionesEventoExcel/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoExcel']);
-Route::get('/reporteAdministradorInscripcionesAcademiaExcel/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaExcel']);
+Route::get('/reporteAdministradorInscripcionesAcademiaExcel/{id_academia}', [ReporteController::class, 'exportarInscripcionesAcademiaExcel'])->name('inscripciones.academia.excel');
 
 /**
  * Padron electoral
@@ -125,6 +126,14 @@ Route::get('/exportar-inscripciones-academia-pdf/{id_academia}', [ReporteControl
 Route::get('/reportes-generales', [ReporteController::class, 'vistaReportesGeneralesAcademia'])->name('reportes.generales.academia');
 Route::get('/reporte/{id_evento}', [ReporteController::class, 'exportarInscripcionesEventoAcademiasPdf']);
 
+Route::get('/reportes/academia/inscripciones/evento/{id_evento}/pdf', 
+    [ReporteController::class, 'exportarInscripcionesEventoAcademiasPdf']
+)->name('inscripciones.academia.evento.pdf');
+
+Route::get(
+    '/reportes/academia/inscripciones/evento/{id_evento}/excel',
+    [ReporteController::class, 'exportarInscripcionesEventoAcademiasExcel']
+)->name('inscripciones.academia.evento.excel');
 
 
 Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');

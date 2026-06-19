@@ -210,6 +210,23 @@ class ReporteController extends Controller
         return $export->exportEventoAcademiaPdf($id_evento);
     }
 
+    public function exportarInscripcionesEventoAcademiasExcel($id_evento)
+    {
+        $usuarioId = request()->session()->get('usuario');
+        $usuario = Usuario::find($usuarioId);
+        $academia = $usuario->academia;
+        $id_academia = $academia->id_academia ?? null;
+
+        $evento = Evento::find($id_evento);
+        $nombreEvento = $evento?->nombre ?? 'evento';
+        $nombreEvento = Str::slug($nombreEvento);
+
+        return Excel::download(
+            new InscripcionesExport($id_evento, $id_academia),
+            "inscripciones_evento_{$nombreEvento}.xlsx"
+        );
+    }
+
     public function vistaReportesGeneralesAcademia(Request $request)
     {
         // Solo academias
