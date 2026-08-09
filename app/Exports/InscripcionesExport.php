@@ -64,6 +64,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     ? "{$i->atleta->nombre} {$i->atleta->primer_apellido} {$i->atleta->segundo_apellido}"
                     : '—',
                 'Sexo' => $i->atleta->sexo ?? '—',
+                'Fecha de Nacimiento' => $i->atleta->fecha_nacimiento ? \Carbon\Carbon::parse($i->atleta->fecha_nacimiento)->format('d/m/Y') : '—',
                 'Grado' => $i->atleta->grado->nombre ?? '—',
                 'Division' => $i->atleta->division->division ?? '—',
                 'Modalidad' => ucfirst(strtolower($i->modalidad->nombre ?? '—')),
@@ -82,12 +83,12 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
             // Si no se filtró ni por evento ni por academia → agregar ambas columnas
             if (!$this->id_evento && !$this->id_academia) {
-                $fila = array_slice($fila, 0, 4, true)
+                $fila = array_slice($fila, 0, 5, true)
                     + [
                         // 'Evento' => $i->evento->nombre ?? '—',
                         'Academia' => $i->academia->nombre ?? '—',
                     ]
-                    + array_slice($fila, 4, null, true);
+                    + array_slice($fila, 5, null, true);
             }
             // Si solo no se filtró por evento → agregar evento
             // elseif (!$this->id_evento) {
@@ -97,9 +98,9 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             // }
             // Si solo no se filtró por academia → agregar academia
             elseif (!$this->id_academia) {
-                $fila = array_slice($fila, 0, 4, true)
+                $fila = array_slice($fila, 0, 5, true)
                     + ['Academia' => $i->academia->nombre ?? '—']
-                    + array_slice($fila, 4, null, true);
+                    + array_slice($fila, 5, null, true);
             }
 
             return $fila;
@@ -148,6 +149,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Identificación',
             'Atleta',
             'Sexo',
+            'Fecha de Nacimiento',
             'Grado',
             'Division',
             'Modalidad',
@@ -163,7 +165,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
 
         // Mostrar todas las columnas si no hay filtros
         if (!$this->id_evento && !$this->id_academia) {
-            array_splice($encabezados, 4, 0, ['Academia']);
+            array_splice($encabezados, 5, 0, ['Academia']);
         }
         // Mostrar solo evento si no se filtró por evento
         // elseif (!$this->id_evento) {
@@ -171,7 +173,7 @@ class InscripcionesExport implements FromCollection, WithHeadings, ShouldAutoSiz
         // }
         // Mostrar solo academia si no se filtró por academia
         elseif (!$this->id_academia) {
-            array_splice($encabezados, 4, 0, ['Academia']);
+            array_splice($encabezados, 5, 0, ['Academia']);
         }
 
         $encabezadoExtra = [];
